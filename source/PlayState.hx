@@ -222,14 +222,14 @@ class PlayState extends MusicBeatState
 
 		// String for when the game is paused
 		detailsPausedText = "Paused - " + detailsText;
-		
+
 		// Updating Discord Rich Presence.
 		DiscordClient.changePresence(detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 		#end
 
 		switch (SONG.song.toLowerCase())
 		{
-                        case 'spookeez' | 'monster' | 'south': 
+                        case 'spookeez' | 'monster' | 'south':
                         {
                                 curStage = 'spooky';
 	                          halloweenLevel = true;
@@ -246,7 +246,7 @@ class PlayState extends MusicBeatState
 
 		                  isHalloween = true;
 		          }
-		          case 'pico' | 'blammed' | 'philly': 
+		          case 'pico' | 'blammed' | 'philly':
                         {
 		                  curStage = 'philly';
 
@@ -496,7 +496,7 @@ class PlayState extends MusicBeatState
 		                  bg.scale.set(6, 6);
 		                  add(bg);
 
-		                  /* 
+		                  /*
 		                           var bg:FlxSprite = new FlxSprite(posX, posY).loadGraphic(Paths.image('weeb/evilSchoolBG'));
 		                           bg.scale.set(6, 6);
 		                           // bg.setGraphicSize(Std.int(bg.width * 6));
@@ -518,7 +518,7 @@ class PlayState extends MusicBeatState
 		                  // bg.shader = wiggleShit.shader;
 		                  // fg.shader = wiggleShit.shader;
 
-		                  /* 
+		                  /*
 		                            var waveSprite = new FlxEffectSprite(bg, [waveEffectBG]);
 		                            var waveSpriteFG = new FlxEffectSprite(fg, [waveEffectFG]);
 
@@ -712,7 +712,7 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		FlxG.camera.follow(camFollow, LOCKON, 0.04);
+		FlxG.camera.follow(camFollow, LOCKON, 0.01);
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
 		FlxG.camera.zoom = defaultCamZoom;
 		FlxG.camera.focusOn(camFollow.getPosition());
@@ -1305,7 +1305,7 @@ class PlayState extends MusicBeatState
 
 		super.onFocus();
 	}
-	
+
 	override public function onFocusLost():Void
 	{
 		#if desktop
@@ -1380,7 +1380,7 @@ class PlayState extends MusicBeatState
 			}
 			else
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
-		
+
 			#if desktop
 			DiscordClient.changePresence(detailsPausedText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
 			#end
@@ -1588,7 +1588,7 @@ class PlayState extends MusicBeatState
 			openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 			// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
-			
+
 			#if desktop
 			// Game Over doesn't get his own variable because it's only used here
 			DiscordClient.changePresence("Game Over - " + detailsText, SONG.song + " (" + storyDifficultyText + ")", iconRPC);
@@ -1678,7 +1678,8 @@ class PlayState extends MusicBeatState
 				{
 					if (daNote.tooLate || !daNote.wasGoodHit)
 					{
-						health -= 0.0475;
+						//health -= 0.0475;
+						noteMiss(daNote.noteData);
 						vocals.volume = 0;
 					}
 
@@ -1911,7 +1912,7 @@ class PlayState extends MusicBeatState
 
 			daLoop++;
 		}
-		/* 
+		/*
 			trace(combo);
 			trace(seperatedScore);
 		 */
@@ -1958,8 +1959,10 @@ class PlayState extends MusicBeatState
 		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
 
 		// FlxG.watch.addQuick('asdfa', upP);
+		var miss = false;
 		if ((upP || rightP || downP || leftP) && !boyfriend.stunned && generatedMusic)
 		{
+			var hitANote=false;
 			boyfriend.holdTimer = 0;
 
 			var possibleNotes:Array<Note> = [];
@@ -1978,12 +1981,14 @@ class PlayState extends MusicBeatState
 				}
 			});
 
+
 			if (possibleNotes.length > 0)
 			{
 				var daNote = possibleNotes[0];
 
 				if (perfectMode)
 					noteCheck(true, daNote);
+					hitANote=true;
 
 				// Jump notes
 				if (possibleNotes.length >= 2)
@@ -1992,8 +1997,11 @@ class PlayState extends MusicBeatState
 					{
 						for (coolNote in possibleNotes)
 						{
-							if (controlArray[coolNote.noteData])
+							if (controlArray[coolNote.noteData]){
+								trace("lol");
+								hitANote=true;
 								goodNoteHit(coolNote);
+							}
 							else
 							{
 								var inIgnoreList:Bool = false;
@@ -2002,33 +2010,45 @@ class PlayState extends MusicBeatState
 									if (controlArray[ignoreList[shit]])
 										inIgnoreList = true;
 								}
-								if (!inIgnoreList)
-									badNoteCheck();
+								//if (!inIgnoreList)
+									//badNoteCheck();
 							}
 						}
 					}
 					else if (possibleNotes[0].noteData == possibleNotes[1].noteData)
 					{
+						if(hitANote==false && controlArray[daNote.noteData]==true ){
+							trace("cock nig");
+							hitANote=true;
+						}
 						noteCheck(controlArray[daNote.noteData], daNote);
 					}
 					else
 					{
 						for (coolNote in possibleNotes)
 						{
+							if(hitANote==false && controlArray[coolNote.noteData]==true ){
+								trace("cockjoke");
+								hitANote=true;
+							}
 							noteCheck(controlArray[coolNote.noteData], coolNote);
 						}
 					}
 				}
 				else // regular notes?
 				{
+					if(hitANote==false && controlArray[daNote.noteData]==true ){
+						trace("cock");
+						hitANote=true;
+					}
 					noteCheck(controlArray[daNote.noteData], daNote);
 				}
-				/* 
+				/*
 					if (controlArray[daNote.noteData])
 						goodNoteHit(daNote);
 				 */
 				// trace(daNote.noteData);
-				/* 
+				/*
 						switch (daNote.noteData)
 						{
 							case 2: // NOTES YOU JUST PRESSED
@@ -2053,11 +2073,22 @@ class PlayState extends MusicBeatState
 						daNote.destroy();
 					}
 				 */
+
+				 if(hitANote==false){
+					 miss=true;
+				 }
+				 trace(hitANote);
 			}
 			else
 			{
-				badNoteCheck();
+				miss=true;
+				//badNoteCheck();
 			}
+		}
+
+		if(miss){
+			trace("miss");
+			badNoteCheck();
 		}
 
 		if ((up || right || down || left) && !boyfriend.stunned && generatedMusic)
@@ -2148,13 +2179,13 @@ class PlayState extends MusicBeatState
 			// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
 			// FlxG.log.add('played imss note');
 
-			boyfriend.stunned = true;
+			/*boyfriend.stunned = true;
 
 			// get stunned for 5 seconds
 			new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
 			{
 				boyfriend.stunned = false;
-			});
+			});*/
 
 			switch (direction)
 			{
@@ -2195,7 +2226,7 @@ class PlayState extends MusicBeatState
 			goodNoteHit(note);
 		else
 		{
-			badNoteCheck();
+			//badNoteCheck();
 		}
 	}
 
