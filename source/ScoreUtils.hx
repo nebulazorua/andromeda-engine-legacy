@@ -4,30 +4,31 @@ class ScoreUtils
 {
 	public static var gradeArray:Array<String> = ["☆☆☆☆","☆☆☆","☆☆","☆","S+","S","S-","A+","A","A-","B+","B","B-","C+","C","C-","D"];
 
-  public static function AccuracyToGrade(accuracy:Float){
-    var grade = "N";
-    var accuracyConditions:Array<Bool>=[
-      accuracy>=1, // Quad star
-      accuracy>=.99, // Trip star
-      accuracy>=.98, // Doub star
-      accuracy>=.96, // Single star
-      accuracy>=.94, // S+
-      accuracy>=.92, // S
-      accuracy>=.89, // S-
-      accuracy>=.86, // A+
-      accuracy>=.83, // A
-      accuracy>=.8, // A-
-      accuracy>=.76, // B+
-      accuracy>=.72, // B
-      accuracy>=.68, // B-
-      accuracy>=.64, // C+
-      accuracy>=.6, // C
-      accuracy>=.55, // C-
-      accuracy<.55 // D
+	public static function GetAccuracyConditions(): Array<Float>{
+		return [
+      1.0, // Quad star
+      .99, // Trip star
+      .98, // Doub star
+      .96, // Single star
+      .94, // S+
+      .92, // S
+      .89, // S-
+      .86, // A+
+      .83, // A
+      .8, // A-
+      .76, // B+
+      .72, // B
+      .68, // B-
+      .64, // C+
+      .6, // C
+      .55, // C-
     ];
+	}
+  public static function AccuracyToGrade(accuracy:Float):String {
+    var grade = gradeArray[gradeArray.length-1];
+    var accuracyConditions:Array<Float>=GetAccuracyConditions();
     for(i in 0...accuracyConditions.length){
-      var achieved = accuracyConditions[i];
-      if(achieved){
+      if(accuracy > accuracyConditions[i]){
         grade = gradeArray[i];
         break;
       }
