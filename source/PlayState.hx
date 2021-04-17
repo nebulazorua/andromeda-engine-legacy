@@ -115,6 +115,12 @@ class PlayState extends MusicBeatState
 	var talking:Bool = true;
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
+	var accuracy:Float = 1;
+	var hitNotes:Float = 0;
+	var totalNotes:Float = 0;
+
+	var grade:String = ScoreUtils.gradeArray[0];
+
 
 	public static var campaignScore:Int = 0;
 
@@ -733,7 +739,7 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width - 190, healthBarBG.y + 30, 0, "", 20);
+		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 150, healthBarBG.y + 50, 0, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
@@ -1242,6 +1248,11 @@ class PlayState extends MusicBeatState
 		FlxTween.tween(FlxG.camera, {zoom: 1.3}, (Conductor.stepCrochet * 4 / 1000), {ease: FlxEase.elasticInOut});
 	}
 
+	function updateAccuracy():Void
+	{
+		accuracy = hitNotes / totalNotes;
+		grade = ScoreUtils.AccuracyToGrade(accuracy);
+	}
 	override function openSubState(SubState:FlxSubState)
 	{
 		if (paused)
@@ -1332,6 +1343,13 @@ class PlayState extends MusicBeatState
 	var startedCountdown:Bool = false;
 	var canPause:Bool = true;
 
+	function truncateFloat( number : Float, precision : Int): Float {
+		var num = number;
+		num = num * Math.pow(10, precision);
+		num = Math.round( num ) / Math.pow(10, precision);
+		return num;
+	}
+
 	override public function update(elapsed:Float)
 	{
 		#if !debug
@@ -1364,7 +1382,7 @@ class PlayState extends MusicBeatState
 
 		super.update(elapsed);
 
-		scoreTxt.text = "Score:" + songScore;
+		scoreTxt.text = "Score:" + songScore + " | Accuracy:" + truncateFloat(accuracy*100, 2) + "% | " + grade;
 
 		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
 		{
@@ -1786,6 +1804,7 @@ class PlayState extends MusicBeatState
 
 	private function popUpScore(strumtime:Float):Void
 	{
+		totalNotes++;
 		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
 		// boyfriend.playAnim('hey');
 		vocals.volume = 1;
@@ -1805,17 +1824,22 @@ class PlayState extends MusicBeatState
 		if (noteDiff > Conductor.safeZoneOffset * 0.9)
 		{
 			daRating = 'shit';
+			hitNotes += .1;
 			score = 50;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
+			hitNotes += .25;
 			score = 100;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
+			hitNotes += .8;
 			score = 200;
+		}else{
+			hitNotes+=1;
 		}
 
 		songScore += score;

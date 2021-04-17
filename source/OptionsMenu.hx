@@ -12,8 +12,6 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 
-var options:Array<> = [];
-
 class OptionsMenu extends MusicBeatState
 {
 	override function create()
