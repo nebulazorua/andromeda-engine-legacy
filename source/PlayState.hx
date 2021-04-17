@@ -149,7 +149,7 @@ class PlayState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
-		grade = ScoreUtils.gradeArray[0];
+		grade = ScoreUtils.gradeArray[0] + " (FC)";
 		hitNotes=0;
 		totalNotes=0;
 		misses=0;
@@ -157,6 +157,7 @@ class PlayState extends MusicBeatState
 		goods=0;
 		sicks=0;
 		shits=0;
+		accuracy=1;
 
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
@@ -2004,6 +2005,7 @@ class PlayState extends MusicBeatState
 		var miss = false;
 		if ((upP || rightP || downP || leftP) && !boyfriend.stunned && generatedMusic)
 		{
+			var forgiven=false;
 			var hitANote=false;
 			boyfriend.holdTimer = 0;
 
@@ -2023,6 +2025,18 @@ class PlayState extends MusicBeatState
 				}
 			});
 
+			if(possibleNotes.length==0){
+				notes.forEachAlive(function(daNote:Note){ // forgive you if you hit near a note but not a note
+						if(!daNote.canBeHit && daNote.mustPress){
+							if (daNote.strumTime > Conductor.songPosition - Conductor.safeZoneOffset
+								&& daNote.strumTime < Conductor.songPosition + Conductor.safeZoneOffset){
+									trace("ur forgiven");
+									forgiven=true;
+									return;
+								}
+						};
+				});
+			};
 
 			if (possibleNotes.length > 0)
 			{
@@ -2121,7 +2135,7 @@ class PlayState extends MusicBeatState
 				 }
 				 trace(hitANote);
 			}
-			else
+			else if(forgiven==false)
 			{
 				miss=true;
 				//badNoteCheck();
