@@ -83,6 +83,7 @@ class OptionsMenu extends MusicBeatState
 	}
 
 	function changeSelection(?diff:Int=0){
+		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 		curSelected += diff;
 
 		if (curSelected < 0)
