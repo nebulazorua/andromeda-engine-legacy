@@ -1,43 +1,87 @@
 package;
 
+import Controls;
 import Controls.Control;
+import Controls.KeyboardScheme;
 import flixel.input.keyboard.FlxKey;
 import OptionCategory;
+import Sys.sleep;
+import flixel.FlxG;
+import flash.events.KeyboardEvent;
 
 class Options
 {
 	public static var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L ];
-
-	public static function getKey(control:Control){
-		var returnedControl:FlxKey = controls[0];
-
+	public static var shit:Array<FlxKey> = [
+		ALT,
+		BACKSPACE,
+		SHIFT,
+		TAB,
+		CAPSLOCK,
+		CONTROL,
+		ENTER
+	];
+	public static function getKIdx(control:Control){
+		var idx = 0;
 		switch (control){
 			case Control.LEFT:
-				returnedControl= controls[0];
+				idx = 0;
 			case Control.DOWN:
-				returnedControl= controls[1];
+				idx = 1;
 			case Control.UP:
-				returnedControl= controls[2];
+				idx = 2;
 			case Control.RIGHT:
-				returnedControl= controls[3];
+				idx = 3;
 			default:
-
 		}
-		return returnedControl;
+		return idx;
+	}
+	public static function getKey(control:Control){
+		return controls[getKIdx(control)];
 	}
 }
 
 class ControlOption extends Option
 {
 	private var controlType:Control = Control.UP;
-	public function new(controlType:Control){
+	private var controls:Controls;
+	private var key:FlxKey;
+	public var forceUpdate=false;
+	public function new(controls:Controls,controlType:Control){
 		super();
 		this.controlType=controlType;
+		this.controls=controls;
+		key=Options.getKey(controlType);
 		name=Options.getKey(controlType).toString();
 	};
 
+	public override function keyPressed(pressed:FlxKey){
+		//FlxKey.fromString(String.fromCharCode(event.charCode));
+		for(k in Options.shit){
+			if(pressed==k){
+				pressed=-1;
+				break;
+			};
+		};
+		if(pressed!=ESCAPE){
+			Options.controls[Options.getKIdx(controlType)]=pressed;
+			key=pressed;
+			name=Options.getKey(controlType).toString();
+		}
+		if(pressed!=-1){
+			trace("epic style " + pressed.toString() );
+			controls.setKeyboardScheme(Custom,true);
+			allowMultiKeyInput=false;
+			return true;
+		}
+		return false;
+	}
+
 	public override function accept():Bool{
-		
+		controls.setKeyboardScheme(None,true);
+		allowMultiKeyInput=true;
+		//FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
+
 		return false;
 	};
 }

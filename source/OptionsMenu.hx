@@ -1,6 +1,7 @@
 package;
 
 import Controls.Control;
+import Controls.KeyboardScheme;
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -12,7 +13,6 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 import flixel.addons.transition.FlxTransitionableState;
-import Controls.Control;
 import Options;
 #if desktop
 import Discord.DiscordClient;
@@ -20,11 +20,11 @@ import Discord.DiscordClient;
 class OptionsMenu extends MusicBeatState
 {
 	private var defCat:OptionCategory = new OptionCategory("Default",[
-		new OptionCategory("Test",[
-			new ControlOption(Control.LEFT),
-			new ControlOption(Control.DOWN),
-			new ControlOption(Control.UP),
-			new ControlOption(Control.RIGHT)
+		new OptionCategory("Controls",[
+			new ControlOption(controls,Control.LEFT),
+			new ControlOption(controls,Control.DOWN),
+			new ControlOption(controls,Control.UP),
+			new ControlOption(controls,Control.RIGHT)
 		]),
 		new OptionCategory("Cock And Ball Torture",[
 			new Option("Cock"),
@@ -109,12 +109,21 @@ class OptionsMenu extends MusicBeatState
 
 	override function update(elapsed:Float)
 	{
-		var upP = controls.UP_P;
-		var downP = controls.DOWN_P;
-		var leftP = controls.LEFT_P;
-		var rightP = controls.RIGHT_P;
+		var upP = false;
+		var downP = false;
+		var leftP = false;
+		var rightP = false;
+		var accepted = false;
+		var back = false;
+		if(controls.keyboardScheme!=None){
+			upP = controls.UP_P;
+			downP = controls.DOWN_P;
+			leftP = controls.LEFT_P;
+			rightP = controls.RIGHT_P;
 
-		var accepted = controls.ACCEPT;
+			accepted = controls.ACCEPT;
+			back = controls.BACK;
+		}
 
 		if (upP)
 		{
@@ -125,7 +134,9 @@ class OptionsMenu extends MusicBeatState
 			changeSelection(1);
 		}
 
-		if (controls.BACK)
+		var option = category.options[curSelected];
+
+		if (back)
 		{
 			if(category!=defCat){
 				category.curSelected=0;
@@ -135,7 +146,6 @@ class OptionsMenu extends MusicBeatState
 				FlxG.switchState(new MainMenuState());
 			}
 		}
-		var option = category.options[curSelected];
 		if(option.type!="Category"){
 			if(leftP){
 				if(option.left()) {
@@ -148,6 +158,29 @@ class OptionsMenu extends MusicBeatState
 			}
 			if(rightP){
 				if(option.right()) {
+					optionText.remove(optionText.members[curSelected]);
+					var songText:Alphabet = new Alphabet(0, (70 * curSelected) + 30, option.name, true, false);
+					songText.isMenuItem = true;
+					optionText.add(songText);
+					changeSelection();
+				}
+			}
+		}
+
+		if(option.allowMultiKeyInput){
+			var pressed = FlxG.keys.firstJustPressed();
+			var released = FlxG.keys.firstJustReleased();
+			if(pressed!=-1){
+				if(option.keyPressed(pressed)){
+					optionText.remove(optionText.members[curSelected]);
+					var songText:Alphabet = new Alphabet(0, (70 * curSelected) + 30, option.name, true, false);
+					songText.isMenuItem = true;
+					optionText.add(songText);
+					changeSelection();
+				}
+			}
+			if(released!=-1){
+				if(option.keyReleased(released)){
 					optionText.remove(optionText.members[curSelected]);
 					var songText:Alphabet = new Alphabet(0, (70 * curSelected) + 30, option.name, true, false);
 					songText.isMenuItem = true;
@@ -171,6 +204,17 @@ class OptionsMenu extends MusicBeatState
 			changeSelection();
 		}
 
+
+
+		if(option.forceupdate){
+			option.forceupdate=false;
+			optionText.remove(optionText.members[curSelected]);
+			var songText:Alphabet = new Alphabet(0, (70 * curSelected) + 30, option.name, true, false);
+			songText.isMenuItem = true;
+
+			optionText.add(songText);
+			changeSelection();
+		}
 		super.update(elapsed);
 
 	}

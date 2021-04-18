@@ -1,17 +1,28 @@
 package;
+import flixel.input.keyboard.FlxKey;
 
 class Option
 {
   public var type:String = "Option";
   public var parent:OptionCategory;
-  public var name ( default, default ):String = "Option";
-  public var description ( default, default ):String = "";
-  public var isButton ( default, default ):Bool = false;
+  public var name:String = "Option";
+  public var description:String = "";
+  public var allowMultiKeyInput=false;
+
   public function new(?name:String){
     this.type = "Option";
     if(name!=null){
       this.name = name;
     }
+  }
+
+  public function keyPressed(key:FlxKey):Bool{
+    trace("Unset");
+    return false;
+  }
+  public function keyReleased(key:FlxKey):Bool{
+    trace("Unset");
+    return false;
   }
 
   public function accept():Bool{
