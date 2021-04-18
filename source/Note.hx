@@ -20,6 +20,9 @@ class Note extends FlxSprite
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
+	public var hit:Bool = false;
+	public var rating:String = "sick";
+	public var lastSustainPiece = false;
 
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
@@ -127,6 +130,8 @@ class Note extends FlxSprite
 
 			x += width / 2;
 
+			lastSustainPiece=true;
+
 			switch (noteData)
 			{
 				case 2:
@@ -148,6 +153,7 @@ class Note extends FlxSprite
 
 			if (prevNote.isSustainNote)
 			{
+				prevNote.lastSustainPiece=false;
 				switch (prevNote.noteData)
 				{
 					case 0:

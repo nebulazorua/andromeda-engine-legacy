@@ -48,7 +48,7 @@ class OptionsMenu extends MusicBeatState
 
 		#if desktop
 		// Updating Discord Rich Presence
-		DiscordClient.changePresence("Changing Options", null);
+		DiscordClient.changePresence("Changing options", null);
 		#end
 		category=defCat;
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));

@@ -37,7 +37,7 @@ class ControlOption extends Option
 	};
 
 	public override function accept():Bool{
-		trace("COCK JOKE");
+		
 		return false;
 	};
 }

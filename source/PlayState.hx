@@ -80,6 +80,7 @@ class PlayState extends MusicBeatState
 	private var gfSpeed:Int = 1;
 	private var health:Float = 1;
 	private var combo:Int = 0;
+	private var highestCombo:Int = 0;
 
 	private var healthBarBG:FlxSprite;
 	private var healthBar:FlxBar;
@@ -115,6 +116,13 @@ class PlayState extends MusicBeatState
 	var talking:Bool = true;
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
+	var shitsTxt:FlxText;
+	var badsTxt:FlxText;
+	var goodsTxt:FlxText;
+	var sicksTxt:FlxText;
+	var highComboTxt:FlxText;
+	var missesTxt:FlxText;
+
 	var accuracy:Float = 1;
 	var hitNotes:Float = 0;
 	var totalNotes:Float = 0;
@@ -758,6 +766,44 @@ class PlayState extends MusicBeatState
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
 
+		highComboTxt = new FlxText(0, FlxG.height/2-60, 0, "", 20);
+		highComboTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		highComboTxt.scrollFactor.set();
+
+		sicksTxt = new FlxText(0, FlxG.height/2-40, 0, "", 20);
+		sicksTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		sicksTxt.scrollFactor.set();
+
+		goodsTxt = new FlxText(0, FlxG.height/2-20, 0, "", 20);
+		goodsTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		goodsTxt.scrollFactor.set();
+
+		badsTxt = new FlxText(0, FlxG.height/2, 0, "", 20);
+		badsTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		badsTxt.scrollFactor.set();
+
+		shitsTxt = new FlxText(0, FlxG.height/2+20, 0, "", 20);
+		shitsTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		shitsTxt.scrollFactor.set();
+
+		missesTxt = new FlxText(0, FlxG.height/2+40, 0, "", 20);
+		missesTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		missesTxt.scrollFactor.set();
+
+		missesTxt.text = "Miss: " + misses;
+		sicksTxt.text = "Sick: " + sicks;
+		goodsTxt.text = "Good: " + goods;
+		badsTxt.text = "Bad: " + bads;
+		shitsTxt.text = "Shit: " + shits;
+		highComboTxt.text = "Highest Combo: " + highestCombo;
+
+		add(highComboTxt);
+		add(sicksTxt);
+		add(goodsTxt);
+		add(badsTxt);
+		add(shitsTxt);
+		add(missesTxt);
+
 		iconP1 = new HealthIcon(SONG.player1, true);
 		iconP1.y = healthBar.y - (iconP1.height / 2);
 		add(iconP1);
@@ -774,6 +820,12 @@ class PlayState extends MusicBeatState
 		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
+		missesTxt.cameras = [camHUD];
+		sicksTxt.cameras = [camHUD];
+		goodsTxt.cameras = [camHUD];
+		badsTxt.cameras = [camHUD];
+		shitsTxt.cameras = [camHUD];
+		highComboTxt.cameras = [camHUD];
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -1264,8 +1316,17 @@ class PlayState extends MusicBeatState
 
 	function updateAccuracy():Void
 	{
-		accuracy = hitNotes / totalNotes;
+		if(totalNotes==0)
+			accuracy = 1;
+		else
+			accuracy = hitNotes / totalNotes;
+
 		grade = ScoreUtils.AccuracyToGrade(accuracy) + (misses==0 ? " (FC)" : "");
+		missesTxt.text = "Miss: " + misses;
+		sicksTxt.text = "Sick: " + sicks;
+		goodsTxt.text = "Good: " + goods;
+		badsTxt.text = "Bad: " + bads;
+		shitsTxt.text = "Shit: " + shits;
 	}
 	override function openSubState(SubState:FlxSubState)
 	{
@@ -1300,7 +1361,7 @@ class PlayState extends MusicBeatState
 			#if desktop
 			if (startTimer.finished)
 			{
-				DiscordClient.changePresence(detailsText + SONG.song + " (" + storyDifficultyText + ")", grade + " | Acc: " + truncateFloat(accuracy*100,2) + "%", iconRPC, true, songLength);
+				DiscordClient.changePresence(detailsText + SONG.song + " (" + storyDifficultyText + ")", grade + " | Acc: " + truncateFloat(accuracy*100,2) + "%", iconRPC, true, songLength- Conductor.songPosition);
 			}
 			else
 			{
@@ -1319,7 +1380,7 @@ class PlayState extends MusicBeatState
 		{
 			if (Conductor.songPosition > 0.0)
 			{
-				DiscordClient.changePresence(detailsText + SONG.song + " (" + storyDifficultyText + ")", grade + " | Acc: " + truncateFloat(accuracy*100,2) + "%", iconRPC, true, songLength);
+				DiscordClient.changePresence(detailsText + SONG.song + " (" + storyDifficultyText + ")", grade + " | Acc: " + truncateFloat(accuracy*100,2) + "%", iconRPC, true, songLength-Conductor.songPosition);
 			}
 			else
 			{
@@ -1336,7 +1397,7 @@ class PlayState extends MusicBeatState
 		#if desktop
 		if (health > 0 && !paused)
 		{
-			DiscordClient.changePresence(detailsPausedText + SONG.song + " (" + storyDifficultyText + ")", grade + " | Acc: " + truncateFloat(accuracy*100,2) + "%", iconRPC, true, songLength);
+			DiscordClient.changePresence(detailsPausedText + SONG.song + " (" + storyDifficultyText + ")", grade + " | Acc: " + truncateFloat(accuracy*100,2) + "%", iconRPC);
 		}
 		#end
 
@@ -1414,7 +1475,7 @@ class PlayState extends MusicBeatState
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
 			#if desktop
-			DiscordClient.changePresence(detailsPausedText + SONG.song + " (" + storyDifficultyText + ")", grade + " | Acc: " + truncateFloat(accuracy*100,2) + "%", iconRPC, true, songLength);
+			DiscordClient.changePresence(detailsPausedText + SONG.song + " (" + storyDifficultyText + ")", grade + " | Acc: " + truncateFloat(accuracy*100,2) + "%", iconRPC);
 			#end
 		}
 
@@ -1430,8 +1491,8 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(150, iconP1.width, 0.1)));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(150, iconP2.width, 0.1)));
+		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, 0.3)));
+		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, 0.3)));
 
 		iconP1.updateHitbox();
 		iconP2.updateHitbox();
@@ -1631,7 +1692,7 @@ class PlayState extends MusicBeatState
 
 			#if desktop
 			// Game Over doesn't get his own variable because it's only used here
-			DiscordClient.changePresence("Game Over - " + detailsText + SONG.song + " (" + storyDifficultyText + ")", grade + " | Acc: " + truncateFloat(accuracy*100,2) + "%", iconRPC, true, songLength);
+			DiscordClient.changePresence("Game Over - " + detailsText + SONG.song + " (" + storyDifficultyText + ")", grade + " | Acc: " + truncateFloat(accuracy*100,2) + "%", iconRPC);
 			#end
 		}
 
@@ -1689,7 +1750,8 @@ class PlayState extends MusicBeatState
 							altAnim = '-alt';
 					}
 
-					//if(!daNote.isSustainNote){
+						//if(!daNote.isSustainNote){
+
 						switch (Math.abs(daNote.noteData))
 						{
 							case 0:
@@ -1700,9 +1762,13 @@ class PlayState extends MusicBeatState
 								dad.playAnim('singUP' + altAnim, true);
 							case 3:
 								dad.playAnim('singRIGHT' + altAnim, true);
-						}
-					//}
+							}
+							if(daNote.isSustainNote && !daNote.lastSustainPiece)
+								dad.animation.paused=true;
+							else
+								dad.animation.paused=false;
 
+					//}
 					dad.holdTimer = 0;
 
 					if (SONG.needsVoices)
@@ -1828,10 +1894,9 @@ class PlayState extends MusicBeatState
 
 	var endingSong:Bool = false;
 
-	private function popUpScore(strumtime:Float):Void
+	private function popUpScore(daRating:String):Void
 	{
 		totalNotes++;
-		var noteDiff:Float = Math.abs(strumtime - Conductor.songPosition);
 		// boyfriend.playAnim('hey');
 		vocals.volume = 1;
 
@@ -1845,29 +1910,43 @@ class PlayState extends MusicBeatState
 		var rating:FlxSprite = new FlxSprite();
 		var score:Int = 350;
 
-		var daRating:String = "sick";
-
+		/*
 		if (noteDiff > Conductor.safeZoneOffset * 0.9)
 		{
 			daRating = 'shit';
+			shits++;
 			hitNotes += .1;
 			score = 50;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.75)
 		{
 			daRating = 'bad';
+			bads++;
 			hitNotes += .25;
 			score = 100;
 		}
 		else if (noteDiff > Conductor.safeZoneOffset * 0.2)
 		{
 			daRating = 'good';
+			goods++;
 			hitNotes += .8;
 			score = 200;
 		}else{
+			sicks++;
 			hitNotes+=1;
-		}
+		}*/
 
+		if(daRating=='shit')
+			shits++;
+		else if(daRating=='bad')
+			bads++;
+		else if(daRating=='good')
+			goods++;
+		else
+			sicks++;
+
+		hitNotes+=ScoreUtils.RatingToHit(daRating);
+		score+=ScoreUtils.RatingToScore(daRating);
 		songScore += score;
 
 		/* if (combo > 60)
@@ -1985,6 +2064,7 @@ class PlayState extends MusicBeatState
 			startDelay: Conductor.crochet * 0.001
 		});
 
+
 		updateAccuracy();
 		curSection += 1;
 	}
@@ -2035,7 +2115,7 @@ class PlayState extends MusicBeatState
 
 			if(possibleNotes.length==0){
 				notes.forEachAlive(function(daNote:Note){ // forgive you if you hit near a note but dont actually hit a note
-						if(!daNote.canBeHit && daNote.mustPress){
+						if(!daNote.canBeHit && daNote.mustPress && controlArray[daNote.noteData]){
 							if (daNote.strumTime > Conductor.songPosition - Conductor.safeZoneOffset
 								&& daNote.strumTime < Conductor.songPosition + Conductor.safeZoneOffset){
 									forgiven=true;
@@ -2262,6 +2342,8 @@ class PlayState extends MusicBeatState
 				case 3:
 					boyfriend.playAnim('singRIGHTmiss', true);
 			}
+
+			updateAccuracy();
 		}
 	}
 
@@ -2300,13 +2382,21 @@ class PlayState extends MusicBeatState
 		{
 			if (!note.isSustainNote)
 			{
-				popUpScore(note.strumTime);
-				combo += 1;
+				combo++;
+				var noteDiff:Float = Math.abs(Conductor.songPosition - note.strumTime);
+				popUpScore(ScoreUtils.DetermineRating(noteDiff));
+				if(combo>highestCombo)
+					highestCombo=combo;
+
+				highComboTxt.text = "Highest Combo: " + highestCombo;
+
 			}else{
 				hitNotes++;
 				totalNotes++;
-				updateAccuracy();
 			}
+
+
+
 
 			if (note.noteData >= 0)
 				health += 0.023;
@@ -2317,14 +2407,18 @@ class PlayState extends MusicBeatState
 				switch (note.noteData)
 				{
 					case 0:
-						boyfriend.playAnim('singLEFT', true);
+						boyfriend.playAnim('singLEFT',true);
 					case 1:
-						boyfriend.playAnim('singDOWN', true);
+						boyfriend.playAnim('singDOWN',true);
 					case 2:
-						boyfriend.playAnim('singUP', true);
+						boyfriend.playAnim('singUP',true);
 					case 3:
-						boyfriend.playAnim('singRIGHT', true);
+						boyfriend.playAnim('singRIGHT',true);
 				}
+				if(note.isSustainNote && !note.lastSustainPiece)
+					boyfriend.animation.paused=true;
+				else
+					boyfriend.animation.paused=false;
 			//}
 
 			playerStrums.forEach(function(spr:FlxSprite)
@@ -2344,6 +2438,7 @@ class PlayState extends MusicBeatState
 				notes.remove(note, true);
 				note.destroy();
 			}
+			updateAccuracy();
 		}
 	}
 
