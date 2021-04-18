@@ -44,7 +44,7 @@ class PlayerSettings
 		controls.setKeyboardScheme(scheme);
 	}
 
-	/* 
+	/*
 		static public function addAvatar(avatar:Player):PlayerSettings
 		{
 			var settings:PlayerSettings;
@@ -119,7 +119,7 @@ class PlayerSettings
 	{
 		if (player1 == null)
 		{
-			player1 = new PlayerSettings(0, Solo);
+			player1 = new PlayerSettings(0, Custom);
 			++numPlayers;
 		}
 

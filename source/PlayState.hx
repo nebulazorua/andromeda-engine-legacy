@@ -1580,6 +1580,14 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		if(curSong == 'Spookeez'){
+			switch (curStep){
+				case 444,445:
+					gf.playAnim("cheer",true);
+					boyfriend.playAnim("hey",true);
+			}
+		}
+
 		if (curSong == 'Bopeebo')
 		{
 			switch (curBeat)
@@ -1681,7 +1689,7 @@ class PlayState extends MusicBeatState
 							altAnim = '-alt';
 					}
 
-					if(!daNote.isSustainNote){
+					//if(!daNote.isSustainNote){
 						switch (Math.abs(daNote.noteData))
 						{
 							case 0:
@@ -1693,7 +1701,7 @@ class PlayState extends MusicBeatState
 							case 3:
 								dad.playAnim('singRIGHT' + altAnim, true);
 						}
-					}
+					//}
 
 					dad.holdTimer = 0;
 
@@ -2305,7 +2313,7 @@ class PlayState extends MusicBeatState
 			else
 				health += 0.004;
 
-			if(!note.isSustainNote){
+			//if(!note.isSustainNote){
 				switch (note.noteData)
 				{
 					case 0:
@@ -2317,7 +2325,7 @@ class PlayState extends MusicBeatState
 					case 3:
 						boyfriend.playAnim('singRIGHT', true);
 				}
-			}
+			//}
 
 			playerStrums.forEach(function(spr:FlxSprite)
 			{

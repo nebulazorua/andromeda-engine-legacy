@@ -111,6 +111,9 @@ class OptionsMenu extends MusicBeatState
 	{
 		var upP = controls.UP_P;
 		var downP = controls.DOWN_P;
+		var leftP = controls.LEFT_P;
+		var rightP = controls.RIGHT_P;
+
 		var accepted = controls.ACCEPT;
 
 		if (upP)
@@ -132,9 +135,29 @@ class OptionsMenu extends MusicBeatState
 				FlxG.switchState(new MainMenuState());
 			}
 		}
+		var option = category.options[curSelected];
+		if(option.type!="Category"){
+			if(leftP){
+				if(option.left()) {
+					optionText.remove(optionText.members[curSelected]);
+					var songText:Alphabet = new Alphabet(0, (70 * curSelected) + 30, option.name, true, false);
+					songText.isMenuItem = true;
+					optionText.add(songText);
+					changeSelection();
+				}
+			}
+			if(rightP){
+				if(option.right()) {
+					optionText.remove(optionText.members[curSelected]);
+					var songText:Alphabet = new Alphabet(0, (70 * curSelected) + 30, option.name, true, false);
+					songText.isMenuItem = true;
+					optionText.add(songText);
+					changeSelection();
+				}
+			}
+		}
 
 		if(accepted){
-			var option = category.options[curSelected];
 			if(option.type=='Category'){
 				category=option;
 				refresh();
@@ -145,7 +168,7 @@ class OptionsMenu extends MusicBeatState
 
 				optionText.add(songText);
 			}
-			changeSelection(0);
+			changeSelection();
 		}
 
 		super.update(elapsed);

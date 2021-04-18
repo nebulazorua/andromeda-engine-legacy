@@ -18,11 +18,11 @@ class Option
     trace("Unset");
     return false;
   };
-  public function next():Bool{
+  public function right():Bool{
     trace("Unset");
     return false;
   };
-  public function back():Bool{
+  public function left():Bool{
     trace("Unset");
     return false;
   };
