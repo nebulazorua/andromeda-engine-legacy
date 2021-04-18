@@ -2026,11 +2026,10 @@ class PlayState extends MusicBeatState
 			});
 
 			if(possibleNotes.length==0){
-				notes.forEachAlive(function(daNote:Note){ // forgive you if you hit near a note but not a note
+				notes.forEachAlive(function(daNote:Note){ // forgive you if you hit near a note but dont actually hit a note
 						if(!daNote.canBeHit && daNote.mustPress){
 							if (daNote.strumTime > Conductor.songPosition - Conductor.safeZoneOffset
 								&& daNote.strumTime < Conductor.songPosition + Conductor.safeZoneOffset){
-									trace("ur forgiven");
 									forgiven=true;
 									return;
 								}

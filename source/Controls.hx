@@ -487,6 +487,14 @@ class Controls extends FlxActionSet
 		}
 	}
 
+	public function setKeybind(control:Control,keys:Array<FlxKey>){
+		removeKeyboard();
+
+		keyboardScheme = KeyboardScheme.Custom;
+
+		inline bindKeys(control,keys);
+	};
+
 	public function setKeyboardScheme(scheme:KeyboardScheme, reset = true)
 	{
 		if (reset)

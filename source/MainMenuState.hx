@@ -41,9 +41,6 @@ class MainMenuState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
-		transIn = FlxTransitionableState.defaultTransIn;
-		transOut = FlxTransitionableState.defaultTransOut;
-
 		if (!FlxG.sound.music.playing)
 		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
@@ -131,11 +128,6 @@ class MainMenuState extends MusicBeatState
 				changeItem(1);
 			}
 
-			if (controls.BACK)
-			{
-				FlxG.switchState(new TitleState());
-			}
-
 			if (controls.ACCEPT)
 			{
 				if (optionShit[curSelected] == 'donate')
@@ -182,8 +174,6 @@ class MainMenuState extends MusicBeatState
 										trace("Freeplay Menu Selected");
 
 									case 'options':
-										FlxTransitionableState.skipNextTransIn = true;
-										FlxTransitionableState.skipNextTransOut = true;
 										FlxG.switchState(new OptionsMenu());
 								}
 							});
