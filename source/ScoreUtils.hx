@@ -32,7 +32,7 @@ class ScoreUtils
     var grade = gradeArray[gradeArray.length-1];
     var accuracyConditions:Array<Float>=GetAccuracyConditions();
     for(i in 0...accuracyConditions.length){
-      if(accuracy > accuracyConditions[i]){
+      if(accuracy >= accuracyConditions[i]){
         grade = gradeArray[i];
         break;
       }
