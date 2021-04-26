@@ -1946,7 +1946,7 @@ class PlayState extends MusicBeatState
 			sicks++;
 
 		hitNotes+=ScoreUtils.RatingToHit(daRating);
-		score+=ScoreUtils.RatingToScore(daRating);
+		score=ScoreUtils.RatingToScore(daRating);
 		songScore += score;
 
 		/* if (combo > 60)
