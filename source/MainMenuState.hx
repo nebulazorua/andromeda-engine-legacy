@@ -16,6 +16,8 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import io.newgrounds.NG;
 import lime.app.Application;
+import vm.lua.LuaVM;
+import haxe.Exception;
 
 using StringTools;
 
@@ -33,6 +35,7 @@ class MainMenuState extends MusicBeatState
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
+	var lua:LuaVM;
 
 	override function create()
 	{
@@ -41,10 +44,13 @@ class MainMenuState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
+		lua = new LuaVM();
 		if (!FlxG.sound.music.playing)
 		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		}
+		lua.setGlobalVar("cum",25);
+		lua.setGlobalVar("penis","bruh!");
 
 		persistentUpdate = persistentDraw = true;
 
@@ -114,6 +120,18 @@ class MainMenuState extends MusicBeatState
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
+
+		if(FlxG.keys.justPressed.Q){
+			try {
+				lua.run("print'LUA TEST' print(cum) print(penis)");
+			}catch(e:LuaException){
+				trace("LUA ERROR:" + e.message);
+			}catch (e:Exception){
+				trace("HAXE ERROR:" + e.message);
+			}
+
+		};
+
 		if (!selectedSomethin)
 		{
 			if (controls.UP_P)
@@ -167,14 +185,16 @@ class MainMenuState extends MusicBeatState
 								{
 									case 'story mode':
 										FlxG.switchState(new StoryMenuState());
+										lua.destroy();
 										trace("Story Menu Selected");
 									case 'freeplay':
 										FlxG.switchState(new FreeplayState());
-
+										lua.destroy();
 										trace("Freeplay Menu Selected");
 
 									case 'options':
 										FlxG.switchState(new OptionsMenu());
+										lua.destroy();
 								}
 							});
 						}
