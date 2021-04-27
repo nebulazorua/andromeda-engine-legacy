@@ -860,7 +860,9 @@ class PlayState extends MusicBeatState
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 		if(modchartExists){
-
+			lua = new LuaVM();
+			lua.runFile(Paths.modchart(SONG.song.toLowerCase()));
+			lua.call("create",[]);
 		}
 
 		if (isStoryMode)
@@ -2607,6 +2609,10 @@ class PlayState extends MusicBeatState
 			notes.sort(FlxSort.byY, FlxSort.DESCENDING);
 		}
 
+		if(modchartExists && lua!=null){
+			lua.call("beatHit",[curBeat]);
+			lua.setGlobalVar("curBeat",curBeat);
+		}
 		if (SONG.notes[Math.floor(curStep / 16)] != null)
 		{
 			if (SONG.notes[Math.floor(curStep / 16)].changeBPM)
