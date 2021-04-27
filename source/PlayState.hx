@@ -42,6 +42,17 @@ import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
 
+import haxe.Exception;
+#if windows
+import vm.lua.LuaVM;
+import Sys;
+import sys.FileSystem;
+import llua.Convert;
+import llua.Lua;
+import llua.State;
+import llua.LuaL;
+#end
+
 using StringTools;
 
 class PlayState extends MusicBeatState
@@ -93,6 +104,9 @@ class PlayState extends MusicBeatState
 	private var camHUD:FlxCamera;
 	private var camGame:FlxCamera;
 
+
+	var lua:LuaVM;
+
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
 	var halloweenBG:FlxSprite;
@@ -133,6 +147,7 @@ class PlayState extends MusicBeatState
 	var goods:Float = 0;
 	var bads:Float = 0;
 	var shits:Float = 0;
+	var modchartExists = false;
 
 	public static var campaignScore:Int = 0;
 
@@ -156,6 +171,11 @@ class PlayState extends MusicBeatState
 	{
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
+
+		//lua = new LuaVM();
+		#if windows
+			modchartExists = FileSystem.exists(Paths.modchart(SONG.song.toLowerCase()));
+		#end
 
 		grade = ScoreUtils.gradeArray[0] + " (FC)";
 		hitNotes=0;
@@ -211,6 +231,12 @@ class PlayState extends MusicBeatState
 				dialogue = CoolUtil.coolTextFile(Paths.txt('roses/rosesDialogue'));
 			case 'thorns':
 				dialogue = CoolUtil.coolTextFile(Paths.txt('thorns/thornsDialogue'));
+			default:
+				try {
+					dialogue = CoolUtil.coolTextFile(Paths.txt(SONG.song.toLowerCase() + "/dialogue"));
+				} catch(e){
+					trace("epic style " + e.message);
+				}
 		}
 
 		#if desktop
@@ -274,7 +300,7 @@ class PlayState extends MusicBeatState
 
 		                  isHalloween = true;
 		          }
-		          case 'pico' | 'blammed' | 'philly':
+		          case 'pico' | 'blammed' | 'philly-nice':
                         {
 		                  curStage = 'philly';
 
@@ -833,6 +859,9 @@ class PlayState extends MusicBeatState
 
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
+		if(modchartExists){
+
+		}
 
 		if (isStoryMode)
 		{
@@ -1481,6 +1510,14 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
+
+
+			#if windows
+			if(lua!=null){
+				lua.destroy();
+				lua=null;
+			}
+			#end
 			FlxG.switchState(new ChartingState());
 
 			#if desktop
@@ -1521,6 +1558,12 @@ class PlayState extends MusicBeatState
 		#if debug
 		if (FlxG.keys.justPressed.EIGHT)
 			FlxG.switchState(new AnimationDebug(SONG.player2));
+			#if windows
+			if(lua!=null){
+				lua.destroy();
+				lua=null;
+			}
+			#end
 		#end
 
 		if (startingSong)
@@ -1817,6 +1860,13 @@ class PlayState extends MusicBeatState
 		canPause = false;
 		FlxG.sound.music.volume = 0;
 		vocals.volume = 0;
+
+		#if windows
+		if(lua!=null){
+			lua.destroy();
+			lua=null;
+		}
+		#end
 		if (SONG.validScore)
 		{
 			#if !switch
@@ -1832,6 +1882,7 @@ class PlayState extends MusicBeatState
 
 			if (storyPlaylist.length <= 0)
 			{
+
 				FlxG.sound.playMusic(Paths.music('freakyMenu'));
 
 				transIn = FlxTransitionableState.defaultTransIn;

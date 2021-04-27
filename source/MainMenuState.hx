@@ -51,6 +51,9 @@ class MainMenuState extends MusicBeatState
 		}
 		lua.setGlobalVar("cum",25);
 		lua.setGlobalVar("penis","bruh!");
+		lua.setGlobalVar("cock", function(a){
+			return a*4;
+		} );
 
 		persistentUpdate = persistentDraw = true;
 
@@ -123,7 +126,7 @@ class MainMenuState extends MusicBeatState
 
 		if(FlxG.keys.justPressed.Q){
 			try {
-				lua.run("print'LUA TEST' print(cum) print(penis)");
+				lua.run("print'LUA TEST' print(cum) print(penis) print(cock(2))");
 			}catch(e:LuaException){
 				trace("LUA ERROR:" + e.message);
 			}catch (e:Exception){

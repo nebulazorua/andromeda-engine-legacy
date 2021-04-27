@@ -95,6 +95,14 @@ class Paths
 		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
 	}
 
+	inline static public function lua(script:String,?library:String){
+			return getPath('data/$script.lua',TEXT,library);
+	}
+
+	inline static public function modchart(song:String,?library:String){
+		return getPath('data/$song/modchart.lua',TEXT,library);
+	}
+
 	inline static public function image(key:String, ?library:String)
 	{
 		return getPath('images/$key.png', IMAGE, library);
