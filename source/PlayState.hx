@@ -41,6 +41,7 @@ import lime.utils.Assets;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
+import LuaClass;
 
 import haxe.Exception;
 #if windows
@@ -723,6 +724,9 @@ class PlayState extends MusicBeatState
 				gf.y += 300;
 		}
 
+		if(SONG.player1=='bf-neb')
+			boyfriend.y -= 75;
+
 		add(gf);
 
 		// Shitty layering but whatev it works LOL
@@ -784,6 +788,8 @@ class PlayState extends MusicBeatState
 			'health', 0, 2);
 		healthBar.scrollFactor.set();
 		healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		if(SONG.player1=='bf-neb')
+			healthBar.createFilledBar(0xFFFF0000, 0xFF9534EB);
 		// healthBar
 		add(healthBar);
 
@@ -861,7 +867,17 @@ class PlayState extends MusicBeatState
 		startingSong = true;
 		if(modchartExists){
 			lua = new LuaVM();
-			lua.runFile(Paths.modchart(SONG.song.toLowerCase()));
+			try {
+				var epic = new InternalSprite();
+				epic.Register(lua.state);
+				lua.runFile(Paths.modchart(SONG.song.toLowerCase()));
+			}catch(e:LuaException){
+				trace("LUA ERROR:" + e.message);
+			}catch (e:Exception){
+				trace("HAXE ERROR:" + e.message);
+			}
+
+
 			lua.call("create",[]);
 		}
 
@@ -1517,6 +1533,7 @@ class PlayState extends MusicBeatState
 			#if windows
 			if(lua!=null){
 				lua.destroy();
+				trace("cringe");
 				lua=null;
 			}
 			#end
@@ -1557,17 +1574,24 @@ class PlayState extends MusicBeatState
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 
-		#if debug
-		if (FlxG.keys.justPressed.EIGHT)
-			FlxG.switchState(new AnimationDebug(SONG.player2));
-			#if windows
-			if(lua!=null){
-				lua.destroy();
-				lua=null;
+		if (FlxG.keys.justPressed.EIGHT){
+				FlxG.switchState(new AnimationDebug(SONG.player2));
+				#if windows
+				if(lua!=null){
+					lua.destroy();
+					lua=null;
+				}
+				#end
 			}
-			#end
-		#end
-
+			if (FlxG.keys.justPressed.ZERO){
+				FlxG.switchState(new AnimationDebug(SONG.player1));
+				#if windows
+				if(lua!=null){
+					lua.destroy();
+					lua=null;
+				}
+				#end
+			}
 		if (startingSong)
 		{
 			if (startedCountdown)

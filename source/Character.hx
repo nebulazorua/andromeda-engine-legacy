@@ -32,7 +32,7 @@ class Character extends FlxSprite
 		{
 			case 'gf':
 				// GIRLFRIEND CODE
-				tex = Paths.getSparrowAtlas('GF_assets');
+				tex = Paths.getSparrowAtlas('cutie');
 				frames = tex;
 				animation.addByPrefix('cheer', 'GF Cheer', 24, false);
 				animation.addByPrefix('singLEFT', 'GF left note', 24, false);
@@ -46,7 +46,7 @@ class Character extends FlxSprite
 				animation.addByIndices('hairFall', "GF Dancing Beat Hair Landing", [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11], "", 24, false);
 				animation.addByPrefix('scared', 'GF FEAR', 24);
 
-				addOffset('cheer');
+				/*addOffset('cheer');
 				addOffset('sad', -2, -2);
 				addOffset('danceLeft', 0, -9);
 				addOffset('danceRight', 0, -9);
@@ -60,8 +60,23 @@ class Character extends FlxSprite
 
 				addOffset('scared', -2, -17);
 
-				playAnim('danceRight');
+				playAnim('danceRight');*/
 
+				addOffset('cheer', 0, 90);
+				addOffset('sad', -2, 78);
+				addOffset('danceLeft', 0, 81);
+				addOffset('danceRight', 0, 81);
+
+				addOffset("singUP", 0, 89);
+				addOffset("singRIGHT", 0, 81);
+				addOffset("singLEFT", 0, 78);
+				addOffset("singDOWN", 0, 70);
+				addOffset('hairBlow', 0, 91);
+				addOffset('hairFall', 0, 91);
+
+				addOffset('scared', -2, 99);
+
+				playAnim('danceRight');
 			case 'gf-christmas':
 				tex = Paths.getSparrowAtlas('christmas/gfChristmas','week5');
 				frames = tex;
@@ -304,6 +319,45 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				flipX = true;
+
+				case 'bf-neb':
+					var tex = Paths.getSparrowAtlas('nebBF','shared');
+					frames = tex;
+					animation.addByPrefix('idle', 'BF idle dance', 24, false);
+					animation.addByPrefix('singUP', 'BF NOTE UP0', 24, false);
+					animation.addByPrefix('singLEFT', 'BF NOTE LEFT0', 24, false);
+					animation.addByPrefix('singRIGHT', 'BF NOTE RIGHT0', 24, false);
+					animation.addByPrefix('singDOWN', 'BF NOTE DOWN0', 24, false);
+					animation.addByPrefix('singUPmiss', 'BF NOTE UP MISS', 24, false);
+					animation.addByPrefix('singLEFTmiss', 'BF NOTE LEFT MISS', 24, false);
+					animation.addByPrefix('singRIGHTmiss', 'BF NOTE RIGHT MISS', 24, false);
+					animation.addByPrefix('singDOWNmiss', 'BF NOTE DOWN MISS', 24, false);
+					animation.addByPrefix('hey', 'BF HEY', 24, false);
+
+					animation.addByPrefix('firstDeath', "BF dies", 24, false);
+					animation.addByPrefix('deathLoop', "BF Dead Loop", 24, true);
+					animation.addByPrefix('deathConfirm', "BF Dead confirm", 24, false);
+
+					animation.addByPrefix('scared', 'BF idle shaking', 24);
+
+					addOffset('idle', 0);
+					addOffset("singUP", -55, 27);
+					addOffset("singRIGHT", -38, -2);
+					addOffset("singLEFT", 25, -12);
+					addOffset("singDOWN", 19, -54);
+					addOffset("singUPmiss", -55, 31);
+					addOffset("singRIGHTmiss", -40, 1);
+					addOffset("singLEFTmiss", 28, 10);
+					addOffset("singDOWNmiss", -11, -32);
+					addOffset("hey", -3, -4);
+					addOffset('firstDeath', 37, 11);
+					addOffset('deathLoop', 37, 5);
+					addOffset('deathConfirm', 37, 69);
+					addOffset('scared', 0,-13);
+
+					playAnim('idle');
+
+					flipX = true;
 
 			case 'bf-christmas':
 				var tex = Paths.getSparrowAtlas('christmas/bfChristmas','week5');

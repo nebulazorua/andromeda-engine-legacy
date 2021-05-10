@@ -106,6 +106,7 @@
 
 	<haxelib name="flixel" />
 	<haxedev set='webgl' />
+	<haxelib name="crashdumper"/>
 
 	<!--In case you want to use the addons package-->
 	<haxelib name="flixel-addons" />
@@ -158,6 +159,10 @@
 
 	<!--Enable this for Nape release builds for a serious peformance improvement-->
 	<haxedef name="NAPE_RELEASE_BUILD" unless="debug" />
+
+	<haxedef name="HXCPP_CHECK_POINTER"/>  <!--makes null references cause errors-->
+	<haxedef name="HXCPP_STACK_LINE" />    <!--if you want line numbers-->
+	<haxedef name="HXCPP_STACK_TRACE"/>    <!--if you want stack traces-->
 
 	<!-- _________________________________ Custom _______________________________ -->
 
