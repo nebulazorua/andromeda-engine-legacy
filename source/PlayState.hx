@@ -641,6 +641,9 @@ class PlayState extends MusicBeatState
 		if (curStage == 'limo')
 			gfVersion = 'gf-car';
 
+		if(SONG.player1=='bf-neb')
+			gfVersion = 'lizzy';
+			
 		gf = new Character(400, 130, gfVersion);
 		gf.scrollFactor.set(0.95, 0.95);
 
