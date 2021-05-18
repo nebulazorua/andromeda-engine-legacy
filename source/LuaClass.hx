@@ -142,7 +142,7 @@ class InternalSprite extends LuaClass {
           // 3 = value
           // 4 = metatable
           if(Lua.type(l,3)!=Lua.LUA_TSTRING){
-            LuaL.error(l,"invalid argument #3 (string expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+            LuaL.error(l,"invalid argument #3 (string expected, got " + Lua.typename(l,Lua.type(l,3)) + ")","");
           }
           LuaClass.DefaultSetter(l);
           return 0;
