@@ -23,7 +23,8 @@ class Note extends FlxSprite
 	public var hit:Bool = false;
 	public var rating:String = "sick";
 	public var lastSustainPiece = false;
-
+	public var sustainBase=false;
+	
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 

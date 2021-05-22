@@ -18,7 +18,7 @@ import io.newgrounds.NG;
 import lime.app.Application;
 import vm.lua.LuaVM;
 import haxe.Exception;
-
+import vm.lua.Exception;
 using StringTools;
 
 class MainMenuState extends MusicBeatState

@@ -20,28 +20,23 @@ import Discord.DiscordClient;
 class OptionsMenu extends MusicBeatState
 {
 	private var defCat:OptionCategory = new OptionCategory("Default",[
-		new OptionCategory("Controls",[
-			new ControlOption(controls,Control.LEFT),
-			new ControlOption(controls,Control.DOWN),
-			new ControlOption(controls,Control.UP),
-			new ControlOption(controls,Control.RIGHT)
+		new OptionCategory("Input",[
+			new OptionCategory("Controls",[
+				new ControlOption(controls,Control.LEFT),
+				new ControlOption(controls,Control.DOWN),
+				new ControlOption(controls,Control.UP),
+				new ControlOption(controls,Control.RIGHT)
+			]),
+			new ToggleOption("missForNothing","Kade-style","Vanilla-style"),
 		]),
-		new OptionCategory("Cock And Ball Torture",[
-			new Option("Cock"),
-			new Option("And"),
-			new Option("Ball"),
-			new Option("Torture"),
-			new OptionCategory("Nested Categories",[
-				new OptionCategory("Are epic",[
-					new Option("Cum")
-				])
-			])
+		new OptionCategory("Gameplay",[
+			new ToggleOption("loadModcharts","Load Lua modcharts","Don't load Lua modcharts")
 		])
 	]);
 
 	private var optionText:FlxTypedGroup<Alphabet>;
 	private var curSelected:Int = 0;
-	private var category:Dynamic;
+	public static var category:Dynamic;
 
 	override function create()
 	{

@@ -1,14 +1,60 @@
-print(InternalSprite.a)
-InternalSprite.a='asdasdasdasd'
-print(InternalSprite.a)
-print(getmetatable(InternalSprite))
-InternalSprite:bruh("a","penis")
-print(InternalSprite.a)
-InternalSprite.a=2;
+local receptors = {
+	leftPlrNote;
+	downPlrNote;
+	upPlrNote;
+	rightPlrNote;
+}
+
+local dadreceptors = {
+	leftDadNote;
+	downDadNote;
+	upDadNote;
+	rightDadNote;
+}
+
+function tick()
+	return os.time(os.date("!*t"))
+end
+
 function create()
     print("create")
 end
 
 function beatHit(beat)
     print(beat)
+end
+
+local counter = 0;
+
+local startX = (window.boundsWidth-window.width)/2
+local startY = (window.boundsHeight-window.height)/2
+local shakeDuration = 0
+
+function dadNoteHit()
+	shakeDuration = 0.1;
+end
+
+function update(elapsed)
+	print("update")
+	counter = counter + elapsed*3;
+	for i = 1,#receptors do
+		if(i==1 or i==3)then
+			receptors[i].yOffset = math.sin(counter*4)*10
+		else
+			receptors[i].yOffset = -math.sin(counter*4)*10
+		end
+		if(i==1)then
+			receptors[i].xOffset = math.abs(math.sin(counter*2)*32)
+		elseif(i==4)then
+			receptors[i].xOffset = -math.abs(math.sin(counter*2)*32)
+		end
+	end
+	if(shakeDuration > 0)then
+		shakeDuration = shakeDuration - elapsed;
+		window.x = startX+math.random(-15,15)
+		window.y = startY+math.random(-15,15)
+	else
+		window.x = startX
+		window.y = startY
+	end
 end

@@ -12,6 +12,9 @@ import flash.events.KeyboardEvent;
 class Options
 {
 	public static var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L ];
+	public static var missForNothing:Bool = true;
+	public static var loadModcharts:Bool = true;
+	public static var dummy:Bool = false;
 	public static var shit:Array<FlxKey> = [
 		ALT,
 		BACKSPACE,
@@ -38,6 +41,27 @@ class Options
 	}
 	public static function getKey(control:Control){
 		return controls[getKIdx(control)];
+	}
+}
+
+class ToggleOption extends Option
+{
+	private var enabledName = "On";
+	private var disabledName = "Off";
+	private var property = "dummy";
+	public function new(property:String,?disabledName:String,?enabledName:String){
+		super();
+		this.enabledName=enabledName;
+		this.disabledName=disabledName;
+		this.property = property;
+		name=Reflect.getProperty(Options,property) ? enabledName : disabledName;
+	}
+
+	public override function accept():Bool{
+		Reflect.setProperty(Options,property,!Reflect.getProperty(Options,property));
+		name=Reflect.getProperty(Options,property) ? enabledName : disabledName;
+
+		return true;
 	}
 }
 

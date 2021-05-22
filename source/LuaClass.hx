@@ -4,6 +4,9 @@ import llua.Lua;
 import llua.State;
 import llua.LuaL;
 
+import lime.app.Application;
+import openfl.Lib;
+
 typedef LuaProperty = {
     var defaultValue:Any;
     var getter:(State,Any)->Int;
@@ -124,14 +127,101 @@ class LuaClass {
   public function new(){}
 }
 
-class InternalSprite extends LuaClass {
+class LuaWindow extends LuaClass {
   private static var state:State;
-  public function new(){
+  private static function WrapNumberSetter(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+        LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      //Lib.application.window.x = Std.int(Lua.tonumber(l,3));
+      Reflect.setProperty(Lib.application.window,Lua.tostring(l,2),Lua.tonumber(l,3));
+      return 0;
+  }
+
+  public function new (){
     super();
-    className="InternalSprite";
+    className = "window";
+    properties = [
+      "x"=>{
+        defaultValue:Lib.application.window.x,
+        getter: function(l:State,data:Any):Int{
+          Lua.pushnumber(l,Lib.application.window.x);
+          return 1;
+        },
+        setter:WrapNumberSetter
+      },
+      "y"=>{
+        defaultValue:Lib.application.window.y,
+        getter: function(l:State,data:Any):Int{
+          Lua.pushnumber(l,Lib.application.window.y);
+          return 1;
+        },
+        setter:WrapNumberSetter
+      },
+      "width"=>{
+        defaultValue:Lib.application.window.width,
+        getter: function(l:State,data:Any):Int{
+          Lua.pushnumber(l,Lib.application.window.width);
+          return 1;
+        },
+        setter:WrapNumberSetter
+      },
+      "height"=>{
+        defaultValue:Lib.application.window.height,
+        getter: function(l:State,data:Any):Int{
+          Lua.pushnumber(l,Lib.application.window.height);
+          return 1;
+        },
+        setter:WrapNumberSetter
+      },
+      "boundsWidth"=>{ // TODO: turn into a table w/ bounds.x and bounds.y
+        defaultValue:Lib.application.window.display.bounds.width,
+        getter: function(l:State,data:Any):Int{
+          Lua.pushnumber(l,Lib.application.window.display.bounds.width);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"boundsWidth is read-only.");
+          return 0;
+        }
+      },
+      "boundsHeight"=>{ // TODO: turn into a table w/ bounds.x and bounds.y
+        defaultValue:Lib.application.window.display.bounds.height,
+        getter: function(l:State,data:Any):Int{
+          Lua.pushnumber(l,Lib.application.window.display.bounds.height);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"boundsHeight is read-only.");
+          return 0;
+        }
+      }
+    ];
+  }
+  override function Register(l:State){
+    state=l;
+    super.Register(l);
+  }
+}
+class LuaNote extends LuaClass {
+  private static var state:State;
+  private static var internalNames = [
+    "left",
+    "down",
+    "up",
+    "right"
+  ];
+  public function new(noteData:Int,plr:Bool){
+    super();
+    className= internalNames[noteData] + (plr?"Plr":"Dad") + "Note";
     properties=[
-      "a"=>{
-        defaultValue: "bruh",
+      "xOffset"=>{
+        defaultValue: 0,
         getter: function(l:State,data:Any):Int{
           Lua.pushstring(l,data);
           return 1;
@@ -141,16 +231,47 @@ class InternalSprite extends LuaClass {
           // 2 = key
           // 3 = value
           // 4 = metatable
-          if(Lua.type(l,3)!=Lua.LUA_TSTRING){
-            LuaL.error(l,"invalid argument #3 (string expected, got " + Lua.typename(l,Lua.type(l,3)) + ")","");
+          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+            return 0;
           }
+
+          var offset = Lua.tonumber(l,3);
+          if(plr)
+            PlayState.currentPState.playerNoteOffsets[noteData][0]=offset;
+          else
+            PlayState.currentPState.opponentNoteOffsets[noteData][0]=offset;
+
           LuaClass.DefaultSetter(l);
           return 0;
         }
-      }
-    ];
-    methods=[
+      },
+      "yOffset"=>{
+        defaultValue: 0,
+        getter: function(l:State,data:Any):Int{
+          Lua.pushstring(l,data);
+          return 1;
+        },
+        setter: function(l:State):Int{
+          // 1 = self
+          // 2 = key
+          // 3 = value
+          // 4 = metatable
+          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+            return 0;
+          }
 
+          var offset = Lua.tonumber(l,3);
+          if(plr)
+            PlayState.currentPState.playerNoteOffsets[noteData][1]=offset;
+          else
+            PlayState.currentPState.opponentNoteOffsets[noteData][1]=offset;
+
+          LuaClass.DefaultSetter(l);
+          return 0;
+        }
+      },
     ];
   }
   override function Register(l:State){
