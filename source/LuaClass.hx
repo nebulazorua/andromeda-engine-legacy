@@ -4,6 +4,7 @@ import llua.Lua;
 import llua.State;
 import llua.LuaL;
 
+import flixel.FlxSprite;
 import lime.app.Application;
 import openfl.Lib;
 
@@ -19,6 +20,7 @@ class LuaClass {
   public var className:String = "BaseClass";
   private static var objectProperties:Map<String,Map<String,LuaProperty>> = [];
   private static var state:State;
+  public var addToGlobal:Bool=true;
   public function Register(l:State){
     Lua.newtable(l);
     state=l;
@@ -26,7 +28,8 @@ class LuaClass {
 
     var classIdx = Lua.gettop(l);
     Lua.pushvalue(l,classIdx);
-    Lua.setglobal(l,className);
+    if(addToGlobal)
+      Lua.setglobal(l,className);
 
     for (k in methods.keys()){
       Lua.pushcfunction(l,methods[k]);
@@ -45,6 +48,9 @@ class LuaClass {
 
     for (k in properties.keys()){
       Lua.pushstring(l,k + "PropertyData");
+      if(k=="visible"){
+        trace(Type.typeof(properties[k].defaultValue));
+      }
       Convert.toLua(l,properties[k].defaultValue);
       Lua.settable(l,mtIdx);
     }
@@ -208,6 +214,137 @@ class LuaWindow extends LuaClass {
     super.Register(l);
   }
 }
+
+class LuaSprite extends LuaClass {
+  private static var state:State;
+
+  private var sprite:FlxSprite;
+  private function SetNumProperty(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+        LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      Reflect.setProperty(sprite,Lua.tostring(l,2),Lua.tonumber(l,3));
+      return 0;
+  }
+  private function GetNumProperty(l:State,data:Any){
+      // 1 = self
+      // 2 = key
+      // 3 = metatable
+      Lua.pushnumber(l,Reflect.getProperty(sprite,Lua.tostring(l,2)));
+      return 1;
+  }
+
+  private function SetBoolProperty(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TBOOLEAN){
+        LuaL.error(l,"invalid argument #3 (boolean expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      Reflect.setProperty(sprite,Lua.tostring(l,2),Lua.tonumber(l,3));
+      return 0;
+  }
+
+  private function GetBoolProperty(l:State,data:Any){
+      // 1 = self
+      // 2 = key
+      // 3 = metatable
+      Lua.pushboolean(l,Reflect.getProperty(sprite,Lua.tostring(l,2)));
+      return 1;
+  }
+
+  private static function setScale(l:StatePointer){
+    // 1 = self
+    // 2 = scale
+    var scale = LuaL.checknumber(state,2);
+    trace(scale);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    trace(spriteName);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.setGraphicSize(Std.int(sprite.width*scale));
+    return 0;
+  }
+
+  public function new(sprite:FlxSprite,name:String,?addToGlobal:Bool=true){
+    super();
+    className=name;
+    this.addToGlobal=addToGlobal;
+    this.sprite=sprite;
+    PlayState.currentPState.luaSprites[name]=sprite;
+    properties=[
+      "spriteName"=>{
+        defaultValue:name,
+        getter:function(l:State,data:Any){
+          Lua.pushstring(l,name);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"spriteName is read-only.");
+          return 0;
+        }
+      },
+      "x"=>{
+        defaultValue:sprite.x,
+        getter:GetNumProperty,
+        setter:SetNumProperty
+      },
+      "y"=>{
+        defaultValue:sprite.y,
+        getter:GetNumProperty,
+        setter:SetNumProperty
+      },
+      "alpha"=>{
+        defaultValue:sprite.alpha,
+        getter:GetNumProperty,
+        setter:SetNumProperty
+      },
+      "angle"=>{
+        defaultValue:sprite.angle,
+        getter:GetNumProperty,
+        setter:SetNumProperty
+      },
+      "width"=>{
+        defaultValue:sprite.width,
+        getter:GetNumProperty,
+        setter:SetNumProperty
+      },
+      "height"=>{
+        defaultValue:sprite.height,
+        getter:GetNumProperty,
+        setter:SetNumProperty
+      },
+      "visible"=>{
+        defaultValue:sprite.visible,
+        getter:GetBoolProperty,
+        setter:SetBoolProperty
+      },
+      "setScale"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,cpp.Callable.fromStaticFunction(setScale));
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"setScale is read-only.");
+          return 0;
+        }
+      }
+
+    ];
+  }
+  override function Register(l:State){
+    state=l;
+    super.Register(l);
+  }
+}
 class LuaNote extends LuaClass {
   private static var state:State;
   private static var internalNames = [
@@ -216,14 +353,40 @@ class LuaNote extends LuaClass {
     "up",
     "right"
   ];
-  public function new(noteData:Int,plr:Bool){
+  public function new(noteData:Int,plr:Bool){ // god i've gotta make this better
     super();
     className= internalNames[noteData] + (plr?"Plr":"Dad") + "Note";
     properties=[
+      "alpha"=>{
+        defaultValue: 1 ,
+        getter: function(l:State,data:Any):Int{
+          Lua.pushnumber(l,data);
+          return 1;
+        },
+        setter: function(l:State):Int{
+          // 1 = self
+          // 2 = key
+          // 3 = value
+          // 4 = metatable
+          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+            return 0;
+          }
+
+          var alpha = Lua.tonumber(l,3);
+          if(plr)
+            PlayState.currentPState.refNotes.members[noteData].alpha=alpha;
+          else
+            PlayState.currentPState.opponentRefNotes.members[noteData].alpha=alpha;
+
+          LuaClass.DefaultSetter(l);
+          return 0;
+        }
+      },
       "xOffset"=>{
         defaultValue: 0,
         getter: function(l:State,data:Any):Int{
-          Lua.pushstring(l,data);
+          Lua.pushnumber(l,data);
           return 1;
         },
         setter: function(l:State):Int{
@@ -249,7 +412,7 @@ class LuaNote extends LuaClass {
       "yOffset"=>{
         defaultValue: 0,
         getter: function(l:State,data:Any):Int{
-          Lua.pushstring(l,data);
+          Lua.pushnumber(l,data);
           return 1;
         },
         setter: function(l:State):Int{

@@ -14,6 +14,7 @@ class Options
 	public static var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L ];
 	public static var missForNothing:Bool = true;
 	public static var loadModcharts:Bool = true;
+	public static var pauseHoldAnims:Bool = true;
 	public static var dummy:Bool = false;
 	public static var shit:Array<FlxKey> = [
 		ALT,

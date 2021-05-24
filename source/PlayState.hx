@@ -90,7 +90,10 @@ class PlayState extends MusicBeatState
 	private var playerStrums:FlxTypedGroup<FlxSprite>;
 	private var dadStrums:FlxTypedGroup<FlxSprite>;
 	private var playerStrumLines:FlxTypedGroup<FlxSprite>;
+	public var refNotes:FlxTypedGroup<FlxSprite>;
+	public var opponentRefNotes:FlxTypedGroup<FlxSprite>;
 	private var opponentStrumLines:FlxTypedGroup<FlxSprite>;
+	public var luaSprites:Map<String, FlxSprite>;
 
 	private var camZooming:Bool = false;
 	private var curSong:String = "";
@@ -123,6 +126,20 @@ class PlayState extends MusicBeatState
 		[0,0], // down
 		[0,0], // up
 		[0,0] // right
+	];
+
+	public var playerNoteAlpha:Array<Float>=[
+		1,
+		1,
+		1,
+		1
+	];
+
+	public var opponentNoteAlpha:Array<Float>=[
+		1,
+		1,
+		1,
+		1
 	];
 	var lua:LuaVM;
 
@@ -775,6 +792,9 @@ class PlayState extends MusicBeatState
 
 		playerStrumLines = new FlxTypedGroup<FlxSprite>();
 		opponentStrumLines = new FlxTypedGroup<FlxSprite>();
+		luaSprites = new Map<String, FlxSprite>();
+		refNotes = new FlxTypedGroup<FlxSprite>();
+		opponentRefNotes = new FlxTypedGroup<FlxSprite>();
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 		dadStrums = new FlxTypedGroup<FlxSprite>();
 
@@ -894,6 +914,7 @@ class PlayState extends MusicBeatState
 		if(modchartExists){
 			lua = new LuaVM();
 			lua.setGlobalVar("curBeat",0);
+			lua.setGlobalVar("curStep",0);
 			lua.setGlobalVar("bpm",Conductor.bpm);
 			var leftPlayerNote = new LuaNote(0,true);
 			var downPlayerNote = new LuaNote(1,true);
@@ -905,9 +926,12 @@ class PlayState extends MusicBeatState
 			var upDadNote = new LuaNote(2,false);
 			var rightDadNote = new LuaNote(3,false);
 
+			var bfLua = new LuaSprite(boyfriend,"bf",true);
+			var gfLua = new LuaSprite(gf,"gf",true);
+			var dadLua = new LuaSprite(dad,"dad",true);
 			var window = new LuaWindow();
 
-			for(i in [leftPlayerNote,downPlayerNote,upPlayerNote,rightPlayerNote,leftDadNote,downDadNote,upDadNote,rightDadNote,window])
+			for(i in [leftPlayerNote,downPlayerNote,upPlayerNote,rightPlayerNote,leftDadNote,downDadNote,upDadNote,rightDadNote,window,bfLua,gfLua,dadLua])
 				i.Register(lua.state);
 
 			try {
@@ -1380,20 +1404,25 @@ class PlayState extends MusicBeatState
 			var newStrumLine:FlxSprite = new FlxSprite(0, 50).makeGraphic(10, 10);
 			newStrumLine.scrollFactor.set();
 
+			var newNoteRef:FlxSprite = new FlxSprite(0,-1000).makeGraphic(10, 10);
+			newNoteRef.scrollFactor.set();
+
 			if (player == 1)
 			{
 				playerStrums.add(babyArrow);
 				playerStrumLines.add(newStrumLine);
+				refNotes.add(newNoteRef);
 			}else{
 				dadStrums.add(babyArrow);
 				opponentStrumLines.add(newStrumLine);
+				opponentRefNotes.add(newNoteRef);
 			}
 
 			if (!isStoryMode)
 			{
 				newStrumLine.y -= 10;
 				babyArrow.alpha = 0;
-				FlxTween.tween(babyArrow, {alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+				FlxTween.tween(newNoteRef, {alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 				FlxTween.tween(newStrumLine,{y: babyArrow.y + 10}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			}
 
@@ -1853,20 +1882,26 @@ class PlayState extends MusicBeatState
 				var note = strumLineNotes.members[idx];
 				var offset = opponentNoteOffsets[idx%4];
 				var strumLine = opponentStrumLines.members[idx%4];
+				var alpha = opponentRefNotes.members[idx%4].alpha;
 				if(idx>3){
 					offset = playerNoteOffsets[idx%4];
 					strumLine = playerStrumLines.members[idx%4];
+					alpha = refNotes.members[idx%4].alpha;
 				}
 
 				note.x = strumLine.x;
 				note.y = strumLine.y;
+				note.alpha = alpha;
 			}
 
 			notes.forEachAlive(function(daNote:Note)
 			{
 				var strumLine = playerStrumLines.members[daNote.noteData];
-				if(!daNote.mustPress)
+				var alpha = refNotes.members[daNote.noteData].alpha;
+				if(!daNote.mustPress){
+					alpha = opponentRefNotes.members[daNote.noteData].alpha;
 					strumLine = opponentStrumLines.members[daNote.noteData];
+				}
 
 				if (daNote.y > FlxG.height)
 				{
@@ -1883,6 +1918,15 @@ class PlayState extends MusicBeatState
 				daNote.x = strumLine.x;
 				if(daNote.isSustainNote){
 					daNote.x+=(Note.swagWidth/2)-daNote.width/2;
+					if(daNote.tooLate)
+						daNote.alpha = .3;
+					else
+						daNote.alpha = FlxMath.lerp(.6, 0, 1-alpha);
+				}else{
+					if(daNote.tooLate)
+						daNote.alpha = .3;
+					else
+						daNote.alpha = alpha;
 				}
 				// i am so fucking sorry for this if condition
 				if (daNote.isSustainNote
@@ -1922,10 +1966,12 @@ class PlayState extends MusicBeatState
 							case 3:
 								dad.playAnim('singRIGHT' + altAnim, true);
 							}
-							if(daNote.isSustainNote && !daNote.lastSustainPiece || daNote.sustainBase )
-								dad.animation.paused=true;
-							else
-								dad.animation.paused=false;
+							if(Options.pauseHoldAnims){
+								if(daNote.isSustainNote && !daNote.lastSustainPiece || daNote.sustainBase )
+									dad.animation.paused=true;
+								else
+									dad.animation.paused=false;
+							}
 
 					//}
 					dadStrums.forEach(function(spr:FlxSprite)
@@ -2490,10 +2536,12 @@ class PlayState extends MusicBeatState
 					case 3:
 						boyfriend.playAnim('singRIGHT',true);
 				}
-				if(note.isSustainNote && !note.lastSustainPiece)
-					boyfriend.animation.paused=true;
-				else
-					boyfriend.animation.paused=false;
+				if(Options.pauseHoldAnims){
+					if(note.isSustainNote && !note.lastSustainPiece || note.sustainBase )
+						dad.animation.paused=true;
+					else
+						dad.animation.paused=false;
+				}
 			//}
 
 			playerStrums.forEach(function(spr:FlxSprite)
@@ -2608,6 +2656,10 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
+		if(modchartExists && lua!=null){
+			lua.setGlobalVar("curStep",curStep);
+			lua.call("stepHit",[curStep]); // TODO: Note lua class???
+		}
 		if (FlxG.sound.music.time > Conductor.songPosition + 20 || FlxG.sound.music.time < Conductor.songPosition - 20)
 		{
 			resyncVocals();

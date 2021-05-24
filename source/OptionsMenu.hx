@@ -27,10 +27,11 @@ class OptionsMenu extends MusicBeatState
 				new ControlOption(controls,Control.UP),
 				new ControlOption(controls,Control.RIGHT)
 			]),
-			new ToggleOption("missForNothing","Kade-style","Vanilla-style"),
+			new ToggleOption("missForNothing","Kade missing","Vanilla missing"),
 		]),
 		new OptionCategory("Gameplay",[
-			new ToggleOption("loadModcharts","Load Lua modcharts","Don't load Lua modcharts")
+			new ToggleOption("loadModcharts","Don't load Lua modcharts","Load Lua modcharts"),
+			new ToggleOption("pauseHoldAnims","Vanilla holds","Holds pause on first frame")
 		])
 	]);
 

@@ -12,16 +12,13 @@ local dadreceptors = {
 	rightDadNote;
 }
 
-function tick()
-	return os.time(os.date("!*t"))
-end
-
 function create()
     print("create")
 end
 
 function beatHit(beat)
     print(beat)
+    dad.y = dad.y + 5
 end
 
 local counter = 0;
@@ -32,10 +29,12 @@ local shakeDuration = 0
 
 function dadNoteHit()
 	shakeDuration = 0.1;
+	for i = 1,#dadreceptors do
+		dadreceptors[i].alpha = dadreceptors[i].alpha + .025
+	end
 end
 
 function update(elapsed)
-	print("update")
 	counter = counter + elapsed*3;
 	for i = 1,#receptors do
 		if(i==1 or i==3)then
@@ -57,4 +56,6 @@ function update(elapsed)
 		window.x = startX
 		window.y = startY
 	end
+
+	bf.alpha = bf.alpha - .001
 end
