@@ -24,7 +24,7 @@ class Note extends FlxSprite
 	public var rating:String = "sick";
 	public var lastSustainPiece = false;
 	public var sustainBase=false;
-	
+
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 
@@ -181,8 +181,8 @@ class Note extends FlxSprite
 		if (mustPress)
 		{
 			// The * 0.5 is so that it's easier to hit them too late, instead of too early
-			if (strumTime > Conductor.songPosition - Conductor.safeZoneOffset
-				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 0.5))
+			if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
+				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 1))
 				canBeHit = true;
 			else
 				canBeHit = false;

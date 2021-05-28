@@ -18,6 +18,7 @@ typedef SwagSong =
 	var player1:String;
 	var player2:String;
 	var validScore:Bool;
+	var noBG:Bool;
 }
 
 class Song
@@ -26,6 +27,7 @@ class Song
 	public var notes:Array<SwagSection>;
 	public var bpm:Int;
 	public var needsVoices:Bool = true;
+	public var noBG:Bool = false;
 	public var speed:Float = 1;
 
 	public var player1:String = 'bf';
@@ -53,7 +55,7 @@ class Song
 		// trace(songData);
 
 		// trace('LOADED FROM JSON: ' + songData.notes);
-		/* 
+		/*
 			for (i in 0...songData.notes.length)
 			{
 				trace('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);

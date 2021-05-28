@@ -39,7 +39,9 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...initSonglist.length)
 		{
-			songs.push(new SongMetadata(initSonglist[i], 1, 'gf'));
+			var data = initSonglist[i].split(" ");
+			var icon = data.splice(0,1)[0];
+			songs.push(new SongMetadata(data.join(" "), 1, icon));
 		}
 
 		/*

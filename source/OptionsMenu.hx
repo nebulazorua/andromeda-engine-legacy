@@ -20,18 +20,21 @@ import Discord.DiscordClient;
 class OptionsMenu extends MusicBeatState
 {
 	private var defCat:OptionCategory = new OptionCategory("Default",[
-		new OptionCategory("Input",[
+		new OptionCategory("Gameplay",[
 			new OptionCategory("Controls",[
 				new ControlOption(controls,Control.LEFT),
 				new ControlOption(controls,Control.DOWN),
 				new ControlOption(controls,Control.UP),
 				new ControlOption(controls,Control.RIGHT)
 			]),
-			new ToggleOption("missForNothing","Kade missing","Vanilla missing"),
+			new ScrollOption("ratingWindow",OptionUtils.ratingWindowNames.length-1,OptionUtils.ratingWindowNames), // TODO: min argument
+			new ToggleOption("missForNothing","Ghost-tapping","No ghost-tapping"),
 		]),
-		new OptionCategory("Gameplay",[
+		new OptionCategory("Modification",[
 			new ToggleOption("loadModcharts","Don't load Lua modcharts","Load Lua modcharts"),
-			new ToggleOption("pauseHoldAnims","Vanilla holds","Holds pause on first frame")
+		]),
+		new OptionCategory("Preferences",[
+			new ToggleOption("pauseHoldAnims","Holds repeat anims","Holds pause anims")
 		])
 	]);
 
@@ -41,7 +44,6 @@ class OptionsMenu extends MusicBeatState
 
 	override function create()
 	{
-
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("Changing options", null);
@@ -140,6 +142,8 @@ class OptionsMenu extends MusicBeatState
 				refresh();
 			}else{
 				FlxG.switchState(new MainMenuState());
+				trace("save options");
+			  OptionUtils.saveOptions();
 			}
 		}
 		if(option.type!="Category"){

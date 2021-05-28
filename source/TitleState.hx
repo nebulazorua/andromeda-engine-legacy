@@ -4,6 +4,7 @@ package;
 import Discord.DiscordClient;
 import sys.thread.Thread;
 #end
+import Options;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.FlxState;
@@ -50,6 +51,8 @@ class TitleState extends MusicBeatState
 		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
 		#end
 
+		OptionUtils.bindSave();
+		OptionUtils.loadOptions();
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());

@@ -515,7 +515,7 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.LEFT, [FlxKey.LEFT]);
 				inline bindKeys(Control.RIGHT, [FlxKey.RIGHT]);
 				for (i in [Control.LEFT,Control.DOWN,Control.UP,Control.RIGHT]){
-					inline bindKeys(i,[Options.getKey(i)]);
+					inline bindKeys(i,[OptionUtils.getKey(i)]);
 				}
 
 				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);

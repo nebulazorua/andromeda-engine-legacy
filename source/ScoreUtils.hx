@@ -1,13 +1,16 @@
 package;
-
+import flixel.math.FlxMath;
+import Options;
 class ScoreUtils
 {
 	public static var gradeArray:Array<String> = ["☆☆☆☆","☆☆☆","☆☆","☆","S+","S","S-","A+","A","A-","B+","B","B-","C+","C","C-","D"];
-	public static var ratingWindows = [
-		0.9, // shit
-		0.75, // bad
-		0.25, // good
+	public static var ratingStrings = [
+		"sick",
+		"good",
+		"bad",
+		"shit",
 	];
+	public static var ratingWindows = OptionUtils.ratingWindowTypes[Options.ratingWindow];
 	public static function GetAccuracyConditions(): Array<Float>{
 		return [
       1.0, // Quad star
@@ -28,7 +31,7 @@ class ScoreUtils
       .55, // C-
     ];
 	}
-  public static function AccuracyToGrade(accuracy:Float):String {
+	public static function AccuracyToGrade(accuracy:Float):String {
     var grade = gradeArray[gradeArray.length-1];
     var accuracyConditions:Array<Float>=GetAccuracyConditions();
     for(i in 0...accuracyConditions.length){
@@ -41,31 +44,26 @@ class ScoreUtils
     return grade;
   }
 	public static function DetermineRating(noteDiff:Float){
-		if (noteDiff > Conductor.safeZoneOffset * ratingWindows[0] || noteDiff < Conductor.safeZoneOffset * -ratingWindows[0])
-		{
-			return 'shit';
+		var noteDiff = Math.abs(noteDiff);
+		for(idx in 0...ratingWindows.length){
+			var timing = ratingWindows[idx];
+			var string = ratingStrings[idx];
+			if(noteDiff<=timing){
+				return string;
+			}
 		}
-		else if (noteDiff > Conductor.safeZoneOffset * ratingWindows[1] || noteDiff < Conductor.safeZoneOffset * -ratingWindows[1])
-		{
-			return 'bad';
-		}
-		else if (noteDiff > Conductor.safeZoneOffset * ratingWindows[2] || noteDiff < Conductor.safeZoneOffset * -ratingWindows[2])
-		{
-			return 'good';
-		}
-
 		return "sick";
 	}
 
-	public static function RatingToHit(rating:String):Float{
+	public static function RatingToHit(rating:String):Float{ // TODO: toggleable ms-based system
 		var hit:Float = 0;
 		switch (rating){
 			case 'shit':
-				hit = 1-ratingWindows[0];
+				hit = 1-(Conductor.safeZoneOffset/ratingWindows[0]);
 			case 'bad':
-				hit = 1-ratingWindows[1];
+				hit = 1-(Conductor.safeZoneOffset/ratingWindows[1]);
 			case 'good':
-				hit = 1-ratingWindows[2];
+				hit = 1-(Conductor.safeZoneOffset/ratingWindows[2]);
 			case 'sick':
 				hit = 1;
 		}

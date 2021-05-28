@@ -1,13 +1,20 @@
 package;
+
+// TODO: Clean up
+
 import llua.Convert;
 import llua.Lua;
 import llua.State;
 import llua.LuaL;
-
+import flixel.util.FlxAxes;
 import flixel.FlxSprite;
 import lime.app.Application;
 import openfl.Lib;
-
+import sys.io.File;
+import flash.display.BitmapData;
+import sys.FileSystem;
+import flixel.graphics.frames.FlxAtlasFrames;
+import flixel.FlxCamera;
 typedef LuaProperty = {
     var defaultValue:Any;
     var getter:(State,Any)->Int;
@@ -48,9 +55,6 @@ class LuaClass {
 
     for (k in properties.keys()){
       Lua.pushstring(l,k + "PropertyData");
-      if(k=="visible"){
-        trace(Type.typeof(properties[k].defaultValue));
-      }
       Convert.toLua(l,properties[k].defaultValue);
       Lua.settable(l,mtIdx);
     }
@@ -64,7 +68,6 @@ class LuaClass {
 
     Lua.setmetatable(l,classIdx);
 
-    Lua.pop(l,0);
   };
 
 
@@ -217,8 +220,13 @@ class LuaWindow extends LuaClass {
 
 class LuaSprite extends LuaClass {
   private static var state:State;
-
-  private var sprite:FlxSprite;
+  private static var stringToCentering:Map<String,FlxAxes> = [
+        "X"=>X,
+        "XY"=>XY,
+        "Y"=>Y,
+        "YX"=>XY
+      ];
+  public var sprite:FlxSprite;
   private function SetNumProperty(l:State){
       // 1 = self
       // 2 = key
@@ -248,7 +256,7 @@ class LuaSprite extends LuaClass {
         LuaL.error(l,"invalid argument #3 (boolean expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
         return 0;
       }
-      Reflect.setProperty(sprite,Lua.tostring(l,2),Lua.tonumber(l,3));
+      Reflect.setProperty(sprite,Lua.tostring(l,2),Lua.toboolean(l,3));
       return 0;
   }
 
@@ -260,18 +268,303 @@ class LuaSprite extends LuaClass {
       return 1;
   }
 
-  private static function setScale(l:StatePointer){
+  private function GetStringProperty(l:State,data:Any){
+      // 1 = self
+      // 2 = key
+      // 3 = metatable
+      Lua.pushstring(l,Reflect.getProperty(sprite,Lua.tostring(l,2)));
+      return 1;
+  }
+
+  private static function setScale(l:StatePointer):Int{
     // 1 = self
     // 2 = scale
     var scale = LuaL.checknumber(state,2);
-    trace(scale);
     Lua.getfield(state,1,"spriteName");
     var spriteName = Lua.tostring(state,-1);
-    trace(spriteName);
     var sprite = PlayState.currentPState.luaSprites[spriteName];
     sprite.setGraphicSize(Std.int(sprite.width*scale));
     return 0;
   }
+
+  private static var setScaleC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setScale);
+
+  private static function getProperty(l:StatePointer):Int{
+    // 1 = self
+    // 2 = property
+    var property = LuaL.checkstring(state,2);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    Convert.toLua(state,Reflect.getProperty(sprite,property));
+    return 1;
+  }
+
+  private static var getPropertyC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(getProperty);
+
+  private static function playSpriteAnim(l:StatePointer):Int{
+    // 1 = self
+    // 2 = anim
+    // 3 = forced
+    // 4 = reversed
+    // 5 = frame
+    var anim = LuaL.checkstring(state,2);
+    var forced = false;
+    var reversed = false;
+    var frame:Int = 0;
+
+    if(Lua.isboolean(state,3))
+      forced = Lua.toboolean(state,3);
+
+    if(Lua.isboolean(state,4))
+      reversed = Lua.toboolean(state,4);
+
+    if(Lua.isnumber(state,5))
+      frame = Std.int(Lua.tonumber(state,5));
+
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.animation.play(anim,forced,reversed,frame);
+    return 0;
+  }
+
+  private static function addSpriteAnimByPrefix(l:StatePointer):Int{
+    // 1 = self
+    // 2 = anim name
+    // 3 = prefix
+    // 4 = framerate
+    // 5 = looped
+    // 6 = flipX
+    // 7 = flipY
+
+    var animName = LuaL.checkstring(state,2);
+    var animPrefix = LuaL.checkstring(state,3);
+    var framerate:Float = 24;
+    var looped:Bool = true;
+    var flipX:Bool = false;
+    var flipY:Bool = false;
+
+    if(Lua.isnumber(state,4))
+      framerate = Lua.tonumber(state,4);
+    if(Lua.isboolean(state,5))
+      looped = Lua.toboolean(state,5);
+
+    if(Lua.isboolean(state,6))
+      flipX = Lua.toboolean(state,6);
+
+    if(Lua.isboolean(state,7))
+      flipY = Lua.toboolean(state,7);
+
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    // sprite.animation.addByPrefix("tightass","garcello coolguy",15,false,false,false)
+    sprite.animation.addByPrefix(animName,animPrefix,framerate,looped,flipX,flipY);
+    return 0;
+  }
+
+  private static function addSpriteAnim(l:StatePointer):Int{
+    // 1 = self
+    // 2 = anim name
+    // 3 = frames
+    // 4 = framerate
+    // 5 = looped
+    // 6 = flipX
+    // 7 = flipY
+
+    var animName = LuaL.checkstring(state,2);
+    LuaL.checktable(state,3);
+    var frames = Convert.fromLua(state,3);
+    trace("ADDANIM");
+    trace("addAnim: " + frames);
+    var framerate:Float = 24;
+    var looped:Bool = true;
+    var flipX:Bool = false;
+    var flipY:Bool = false;
+
+    if(Lua.isnumber(state,4))
+      framerate = Lua.tonumber(state,4);
+
+    if(Lua.isboolean(state,5))
+      looped = Lua.toboolean(state,5);
+
+    if(Lua.isboolean(state,6))
+      flipX = Lua.toboolean(state,6);
+
+    if(Lua.isboolean(state,7))
+      flipY = Lua.toboolean(state,7);
+
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    // sprite.animation.addByPrefix("tightass","garcello coolguy",15,false,false,false)
+    sprite.animation.add(animName,frames,framerate,looped,flipX,flipY);
+    return 0;
+  }
+  private static function addSpriteAnimByIndices(l:StatePointer):Int{
+    var animName = LuaL.checkstring(state,2);
+    var animPrefix = LuaL.checkstring(state,3);
+    LuaL.checktable(state,4);
+    var indices = Convert.fromLua(state,4);
+    var framerate:Float = 24;
+    var looped:Bool = true;
+    var flipX:Bool = false;
+    var flipY:Bool = false;
+
+    if(Lua.isnumber(state,4))
+      framerate = Lua.tonumber(state,4);
+
+    if(Lua.isboolean(state,5))
+      looped = Lua.toboolean(state,5);
+
+    if(Lua.isboolean(state,6))
+      looped = Lua.toboolean(state,6);
+
+    if(Lua.isboolean(state,7))
+      flipY = Lua.toboolean(state,7);
+
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.animation.addByIndices(animName,animPrefix,indices,"",framerate,looped,flipX,flipY);
+
+    return 0;
+  }
+
+  private static function loadGraphic(l:StatePointer){
+    var path = LuaL.checkstring(state,2);
+    Lua.getfield(state,1,"spriteName");
+    var animated = false;
+    var width:Int = 0;
+    var height:Int = 0;
+    if(Lua.isboolean(state,3))
+      animated=Lua.toboolean(state,3);
+
+    if(Lua.isnumber(state,4))
+      width=Std.int(Lua.tonumber(state,4));
+
+    if(Lua.isnumber(state,5))
+      height=Std.int(Lua.tonumber(state,5));
+
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    var fullPath = "assets/data/" + PlayState.SONG.song.toLowerCase()+"/"+path+".png";
+    var data:BitmapData;
+    if(FileSystem.exists(fullPath) && !FileSystem.isDirectory(fullPath)){
+      try{
+        data = BitmapData.fromFile(fullPath);
+      }catch(e:Any){
+        LuaL.error(state,"FATAL ERROR: " + e);
+        return 0;
+      }
+    }else{
+      LuaL.error(state,path + " is not a valid image file!");
+      return 0;
+    }
+    sprite.loadGraphic(data,animated,0,0,false,spriteName);
+    return 0;
+  }
+
+  private static function setFrames(l:StatePointer){
+    var path = LuaL.checkstring(state,2);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+
+    var fullPath = "assets/data/" + PlayState.SONG.song.toLowerCase()+"/"+path;
+    var fullPathXML = fullPath + ".xml";
+    var fullPathPNG = fullPath + ".png";
+    var bitmapData:BitmapData;
+    var content:String;
+    if(FileSystem.exists(fullPathPNG) && !FileSystem.isDirectory(fullPathPNG) && FileSystem.exists(fullPathXML) && !FileSystem.isDirectory(fullPathXML) ){
+      try{
+        bitmapData = BitmapData.fromFile(fullPathPNG);
+        content = File.getContent(fullPathXML);
+      }catch(e:Any){
+        LuaL.error(state,"FATAL ERROR: " + e);
+        return 0;
+      }
+    }else{
+      LuaL.error(state,path + " is not a valid spritesheet!");
+      return 0;
+    }
+    var frames = FlxAtlasFrames.fromSparrow(bitmapData,content);
+    sprite.setFrames(frames);
+    return 0;
+  }
+
+  private static function changeAnimFramerate(l:StatePointer):Int{
+    var animName = LuaL.checkstring(state,2);
+    var framerate = LuaL.checknumber(state,3);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    if(sprite.animation.getByName(animName)==null){
+      LuaL.error(state,animName + " is not a valid animation.");
+      return 0;
+    }
+    sprite.animation.getByName(animName).frameRate=framerate;
+    return 0;
+  }
+
+  private static function animExists(l:StatePointer):Int{
+    var animName = LuaL.checkstring(state,2);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    Lua.pushboolean(state,sprite.animation.getByName(animName)!=null);
+    return 1;
+  }
+
+  private static function screenCenter(l:StatePointer):Int{
+    var type = LuaL.checkstring(state,2);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.screenCenter(stringToCentering[type]);
+    Lua.pushnumber(state,sprite.x);
+    Lua.pushnumber(state,sprite.y);
+    return 2;
+  }
+
+  private static function playAnimSprite(l:StatePointer):Int{
+    // 1 = self
+    // 2 = anim
+    // 3 = forced
+    // 4 = reversed
+    // 5 = frame
+    var anim = LuaL.checkstring(state,2);
+    var forced = false;
+    var reversed = false;
+    var frame:Int = 0;
+
+    if(Lua.isboolean(state,3))
+      forced = Lua.toboolean(state,3);
+
+    if(Lua.isboolean(state,4))
+      reversed = Lua.toboolean(state,4);
+
+    if(Lua.isnumber(state,5))
+      frame = Std.int(Lua.tonumber(state,5));
+
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.animation.play(anim,forced,reversed,frame);
+    return 0;
+  }
+
+  private static var changeAnimFramerateC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(changeAnimFramerate);
+  private static var animExistsC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(animExists);
+  private static var playSpriteAnimC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(playSpriteAnim);
+  private static var addSpriteAnimByPrefixC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addSpriteAnimByPrefix);
+  private static var addSpriteAnimByIndicesC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addSpriteAnimByIndices);
+  private static var addSpriteAnimC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addSpriteAnim);
+  private static var screenCenterC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(screenCenter);
+  private static var loadGraphicC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(loadGraphic);
+  private static var setFramesC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setFrames);
+  private static var playAnimSpriteC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(playAnimSprite);
 
   public function new(sprite:FlxSprite,name:String,?addToGlobal:Bool=true){
     super();
@@ -290,6 +583,16 @@ class LuaSprite extends LuaClass {
           LuaL.error(l,"spriteName is read-only.");
           return 0;
         }
+      },
+      "flipX"=>{
+        defaultValue:sprite.flipX,
+        getter:GetBoolProperty,
+        setter:SetBoolProperty
+      },
+      "flipY"=>{
+        defaultValue:sprite.flipY,
+        getter:GetBoolProperty,
+        setter:SetBoolProperty
       },
       "x"=>{
         defaultValue:sprite.x,
@@ -326,18 +629,169 @@ class LuaSprite extends LuaClass {
         getter:GetBoolProperty,
         setter:SetBoolProperty
       },
+      "antialiasing"=>{
+        defaultValue:sprite.antialiasing,
+        getter:GetBoolProperty,
+        setter:SetBoolProperty
+      },
+      "active"=>{
+        defaultValue:sprite.active,
+        getter:GetBoolProperty,
+        setter:SetBoolProperty
+      },
       "setScale"=>{
         defaultValue:0,
         getter:function(l:State,data:Any){
-          Lua.pushcfunction(l,cpp.Callable.fromStaticFunction(setScale));
+          Lua.pushcfunction(l,setScaleC);
           return 1;
         },
         setter:function(l:State){
           LuaL.error(l,"setScale is read-only.");
           return 0;
         }
-      }
-
+      },
+      "getProperty"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,getPropertyC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"getProperty is read-only.");
+          return 0;
+        }
+      },
+      "addAnimByPrefix"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,addSpriteAnimByPrefixC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"addAnimByPrefix is read-only.");
+          return 0;
+        }
+      },
+      "screenCenter"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,screenCenterC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"screenCenter is read-only.");
+          return 0;
+        }
+      },
+      "loadGraphic"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,loadGraphicC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"loadGraphic is read-only.");
+          return 0;
+        }
+      },
+      "setFrames"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,setFramesC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"setFrames is read-only.");
+          return 0;
+        }
+      },
+      "playAnim"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,playAnimSpriteC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"playAnim is read-only.");
+          return 0;
+        }
+      },
+      "addAnimByIndices"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,addSpriteAnimByIndicesC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"addAnimByIndices is read-only.");
+          return 0;
+        }
+      },
+      "addAnim"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,addSpriteAnimC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"addAnim is read-only.");
+          return 0;
+        }
+      },
+      "changeAnimFramerate"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,changeAnimFramerateC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"changeAnimFramerate is read-only.");
+          return 0;
+        }
+      },
+      "animExists"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,animExistsC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"animExists is read-only.");
+          return 0;
+        }
+      },
+      "scrollFactorX"=>{ // TODO: sprite.scrollFactor.x
+        defaultValue:sprite.scrollFactor.x,
+        getter:function(l:State,data:Any){
+          Lua.pushnumber(l,sprite.scrollFactor.x);
+          return 1;
+        },
+        setter:function(l:State){
+          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+            return 0;
+          }
+          sprite.scrollFactor.set(Lua.tonumber(l,3),sprite.scrollFactor.y);
+          LuaClass.DefaultSetter(l);
+          return 0;
+        }
+      },
+      "scrollFactorY"=>{ // TODO: sprite.scrollFactor.y
+        defaultValue:sprite.scrollFactor.x,
+        getter:function(l:State,data:Any){
+          Lua.pushnumber(l,sprite.scrollFactor.y);
+          return 1;
+        },
+        setter:function(l:State){
+          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+            return 0;
+          }
+          sprite.scrollFactor.set(sprite.scrollFactor.x,Lua.tonumber(l,3));
+          LuaClass.DefaultSetter(l);
+          return 0;
+        }
+      },
     ];
   }
   override function Register(l:State){
@@ -345,6 +799,134 @@ class LuaSprite extends LuaClass {
     super.Register(l);
   }
 }
+
+class LuaCam extends LuaClass {
+  private static var state:State;
+
+  public function new(cam:FlxCamera){
+    super();
+  }
+  override function Register(l:State){
+    state=l;
+    super.Register(l);
+  }
+}
+class LuaCharacter extends LuaSprite {
+  private static var state:State;
+
+  private static function swapCharacter(l:StatePointer){
+    // 1 = self
+    // 2 = character
+    var char = LuaL.checkstring(state,2);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    //var sprite = PlayState.currentPState.luaSprites[spriteName];
+    PlayState.currentPState.swapCharacterByLuaName(spriteName,char);
+
+    return 0;
+  }
+  private static var swapCharacterC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(swapCharacter);
+
+  private static function addOffset(l:StatePointer){
+      // 1 = self
+      // 2 = name
+      // 3 = offsetX
+      // 4 = offsetY
+      var name:String = LuaL.checkstring(state,2);
+      var offsetX:Float = LuaL.checknumber(state,3);
+      var offsetY:Float = LuaL.checknumber(state,4);
+      Lua.getfield(state,1,"spriteName");
+      var spriteName = Lua.tostring(state,-1);
+      var sprite = PlayState.currentPState.luaSprites[spriteName];
+      sprite.addOffset(name,offsetX,offsetY);
+      return 0;
+  }
+
+  private static function playAnim(l:StatePointer):Int{
+    // 1 = self
+    // 2 = anim
+    // 3 = forced
+    // 4 = reversed
+    // 5 = frame
+    var anim = LuaL.checkstring(state,2);
+    var forced = false;
+    var reversed = false;
+    var frame:Int = 0;
+
+    if(Lua.isboolean(state,3))
+      forced = Lua.toboolean(state,3);
+
+    if(Lua.isboolean(state,4))
+      reversed = Lua.toboolean(state,4);
+
+    if(Lua.isnumber(state,5))
+      frame = Std.int(Lua.tonumber(state,5));
+
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.playAnim(anim,forced,reversed,frame);
+    return 0;
+  }
+
+  private static var playAnimC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(playAnim);
+  private static var addOffsetC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addOffset);
+
+  public function new(character:Character,name:String,?addToGlobal:Bool=true){
+    super(character,name,addToGlobal);
+    properties.set("curCharacter",{
+      defaultValue:character.curCharacter,
+      getter:GetStringProperty,
+      setter:function(l:State){
+        LuaL.error(l,"curCharacter is read-only. Try calling 'changeCharacter'");
+        return 0;
+      }
+    });
+    properties.set("disabledDance",{
+      defaultValue:character.disabledDance,
+      getter:GetBoolProperty,
+      setter:SetBoolProperty
+    });
+    properties.set("changeCharacter",{
+      defaultValue:0,
+      getter:function(l:State,data:Any){
+        Lua.pushcfunction(l,swapCharacterC);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"changeCharacter is read-only.");
+        return 0;
+      }
+    });
+    properties.set("playAnim",{
+      defaultValue:0,
+      getter:function(l:State,data:Any){
+        Lua.pushcfunction(l,playAnimC);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"playAnim is read-only.");
+        return 0;
+      }
+    });
+    properties.set("addOffset",{
+      defaultValue:0,
+      getter:function(l:State,data:Any){
+        Lua.pushcfunction(l,addOffsetC);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"addOffset is read-only.");
+        return 0;
+      }
+    });
+  }
+  override function Register(l:State){
+    state=l;
+    super.Register(l);
+  }
+}
+
 class LuaNote extends LuaClass {
   private static var state:State;
   private static var internalNames = [

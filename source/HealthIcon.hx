@@ -26,6 +26,7 @@ class HealthIcon extends FlxSprite
 		animation.add('dad', [12, 13], 0, false, isPlayer);
 		animation.add('bf-old', [14, 15], 0, false, isPlayer);
 		animation.add('gf', [16], 0, false, isPlayer);
+		animation.add('lizzy', [16], 0, false, isPlayer);
 		animation.add('parents-christmas', [17], 0, false, isPlayer);
 		animation.add('monster', [19, 20], 0, false, isPlayer);
 		animation.add('monster-christmas', [19, 20], 0, false, isPlayer);
@@ -34,8 +35,19 @@ class HealthIcon extends FlxSprite
 		animation.add('senpai-angry', [22, 22], 0, false, isPlayer);
 		animation.add('spirit', [23, 23], 0, false, isPlayer);
 		animation.add('bf-neb', [24,25], 0, false, isPlayer);
-		animation.play(char);
+		if(animation.getByName(char)!=null)
+			animation.play(char);
+		else
+			animation.play("face");
+
 		scrollFactor.set();
+	}
+
+	public function changeCharacter(char:String){
+		if(animation.getByName(char)!=null)
+			animation.play(char);
+		else
+			animation.play("face");
 	}
 
 	override function update(elapsed:Float)
