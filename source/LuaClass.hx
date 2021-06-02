@@ -359,7 +359,6 @@ class LuaSprite extends LuaClass {
     Lua.getfield(state,1,"spriteName");
     var spriteName = Lua.tostring(state,-1);
     var sprite = PlayState.currentPState.luaSprites[spriteName];
-    // sprite.animation.addByPrefix("tightass","garcello coolguy",15,false,false,false)
     sprite.animation.addByPrefix(animName,animPrefix,framerate,looped,flipX,flipY);
     return 0;
   }
@@ -398,7 +397,6 @@ class LuaSprite extends LuaClass {
     Lua.getfield(state,1,"spriteName");
     var spriteName = Lua.tostring(state,-1);
     var sprite = PlayState.currentPState.luaSprites[spriteName];
-    // sprite.animation.addByPrefix("tightass","garcello coolguy",15,false,false,false)
     sprite.animation.add(animName,frames,framerate,looped,flipX,flipY);
     return 0;
   }
@@ -802,9 +800,155 @@ class LuaSprite extends LuaClass {
 
 class LuaCam extends LuaClass {
   private static var state:State;
+  public var camera:FlxCamera;
+  private function SetNumProperty(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+        LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      Reflect.setProperty(camera,Lua.tostring(l,2),Lua.tonumber(l,3));
+      return 0;
+  }
 
-  public function new(cam:FlxCamera){
+  private function GetNumProperty(l:State,data:Any){
+      // 1 = self
+      // 2 = key
+      // 3 = metatable
+      Lua.pushnumber(l,Reflect.getProperty(camera,Lua.tostring(l,2)));
+      return 1;
+  }
+
+  private function SetBoolProperty(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TBOOLEAN){
+        LuaL.error(l,"invalid argument #3 (boolean expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      Reflect.setProperty(camera,Lua.tostring(l,2),Lua.toboolean(l,3));
+      return 0;
+  }
+
+  private function GetBoolProperty(l:State,data:Any){
+      // 1 = self
+      // 2 = key
+      // 3 = metatable
+      Lua.pushboolean(l,Reflect.getProperty(camera,Lua.tostring(l,2)));
+      return 1;
+  }
+
+  private function GetStringProperty(l:State,data:Any){
+      // 1 = self
+      // 2 = key
+      // 3 = metatable
+      Lua.pushstring(l,Reflect.getProperty(camera,Lua.tostring(l,2)));
+      return 1;
+  }
+
+  private static function shake(l:StatePointer):Int{
+    var intensity = .05;
+    var duration = .5;
+    var force = true;
+
+    if(Lua.isnumber(state,2) )
+      intensity=Lua.tonumber(state,2);
+
+    if(Lua.isnumber(state,3) )
+      duration=Lua.tonumber(state,3);
+
+    if(Lua.isboolean(state,4) )
+      force=Lua.isboolean(state,4);
+
+    Lua.getfield(state,1,"className");
+    var objName = Lua.tostring(state,-1);
+    var cam = PlayState.currentPState.luaObjects[objName];
+    cam.shake(intensity,duration,null,force);
+    return 0;
+  }
+
+  private static var shakeC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(shake);
+
+  public function new(cam:FlxCamera,name:String,?addToGlobal:Bool=true){
     super();
+    className=name;
+    this.addToGlobal=addToGlobal;
+    camera=cam;
+    PlayState.currentPState.luaObjects[name]=cam;
+    properties = [
+      "className"=>{
+        defaultValue:name,
+        getter:function(l:State,data:Any){
+          Lua.pushstring(l,name);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"spriteName is read-only.");
+          return 0;
+        }
+      },
+      "x"=>{
+        defaultValue:cam.x,
+        getter:GetNumProperty,
+        setter:SetNumProperty
+      },
+      "y"=>{
+        defaultValue:cam.y,
+        getter:GetNumProperty,
+        setter:SetNumProperty
+      },
+      "width"=>{
+        defaultValue:cam.width,
+        getter:GetNumProperty,
+        setter:SetNumProperty
+      },
+      "height"=>{
+        defaultValue:cam.height,
+        getter:GetNumProperty,
+        setter:SetNumProperty
+      },
+      "zoom"=>{
+        defaultValue:cam.zoom,
+        getter:GetNumProperty,
+        setter:SetNumProperty
+      },
+      "angle"=>{
+        defaultValue:cam.angle,
+        getter:GetNumProperty,
+        setter:SetNumProperty
+      },
+      "alpha"=>{
+        defaultValue:cam.alpha,
+        getter:GetNumProperty,
+        setter:SetNumProperty
+      },
+      "antialiasing"=>{
+        defaultValue:cam.antialiasing,
+        getter:GetBoolProperty,
+        setter:SetBoolProperty
+      },
+      "filtersEnabled"=>{
+        defaultValue:cam.filtersEnabled,
+        getter:GetBoolProperty,
+        setter:SetBoolProperty
+      },
+      "shake"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,shakeC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"shake is read-only.");
+          return 0;
+        }
+      },
+    ];
   }
   override function Register(l:State){
     state=l;

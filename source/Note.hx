@@ -24,7 +24,6 @@ class Note extends FlxSprite
 	public var rating:String = "sick";
 	public var lastSustainPiece = false;
 	public var sustainBase=false;
-
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 
@@ -129,8 +128,9 @@ class Note extends FlxSprite
 			noteScore * 0.2;
 			alpha = 0.6;
 
-			x += width / 2;
-
+			//var off = -width;
+			var off = -width/4;
+			//x+=width/2;
 			lastSustainPiece=true;
 
 			switch (noteData)
@@ -147,14 +147,21 @@ class Note extends FlxSprite
 
 			updateHitbox();
 
-			x -= width / 2;
+			if(Options.downScroll){
+				flipY=true;
+			}
 
+			//off -= width / 2;
+			//x -= width / 2;
 			if (PlayState.curStage.startsWith('school'))
-				x += 30;
+				off += 30;
+
+			offset.x = off;
 
 			if (prevNote.isSustainNote)
 			{
 				prevNote.lastSustainPiece=false;
+				var offset = prevNote.offset.x;
 				switch (prevNote.noteData)
 				{
 					case 0:
@@ -167,8 +174,9 @@ class Note extends FlxSprite
 						prevNote.animation.play('redhold');
 				}
 
-				prevNote.scale.y *= Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed;
+				prevNote.scale.y = Conductor.stepCrochet / 100 * prevNote.scale.y * 1.5 * FlxMath.roundDecimal(PlayState.SONG.speed,2);
 				prevNote.updateHitbox();
+				prevNote.offset.x = offset;
 				// prevNote.setGraphicSize();
 			}
 		}
@@ -192,10 +200,8 @@ class Note extends FlxSprite
 		}
 		else
 		{
-			canBeHit = false;
-
 			if (strumTime <= Conductor.songPosition)
-				wasGoodHit = true;
+				canBeHit = true;
 		}
 
 		if (tooLate)

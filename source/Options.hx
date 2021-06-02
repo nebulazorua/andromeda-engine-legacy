@@ -9,6 +9,7 @@ import Sys.sleep;
 import flixel.FlxG;
 import flash.events.KeyboardEvent;
 import flixel.util.FlxSave;
+import flixel.FlxState;
 
 class OptionUtils
 {
@@ -20,6 +21,7 @@ class OptionUtils
 		"Quaver",
 		"Judge Four",
 		"Modern KE",
+		"EMFNF2",
 		"Dream",
 	];
 	public static var ratingWindowTypes:Array<Array<Float>> = [ // TODO: make these all properly scale w/ the safeZoneOffset n shit
@@ -51,6 +53,12 @@ class OptionUtils
 			45, // sick
 			90, // good
 			135, // bad
+			Conductor.safeZoneOffset, // shit
+		],
+		[ // EMFNF2
+			50, // sick
+			124, // good
+			149, // bad
 			Conductor.safeZoneOffset, // shit
 		],
 		[ // All Sicks
@@ -112,10 +120,29 @@ class Options
 	public static var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L ];
 	public static var missForNothing:Bool = true;
 	public static var loadModcharts:Bool = true;
-	public static var pauseHoldAnims:Bool = true;
+	//public static var pauseHoldAnims:Bool = true;
+	public static var holdBehaviour:Int = 0;
 	public static var dummy:Bool = false;
 	public static var dummyInt:Int = 0;
 	public static var ratingWindow:Int = 0;
+	public static var showMS:Bool = false;
+	public static var ratingInHUD:Bool = false;
+	public static var noteOffset:Int = 0;
+	public static var downScroll:Bool = false;
+}
+
+class StateOption extends Option
+{
+	private var state:FlxState;
+	public function new(name:String,state:FlxState){
+		super();
+		this.state=state;
+		this.name=name;
+	}
+	public override function accept(){
+		FlxG.switchState(state);
+		return false;
+	}
 }
 
 class ToggleOption extends Option
@@ -144,12 +171,14 @@ class ScrollOption extends Option
 	private var names:Array<String>;
 	private var property = "dummyInt";
 	private var max:Int = -1;
-	public function new(property:String,?max:Int=-1,?names:Array<String>){
+	private var min:Int = 0;
+	public function new(property:String,?min:Int=0,?max:Int=-1,?names:Array<String>){
 		super();
 		this.property=property;
 		this.names=names;
 		var value = Reflect.getProperty(Options,property);
 		this.max=max;
+		this.min=min;
 		if(names!=null){
 			name = names[value];
 		}else{
@@ -161,10 +190,14 @@ class ScrollOption extends Option
 		var value:Int = Std.int(Reflect.getProperty(Options,property)-1);
 		trace(value);
 
-		if(value<0)
+
+		if(value<min)
 			value=max;
+
 		if(value>max)
-			value=0;
+			value=min;
+
+
 
 		Reflect.setProperty(Options,property,value);
 
@@ -179,17 +212,72 @@ class ScrollOption extends Option
 		var value:Int = Std.int(Reflect.getProperty(Options,property)+1);
 		trace(value);
 
-		if(value<0)
+
+		if(value<min)
 			value=max;
 		if(value>max)
-			value=0;
-			Reflect.setProperty(Options,property,value);
+			value=min;
+
+		Reflect.setProperty(Options,property,value);
 
 		if(names!=null){
 			name = names[value];
 		}else{
 			name = Std.string(value);
 		}
+		return true;
+	};
+}
+
+class CountOption extends Option
+{
+	private var prefix:String='';
+	private var suffix:String='';
+	private var property = "dummyInt";
+	private var max:Int = -1;
+	private var min:Int = 0;
+	public function new(property:String,?min:Int=0,?max:Int=-1,?prefix:String='',?suffix:String=''){
+		super();
+		this.property=property;
+		this.min=min;
+		this.max=max;
+		var value = Reflect.getProperty(Options,property);
+		this.prefix=prefix;
+		this.suffix=suffix;
+
+		name = prefix + " " + Std.string(value) + " " + suffix;
+	};
+
+	public override function left():Bool{
+		var value:Int = Std.int(Reflect.getProperty(Options,property)-1);
+
+
+		if(value<min)
+			value=max;
+		if(value>max)
+			value=min;
+
+
+
+		Reflect.setProperty(Options,property,value);
+		trace(value);
+		name = prefix + " " + Std.string(value) + " " + suffix;
+		return true;
+	};
+	public override function right():Bool{
+		var value:Int = Std.int(Reflect.getProperty(Options,property)+1);
+
+
+
+		if(value<min)
+			value=max;
+		if(value>max)
+			value=min;
+		trace(value);
+
+		Reflect.setProperty(Options,property,value);
+
+		name = prefix + " " + Std.string(value) + " " + suffix;
 		return true;
 	};
 }

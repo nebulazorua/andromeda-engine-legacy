@@ -19,6 +19,7 @@ import Discord.DiscordClient;
 #end
 class OptionsMenu extends MusicBeatState
 {
+	public static var instance:OptionsMenu;
 	private var defCat:OptionCategory = new OptionCategory("Default",[
 		new OptionCategory("Gameplay",[
 			new OptionCategory("Controls",[
@@ -27,14 +28,19 @@ class OptionsMenu extends MusicBeatState
 				new ControlOption(controls,Control.UP),
 				new ControlOption(controls,Control.RIGHT)
 			]),
-			new ScrollOption("ratingWindow",OptionUtils.ratingWindowNames.length-1,OptionUtils.ratingWindowNames), // TODO: min argument
+			new ScrollOption("ratingWindow",0,OptionUtils.ratingWindowNames.length-1,OptionUtils.ratingWindowNames),
 			new ToggleOption("missForNothing","Ghost-tapping","No ghost-tapping"),
+			new StateOption("Calibrate Offset",new SoundOffsetState()),
 		]),
 		new OptionCategory("Modification",[
 			new ToggleOption("loadModcharts","Don't load Lua modcharts","Load Lua modcharts"),
 		]),
 		new OptionCategory("Preferences",[
-			new ToggleOption("pauseHoldAnims","Holds repeat anims","Holds pause anims")
+			//new ToggleOption("pauseHoldAnims","Holds repeat anims","Holds pause anims"),
+			new ScrollOption("holdBehaviour",0,1,["Holds pause anims","Holds repeat anims"]),
+			new ToggleOption("showMS","Hit MS not shown","Hit MS shown"),
+			new ToggleOption("ratingInHUD","Ratings aren't apart of HUD","Ratings are apart of HUD"),
+			new ToggleOption("downScroll","Upscroll","Downscroll")
 		])
 	]);
 
