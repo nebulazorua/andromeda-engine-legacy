@@ -21,17 +21,20 @@ typedef LuaProperty = {
     var setter:State->Int;
 }
 
+class LuaStorage {
+  public static var objectProperties:Map<String,Map<String,LuaProperty>> = [];
+}
+
 class LuaClass {
   public var properties:Map<String,LuaProperty> = [];
   public var methods:Map<String,cpp.Callable<StatePointer->Int> > = [];
   public var className:String = "BaseClass";
-  private static var objectProperties:Map<String,Map<String,LuaProperty>> = [];
   private static var state:State;
   public var addToGlobal:Bool=true;
   public function Register(l:State){
     Lua.newtable(l);
     state=l;
-    objectProperties[className]=this.properties;
+    LuaStorage.objectProperties[className]=this.properties;
 
     var classIdx = Lua.gettop(l);
     Lua.pushvalue(l,classIdx);
@@ -83,8 +86,8 @@ class LuaClass {
         Lua.pushstring(l,"_CLASSNAME");
         Lua.rawget(l,mtIdx);
         var clName = Lua.tostring(l,-1);
-        if(objectProperties[clName]!=null && objectProperties[clName][index]!=null){
-          return objectProperties[clName][index].getter(l,data);
+        if(LuaStorage.objectProperties[clName]!=null && LuaStorage.objectProperties[clName][index]!=null){
+          return LuaStorage.objectProperties[clName][index].getter(l,data);
         }
       };
     }else{
@@ -105,9 +108,9 @@ class LuaClass {
         Lua.pushstring(l,"_CLASSNAME");
         Lua.rawget(l,mtIdx);
         var clName = Lua.tostring(l,-1);
-        if(objectProperties[clName]!=null && objectProperties[clName][index]!=null){
+        if(LuaStorage.objectProperties[clName]!=null && LuaStorage.objectProperties[clName][index]!=null){
           Lua.pop(l,2);
-          return objectProperties[clName][index].setter(l);
+          return LuaStorage.objectProperties[clName][index].setter(l);
         }
       };
     }else{

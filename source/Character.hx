@@ -427,7 +427,7 @@ class Character extends FlxSprite
 				playAnim("idle");
 		default:
 			var xmlData:String = '';
-			if(Cache.xmlData[curCharacter]!=null){
+			/*if(Cache.xmlData[curCharacter]!=null){
 				xmlData=Cache.xmlData[curCharacter];
 			}else{
 				xmlData=File.getContent("assets/shared/images/characters/"+curCharacter+".xml");
@@ -439,9 +439,19 @@ class Character extends FlxSprite
 			}else{
 				bitmapData = BitmapData.fromFile("assets/shared/images/characters/"+curCharacter+".png");
 				FlxG.bitmap.add(bitmapData,true,curCharacter+"CharFrames");
-			}
+			}*/
 
-			frames = FlxAtlasFrames.fromSparrow(bitmapData,xmlData);
+			if(Cache.charFrames[curCharacter]!=null){
+				frames=Cache.charFrames[curCharacter];
+			}else{
+				frames = FlxAtlasFrames.fromSparrow(BitmapData.fromFile("assets/shared/images/characters/"+curCharacter+".png"),File.getContent("assets/shared/images/characters/"+curCharacter+".xml"));
+				Cache.charFrames[curCharacter]=frames;
+			}
+			FlxG.bitmap.dumpCache();
+
+
+
+
 
 			loadAnimations();
 			loadOffsets();

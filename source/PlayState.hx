@@ -98,8 +98,8 @@ class PlayState extends MusicBeatState
 	private var opponentStrumLines:FlxTypedGroup<FlxSprite>;
 	public var luaSprites:Map<String, Dynamic>;
 	public var luaObjects:Map<String, Dynamic>;
-	var unnamedLuaSprites:Int=0;
-	var unnamedLuaObjects:Int=0;
+	public var unnamedLuaSprites:Int=0;
+	public var unnamedLuaObjects:Int=0;
 	public var dadLua:LuaCharacter;
 	public var gfLua:LuaCharacter;
 	public var bfLua:LuaCharacter;
@@ -217,6 +217,7 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+		Cache.Clear();
 		FlxG.sound.music.looped=false;
 		unnamedLuaSprites=0;
 		unnamedLuaObjects=0;
@@ -1771,6 +1772,7 @@ class PlayState extends MusicBeatState
 			{
 				// gitaroo man easter egg
 				FlxG.switchState(new GitarooPause());
+				Cache.Clear();
 			}
 			else
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
@@ -1792,6 +1794,7 @@ class PlayState extends MusicBeatState
 			}
 			#end
 			FlxG.switchState(new ChartingState());
+			Cache.Clear();
 
 			#if desktop
 			DiscordClient.changePresence("Chart Editor", null, null, true);
@@ -1835,6 +1838,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.EIGHT){
 				FlxG.switchState(new AnimationDebug(SONG.player2));
+				Cache.Clear();
 				#if windows
 				if(lua!=null){
 					lua.destroy();
@@ -1844,6 +1848,7 @@ class PlayState extends MusicBeatState
 			}
 			if (FlxG.keys.justPressed.NINE){
 				FlxG.switchState(new AnimationDebug(SONG.player1));
+				Cache.Clear();
 				#if windows
 				if(lua!=null){
 					lua.destroy();
@@ -2309,6 +2314,7 @@ class PlayState extends MusicBeatState
 				transOut = FlxTransitionableState.defaultTransOut;
 
 				FlxG.switchState(new StoryMenuState());
+				Cache.Clear();
 
 				// if ()
 				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
@@ -2354,12 +2360,14 @@ class PlayState extends MusicBeatState
 				FlxG.sound.music.stop();
 
 				LoadingState.loadAndSwitchState(new PlayState());
+				Cache.Clear();
 			}
 		}
 		else
 		{
 			trace('WENT BACK TO FREEPLAY??');
 			FlxG.switchState(new FreeplayState());
+			Cache.Clear();
 		}
 	}
 

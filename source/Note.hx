@@ -153,8 +153,8 @@ class Note extends FlxSprite
 
 			//off -= width / 2;
 			//x -= width / 2;
-			if (PlayState.curStage.startsWith('school'))
-				off += 30;
+		//	if (PlayState.curStage.startsWith('school'))
+				//off += 30;
 
 			offset.x = off;
 
