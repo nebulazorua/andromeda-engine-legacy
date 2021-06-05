@@ -1103,13 +1103,23 @@ class PlayState extends MusicBeatState
 		super.create();
 	}
 
+	function AnimWithoutModifiers(a:String){
+		var reg1 = new EReg(".+Hold","i");
+		var reg2 = new EReg(".+Repeat","i");
+		trace(reg1.replace(reg2.replace(a,""),""));
+		return reg1.replace(reg2.replace(a,""),"");
+	}
+
 	public function swapCharacterByLuaName(spriteName:String,newCharacter:String){
 		var sprite = luaSprites[spriteName];
 		if(sprite!=null){
 			var newSprite:Character;
 			var spriteX = sprite.x;
 			var spriteY = sprite.y;
-			var currAnim = sprite.animation.curAnim;
+			var currAnim:String = "idle";
+			if(sprite.animation.curAnim!=null)
+				currAnim=sprite.animation.curAnim.name;
+			trace(currAnim);
 			remove(sprite);
 			// TODO: Make this BETTER!!!
 			if(spriteName=="bf"){
@@ -1131,10 +1141,15 @@ class PlayState extends MusicBeatState
 			}
 
 			luaSprites[spriteName]=newSprite;
-			if(currAnim!=null && currAnim.name!="idle" && !currAnim.name.startsWith("dance"))
-				newSprite.playAnim(currAnim.name);
-
 			add(newSprite);
+			trace(currAnim);
+			if(currAnim!="idle" && !currAnim.startsWith("dance")){
+				newSprite.playAnim(currAnim);
+			}else if(currAnim=='idle' || currAnim.startsWith("dance")){
+				newSprite.dance();
+			}
+
+
 		}
 	}
 
@@ -2158,7 +2173,9 @@ class PlayState extends MusicBeatState
 						if (SONG.notes[Math.floor(curStep / 16)].altAnim)
 							altAnim = '-alt';
 					}
-
+					if(modchartExists && lua!=null){
+						lua.call("dadNoteHit",[Math.abs(daNote.noteData),daNote.strumTime,Conductor.songPosition]); // TODO: Note lua class???
+					}
 						//if(!daNote.isSustainNote){
 
 						var anim = "";
@@ -2178,23 +2195,20 @@ class PlayState extends MusicBeatState
 							anim='singRIGHT' + altAnim;
 						}
 
-
-						if(daNote.isSustainNote && !dad.animation.curAnim.name.startsWith(anim) && dad.animation.getByName(anim+"Hold")!=null ){
+						var canHold = daNote.isSustainNote && dad.animation.getByName(anim+"Hold")!=null;
+						if(canHold && !dad.animation.curAnim.name.startsWith(anim)){
 							dad.playAnim(anim,true);
-						}else if(Options.holdBehaviour==0){
+						}else if(Options.holdBehaviour==0 && !canHold){
 							dad.playAnim(anim,true);
 							if(daNote.isSustainNote && !daNote.lastSustainPiece || daNote.sustainBase )
 								dad.animation.paused=true;
 							else
 								dad.animation.paused=false;
-						}else if(Options.holdBehaviour==1){
+						}else if(Options.holdBehaviour==1 && !canHold){
 							dad.playAnim(anim,true);
 						}
 
 					//}
-					if(modchartExists && lua!=null){
-						lua.call("dadNoteHit",[Math.abs(daNote.noteData),daNote.strumTime,Conductor.songPosition]); // TODO: Note lua class???
-					}
 					dad.holdTimer = 0;
 
 					if (SONG.needsVoices)
@@ -2205,7 +2219,6 @@ class PlayState extends MusicBeatState
 						notes.remove(daNote, true);
 						daNote.destroy();
 					}
-
 				}
 
 				// WIP interpolation shit? Need to fix the pause issue
@@ -2579,11 +2592,8 @@ class PlayState extends MusicBeatState
 		var downP = controls.DOWN_P;
 		var leftP = controls.LEFT_P;
 
-		// TODO: re-implement shitty replay system from KE
-		// or remove it probably lol
 		var holdArray:Array<Bool> = [left,down,up,right];
 		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
-		// FlxG.watch.addQuick('asdfa', upP);
 
 		if((left || right || up || down) && generatedMusic ){
 			notes.forEachAlive( function(daNote:Note){
@@ -2806,17 +2816,17 @@ class PlayState extends MusicBeatState
 			}
 
 
-			if(note.isSustainNote && !boyfriend.animation.curAnim.name.startsWith(anim) && boyfriend.animation.getByName(anim+"Hold")!=null ){
+			var canHold = note.isSustainNote && boyfriend.animation.getByName(anim+"Hold")!=null;
+			if(canHold && !boyfriend.animation.curAnim.name.startsWith(anim)){
 				boyfriend.playAnim(anim,true);
-			}else{
-				trace("play anim");
+			}else if(Options.holdBehaviour==0 && !canHold){
 				boyfriend.playAnim(anim,true);
-				if(Options.holdBehaviour==0){
-					if(note.isSustainNote && !note.lastSustainPiece || note.sustainBase )
-						boyfriend.animation.paused=true;
-					else
-						boyfriend.animation.paused=false;
-				}
+				if(note.isSustainNote && !note.lastSustainPiece || note.sustainBase )
+					boyfriend.animation.paused=true;
+				else
+					boyfriend.animation.paused=false;
+			}else if(Options.holdBehaviour==1 && !canHold){
+				boyfriend.playAnim(anim,true);
 			}
 			//}
 

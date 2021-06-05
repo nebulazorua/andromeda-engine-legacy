@@ -534,11 +534,10 @@ class Character extends FlxSprite
 	{
 		if (!isPlayer)
 		{
-			if(animation.curAnim!=null){
-				if(animation.getByName('${animation.curAnim.name}Hold')!=null){
-					if(animation.curAnim.name.startsWith("sing") && !animation.curAnim.name.endsWith("Hold") && animation.curAnim.finished){
-						playAnim(animation.curAnim.name + "Hold",true);
-					}
+			if(animation.getByName('${animation.curAnim.name}Hold')!=null){
+				animation.paused=false;
+				if(animation.curAnim.name.startsWith("sing") && !animation.curAnim.name.endsWith("Hold") && animation.curAnim.finished){
+					playAnim(animation.curAnim.name + "Hold",true);
 				}
 			}
 
