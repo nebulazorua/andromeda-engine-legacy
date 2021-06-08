@@ -2,6 +2,11 @@ singUP -6 50
 singRIGHT 0 27
 singLEFT -10 10
 singDOWN 0 -30
+singUPHold -6 50
+singRIGHTHold 0 27
+singLEFTHold -10 10
+singDOWNHold 0 -30
+
 idle 0 0
 stare 0 0
 meow 0 0

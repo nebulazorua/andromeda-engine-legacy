@@ -1112,6 +1112,33 @@ class LuaNote extends LuaClass {
           return 0;
         }
       },
+      "angle"=>{
+        defaultValue: 1 ,
+        getter: function(l:State,data:Any):Int{
+          Lua.pushnumber(l,data);
+          return 1;
+        },
+        setter: function(l:State):Int{
+          // 1 = self
+          // 2 = key
+          // 3 = value
+          // 4 = metatable
+          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+            return 0;
+          }
+
+          var angle = Lua.tonumber(l,3);
+          if(plr)
+            PlayState.currentPState.refNotes.members[noteData].angle=angle;
+          else
+            PlayState.currentPState.opponentRefNotes.members[noteData].angle=angle;
+
+          LuaClass.DefaultSetter(l);
+          return 0;
+        }
+      },
+
       "xOffset"=>{
         defaultValue: 0,
         getter: function(l:State,data:Any):Int{

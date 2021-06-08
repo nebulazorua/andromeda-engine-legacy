@@ -10,7 +10,8 @@ import flixel.FlxG;
 import flash.events.KeyboardEvent;
 import flixel.util.FlxSave;
 import flixel.FlxState;
-
+import flixel.FlxSprite;
+import flixel.group.FlxGroup.FlxTypedGroup;
 class OptionUtils
 {
 	private static var saveFile:FlxSave = new FlxSave();
@@ -22,26 +23,29 @@ class OptionUtils
 		"Judge Four",
 		"Modern KE",
 		"EMFNF2",
+		"KadeDev",
 		"Dream",
+		"Fucky Friday",
 	];
 	public static var ratingWindowTypes:Array<Array<Float>> = [ // TODO: make these all properly scale w/ the safeZoneOffset n shit
 		[ // Vanilla
 			32, // sick
 			123, // good
 			148, // bad
-			Conductor.safeZoneOffset, // shit
+			166, // shit
 		],
 		[ // ITG
-			41.5, // sick
-			83, // good
-			124.5, // bad
-			Conductor.safeZoneOffset, // shit
+			180, // hit frames
+			43, // sick
+			102, // good
+			135, // bad
+			180,
 		],
 		[ // Quaver
 			43, // sick
 			76, // good
 			127, // bad
-			Conductor.safeZoneOffset // shit
+			164,
 		],
 		[ // Judge 4
 			40, // sick
@@ -53,20 +57,32 @@ class OptionUtils
 			45, // sick
 			90, // good
 			135, // bad
-			Conductor.safeZoneOffset, // shit
+			166, // shit
 		],
 		[ // EMFNF2
 			50, // sick
 			124, // good
 			149, // bad
-			Conductor.safeZoneOffset, // shit
+			166, // shit
 		],
-		[ // All Sicks
-			Conductor.safeZoneOffset,
+		[ // KadeDev
+			1500,
 			0,
 			0,
-			0
+			1500,
 		],
+		[ // All sick
+			166,
+			0,
+			0,
+			166
+		],
+		[
+			375,
+			750,
+			1125,
+			1500
+		]
 	];
 	public static var shit:Array<FlxKey> = [
 		ALT,
@@ -77,7 +93,7 @@ class OptionUtils
 		CONTROL,
 		ENTER
 	];
-	public static function bindSave(?saveName:String="nebbyEngine"){
+	public static function bindSave(?saveName:String="nebbyEngineBeta"){
 		saveFile.bind(saveName);
 	};
 	public static function saveOptions(){
@@ -106,6 +122,8 @@ class OptionUtils
 				idx = 2;
 			case Control.RIGHT:
 				idx = 3;
+			case Control.RESET:
+				idx = 4;
 			default:
 		}
 		return idx;
@@ -117,11 +135,12 @@ class OptionUtils
 
 class Options
 {
-	public static var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L ];
-	public static var missForNothing:Bool = true;
+	public static var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L,FlxKey.R];
+	public static var ghosttapping:Bool = false;
+	public static var failForMissing:Bool = false;
 	public static var loadModcharts:Bool = true;
-	//public static var pauseHoldAnims:Bool = true;
-	public static var holdBehaviour:Int = 0;
+	public static var pauseHoldAnims:Bool = true;
+	//public static var holdBehaviour:Int = 0;
 	public static var dummy:Bool = false;
 	public static var dummyInt:Int = 0;
 	public static var ratingWindow:Int = 0;
@@ -129,6 +148,7 @@ class Options
 	public static var ratingInHUD:Bool = false;
 	public static var noteOffset:Int = 0;
 	public static var downScroll:Bool = false;
+	public static var menuFlash:Bool = true;
 }
 
 class StateOption extends Option
@@ -145,24 +165,120 @@ class StateOption extends Option
 	}
 }
 
+class Checkbox extends FlxSprite
+{
+	public var state:Bool=false;
+	public var tracker:FlxSprite;
+	public function new(state:Bool){
+		super();
+		this.state=state;
+		//frames = Paths.getSparrowAtlas("checkboxThingie"); // THANKS NINJAMUFFIN ILY SO MUCH I JUST CANT MAKE A GOOD CHECKBOX OK :(
+		frames = Paths.getSparrowAtlas("checkbox");
+		updateHitbox();
+		//animation.addByPrefix("unselected","Check Box unselected",24,false);
+		//animation.addByPrefix("selecting","Check Box selecting animation",24,false);
+		animation.addByIndices("unselected","confirm",[0],"",36,false);
+		animation.addByPrefix("selecting","confirm",36,false);
+		var reversedindices = []; // man i hate haxe I DONT WANNA DO A TABI CODE :(((
+			// PROBABLY A BETTER WAY TO DO THIS
+			// I DONT CARE I CANT CODE
+		var max = animation.getByName("selecting").frames.copy();
+		max.reverse();
+		for(i in max){
+			reversedindices.push(i-2);
+		}
+		//animation.addByIndices("unselecting","Check Box selecting animation",reversedindices,"",24,false);
+		//animation.addByPrefix("selected","Check Box Selected Static",24,false);
+		animation.addByIndices("unselecting","confirm",reversedindices,"",36,false);
+		animation.addByIndices("selected","confirm",[animation.getByName("selecting").frames.length-2],"",36,false);
+		antialiasing=true;
+		setGraphicSize(Std.int(width*.6) );
+		updateHitbox();
+		if(state)
+			animation.play("selected");
+		else
+			animation.play("unselected");
+
+	}
+
+	public function changeState(state:Bool){
+		this.state=state;
+		if(state){
+			animation.play("selecting",true,false,animation.curAnim.name=='unselecting'?animation.curAnim.frames.length-animation.curAnim.curFrame:0);
+		}else{
+			animation.play("unselecting",true,false,animation.curAnim.name=='selecting'?animation.curAnim.frames.length-animation.curAnim.curFrame:0);
+		}
+	}
+
+	override function update(elapsed:Float){
+		super.update(elapsed);
+		if(tracker!=null){
+			x = tracker.x - 140;
+			y = tracker.y - 45;
+		}
+		if(animation.curAnim!=null){
+
+			if(animation.curAnim.finished && (animation.curAnim.name=="selecting" || animation.curAnim.name=="unselecting")){
+				if(state){
+					trace("SELECTED");
+					animation.play("selected",true);
+				}else{
+					trace("UNSELECTED");
+					animation.play("unselected",true);
+				}
+			}
+
+			switch(animation.curAnim.name){
+				case 'selecting' | 'unselecting':
+					//offset.x=18;
+					//offset.y=70;
+					offset.x=0;
+					offset.y=0;
+				case 'unselected':
+					//offset.x=0;
+					//offset.y=0;
+					offset.x=0;
+					offset.y=0;
+				case 'selected':
+					//offset.x=10;
+					//offset.y=49.7;
+					offset.x=0;
+					offset.y=0;
+			}
+		}
+
+	}
+}
+
 class ToggleOption extends Option
 {
-	private var enabledName = "On";
-	private var disabledName = "Off";
 	private var property = "dummy";
-	public function new(property:String,?disabledName:String,?enabledName:String){
+	private var checkbox:Checkbox;
+	public function new(property:String,?name:String){
 		super();
-		this.enabledName=enabledName;
-		this.disabledName=disabledName;
 		this.property = property;
-		name=Reflect.getProperty(Options,property) ? enabledName : disabledName;
+		this.name = name;
+		checkbox = new Checkbox(Reflect.getProperty(Options,property));
+		add(checkbox);
 	}
+
+	public override function createOptionText(curSelected:Int,optionText:FlxTypedGroup<Option>):Dynamic{
+    remove(text);
+    text = new Alphabet(0, (70 * curSelected) + 30, name, true, false);
+    text.movementType = "list";
+    text.isMenuItem = true;
+		text.offsetX = 165;
+		text.gotoTargetPosition();
+		checkbox.tracker = text;
+    add(text);
+    return text;
+  }
 
 	public override function accept():Bool{
 		Reflect.setProperty(Options,property,!Reflect.getProperty(Options,property));
-		name=Reflect.getProperty(Options,property) ? enabledName : disabledName;
+		checkbox.changeState(Reflect.getProperty(Options,property));
 
-		return true;
+		return false;
 	}
 }
 
@@ -172,11 +288,32 @@ class ScrollOption extends Option
 	private var property = "dummyInt";
 	private var max:Int = -1;
 	private var min:Int = 0;
+
+	private var leftArrow:FlxSprite;
+	private var rightArrow:FlxSprite;
 	public function new(property:String,?min:Int=0,?max:Int=-1,?names:Array<String>){
 		super();
 		this.property=property;
 		this.names=names;
 		var value = Reflect.getProperty(Options,property);
+		leftArrow = new FlxSprite(0,0);
+		leftArrow.frames = Paths.getSparrowAtlas("arrows");
+		leftArrow.setGraphicSize(Std.int(leftArrow.width*.7));
+		leftArrow.updateHitbox();
+		leftArrow.animation.addByPrefix("pressed","arrow push left",24,false);
+		leftArrow.animation.addByPrefix("static","arrow left",24,false);
+		leftArrow.animation.play("static");
+
+		rightArrow = new FlxSprite(0,0);
+		rightArrow.frames = Paths.getSparrowAtlas("arrows");
+		rightArrow.setGraphicSize(Std.int(rightArrow.width*.7));
+		rightArrow.updateHitbox();
+		rightArrow.animation.addByPrefix("pressed","arrow push right",24,false);
+		rightArrow.animation.addByPrefix("static","arrow right",24,false);
+		rightArrow.animation.play("static");
+
+		add(rightArrow);
+		add(leftArrow);
 		this.max=max;
 		this.min=min;
 		if(names!=null){
@@ -186,18 +323,53 @@ class ScrollOption extends Option
 		}
 	};
 
+	override function update(elapsed:Float){
+		super.update(elapsed);
+		//sprTracker.x + sprTracker.width + 10
+		if(PlayerSettings.player1.controls.LEFT){
+			leftArrow.animation.play("pressed");
+			leftArrow.offset.x = 0;
+			leftArrow.offset.y = -3;
+		}else{
+			leftArrow.animation.play("static");
+			leftArrow.offset.x = 0;
+			leftArrow.offset.y = 0;
+		}
+
+		if(PlayerSettings.player1.controls.RIGHT){
+			rightArrow.animation.play("pressed");
+			rightArrow.offset.x = 0;
+			rightArrow.offset.y = -3;
+		}else{
+			rightArrow.animation.play("static");
+			rightArrow.offset.x = 0;
+			rightArrow.offset.y = 0;
+		}
+		rightArrow.x = text.x+text.width+10;
+		leftArrow.x = text.x-60;
+		leftArrow.y = text.y-10;
+		rightArrow.y = text.y-10;
+	}
+
+	public override function createOptionText(curSelected:Int,optionText:FlxTypedGroup<Option>):Dynamic{
+    remove(text);
+    text = new Alphabet(0, (70 * curSelected) + 30, name, true, false);
+    text.movementType = "list";
+    text.isMenuItem = true;
+		text.offsetX = 135;
+		text.gotoTargetPosition();
+    add(text);
+    return text;
+  }
+
 	public override function left():Bool{
 		var value:Int = Std.int(Reflect.getProperty(Options,property)-1);
-		trace(value);
-
 
 		if(value<min)
 			value=max;
 
 		if(value>max)
 			value=min;
-
-
 
 		Reflect.setProperty(Options,property,value);
 
@@ -210,8 +382,6 @@ class ScrollOption extends Option
 	};
 	public override function right():Bool{
 		var value:Int = Std.int(Reflect.getProperty(Options,property)+1);
-		trace(value);
-
 
 		if(value<min)
 			value=max;
@@ -251,16 +421,12 @@ class CountOption extends Option
 	public override function left():Bool{
 		var value:Int = Std.int(Reflect.getProperty(Options,property)-1);
 
-
 		if(value<min)
 			value=max;
 		if(value>max)
 			value=min;
 
-
-
 		Reflect.setProperty(Options,property,value);
-		trace(value);
 		name = prefix + " " + Std.string(value) + " " + suffix;
 		return true;
 	};
@@ -273,7 +439,6 @@ class CountOption extends Option
 			value=max;
 		if(value>max)
 			value=min;
-		trace(value);
 
 		Reflect.setProperty(Options,property,value);
 
@@ -293,7 +458,7 @@ class ControlOption extends Option
 		this.controlType=controlType;
 		this.controls=controls;
 		key=OptionUtils.getKey(controlType);
-		name=OptionUtils.getKey(controlType).toString();
+		name='${controlType} : ${OptionUtils.getKey(controlType).toString()}';
 	};
 
 	public override function keyPressed(pressed:FlxKey){
@@ -307,22 +472,33 @@ class ControlOption extends Option
 		if(pressed!=ESCAPE){
 			Options.controls[OptionUtils.getKIdx(controlType)]=pressed;
 			key=pressed;
-			name=OptionUtils.getKey(controlType).toString();
 		}
+		name='${controlType} : ${OptionUtils.getKey(controlType).toString()}';
 		if(pressed!=-1){
 			trace("epic style " + pressed.toString() );
 			controls.setKeyboardScheme(Custom,true);
 			allowMultiKeyInput=false;
 			return true;
 		}
-		return false;
+		return true;
 	}
+
+	public override function createOptionText(curSelected:Int,optionText:FlxTypedGroup<Option>):Dynamic{
+    remove(text);
+    text = new Alphabet(0, (70 * curSelected) + 30, name, false, false);
+    text.movementType = "list";
+		text.offsetX = 70;
+    text.isMenuItem = true;
+		text.gotoTargetPosition();
+    add(text);
+    return text;
+  }
 
 	public override function accept():Bool{
 		controls.setKeyboardScheme(None,true);
 		allowMultiKeyInput=true;
 		//FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN, onKeyDown);
-
-		return false;
+		name = "<Press any key to rebind>";
+		return true;
 	};
 }

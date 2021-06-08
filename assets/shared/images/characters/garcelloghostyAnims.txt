@@ -1,0 +1,6 @@
+prefix idle 24 garcello idle dance
+prefix singUP 24 garcello Sing Note UP
+prefix singLEFT 24 garcello Sing Note LEFT
+prefix singRIGHT 24 garcello Sing Note RIGHT
+prefix singDOWN 24 garcello Sing Note DOWN
+prefix farewell 15 garcello coolguy

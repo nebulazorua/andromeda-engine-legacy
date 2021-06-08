@@ -1,0 +1,85 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="garcellodead_assets.png">
+	<!-- Created with Adobe Animate version 20.0.0.17400 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="garcello Sing Note DOWN0000" x="5624" y="2812" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note DOWN0001" x="7030" y="2812" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note DOWN0002" x="6327" y="2812" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note DOWN0003" x="4921" y="2812" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note DOWN0004" x="4218" y="2812" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note DOWN0005" x="703" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note DOWN0006" x="0" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note DOWN0007" x="0" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note DOWN0008" x="0" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note DOWN0009" x="0" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note DOWN0010" x="0" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note LEFT0000" x="1406" y="2109" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note LEFT0001" x="703" y="2109" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note LEFT0002" x="0" y="2109" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note LEFT0003" x="7030" y="1406" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note LEFT0004" x="6327" y="1406" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note LEFT0005" x="5624" y="1406" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note LEFT0006" x="4921" y="1406" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note LEFT0007" x="4218" y="1406" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note LEFT0008" x="4218" y="1406" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note LEFT0009" x="4218" y="1406" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note LEFT0010" x="4218" y="1406" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note RIGHT0000" x="7030" y="2109" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note RIGHT0001" x="6327" y="2109" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note RIGHT0002" x="5624" y="2109" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note RIGHT0003" x="4921" y="2109" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note RIGHT0004" x="4218" y="2109" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note RIGHT0005" x="6327" y="2109" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note RIGHT0006" x="3515" y="2109" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note RIGHT0007" x="2812" y="2109" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note RIGHT0008" x="2812" y="2109" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note RIGHT0009" x="2812" y="2109" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note RIGHT0010" x="2812" y="2109" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note UP0000" x="2812" y="1406" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note UP0001" x="2109" y="1406" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note UP0002" x="1406" y="1406" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello Sing Note UP0003" x="703" y="1406" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note UP0004" x="0" y="1406" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note UP0005" x="7030" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note UP0006" x="6327" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note UP0007" x="5624" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note UP0008" x="5624" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note UP0009" x="5624" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello Sing Note UP0010" x="5624" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello idle dance0000" x="3515" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello idle dance0001" x="2109" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello idle dance0002" x="1406" y="703" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello idle dance0003" x="3515" y="2812" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello idle dance0004" x="2812" y="2812" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello idle dance0005" x="2109" y="2812" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello idle dance0006" x="1406" y="2812" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello idle dance0007" x="703" y="2812" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello idle dance0008" x="703" y="2812" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello idle dance0009" x="703" y="2812" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello idle dance0010" x="703" y="2812" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+	<SubTexture name="garcello idle dance0011" x="703" y="2812" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0000" x="6327" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>>
+  <SubTexture name="garcello coolguy0001" x="5624" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>>
+  <SubTexture name="garcello coolguy0002" x="4921" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>>
+  <SubTexture name="garcello coolguy0003" x="4218" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>>
+  <SubTexture name="garcello coolguy0004" x="3515" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>>
+  <SubTexture name="garcello coolguy0005" x="2812" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>>
+  <SubTexture name="garcello coolguy0006" x="2109" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>>
+  <SubTexture name="garcello coolguy0007" x="1406" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>>
+  <SubTexture name="garcello coolguy0008" x="703" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0009" x="1406" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0010" x="703" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0011" x="1406" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0012" x="1406" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0013" x="703" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0014" x="0" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0015" x="0" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0016" x="0" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0018" x="0" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0019" x="0" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0020" x="0" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0021" x="0" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0022" x="0" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0023" x="0" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+  <SubTexture name="garcello coolguy0024" x="0" y="0" width="700" height="700" frameX="0" frameY="-80" frameWidth="800" frameHeight="800"/>
+</TextureAtlas>

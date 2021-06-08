@@ -26,6 +26,7 @@ class Note extends FlxSprite
 	public var sustainBase=false;
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
+	public var rawNoteData:Int = 0; // for charting shit and thats it LOL
 
 	public var noteScore:Float = 1;
 
@@ -153,8 +154,12 @@ class Note extends FlxSprite
 
 			//off -= width / 2;
 			//x -= width / 2;
-		//	if (PlayState.curStage.startsWith('school'))
-				//off += 30;
+			if (PlayState.curStage.startsWith('school'))
+				off -= 36.5;
+			else
+				off -= 2;
+
+
 
 			offset.x = off;
 
@@ -189,11 +194,17 @@ class Note extends FlxSprite
 		if (mustPress)
 		{
 			// The * 0.5 is so that it's easier to hit them too late, instead of too early
-			if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
-				&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 1))
-				canBeHit = true;
-			else
-				canBeHit = false;
+			if(!isSustainNote || (prevNote==null || prevNote.tooLate || prevNote.isSustainNote && prevNote.canBeHit || !prevNote.isSustainNote)){
+				if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
+					&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 1))
+					canBeHit = true;
+				else
+					canBeHit = false;
+			}else{
+				canBeHit=false;
+			}
+
+
 
 			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
 				tooLate = true;

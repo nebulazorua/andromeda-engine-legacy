@@ -1,0 +1,24 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="confirm.png">
+	<!-- Created with Adobe Animate version 18.0.1.115 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="confirm0000" x="0" y="0" width="157" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0001" x="0" y="0" width="157" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0002" x="157" y="0" width="157" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0003" x="157" y="0" width="157" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0004" x="314" y="0" width="157" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0005" x="314" y="0" width="157" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0006" x="0" y="157" width="157" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0007" x="0" y="157" width="157" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0008" x="157" y="157" width="157" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0009" x="157" y="157" width="157" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0010" x="314" y="157" width="157" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0011" x="314" y="157" width="157" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0012" x="0" y="314" width="160" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0013" x="160" y="314" width="168" height="157"/>
+	<SubTexture name="confirm0014" x="160" y="314" width="168" height="157"/>
+	<SubTexture name="confirm0015" x="328" y="314" width="161" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0016" x="328" y="314" width="161" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0017" x="0" y="471" width="161" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+	<SubTexture name="confirm0018" x="0" y="471" width="161" height="157" frameX="0" frameY="0" frameWidth="168" frameHeight="157"/>
+</TextureAtlas>

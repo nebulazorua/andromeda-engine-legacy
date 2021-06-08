@@ -16,10 +16,13 @@ class Alphabet extends FlxSpriteGroup
 {
 	public var delay:Float = 0.05;
 	public var paused:Bool = false;
-
+	public var movementType:String = "stairs";
 	// for menu shit
 	public var targetY:Float = 0;
 	public var isMenuItem:Bool = false;
+	public var wantedX:Float = 0;
+	public var wantedY:Float = 0;
+	public var offsetX:Float = 90;
 
 	public var text:String = "";
 
@@ -77,7 +80,15 @@ class Alphabet extends FlxSpriteGroup
 				lastWasSpace = true;
 			}
 
-			if (AlphaCharacter.alphabet.indexOf(character.toLowerCase()) != -1)
+			#if (haxe >= "4.0.0")
+			var isNumber:Bool = AlphaCharacter.numbers.contains(character);
+			var isSymbol:Bool = AlphaCharacter.symbols.contains(character);
+			#else
+			var isNumber:Bool = AlphaCharacter.numbers.indexOf(character) != -1;
+			var isSymbol:Bool = AlphaCharacter.symbols.indexOf(character) != -1;
+			#end
+
+			if (AlphaCharacter.alphabet.indexOf(character.toLowerCase()) != -1 || isNumber || isSymbol)
 				// if (AlphaCharacter.alphabet.contains(character.toLowerCase()))
 			{
 				if (lastSprite != null)
@@ -94,11 +105,25 @@ class Alphabet extends FlxSpriteGroup
 				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
 				var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
 
-				if (isBold)
+				if (isBold && !isNumber && !isSymbol)
+				{
 					letter.createBold(character);
+				}
 				else
 				{
-					letter.createLetter(character);
+					if (isNumber)
+					{
+						letter.createNumber(character);
+					}
+					else if (isSymbol)
+					{
+						letter.createSymbol(character);
+					}
+					else
+					{
+						letter.createLetter(character);
+					}
+
 				}
 
 				add(letter);
@@ -218,14 +243,35 @@ class Alphabet extends FlxSpriteGroup
 		}, splitWords.length);
 	}
 
+	public function calculateWantedXY(){
+		var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
+		switch (movementType){
+			case 'stairs':
+				wantedY = (scaledY * 120) + (FlxG.height * 0.48);
+				wantedX = (targetY * 20) + offsetX;
+			case 'list':
+				wantedY =  (scaledY * 120) + (FlxG.height * 0.48);
+				wantedX = offsetX;
+			default:
+				wantedY = (scaledY * 120) + (FlxG.height * 0.48);
+				wantedX = offsetX;
+		}
+	}
+
+	public function gotoTargetPosition(){
+		calculateWantedXY();
+		x = wantedX;
+		y = wantedY;
+	}
+
 	override function update(elapsed:Float)
 	{
 		if (isMenuItem)
 		{
-			var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
+			calculateWantedXY();
+			x = FlxMath.lerp(x, wantedX, 0.16);
+			y = FlxMath.lerp(y, wantedY, 0.16);
 
-			y = FlxMath.lerp(y, (scaledY * 120) + (FlxG.height * 0.48), 0.16);
-			x = FlxMath.lerp(x, (targetY * 20) + 90, 0.16);
 		}
 
 		super.update(elapsed);
@@ -301,6 +347,22 @@ class AlphaCharacter extends FlxSprite
 				animation.play(letter);
 			case "!":
 				animation.addByPrefix(letter, 'exclamation point', 24);
+				animation.play(letter);
+			case ':':
+				animation.addByPrefix(letter, ":", 24);
+				animation.play(letter);
+				y += 62;
+			case '-':
+				animation.addByPrefix(letter, "-", 24);
+				animation.play(letter);
+				y += 30;
+				x -= 45;
+			case '>' | '<':
+				animation.addByPrefix(letter, letter, 24);
+				animation.play(letter);
+				y += 50;
+			default:
+				animation.addByPrefix(letter, letter, 24);
 				animation.play(letter);
 		}
 

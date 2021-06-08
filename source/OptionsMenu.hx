@@ -1,5 +1,5 @@
 package;
-
+import Controls;
 import Controls.Control;
 import Controls.KeyboardScheme;
 import flash.text.TextField;
@@ -26,25 +26,29 @@ class OptionsMenu extends MusicBeatState
 				new ControlOption(controls,Control.LEFT),
 				new ControlOption(controls,Control.DOWN),
 				new ControlOption(controls,Control.UP),
-				new ControlOption(controls,Control.RIGHT)
+				new ControlOption(controls,Control.RIGHT),
+				new ControlOption(controls,Control.RESET),
+			]),
+			new OptionCategory("Modifiers",[
+				new ToggleOption("failForMissing","Sudden Death"),
 			]),
 			new ScrollOption("ratingWindow",0,OptionUtils.ratingWindowNames.length-1,OptionUtils.ratingWindowNames),
-			new ToggleOption("missForNothing","Ghost-tapping","No ghost-tapping"),
+			new ToggleOption("ghosttapping","Ghost-tapping"),
 			new StateOption("Calibrate Offset",new SoundOffsetState()),
 		]),
 		new OptionCategory("Modification",[
-			new ToggleOption("loadModcharts","Don't load Lua modcharts","Load Lua modcharts"),
+			new ToggleOption("loadModcharts","Load Lua modcharts"),
 		]),
 		new OptionCategory("Preferences",[
-			//new ToggleOption("pauseHoldAnims","Holds repeat anims","Holds pause anims"),
-			new ScrollOption("holdBehaviour",0,1,["Holds pause anims","Holds repeat anims"]),
-			new ToggleOption("showMS","Hit MS not shown","Hit MS shown"),
-			new ToggleOption("ratingInHUD","Ratings aren't apart of HUD","Ratings are apart of HUD"),
-			new ToggleOption("downScroll","Upscroll","Downscroll")
+			new ToggleOption("pauseHoldAnims","Holds pause anims"),
+			//new ScrollOption("holdBehaviour",0,1,["Holds pause anims","Holds repeat anims"]),
+			new ToggleOption("showMS","Hit MS shown"),
+			new ToggleOption("ratingInHUD","Ratings are apart of HUD"),
+			new ToggleOption("downScroll","Downscroll")
 		])
 	]);
 
-	private var optionText:FlxTypedGroup<Alphabet>;
+	private var optionText:FlxTypedGroup<Option>;
 	private var curSelected:Int = 0;
 	public static var category:Dynamic;
 
@@ -64,7 +68,7 @@ class OptionsMenu extends MusicBeatState
 		menuBG.antialiasing = true;
 		add(menuBG);
 
-		optionText = new FlxTypedGroup<Alphabet>();
+		optionText = new FlxTypedGroup<Option>();
 		add(optionText);
 
 		refresh();
@@ -77,10 +81,10 @@ class OptionsMenu extends MusicBeatState
 		optionText.clear();
 		for (i in 0...category.options.length)
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, category.options[i].name, true, false);
-			songText.isMenuItem = true;
-			songText.targetY = i;
-			optionText.add(songText);
+			optionText.add(category.options[i]);
+			var text = category.options[i].createOptionText(curSelected,optionText);
+			text.targetY = i;
+			text.gotoTargetPosition();
 		}
 
 		changeSelection(0);
@@ -99,12 +103,12 @@ class OptionsMenu extends MusicBeatState
 		for (i in 0...optionText.length)
 		{
 			var item = optionText.members[i];
-			item.targetY = i-curSelected;
-			item.alpha = 0.6;
+			item.text.targetY = i-curSelected;
+			item.text.alpha = 0.6;
 
-			if (item.targetY == 0)
+			if (item.text.targetY == 0)
 			{
-				item.alpha = 1;
+				item.text.alpha = 1;
 			}
 		}
 
@@ -155,19 +159,13 @@ class OptionsMenu extends MusicBeatState
 		if(option.type!="Category"){
 			if(leftP){
 				if(option.left()) {
-					optionText.remove(optionText.members[curSelected]);
-					var songText:Alphabet = new Alphabet(0, (70 * curSelected) + 30, option.name, true, false);
-					songText.isMenuItem = true;
-					optionText.add(songText);
+					option.createOptionText(curSelected,optionText);
 					changeSelection();
 				}
 			}
 			if(rightP){
 				if(option.right()) {
-					optionText.remove(optionText.members[curSelected]);
-					var songText:Alphabet = new Alphabet(0, (70 * curSelected) + 30, option.name, true, false);
-					songText.isMenuItem = true;
-					optionText.add(songText);
+					option.createOptionText(curSelected,optionText);
 					changeSelection();
 				}
 			}
@@ -178,19 +176,13 @@ class OptionsMenu extends MusicBeatState
 			var released = FlxG.keys.firstJustReleased();
 			if(pressed!=-1){
 				if(option.keyPressed(pressed)){
-					optionText.remove(optionText.members[curSelected]);
-					var songText:Alphabet = new Alphabet(0, (70 * curSelected) + 30, option.name, true, false);
-					songText.isMenuItem = true;
-					optionText.add(songText);
+					option.createOptionText(curSelected,optionText);
 					changeSelection();
 				}
 			}
 			if(released!=-1){
 				if(option.keyReleased(released)){
-					optionText.remove(optionText.members[curSelected]);
-					var songText:Alphabet = new Alphabet(0, (70 * curSelected) + 30, option.name, true, false);
-					songText.isMenuItem = true;
-					optionText.add(songText);
+					option.createOptionText(curSelected,optionText);
 					changeSelection();
 				}
 			}
@@ -201,11 +193,7 @@ class OptionsMenu extends MusicBeatState
 				category=option;
 				refresh();
 			}else if(option.accept()) {
-				optionText.remove(optionText.members[curSelected]);
-				var songText:Alphabet = new Alphabet(0, (70 * curSelected) + 30, option.name, true, false);
-				songText.isMenuItem = true;
-
-				optionText.add(songText);
+				option.createOptionText(curSelected,optionText);
 			}
 			changeSelection();
 		}
@@ -214,11 +202,8 @@ class OptionsMenu extends MusicBeatState
 
 		if(option.forceupdate){
 			option.forceupdate=false;
-			optionText.remove(optionText.members[curSelected]);
-			var songText:Alphabet = new Alphabet(0, (70 * curSelected) + 30, option.name, true, false);
-			songText.isMenuItem = true;
-
-			optionText.add(songText);
+			//optionText.remove(optionText.members[curSelected]);
+			option.createOptionText(curSelected,optionText);
 			changeSelection();
 		}
 		super.update(elapsed);
