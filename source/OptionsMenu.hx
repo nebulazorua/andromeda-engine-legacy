@@ -42,9 +42,16 @@ class OptionsMenu extends MusicBeatState
 		new OptionCategory("Preferences",[
 			new ToggleOption("pauseHoldAnims","Holds pause anims"),
 			//new ScrollOption("holdBehaviour",0,1,["Holds pause anims","Holds repeat anims"]),
-			new ToggleOption("showMS","Hit MS shown"),
-			new ToggleOption("ratingInHUD","Ratings are apart of HUD"),
-			new ToggleOption("downScroll","Downscroll")
+			new ToggleOption("showMS","Hit MS"),
+			new ToggleOption("ratingInHUD","Ratings in HUD"),
+			new ToggleOption("downScroll","Downscroll"),
+			new ToggleOption("middleScroll","Middlescroll"),
+			new ToggleOption("menuFlash","Flashing in menus"),
+			new OptionCategory("Effects",[
+				new ToggleOption("picoShaders","Week 3 shaders"),
+				new ToggleOption("picoCamshake","Week 3 cam shake"),
+				new ToggleOption("senpaiShaders","Week 6 shaders"),
+			])
 		])
 	]);
 

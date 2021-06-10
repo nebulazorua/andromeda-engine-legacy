@@ -24,7 +24,8 @@ class MenuItem extends FlxSpriteGroup
 
 	public function startFlashing():Void
 	{
-		isFlashing = true;
+		if(Options.menuFlash==true)
+			isFlashing = true;
 	}
 
 	// if it runs at 60fps, fake framerate will be 6

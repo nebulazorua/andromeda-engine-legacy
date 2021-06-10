@@ -21,11 +21,9 @@ class OptionUtils
 		"ITG",
 		"Quaver",
 		"Judge Four",
-		"Modern KE",
 		"EMFNF2",
 		"KadeDev",
 		"Dream",
-		"Fucky Friday",
 	];
 	public static var ratingWindowTypes:Array<Array<Float>> = [ // TODO: make these all properly scale w/ the safeZoneOffset n shit
 		[ // Vanilla
@@ -35,7 +33,6 @@ class OptionUtils
 			166, // shit
 		],
 		[ // ITG
-			180, // hit frames
 			43, // sick
 			102, // good
 			135, // bad
@@ -48,16 +45,10 @@ class OptionUtils
 			164,
 		],
 		[ // Judge 4
-			40, // sick
-			83, // good
-			124.5, // bad
-			Conductor.safeZoneOffset, // shit
-		],
-		[ // Modern KE
 			45, // sick
 			90, // good
 			135, // bad
-			166, // shit
+			180, // shit
 		],
 		[ // EMFNF2
 			50, // sick
@@ -66,22 +57,16 @@ class OptionUtils
 			166, // shit
 		],
 		[ // KadeDev
-			1500,
+			300,
 			0,
 			0,
-			1500,
+			300,
 		],
 		[ // All sick
 			166,
 			0,
 			0,
 			166
-		],
-		[
-			375,
-			750,
-			1125,
-			1500
 		]
 	];
 	public static var shit:Array<FlxKey> = [
@@ -148,7 +133,12 @@ class Options
 	public static var ratingInHUD:Bool = false;
 	public static var noteOffset:Int = 0;
 	public static var downScroll:Bool = false;
+	public static var middleScroll:Bool = false;
 	public static var menuFlash:Bool = true;
+
+	public static var picoShaders:Bool = true;
+	public static var picoCamshake:Bool = true;
+	public static var senpaiShaders:Bool = true;
 }
 
 class StateOption extends Option

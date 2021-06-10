@@ -16,11 +16,9 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import io.newgrounds.NG;
 import lime.app.Application;
-import vm.lua.LuaVM;
 import haxe.Exception;
-import vm.lua.Exception;
 using StringTools;
-
+import flixel.util.FlxTimer;
 class MainMenuState extends MusicBeatState
 {
 	var curSelected:Int = 0;
@@ -35,7 +33,6 @@ class MainMenuState extends MusicBeatState
 
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
-	var lua:LuaVM;
 
 	override function create()
 	{
@@ -44,16 +41,10 @@ class MainMenuState extends MusicBeatState
 		DiscordClient.changePresence("In the Menus", null);
 		#end
 
-		lua = new LuaVM();
 		if (!FlxG.sound.music.playing)
 		{
 			FlxG.sound.playMusic(Paths.music('freakyMenu'));
 		}
-		lua.setGlobalVar("cum",25);
-		lua.setGlobalVar("penis","bruh!");
-		lua.setGlobalVar("cock", function(a){
-			return a*4;
-		} );
 
 		persistentUpdate = persistentDraw = true;
 
@@ -123,18 +114,6 @@ class MainMenuState extends MusicBeatState
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
 
-
-		if(FlxG.keys.justPressed.Q){
-			try {
-				lua.run("print'LUA TEST' print(cum) print(penis) print(cock(2))");
-			}catch(e:LuaException){
-				trace("LUA ERROR:" + e.message);
-			}catch (e:Exception){
-				trace("HAXE ERROR:" + e.message);
-			}
-
-		};
-
 		if (!selectedSomethin)
 		{
 			if (controls.UP_P)
@@ -164,8 +143,11 @@ class MainMenuState extends MusicBeatState
 				{
 					selectedSomethin = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));
-
-					FlxFlicker.flicker(magenta, 1.1, 0.15, false);
+					if(Options.menuFlash){
+						FlxFlicker.flicker(magenta, 1.1, 0.15, false);
+					}else{
+						magenta.visible=true;
+					}
 
 					menuItems.forEach(function(spr:FlxSprite)
 					{
@@ -181,26 +163,42 @@ class MainMenuState extends MusicBeatState
 						}
 						else
 						{
-							FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
-							{
-								var daChoice:String = optionShit[curSelected];
-
-								switch (daChoice)
+							if(Options.menuFlash){
+								FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
 								{
-									case 'story mode':
-										FlxG.switchState(new StoryMenuState());
-										lua.destroy();
-										trace("Story Menu Selected");
-									case 'freeplay':
-										FlxG.switchState(new FreeplayState());
-										lua.destroy();
-										trace("Freeplay Menu Selected");
+									var daChoice:String = optionShit[curSelected];
 
-									case 'options':
-										FlxG.switchState(new OptionsMenu());
-										lua.destroy();
-								}
-							});
+									switch (daChoice)
+									{
+										case 'story mode':
+											FlxG.switchState(new StoryMenuState());
+											trace("Story Menu Selected");
+										case 'freeplay':
+											FlxG.switchState(new FreeplayState());
+											trace("Freeplay Menu Selected");
+
+										case 'options':
+											FlxG.switchState(new OptionsMenu());
+									}
+								});
+							}else{
+								new FlxTimer().start(1, function(tmr:FlxTimer){
+									var daChoice:String = optionShit[curSelected];
+
+									switch (daChoice)
+									{
+										case 'story mode':
+											FlxG.switchState(new StoryMenuState());
+											trace("Story Menu Selected");
+										case 'freeplay':
+											FlxG.switchState(new FreeplayState());
+											trace("Freeplay Menu Selected");
+
+										case 'options':
+											FlxG.switchState(new OptionsMenu());
+									}
+								});
+							}
 						}
 					});
 				}
