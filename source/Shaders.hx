@@ -5,6 +5,11 @@ import flixel.system.FlxAssets.FlxShader;
 import openfl.display.BitmapData;
 import openfl.display.ShaderInput;
 import openfl.utils.Assets;
+
+typedef ShaderEffect = {
+  var shader:Dynamic;
+}
+
 class BuildingEffect {
   public var shader:BuildingShader = new BuildingShader();
   public function new(){
@@ -83,6 +88,31 @@ class VCRDistortionEffect
   }
 }
 
+class CRTShader extends FlxShader // https://github.com/crosire/reshade-shaders/blob/master/Shaders/CRT.fx
+{
+  @:glFragmentSource('
+    uniform float Amount = 1.0;
+    uniform float Resolution = 1.15;
+    uniform float Gamma = 2.4;
+    uniform float MonitorGamma = 2.2;
+    uniform float Brightness = .9;
+    uniform int ScanlineIntensity = 2;
+    uniform bool ScanlineGaussian = true;
+    uniform bool Curvature = true;
+    uniform float CurvatureRadius = 1.5;
+    uniform float CornerSize = 0.01;
+    uniform float ViewerDistance = 2.0;
+    uniform float2 Angle = 0.0;
+    uniform float Overscan = 1.01;
+    uniform bool Oversample = true;
+
+  ')
+  public function new()
+  {
+    super();
+  }
+}
+
 class VCRDistortionShader extends FlxShader // https://www.shadertoy.com/view/ldjGzV
 {
   @:glFragmentSource('
@@ -114,7 +144,7 @@ class VCRDistortionShader extends FlxShader // https://www.shadertoy.com/view/ld
       	vec2 look = uv;
         if(distortionOn==1){
         	float window = 1./(1.+20.*(look.y-mod(iTime/4.,1.))*(look.y-mod(iTime/4.,1.)));
-        	look.x = look.x + (sin(look.y*10. + iTime)/50.*onOff(4.,4.,.3)*(1.+cos(iTime*80.))*window)*glitchModifier;
+        	look.x = look.x + (sin(look.y*10. + iTime)/50.*onOff(4.,4.,.3)*(1.+cos(iTime*80.))*window)*(glitchModifier*2);
         	float vShift = 0.4*onOff(2.,3.,.9)*(sin(iTime)*sin(iTime*20.) +
         										 (0.5 + 0.1*sin(iTime*200.)*cos(iTime)));
         	look.y = mod(look.y + vShift*glitchModifier, 1.);

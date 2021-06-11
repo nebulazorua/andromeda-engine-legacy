@@ -47,7 +47,7 @@ import flash.display.Bitmap;
 import Shaders;
 import haxe.Exception;
 import openfl.utils.Assets;
-
+import ModChart;
 #if windows
 import vm.lua.LuaVM;
 import vm.lua.Exception;
@@ -126,7 +126,7 @@ class PlayState extends MusicBeatState
 	private var camHUD:FlxCamera;
 	private var pauseHUD:FlxCamera;
 	private var camGame:FlxCamera;
-
+	public var modchart:ModChart;
 
 	public var playerNoteOffsets:Array<Array<Float>> = [
 		[0,0], // left
@@ -200,7 +200,7 @@ class PlayState extends MusicBeatState
 	var goods:Float = 0;
 	var bads:Float = 0;
 	var shits:Float = 0;
-	var modchartExists = false;
+	var luaModchartExists = false;
 
 	public static var campaignScore:Int = 0;
 
@@ -234,9 +234,9 @@ class PlayState extends MusicBeatState
 
 		//lua = new LuaVM();
 		#if windows
-			modchartExists = FileSystem.exists(Paths.modchart(SONG.song.toLowerCase()));
+			luaModchartExists = FileSystem.exists(Paths.modchart(SONG.song.toLowerCase()));
 		#end
-
+		modchart = new ModChart(this);
 		grade = ScoreUtils.gradeArray[0] + " (FC)";
 		hitNotes=0;
 		totalNotes=0;
@@ -550,10 +550,10 @@ class PlayState extends MusicBeatState
 												}else{
 													vcrDistortion.setGlitchModifier(.025);
 												}
+												modchart.addCamEffect(vcrDistortion);
+												modchart.addHudEffect(vcrDistortion);
 											}
 
-											camGame.setFilters([new ShaderFilter(vcrDistortion.shader)]);
-											camHUD.setFilters([new ShaderFilter(vcrDistortion.shader)]);
 
 		                  // defaultCamZoom = 0.9;
 
@@ -623,8 +623,8 @@ class PlayState extends MusicBeatState
 		                  curStage = 'schoolEvil';
 											if(Options.senpaiShaders && vcrDistortion!=null){
 												vcrDistortion.setGlitchModifier(.2);
-												camGame.setFilters([new ShaderFilter(vcrDistortion.shader)]);
-												camHUD.setFilters([new ShaderFilter(vcrDistortion.shader)]);
+												modchart.addCamEffect(vcrDistortion);
+												modchart.addHudEffect(vcrDistortion);
 											}
 
 		                  var waveEffectBG = new FlxWaveEffect(FlxWaveMode.ALL, 2, -1, 3, 2);
@@ -987,7 +987,7 @@ class PlayState extends MusicBeatState
 
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
-		if(modchartExists && Options.loadModcharts){
+		if(luaModchartExists && Options.loadModcharts){
 			lua = new LuaVM();
 			lua.setGlobalVar("defaultCamZoom",defaultCamZoom);
 			lua.setGlobalVar("curBeat",0);
@@ -1080,7 +1080,7 @@ class PlayState extends MusicBeatState
 				trace("ERROR: " + e);
 			};
 
-			if(lua!=null && modchartExists)
+			if(lua!=null && luaModchartExists)
 				lua.call("init",[]);
 
 
@@ -1760,6 +1760,7 @@ class PlayState extends MusicBeatState
 		#end
 
 		vcrDistortion.update(elapsed);
+		modchart.update(elapsed);
 		if (FlxG.keys.justPressed.NINE)
 		{
 			if (iconP1.animation.curAnim.name == 'bf-old')
@@ -1787,13 +1788,13 @@ class PlayState extends MusicBeatState
 				else
 					phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed * 1.5;
 		}
-		if(modchartExists && lua!=null){
+		if(luaModchartExists && lua!=null){
 			lua.call("update",[elapsed]);
 		}
 		super.update(elapsed);
 
 		scoreTxt.text = "Score:" + songScore + " | Accuracy:" + truncateFloat(accuracy*100, 2) + "% | " + grade;
-		if(modchartExists && lua!=null){
+		if(luaModchartExists && lua!=null){
 			var luaHealth = lua.getGlobalVar("health","float");
 			if(luaHealth!=previousHealth && luaHealth!=health)
 				health = luaHealth;
@@ -1868,7 +1869,7 @@ class PlayState extends MusicBeatState
 		if (health > 2){
 			health = 2;
 			previousHealth = health;
-			if(modchartExists && lua!=null)
+			if(luaModchartExists && lua!=null)
 				lua.setGlobalVar("health",health);
 		}
 
@@ -1938,7 +1939,7 @@ class PlayState extends MusicBeatState
 			// Conductor.lastSongPos = FlxG.sound.music.time;
 		}
 
-		if(modchartExists && lua!=null)
+		if(luaModchartExists && lua!=null)
 			lua.setGlobalVar("songPosition",Conductor.songPosition);
 
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
@@ -2059,7 +2060,7 @@ class PlayState extends MusicBeatState
 		{
 			health += 1;
 			previousHealth = health;
-			if(modchartExists && lua!=null)
+			if(luaModchartExists && lua!=null)
 				lua.setGlobalVar("health",health);
 			trace("User is cheating!");
 		}
@@ -2166,10 +2167,12 @@ class PlayState extends MusicBeatState
 				var brr = strumLine.y + Note.swagWidth/2;
 				if(Options.downScroll){
 					daNote.y = (strumLine.y + 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
-					if(daNote.animation.curAnim.name.endsWith("end") && daNote.prevNote!=null && daNote.isSustainNote){
-						daNote.y += daNote.prevNote.height;
-					}else if(daNote.isSustainNote){
-						daNote.y += daNote.height/2;
+					if(daNote.isSustainNote){
+						if(daNote.animation.curAnim.name.endsWith("end") && daNote.prevNote!=null){
+							daNote.y += daNote.prevNote.height;
+						}else{
+							daNote.y += daNote.height/2;
+						}
 					}
 					if (daNote.isSustainNote
 						&& daNote.y-daNote.offset.y*daNote.scale.y+daNote.height>=brr
@@ -2184,10 +2187,12 @@ class PlayState extends MusicBeatState
 				}else{
 					daNote.y = (strumLine.y - 0.45 * (Conductor.songPosition - daNote.strumTime) * FlxMath.roundDecimal(SONG.speed, 2));
 					if(!curStage.startsWith("school")){
-						if(daNote.animation.curAnim.name.endsWith("end") && daNote.prevNote!=null){
-							daNote.y -= daNote.prevNote.height/2;
-						}else if(daNote.isSustainNote){
-							daNote.y -= daNote.height/2;
+						if(daNote.isSustainNote){
+							if(daNote.animation.curAnim.name.endsWith("end") && daNote.prevNote!=null){
+								daNote.y -= daNote.prevNote.height;
+							}else{
+								daNote.y -= daNote.height/2;
+							}
 						}
 					}
 					if (daNote.isSustainNote
@@ -2235,7 +2240,7 @@ class PlayState extends MusicBeatState
 						if (SONG.notes[Math.floor(curStep / 16)].altAnim)
 							altAnim = '-alt';
 					}
-					if(modchartExists && lua!=null){
+					if(luaModchartExists && lua!=null){
 						lua.call("dadNoteHit",[Math.abs(daNote.noteData),daNote.strumTime,Conductor.songPosition]); // TODO: Note lua class???
 					}
 						//if(!daNote.isSustainNote){
@@ -2769,7 +2774,7 @@ class PlayState extends MusicBeatState
 			misses++;
 			health -= 0.04;
 			previousHealth=health;
-			if(modchartExists && lua!=null)
+			if(luaModchartExists && lua!=null)
 				lua.setGlobalVar("health",health);
 			if (combo > 5 && gf.animOffsets.exists('sad'))
 			{
@@ -2857,7 +2862,7 @@ class PlayState extends MusicBeatState
 			var strumLine = playerStrumLines.members[note.noteData%4];
 
 
-			if(modchartExists && lua!=null){
+			if(luaModchartExists && lua!=null){
 				lua.call("goodNoteHit",[note.noteData,note.strumTime,Conductor.songPosition,note.isSustainNote]); // TODO: Note lua class???
 			}
 
@@ -2868,7 +2873,7 @@ class PlayState extends MusicBeatState
 				health += 0.004;
 
 			previousHealth=health;
-			if(modchartExists && lua!=null)
+			if(luaModchartExists && lua!=null)
 				lua.setGlobalVar("health",health);
 
 			//if(!note.isSustainNote){
@@ -3017,7 +3022,7 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
-		if(modchartExists && lua!=null){
+		if(luaModchartExists && lua!=null){
 			lua.setGlobalVar("curStep",curStep);
 			lua.call("stepHit",[curStep]);
 		}
@@ -3050,7 +3055,7 @@ class PlayState extends MusicBeatState
 			{
 				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
 				FlxG.log.add('CHANGED BPM!');
-				if(modchartExists && lua!=null){
+				if(luaModchartExists && lua!=null){
 					lua.setGlobalVar("bpm",Conductor.bpm);
 				}
 			}
@@ -3105,7 +3110,7 @@ class PlayState extends MusicBeatState
 			dad.playAnim('cheer', true);
 		}*/
 
-		if(modchartExists && lua!=null){
+		if(luaModchartExists && lua!=null){
 			lua.setGlobalVar("curBeat",curBeat);
 			lua.call("beatHit",[curBeat]);
 		}

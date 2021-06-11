@@ -1,5 +1,5 @@
 prefix idle 24 Dad idle dance
-prefix singUP 24 Dad Sing Note UP
-prefix singRIGHT 24 Dad Sing Note RIGHT
+prefix singUP 24 Dad Sing note UP
+prefix singLEFT 24 dad sing note right
 prefix singDOWN 24 Dad Sing Note DOWN
-prefix singLEFT 24 Dad Sing Note LEFT
+prefix singRIGHT 24 Dad Sing Note LEFT
