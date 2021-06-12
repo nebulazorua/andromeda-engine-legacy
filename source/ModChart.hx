@@ -3,13 +3,24 @@ import flixel.system.FlxAssets.FlxShader;
 import openfl.filters.ShaderFilter;
 import openfl.filters.BitmapFilter;
 import Shaders;
+import Options;
 class ModChart {
   private var playState:PlayState;
   private var camShaders=[];
   private var hudShaders=[];
+
+  public var playerNotesFollowReceptors=true;
+  public var opponentNotesFollowReceptors=true;
+  public var hudVisible=true;
+
+  public var currentOptions:Options;
+
   public function new(playState:PlayState){
+    currentOptions = OptionUtils.options.clone();
     this.playState=playState;
+
   }
+
   public function addCamEffect(effect:ShaderEffect){
     camShaders.push(effect);
     var newCamEffects:Array<BitmapFilter>=[]; // IT SHUTS HAXE UP IDK WHY BUT WHATEVER IDK WHY I CANT JUST ARRAY<SHADERFILTER>
@@ -39,6 +50,7 @@ class ModChart {
     @:privateAccess
     playState.camHUD.setFilters(newCamEffects);
   }
+
   public function removeHudEffect(effect:ShaderEffect){
     hudShaders.remove(effect);
     var newCamEffects:Array<BitmapFilter>=[];

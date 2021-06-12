@@ -24,6 +24,7 @@ class Note extends FlxSprite
 	public var rating:String = "sick";
 	public var lastSustainPiece = false;
 	public var sustainBase=false;
+	public var defaultX:Float = 0;
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 	public var rawNoteData:Int = 0; // for charting shit and thats it LOL
@@ -148,7 +149,7 @@ class Note extends FlxSprite
 
 			updateHitbox();
 
-			if(Options.downScroll){
+			if(PlayState.currentPState.modchart.currentOptions.downScroll){
 				flipY=true;
 			}
 

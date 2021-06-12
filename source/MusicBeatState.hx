@@ -6,6 +6,7 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.ui.FlxUIState;
 import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
+import Options;
 
 class MusicBeatState extends FlxUIState
 {
@@ -55,11 +56,11 @@ class MusicBeatState extends FlxUIState
 		}
 		for (i in 0...Conductor.bpmChangeMap.length)
 		{
-			if (Conductor.songPosition - Options.noteOffset >= Conductor.bpmChangeMap[i].songTime)
+			if (Conductor.songPosition - OptionUtils.options.noteOffset >= Conductor.bpmChangeMap[i].songTime)
 				lastChange = Conductor.bpmChangeMap[i];
 		}
 
-		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - Options.noteOffset - lastChange.songTime) / Conductor.stepCrochet);
+		curStep = lastChange.stepTime + Math.floor((Conductor.songPosition - OptionUtils.options.noteOffset - lastChange.songTime) / Conductor.stepCrochet);
 	}
 
 	public function stepHit():Void

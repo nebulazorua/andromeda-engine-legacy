@@ -112,10 +112,14 @@ class OptionsMenu extends MusicBeatState
 			var item = optionText.members[i];
 			item.text.targetY = i-curSelected;
 			item.text.alpha = 0.6;
-
-			if (item.text.targetY == 0)
+			var wasSelected = item.isSelected;
+			item.isSelected=item.text.targetY==0;
+			if (item.isSelected)
 			{
 				item.text.alpha = 1;
+				item.selected();
+			}else if(wasSelected){
+				item.deselected();
 			}
 		}
 
@@ -160,7 +164,7 @@ class OptionsMenu extends MusicBeatState
 			}else{
 				FlxG.switchState(new MainMenuState());
 				trace("save options");
-			  OptionUtils.saveOptions();
+			  OptionUtils.saveOptions(OptionUtils.options);
 			}
 		}
 		if(option.type!="Category"){

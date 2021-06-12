@@ -19,6 +19,7 @@ import lime.app.Application;
 import haxe.Exception;
 using StringTools;
 import flixel.util.FlxTimer;
+import Options;
 class MainMenuState extends MusicBeatState
 {
 	var curSelected:Int = 0;
@@ -143,7 +144,7 @@ class MainMenuState extends MusicBeatState
 				{
 					selectedSomethin = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));
-					if(Options.menuFlash){
+					if(OptionUtils.options.menuFlash){
 						FlxFlicker.flicker(magenta, 1.1, 0.15, false);
 					}else{
 						magenta.visible=true;
@@ -163,7 +164,7 @@ class MainMenuState extends MusicBeatState
 						}
 						else
 						{
-							if(Options.menuFlash){
+							if(OptionUtils.options.menuFlash){
 								FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
 								{
 									var daChoice:String = optionShit[curSelected];

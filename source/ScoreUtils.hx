@@ -10,7 +10,7 @@ class ScoreUtils
 		"bad",
 		"shit",
 	];
-	public static var ratingWindows = OptionUtils.ratingWindowTypes[Options.ratingWindow];
+	public static var ratingWindows = OptionUtils.ratingWindowTypes[OptionUtils.options.ratingWindow];
 	public static function GetAccuracyConditions(): Array<Float>{
 		return [
       1.0, // Quad star

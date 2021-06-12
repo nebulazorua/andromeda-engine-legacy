@@ -6,6 +6,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
+import Options;
 
 class MenuItem extends FlxSpriteGroup
 {
@@ -24,7 +25,7 @@ class MenuItem extends FlxSpriteGroup
 
 	public function startFlashing():Void
 	{
-		if(Options.menuFlash==true)
+		if(OptionUtils.options.menuFlash==true)
 			isFlashing = true;
 	}
 

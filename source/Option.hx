@@ -10,6 +10,7 @@ class Option extends FlxTypedGroup<FlxSprite>
   public var description:String = "";
   public var allowMultiKeyInput=false;
   public var text:Alphabet;
+  public var isSelected:Bool=false;
 
   public function new(?name:String){
     super();

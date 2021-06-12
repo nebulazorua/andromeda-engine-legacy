@@ -23,7 +23,7 @@ class SoundOffsetState extends MusicBeatState
   public var status:FlxText;
   public var beatCounter:Float = 0;
   public var beatCounts=[];
-  public var currOffset:Int = Options.noteOffset;
+  public var currOffset:Int = OptionUtils.options.noteOffset;
   public var offsetTxt:FlxText;
   public var metronome:Character;
   override function create(){
@@ -106,7 +106,7 @@ class SoundOffsetState extends MusicBeatState
     if(FlxG.keys.justPressed.SPACE){
       playingAudio = !playingAudio;
       if(playingAudio==false){
-        Options.noteOffset=currOffset;
+        OptionUtils.options.noteOffset=currOffset;
       }
     }
 
@@ -125,8 +125,8 @@ class SoundOffsetState extends MusicBeatState
       currOffset = 0;
     }
     if(FlxG.keys.justPressed.ESCAPE){
-      Options.noteOffset = currOffset;
-      OptionUtils.saveOptions();
+      OptionUtils.options.noteOffset = currOffset;
+      OptionUtils.saveOptions(OptionUtils.options);
       FlxG.switchState(new OptionsMenu());
     }
 

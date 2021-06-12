@@ -52,7 +52,7 @@ class TitleState extends MusicBeatState
 		#end
 
 		OptionUtils.bindSave();
-		OptionUtils.loadOptions();
+		OptionUtils.loadOptions(OptionUtils.options);
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());

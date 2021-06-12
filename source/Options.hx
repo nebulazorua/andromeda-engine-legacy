@@ -78,21 +78,26 @@ class OptionUtils
 		CONTROL,
 		ENTER
 	];
+	public static var options:Options = new Options();
+
 	public static function bindSave(?saveName:String="nebbyEngineBeta"){
 		saveFile.bind(saveName);
 	};
-	public static function saveOptions(){
-		var fields = Type.getClassFields(Options);
+	public static function saveOptions(options:Options){
+		var fields = Reflect.fields(options);
 		for(f in fields){
-			var shit = Reflect.getProperty(Options,f);
-			Reflect.setProperty(saveFile.data,f,shit);
+			var shit = Reflect.field(options,f);
+			trace(f,shit);
+			Reflect.setField(saveFile.data,f,shit);
 		}
 		saveFile.flush();
 	};
-	public static function loadOptions(){
+	public static function loadOptions(options:Options){
 		var fields = Reflect.fields(saveFile.data);
 		for(f in fields){
-			Reflect.setProperty(Options,f,Reflect.getProperty(saveFile.data,f));
+			trace(f,Reflect.getProperty(options,f));
+			if(Reflect.getProperty(options,f)!=null)
+				Reflect.setField(options,f,Reflect.field(saveFile.data,f));
 		}
 	}
 
@@ -114,31 +119,51 @@ class OptionUtils
 		return idx;
 	}
 	public static function getKey(control:Control){
-		return Options.controls[getKIdx(control)];
+		return options.controls[getKIdx(control)];
 	}
 }
 
 class Options
 {
-	public static var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L,FlxKey.R];
-	public static var ghosttapping:Bool = false;
-	public static var failForMissing:Bool = false;
-	public static var loadModcharts:Bool = true;
-	public static var pauseHoldAnims:Bool = true;
-	//public static var holdBehaviour:Int = 0;
-	public static var dummy:Bool = false;
-	public static var dummyInt:Int = 0;
-	public static var ratingWindow:Int = 0;
-	public static var showMS:Bool = false;
-	public static var ratingInHUD:Bool = false;
-	public static var noteOffset:Int = 0;
-	public static var downScroll:Bool = false;
-	public static var middleScroll:Bool = false;
-	public static var menuFlash:Bool = true;
+	public var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L,FlxKey.R];
+	public var ghosttapping:Bool = false;
+	public var failForMissing:Bool = false;
+	public var loadModcharts:Bool = true;
+	public var pauseHoldAnims:Bool = true;
 
-	public static var picoShaders:Bool = true;
-	public static var picoCamshake:Bool = true;
-	public static var senpaiShaders:Bool = true;
+	public var dummy:Bool = false;
+	public var dummyInt:Int = 0;
+	public var ratingWindow:Int = 0;
+	public var showMS:Bool = false;
+	public var ratingInHUD:Bool = false;
+	public var noteOffset:Int = 0;
+	public var downScroll:Bool = false;
+	public var middleScroll:Bool = false;
+	public var menuFlash:Bool = true;
+
+	public var picoShaders:Bool = true;
+	public var picoCamshake:Bool = true;
+	public var senpaiShaders:Bool = true;
+
+	public function loadOptions(){
+
+		OptionUtils.loadOptions(this);
+	}
+
+	public function clone(){
+		var optionClone = new Options();
+		for(f in Reflect.fields(this)){
+			Reflect.setField(optionClone,f,Reflect.field(this,f));
+		}
+		return optionClone;
+	}
+
+	public function saveOptions(){
+		OptionUtils.saveOptions(this);
+	}
+
+	public function new(){
+	}
 }
 
 class StateOption extends Option
@@ -248,7 +273,7 @@ class ToggleOption extends Option
 		super();
 		this.property = property;
 		this.name = name;
-		checkbox = new Checkbox(Reflect.getProperty(Options,property));
+		checkbox = new Checkbox(Reflect.field(OptionUtils.options,property));
 		add(checkbox);
 	}
 
@@ -265,8 +290,8 @@ class ToggleOption extends Option
   }
 
 	public override function accept():Bool{
-		Reflect.setProperty(Options,property,!Reflect.getProperty(Options,property));
-		checkbox.changeState(Reflect.getProperty(Options,property));
+		Reflect.setField(OptionUtils.options,property,!Reflect.field(OptionUtils.options,property));
+		checkbox.changeState(Reflect.field(OptionUtils.options,property));
 
 		return false;
 	}
@@ -285,7 +310,7 @@ class ScrollOption extends Option
 		super();
 		this.property=property;
 		this.names=names;
-		var value = Reflect.getProperty(Options,property);
+		var value = Reflect.field(OptionUtils.options,property);
 		leftArrow = new FlxSprite(0,0);
 		leftArrow.frames = Paths.getSparrowAtlas("arrows");
 		leftArrow.setGraphicSize(Std.int(leftArrow.width*.7));
@@ -353,7 +378,7 @@ class ScrollOption extends Option
   }
 
 	public override function left():Bool{
-		var value:Int = Std.int(Reflect.getProperty(Options,property)-1);
+		var value:Int = Std.int(Reflect.field(OptionUtils.options,property)-1);
 
 		if(value<min)
 			value=max;
@@ -361,7 +386,7 @@ class ScrollOption extends Option
 		if(value>max)
 			value=min;
 
-		Reflect.setProperty(Options,property,value);
+		Reflect.setField(OptionUtils.options,property,value);
 
 		if(names!=null){
 			name = names[value];
@@ -371,14 +396,14 @@ class ScrollOption extends Option
 		return true;
 	};
 	public override function right():Bool{
-		var value:Int = Std.int(Reflect.getProperty(Options,property)+1);
+		var value:Int = Std.int(Reflect.field(OptionUtils.options,property)+1);
 
 		if(value<min)
 			value=max;
 		if(value>max)
 			value=min;
 
-		Reflect.setProperty(Options,property,value);
+		Reflect.setField(OptionUtils.options,property,value);
 
 		if(names!=null){
 			name = names[value];
@@ -401,7 +426,7 @@ class CountOption extends Option
 		this.property=property;
 		this.min=min;
 		this.max=max;
-		var value = Reflect.getProperty(Options,property);
+		var value = Reflect.field(OptionUtils.options,property);
 		this.prefix=prefix;
 		this.suffix=suffix;
 
@@ -409,19 +434,19 @@ class CountOption extends Option
 	};
 
 	public override function left():Bool{
-		var value:Int = Std.int(Reflect.getProperty(Options,property)-1);
+		var value:Int = Std.int(Reflect.field(OptionUtils.options,property)-1);
 
 		if(value<min)
 			value=max;
 		if(value>max)
 			value=min;
 
-		Reflect.setProperty(Options,property,value);
+		Reflect.setField(OptionUtils.options,property,value);
 		name = prefix + " " + Std.string(value) + " " + suffix;
 		return true;
 	};
 	public override function right():Bool{
-		var value:Int = Std.int(Reflect.getProperty(Options,property)+1);
+		var value:Int = Std.int(Reflect.field(OptionUtils.options,property)+1);
 
 
 
@@ -430,7 +455,7 @@ class CountOption extends Option
 		if(value>max)
 			value=min;
 
-		Reflect.setProperty(Options,property,value);
+		Reflect.setField(OptionUtils.options,property,value);
 
 		name = prefix + " " + Std.string(value) + " " + suffix;
 		return true;
@@ -460,7 +485,7 @@ class ControlOption extends Option
 			};
 		};
 		if(pressed!=ESCAPE){
-			Options.controls[OptionUtils.getKIdx(controlType)]=pressed;
+			OptionUtils.options.controls[OptionUtils.getKIdx(controlType)]=pressed;
 			key=pressed;
 		}
 		name='${controlType} : ${OptionUtils.getKey(controlType).toString()}';
