@@ -23,11 +23,13 @@ class Note extends FlxSprite
 	public var hit:Bool = false;
 	public var rating:String = "sick";
 	public var lastSustainPiece = false;
-	public var sustainBase=false;
 	public var defaultX:Float = 0;
 	public var sustainLength:Float = 0;
 	public var isSustainNote:Bool = false;
 	public var rawNoteData:Int = 0; // for charting shit and thats it LOL
+	public var holdParent:Bool=false;
+	public var noteType:Int = 0;
+	public var beingCharted:Bool=false;
 
 	public var noteScore:Float = 1;
 
@@ -127,6 +129,7 @@ class Note extends FlxSprite
 
 		if (isSustainNote && prevNote != null)
 		{
+			prevNote.holdParent=true;
 			noteScore * 0.2;
 			alpha = 0.6;
 
@@ -149,7 +152,7 @@ class Note extends FlxSprite
 
 			updateHitbox();
 
-			if(PlayState.currentPState.modchart.currentOptions.downScroll){
+			if(PlayState.currentPState.currentOptions.downScroll){
 				flipY=true;
 			}
 

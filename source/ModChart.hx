@@ -12,11 +12,9 @@ class ModChart {
   public var playerNotesFollowReceptors=true;
   public var opponentNotesFollowReceptors=true;
   public var hudVisible=true;
-
-  public var currentOptions:Options;
+  public var opponentHPDrain:Float = 0;
 
   public function new(playState:PlayState){
-    currentOptions = OptionUtils.options.clone();
     this.playState=playState;
 
   }

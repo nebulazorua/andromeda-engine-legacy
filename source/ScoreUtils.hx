@@ -4,6 +4,7 @@ import Options;
 class ScoreUtils
 {
 	public static var gradeArray:Array<String> = ["☆☆☆☆","☆☆☆","☆☆","☆","S+","S","S-","A+","A","A-","B+","B","B-","C+","C","C-","D"];
+	public static var ghostTapping:Bool=false;
 	public static var ratingStrings = [
 		"sick",
 		"good",
@@ -52,18 +53,18 @@ class ScoreUtils
 				return string;
 			}
 		}
-		return "sick";
+		return "shit";
 	}
 
 	public static function RatingToHit(rating:String):Float{ // TODO: toggleable ms-based system
 		var hit:Float = 0;
 		switch (rating){
 			case 'shit':
-				hit = 1-(Conductor.safeZoneOffset/ratingWindows[0]);
+				hit = 1-(ratingWindows[0]/Conductor.safeZoneOffset);
 			case 'bad':
-				hit = 1-(Conductor.safeZoneOffset/ratingWindows[1]);
+				hit = 1-(ratingWindows[1]/Conductor.safeZoneOffset);
 			case 'good':
-				hit = 1-(Conductor.safeZoneOffset/ratingWindows[2]);
+				hit = 1-(ratingWindows[2]/Conductor.safeZoneOffset);
 			case 'sick':
 				hit = 1;
 		}
@@ -72,15 +73,15 @@ class ScoreUtils
 	public static function RatingToScore(rating:String):Int{
 		var score = 0;
 		switch (rating){
-			case 'shit':
+			case 'shit' | 'bad':
 				score = 0;
-			case 'bad':
-				score = 10;
 			case 'good':
 				score = 100;
 			case 'sick':
 				score = 350;
 		}
+		if(!ghostTapping)
+			score=Std.int(score*1.02); // TINY LIL MODIFIER
 		return score;
 	}
 }

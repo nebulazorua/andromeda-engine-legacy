@@ -62,7 +62,7 @@ class ChartingState extends MusicBeatState
 	var dummyArrow:FlxSprite;
 
 	var curRenderedNotes:FlxTypedGroup<Note>;
-	var curRenderedSustains:FlxTypedGroup<FlxSprite>;
+	var curRenderedSustains:FlxTypedGroup<Note>;
 
 	var gridBG:FlxSprite;
 
@@ -106,7 +106,7 @@ class ChartingState extends MusicBeatState
 		add(gridBlackLine);
 
 		curRenderedNotes = new FlxTypedGroup<Note>();
-		curRenderedSustains = new FlxTypedGroup<FlxSprite>();
+		curRenderedSustains = new FlxTypedGroup<Note>();
 
 		if (PlayState.SONG != null)
 			_song = PlayState.SONG;
@@ -169,6 +169,8 @@ class ChartingState extends MusicBeatState
 
 		add(curRenderedNotes);
 		add(curRenderedSustains);
+		curSection = 0;
+		updateSectionUI();
 
 		super.create();
 	}
@@ -794,15 +796,16 @@ class ChartingState extends MusicBeatState
 	{
 		if (check_mustHitSection.checked)
 		{
-			leftIcon.animation.play('bf');
-			rightIcon.animation.play('dad');
+			leftIcon.changeCharacter(_song.player1);
+			rightIcon.changeCharacter(_song.player2);
 		}
 		else
 		{
-			leftIcon.animation.play('dad');
-			rightIcon.animation.play('bf');
+			leftIcon.changeCharacter(_song.player2);
+			rightIcon.changeCharacter(_song.player1);
 		}
 	}
+
 
 	function updateNoteUI():Void
 	{
@@ -853,29 +856,74 @@ class ChartingState extends MusicBeatState
 			}
 		 */
 
-		for (i in sectionInfo)
-		{
-			var daNoteInfo = i[1];
-			var daStrumTime = i[0];
-			var daSus = i[2];
+		 var oldNote:Note;
+		 for (i in sectionInfo)
+ 		{
+ 			var daNoteInfo = i[1];
+ 			var daStrumTime = i[0];
+ 			var daSus = i[2];
 
-			var note:Note = new Note(daStrumTime, daNoteInfo %4);
-			note.rawNoteData = daNoteInfo;
-			note.sustainLength = daSus;
-			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
-			note.updateHitbox();
-			note.x = Math.floor(daNoteInfo * GRID_SIZE);
-			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
+ 			var note:Note = new Note(daStrumTime, daNoteInfo %4,null,false);
+ 			note.rawNoteData = daNoteInfo;
+ 			note.sustainLength = daSus;
+ 			note.beingCharted = true;
+ 			note.setGraphicSize(GRID_SIZE, GRID_SIZE);
+ 			note.updateHitbox();
+ 			oldNote=note;
 
-			curRenderedNotes.add(note);
+ 			note.x = Math.floor(daNoteInfo * GRID_SIZE);
+ 			note.y = Math.floor(getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
 
-			if (daSus > 0)
-			{
-				var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
-					note.y + GRID_SIZE).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * 16, 0, gridBG.height)));
-				curRenderedSustains.add(sustainVis);
-			}
-		}
+ 			curRenderedNotes.add(note);
+
+ 			if (daSus > 0)
+ 			{
+ 				/*var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
+ 					note.y + GRID_SIZE).makeGraphic(8, Math.floor(FlxMath.remapToRange(daSus, 0, Conductor.stepCrochet * 16, 0, gridBG.height)));
+ 				curRenderedSustains.add(sustainVis);*/
+ 				daSus = daSus/Conductor.stepCrochet;
+ 				var sus = [];
+ 				for (susNote in 0...Math.floor(daSus))
+ 				{
+ 					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteInfo%4, oldNote, true);
+ 					sustainNote.rawNoteData = daNoteInfo;
+ 					sustainNote.beingCharted = true;
+ 					sustainNote.setGraphicSize(GRID_SIZE, GRID_SIZE);
+ 					sustainNote.updateHitbox();
+ 					sustainNote.x = Math.floor(daNoteInfo * GRID_SIZE);
+ 					sustainNote.y = oldNote.y + GRID_SIZE;
+ 					sustainNote.flipY = false;
+ 					sustainNote.scale.y = 1;
+ 					oldNote = sustainNote;
+ 					curRenderedSustains.add(sustainNote);
+ 				}
+ 				for(i in curRenderedSustains){
+ 					if(i.animation.curAnim.name.endsWith("end") ){
+ 						if(PlayState.curStage.startsWith("school")){
+ 							i.setGraphicSize(Std.int(GRID_SIZE*.35), Std.int(GRID_SIZE*.35));
+ 							i.updateHitbox();
+ 							i.offset.x = -17.25;
+ 							i.offset.y = (GRID_SIZE*.35)/2-12;
+ 						}else{
+ 							i.setGraphicSize(Std.int(GRID_SIZE*.35), Std.int((GRID_SIZE)/2)+2);
+ 							i.updateHitbox();
+ 							i.offset.x = 5;
+ 							i.offset.y = (GRID_SIZE)/2+2;
+ 						}
+
+ 						i.x = Math.floor(i.rawNoteData * GRID_SIZE);
+ 					}else{
+ 						i.setGraphicSize(Std.int(GRID_SIZE*.35), GRID_SIZE+1);
+ 						i.updateHitbox();
+ 						i.offset.x = 5;
+ 						if(PlayState.curStage.startsWith("school")){
+ 							i.offset.x = -17.25;
+ 						}
+ 						i.x = Math.floor(i.rawNoteData * GRID_SIZE);
+ 					}
+ 				}
+ 			}
+ 		}
 	}
 
 	private function addSection(lengthInSteps:Int = 16):Void
