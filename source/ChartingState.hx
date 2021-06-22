@@ -241,7 +241,7 @@ class ChartingState extends MusicBeatState
 
 		player2DropDown.selectedLabel = _song.player2;
 
-		var check_use_hit = new FlxUICheckBox(125, 200, null, null, "Use hit sounds (in editor)", 100);
+		var check_use_hit = new FlxUICheckBox(135, 200, null, null, "Use hit sounds (in editor)", 100);
 		check_use_hit.checked = false;
 		check_use_hit.callback = function()
 		{
