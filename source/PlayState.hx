@@ -811,6 +811,11 @@ class PlayState extends MusicBeatState
 				dad.x -= 150;
 				dad.y += 100;
 				camPos.set(dad.getGraphicMidpoint().x + 300, dad.getGraphicMidpoint().y);
+			case 'bf-pixel':
+				dad.y += 570;
+				dad.x += 200;
+			case 'bf' | 'bf-car' | 'bf-christmas':
+				dad.y += 350;
 		}
 
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
@@ -1450,9 +1455,12 @@ class PlayState extends MusicBeatState
 		if (!paused)
 			FlxG.sound.playMusic(Paths.inst(PlayState.SONG.song), 1, false);
 			FlxG.sound.music.looped=false;
-			FlxG.sound.music.onComplete = function(){
-				dontSync=true;
-			};
+			if(currentOptions.noteOffset==0)
+				FlxG.sound.music.onComplete = endSong;
+			else
+				FlxG.sound.music.onComplete = function(){
+					dontSync=true;
+				};
 
 		vocals.play();
 
@@ -1480,6 +1488,8 @@ class PlayState extends MusicBeatState
 			vocals = new FlxSound().loadEmbedded(Paths.voices(songData.song));
 		}else
 			vocals = new FlxSound();
+
+		vocals.looped=false;
 
 		FlxG.sound.list.add(vocals);
 
@@ -2532,7 +2542,7 @@ class PlayState extends MusicBeatState
 		}
 
 		if(Conductor.songPosition-currentOptions.noteOffset>=FlxG.sound.music.length){
-			if(FlxG.sound.music.volume>0)
+			if(FlxG.sound.music.volume>0 || vocals.volume>0)
 				endSong();
 
 			FlxG.sound.music.volume=0;
@@ -2872,7 +2882,6 @@ class PlayState extends MusicBeatState
 		var holdArray:Array<Bool> = [left,down,up,right];
 		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
 
-
 		if(holdArray.contains(true)){
 			for(idx in 0...holdArray.length){
 				var isHeld = holdArray[idx];
@@ -2886,6 +2895,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		var hitSomething=false;
 		// probably a naive way but idc
 		if(controlArray.contains(true)){
 			for(idx in 0...controlArray.length){
@@ -2893,10 +2903,14 @@ class PlayState extends MusicBeatState
 				if(pressed){
 					var nextHit = noteLanes[idx][0];
 					if(nextHit.canBeHit){
+						hitSomething=true;
 						boyfriend.holdTimer=0;
 						noteHit(nextHit);
 					}
 				}
+			}
+			if(!hitSomething && currentOptions.ghostTapping==false){
+				badNoteCheck();
 			}
 		}
 
