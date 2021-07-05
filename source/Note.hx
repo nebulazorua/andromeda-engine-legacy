@@ -30,6 +30,7 @@ class Note extends FlxSprite
 	public var holdParent:Bool=false;
 	public var noteType:Int = 0;
 	public var beingCharted:Bool=false;
+	public var initialPos:Float = 0;
 
 	public var noteScore:Float = 1;
 
@@ -39,10 +40,12 @@ class Note extends FlxSprite
 	public static var BLUE_NOTE:Int = 1;
 	public static var RED_NOTE:Int = 3;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false)
+	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?initialPos:Float=0, ?beingCharted=false)
 	{
 		super();
 
+		this.initialPos=initialPos;
+		this.beingCharted=beingCharted;
 		if (prevNote == null)
 			prevNote = this;
 
@@ -182,8 +185,8 @@ class Note extends FlxSprite
 					case 3:
 						prevNote.animation.play('redhold');
 				}
-
-				prevNote.scale.y = Conductor.stepCrochet / 100 * prevNote.scale.y * 1.5 * FlxMath.roundDecimal(PlayState.SONG.speed,2);
+				if(!beingCharted)
+					prevNote.scale.y = Conductor.stepCrochet / 100 * prevNote.scale.y * 1.5 * (PlayState.getSVFromTime(strumTime)*(1/.45));
 				prevNote.updateHitbox();
 				prevNote.offset.x = offset;
 				// prevNote.setGraphicSize();

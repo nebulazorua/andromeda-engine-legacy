@@ -22,7 +22,7 @@ class OptionUtils
 		"Quaver",
 		"Judge Four",
 		"EMFNF2",
-		"KadeDev",
+		"BSide Philly",
 		"Dream",
 	];
 	public static var ratingWindowTypes:Array<Array<Float>> = [ // TODO: make these all properly scale w/ the safeZoneOffset n shit
@@ -145,6 +145,9 @@ class Options
 	public var picoCamshake:Bool = true;
 	public var senpaiShaders:Bool = true;
 
+	public var freeplayPreview:Bool = true;
+	public var hitSound:Bool = false;
+	
 	public function loadOptions(){
 
 		OptionUtils.loadOptions(this);

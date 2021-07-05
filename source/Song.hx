@@ -7,6 +7,11 @@ import lime.utils.Assets;
 
 using StringTools;
 
+typedef VelocityChange = {
+		var startTime:Float;
+		var multiplier:Float;
+}
+
 typedef SwagSong =
 {
 	var song:String;
@@ -19,6 +24,8 @@ typedef SwagSong =
 	var player2:String;
 	var validScore:Bool;
 	var noBG:Bool;
+	@:optional var sliderVelocities:Array<VelocityChange>;
+	@:optional var initialSpeed:Float;
 }
 
 class Song
@@ -29,7 +36,8 @@ class Song
 	public var needsVoices:Bool = true;
 	public var noBG:Bool = false;
 	public var speed:Float = 1;
-
+	public var initialSpeed:Float = 1;
+	public var sliderVelocities:Array<VelocityChange>=[];
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
 
@@ -47,31 +55,30 @@ class Song
 		while (!rawJson.endsWith("}"))
 		{
 			rawJson = rawJson.substr(0, rawJson.length - 1);
-			// LOL GOING THROUGH THE BULLSHIT TO CLEAN IDK WHATS STRANGE
 		}
 
-		// FIX THE CASTING ON WINDOWS/NATIVE
-		// Windows???
-		// trace(songData);
-
-		// trace('LOADED FROM JSON: ' + songData.notes);
-		/*
-			for (i in 0...songData.notes.length)
-			{
-				trace('LOADED FROM JSON: ' + songData.notes[i].sectionNotes);
-				// songData.notes[i].sectionNotes = songData.notes[i].sectionNotes
-			}
-
-				daNotes = songData.notes;
-				daSong = songData.song;
-				daBpm = songData.bpm; */
 
 		return parseJSONshit(rawJson);
 	}
 
 	public static function parseJSONshit(rawJson:String):SwagSong
 	{
-		var swagShit:SwagSong = cast Json.parse(rawJson).song;
+		var cumData = Json.parse(rawJson);
+		var swagShit:SwagSong = cast cumData.song;
+		swagShit.initialSpeed = swagShit.speed*.45;
+		trace(cumData.sliderVelocities);
+		if(cumData.sliderVelocities!=null){
+			var shit:Array<VelocityChange> = cast cumData.sliderVelocities;
+			trace(shit);
+			swagShit.sliderVelocities = shit;
+		}else{
+			swagShit.sliderVelocities = [
+				{
+					startTime:0,
+					multiplier:1
+				}
+			];
+		}
 		swagShit.validScore = true;
 		return swagShit;
 	}
