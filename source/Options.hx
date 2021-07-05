@@ -130,6 +130,7 @@ class Options
 	public var failForMissing:Bool = false;
 	public var loadModcharts:Bool = true;
 	public var pauseHoldAnims:Bool = true;
+	public var newInput:Bool = true;
 
 	public var dummy:Bool = false;
 	public var dummyInt:Int = 0;
@@ -147,7 +148,7 @@ class Options
 
 	public var freeplayPreview:Bool = true;
 	public var hitSound:Bool = false;
-	
+
 	public function loadOptions(){
 
 		OptionUtils.loadOptions(this);

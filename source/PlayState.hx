@@ -2255,19 +2255,17 @@ class PlayState extends MusicBeatState
 			{
 				var dunceNote:Note = unspawnNotes[0];
 				renderedNotes.add(dunceNote);
-				//hittableNotes.push(dunceNote);
-				trace(dunceNote.noteData);
 
 				if(dunceNote.mustPress){
 					if(dunceNote.isSustainNote)
 						susNoteLanes[dunceNote.noteData].push(dunceNote);
 					else
 						noteLanes[dunceNote.noteData].push(dunceNote);
-
 					noteLanes[dunceNote.noteData].sort((a,b)->Std.int(a.strumTime-b.strumTime));
 					susNoteLanes[dunceNote.noteData].sort((a,b)->Std.int(a.strumTime-b.strumTime));
 				}
-
+				hittableNotes.push(dunceNote);
+				hittableNotes.sort((a,b)->Std.int(a.strumTime-b.strumTime));
 				var index:Int = unspawnNotes.indexOf(dunceNote);
 				unspawnNotes.splice(index, 1);
 
@@ -2467,6 +2465,8 @@ class PlayState extends MusicBeatState
 						daNote.kill();
 						if(daNote.mustPress)
 							noteLanes[daNote.noteData].remove(daNote);
+
+						hittableNotes.remove(daNote);
 						daNote.destroy();
 					}else if(daNote.mustPress){
 						susNoteLanes[daNote.noteData].remove(daNote);
@@ -2491,13 +2491,13 @@ class PlayState extends MusicBeatState
 					daNote.visible = false;
 
 					daNote.kill();
-					//hittableNotes.remove(daNote);
 					if(daNote.mustPress){
 						if(daNote.isSustainNote)
 							susNoteLanes[daNote.noteData].remove(daNote);
 						else
 							noteLanes[daNote.noteData].remove(daNote);
 					}
+					hittableNotes.remove(daNote);
 
 					renderedNotes.remove(daNote, true);
 					daNote.destroy();
@@ -2523,8 +2523,13 @@ class PlayState extends MusicBeatState
 				spr.centerOffsets();
 		});
 
-		if (!inCutscene)
-			keyShit();
+		if (!inCutscene){
+			if(currentOptions.newInput)
+				keyShit();
+			else
+				oldKeyShit();
+
+		}
 
 		if(Conductor.songPosition-currentOptions.noteOffset>=FlxG.sound.music.length){
 			if(FlxG.sound.music.volume>0)
@@ -3133,9 +3138,9 @@ class PlayState extends MusicBeatState
 			if (!note.isSustainNote)
 			{
 				note.kill();
-				//hittableNotes.remove(note);
 				if(note.mustPress)
 					noteLanes[note.noteData].remove(note);
+				hittableNotes.remove(note);
 				renderedNotes.remove(note, true);
 				note.destroy();
 			}else if(note.mustPress){

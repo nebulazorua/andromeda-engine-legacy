@@ -47,6 +47,7 @@ class OptionsMenu extends MusicBeatState
 			new ToggleOption("downScroll","Downscroll"),
 			new ToggleOption("middleScroll","Middlescroll"),
 			new ToggleOption("menuFlash","Flashing in menus"),
+			new ToggleOption("newInput","New Input"),
 			new OptionCategory("Effects",[
 				new ToggleOption("picoShaders","Week 3 shaders"),
 				new ToggleOption("picoCamshake","Week 3 cam shake"),
