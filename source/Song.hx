@@ -66,12 +66,13 @@ class Song
 		var cumData = Json.parse(rawJson);
 		var swagShit:SwagSong = cast cumData.song;
 		swagShit.initialSpeed = swagShit.speed*.45;
-		trace(cumData.sliderVelocities);
 		if(cumData.sliderVelocities!=null){
 			var shit:Array<VelocityChange> = cast cumData.sliderVelocities;
-			trace(shit);
+			shit.sort((a,b)->Std.int(a.startTime-b.startTime));
 			swagShit.sliderVelocities = shit;
+
 		}else{
+			trace("SLIDERS");
 			swagShit.sliderVelocities = [
 				{
 					startTime:0,

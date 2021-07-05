@@ -1854,11 +1854,11 @@ class PlayState extends MusicBeatState
 	function getPosFromTime(strumTime:Float):Float{
 		var idx:Int = 0;
 		while(idx<SONG.sliderVelocities.length){
-
 			if(strumTime<SONG.sliderVelocities[idx].startTime)
 				break;
 			idx++;
 		}
+		trace(idx,SONG.sliderVelocities[idx],strumTime);
 		return getPosFromTimeSV(strumTime,idx);
 	}
 
@@ -1870,7 +1870,7 @@ class PlayState extends MusicBeatState
 			idx++;
 		}
 		idx--;
-		if(idx==0)
+		if(idx<=0)
 			return SONG.initialSpeed;
 		return SONG.initialSpeed*SONG.sliderVelocities[idx].multiplier;
 	}
@@ -2902,10 +2902,12 @@ class PlayState extends MusicBeatState
 				var pressed = controlArray[idx];
 				if(pressed){
 					var nextHit = noteLanes[idx][0];
-					if(nextHit.canBeHit){
-						hitSomething=true;
-						boyfriend.holdTimer=0;
-						noteHit(nextHit);
+					if(nextHit!=null){
+						if(nextHit.canBeHit){
+							hitSomething=true;
+							boyfriend.holdTimer=0;
+							noteHit(nextHit);
+						}
 					}
 				}
 			}

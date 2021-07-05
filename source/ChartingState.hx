@@ -481,7 +481,7 @@ class ChartingState extends MusicBeatState
 			}
 			else if (wname == 'marker_scrollVel')
 			{
-				curSelectedMarker.multiplier=nums.value*.45;
+				curSelectedMarker.multiplier=nums.value;
 				updateGrid();
 			}
 		}
@@ -607,11 +607,13 @@ class ChartingState extends MusicBeatState
 
 		curRenderedNotes.forEach(function(note:Note){
 			if(note.strumTime<=Conductor.songPosition && note.noteType==0){
-				if(!note.wasGoodHit){
-					note.wasGoodHit=true;
-					if(useHitSounds){
-						if(note.rawNoteData<=3)
-							FlxG.sound.play(Paths.sound('Normal_Hit'),3);
+				if(note.color!=0xAAAAAA){
+					if(!note.wasGoodHit){
+						note.wasGoodHit=true;
+						if(useHitSounds){
+							if(note.rawNoteData<=3)
+								FlxG.sound.play(Paths.sound('Normal_Hit'),3);
+						}
 					}
 
 					note.color = 0xAAAAAA;
