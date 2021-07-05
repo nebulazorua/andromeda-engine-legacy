@@ -2909,7 +2909,7 @@ class PlayState extends MusicBeatState
 					}
 				}
 			}
-			if(!hitSomething && currentOptions.ghostTapping==false){
+			if(!hitSomething && currentOptions.ghosttapping==false){
 				badNoteCheck();
 			}
 		}
