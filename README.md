@@ -3,7 +3,7 @@
 "ANDROMEDA ENGINE IS GOATED" - bbpanzu
 
 Made as an alternative to other engines because im a lil' bitch and thought I could take a shot, so I did.
-- Fully rebindable controls, a brand new input system based on other rhythm games' (Though you can goto week 6's)
+- Fully rebindable controls, a brand new input system based on other rhythm games' (Though you can goto week 7's)
 - VERY customisable, even down to judgement window presets
 - SICK AS FUCK WEEK 6 SHADERS THAT YOU CAN ACTUALLY RUN!!! (SUCK ON THAT TABI) ((idk why they work though LOL THEY JUST DO ITS MAGIC))
 - Scroll velocity
