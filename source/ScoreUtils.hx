@@ -81,7 +81,7 @@ class ScoreUtils
 				score = 350;
 		}
 		if(!ghostTapping)
-			score=Std.int(score*1.02); // TINY LIL MODIFIER
+			score=Std.int(score*1.05); // TINY LIL MODIFIER
 		return score;
 	}
 }

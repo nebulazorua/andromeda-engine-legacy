@@ -12,6 +12,7 @@ import flixel.math.FlxMath;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
+import Options;
 
 using StringTools;
 
@@ -44,13 +45,13 @@ class FreeplayState extends MusicBeatState
 			songs.push(new SongMetadata(data.join(" "), 1, icon));
 		}
 
-		/*
+
 			if (FlxG.sound.music != null)
 			{
 				if (!FlxG.sound.music.playing)
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));
 			}
-		 */
+
 
 		#if desktop
 		// Updating Discord Rich Presence
@@ -280,9 +281,11 @@ class FreeplayState extends MusicBeatState
 		// lerpScore = 0;
 		#end
 
-		#if PRELOAD_ALL
-		FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
-		#end
+		if(OptionUtils.options.freeplayPreview){
+			#if PRELOAD_ALL
+				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
+			#end
+		}
 
 		var bullShit:Int = 0;
 

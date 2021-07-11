@@ -33,25 +33,26 @@ class OptionsMenu extends MusicBeatState
 				new ToggleOption("failForMissing","Sudden Death"),
 			]),
 			new ScrollOption("ratingWindow",0,OptionUtils.ratingWindowNames.length-1,OptionUtils.ratingWindowNames),
-			new ToggleOption("ghosttapping","Ghost-tapping"),
+			new ToggleOption("ghosttapping","Ghost-tapping","Missing when you hit nothing"),
 			new StateOption("Calibrate Offset",new SoundOffsetState()),
 		]),
 		new OptionCategory("Modification",[
 			new ToggleOption("loadModcharts","Load Lua modcharts"),
 		]),
 		new OptionCategory("Preferences",[
-			new ToggleOption("pauseHoldAnims","Holds pause anims"),
-			//new ScrollOption("holdBehaviour",0,1,["Holds pause anims","Holds repeat anims"]),
-			new ToggleOption("showMS","Hit MS"),
-			new ToggleOption("ratingInHUD","Ratings in HUD"),
-			new ToggleOption("downScroll","Downscroll"),
-			new ToggleOption("middleScroll","Middlescroll"),
-			new ToggleOption("menuFlash","Flashing in menus"),
-			new ToggleOption("newInput","New Input"),
+			new ToggleOption("pauseHoldAnims","Holds pause anims", "Do animations get paused on the first frame on holds"),
+			new ToggleOption("showMS","Hit MS","Display the milliseconds for when you hit a note"),
+			new ToggleOption("ratingInHUD","Ratings in HUD","Are ratings part of the UI"),
+			new ToggleOption("downScroll","Downscroll","Do arrows come from the top coming down"),
+			new ToggleOption("middleScroll","Middlescroll","Are arrows placed in the middle of the screen"),
+			new ToggleOption("menuFlash","Flashing in menus","Do the background and buttons flash when selecting them in menus"),
+			new ToggleOption("newInput","New Input","New input is a quaver-like system where each lane handles its own notes"),
+			new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),
+			new ToggleOption("freeplayPreview","Song preview in freeplay","Do songs get played when selecting them in the freeplay menu"),
 			new OptionCategory("Effects",[
-				new ToggleOption("picoShaders","Week 3 shaders"),
-				new ToggleOption("picoCamshake","Week 3 cam shake"),
-				new ToggleOption("senpaiShaders","Week 6 shaders"),
+				new ToggleOption("picoShaders","Week 3 shaders","Does the windows fading out in week 3 use shaders"),
+				new ToggleOption("picoCamshake","Week 3 cam shake","Does the train cause a camera shake in week 3"),
+				new ToggleOption("senpaiShaders","Week 6 shaders","Is the CRT effect active in week 6"),
 			])
 		])
 	]);

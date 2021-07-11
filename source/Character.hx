@@ -406,25 +406,6 @@ class Character extends FlxSprite
 				loadOffsets();
 
 				playAnim('idle');
-			case 'kapi':
-				frames = Paths.getSparrowAtlas('characters/kapi');
-				animation.addByPrefix('idle', 'Dad idle dance', 24, false);
-				animation.addByPrefix('singUP', 'Dad Sing Note UP', 24, false);
-				animation.addByPrefix('singRIGHT', 'Dad Sing Note RIGHT', 24, false);
-				animation.addByPrefix('singDOWN', 'Dad Sing Note DOWN', 24, false);
-				animation.addByPrefix('singLEFT', 'Dad Sing Note LEFT', 24, false);
-
-				animation.addByIndices('singUPHold', 'Dad Sing Note UP',[8,9,10],"", 24);
-				animation.addByIndices('singRIGHTHold', 'Dad Sing Note RIGHT',[8,9,10],"", 24);
-				animation.addByIndices('singDOWNHold', 'Dad Sing Note DOWN',[8,9,10],"", 24);
-				animation.addByIndices('singLEFTHold', 'Dad Sing Note LEFT',[8,9,10],"", 24);
-
-				animation.addByPrefix('meow', 'Dad meow', 24, false);
-				animation.addByPrefix('stare', 'Dad stare', 24, false);
-
-				loadOffsets();
-
-				playAnim("idle");
 		default:
 			var xmlData:String = '';
 			/*if(Cache.xmlData[curCharacter]!=null){

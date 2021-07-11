@@ -112,21 +112,10 @@ class Note extends FlxSprite
 				antialiasing = true;
 		}
 
-		switch (noteData)
-		{
-			case 0:
-				x += swagWidth * 0;
-				animation.play('purpleScroll');
-			case 1:
-				x += swagWidth * 1;
-				animation.play('blueScroll');
-			case 2:
-				x += swagWidth * 2;
-				animation.play('greenScroll');
-			case 3:
-				x += swagWidth * 3;
-				animation.play('redScroll');
-		}
+		var colors = ["purple","blue","green","red"];
+
+		x += swagWidth * noteData;
+		animation.play('${colors[noteData]}Scroll');
 
 		// trace(prevNote);
 
@@ -141,18 +130,7 @@ class Note extends FlxSprite
 			//x+=width/2;
 			lastSustainPiece=true;
 
-			switch (noteData)
-			{
-				case 2:
-					animation.play('greenholdend');
-				case 3:
-					animation.play('redholdend');
-				case 1:
-					animation.play('blueholdend');
-				case 0:
-					animation.play('purpleholdend');
-			}
-
+			animation.play('${colors[noteData]}holdend');
 			updateHitbox();
 
 			if(PlayState.currentPState.currentOptions.downScroll){
@@ -174,17 +152,7 @@ class Note extends FlxSprite
 			{
 				prevNote.lastSustainPiece=false;
 				var offset = prevNote.offset.x;
-				switch (prevNote.noteData)
-				{
-					case 0:
-						prevNote.animation.play('purplehold');
-					case 1:
-						prevNote.animation.play('bluehold');
-					case 2:
-						prevNote.animation.play('greenhold');
-					case 3:
-						prevNote.animation.play('redhold');
-				}
+				prevNote.animation.play('${colors[noteData]}hold');
 				if(!beingCharted)
 					prevNote.scale.y = Conductor.stepCrochet / 100 * prevNote.scale.y * 1.5 * (PlayState.getSVFromTime(strumTime)*(1/.45));
 				prevNote.updateHitbox();
