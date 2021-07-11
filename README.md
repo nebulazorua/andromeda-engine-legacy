@@ -1,18 +1,32 @@
-# Friday Night Funkin
+# Friday Night Funkin: Andromeda Engine
 
-This is the repository for Friday Night Funkin, a game originally made for Ludum Dare 47 "Stuck In a Loop".
+"ANDROMEDA ENGINE IS GOATED" - bbpanzu
+
+Made as an alternative to other engines because im a lil' bitch and thought I could take a shot, so I did.
+- Fully rebindable controls, a brand new input system based on other rhythm games' (Though you can goto week 7's)
+- VERY customisable, even down to judgement window presets
+- SICK AS FUCK WEEK 6 SHADERS THAT YOU CAN ACTUALLY RUN!!! (SUCK ON THAT TABI) ((idk why they work though LOL THEY JUST DO ITS MAGIC))
+- Scroll velocity
+
+AND IM STILL WORKIN' ON IT
+
+NOTE: ENGINE KINDA SORTA IN BETA STAGES RN
+## OG Friday Night Funkin'
 
 Play the Ludum Dare prototype here: https://ninja-muffin24.itch.io/friday-night-funkin
 Play the Newgrounds one here: https://www.newgrounds.com/portal/view/770371
 Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
+Get the source code: https://github.com/ninjamuffin99/Funkin
 
 ## Credits / shoutouts
 
-- [ninjamuffin99 (me!)](https://twitter.com/ninja_muffin99) - Programmer
+- [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programmer
 - [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
 - [Kawaisprite](https://twitter.com/kawaisprite) - Musician
+- Nebula - Andromeda Engine
+- [Quaver](https://github.com/Quaver/Quaver) - Scroll code
 
-This game was made with love to Newgrounds and it's community. Extra love to Tom Fulp.
+Shoutouts to Newgrounds and Tom Fulp for creatin' the best website and community on the internet
 
 ## Build instructions
 
