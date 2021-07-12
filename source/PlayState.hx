@@ -104,7 +104,7 @@ class PlayState extends MusicBeatState
 	public var luaSprites:Map<String, Dynamic>;
 	public var luaObjects:Map<String, Dynamic>;
 	public var unnamedLuaSprites:Int=0;
-	public var unnamedLuaObjects:Int=0;
+	public var unnamedLuaShaders:Int=0;
 	public var dadLua:LuaCharacter;
 	public var gfLua:LuaCharacter;
 	public var bfLua:LuaCharacter;
@@ -236,7 +236,6 @@ class PlayState extends MusicBeatState
 		modchart = new ModChart(this);
 		FlxG.sound.music.looped=false;
 		unnamedLuaSprites=0;
-		unnamedLuaObjects=0;
 		currentPState=this;
 		currentOptions = OptionUtils.options.clone();
 		ScoreUtils.ratingWindows = OptionUtils.ratingWindowTypes[currentOptions.ratingWindow];
@@ -1046,12 +1045,10 @@ class PlayState extends MusicBeatState
 		startingSong = true;
 		if(luaModchartExists && currentOptions.loadModcharts){
 			lua = new LuaVM();
-			lua.setGlobalVar("defaultCamZoom",defaultCamZoom);
 			lua.setGlobalVar("curBeat",0);
 			lua.setGlobalVar("curStep",0);
 			lua.setGlobalVar("songPosition",Conductor.songPosition);
 			lua.setGlobalVar("bpm",Conductor.bpm);
-			lua.setGlobalVar("health",health);
 			lua.setGlobalVar("XY","XY");
 			lua.setGlobalVar("X","X");
 			lua.setGlobalVar("Y","Y");
@@ -1067,8 +1064,11 @@ class PlayState extends MusicBeatState
 			Lua_helper.add_callback(lua.state,"newSprite", function(?x:Int=0,?y:Int=0,?drawBehind:Bool=false,?spriteName:String){
 				var sprite = new FlxSprite(x,y);
 				var name = "UnnamedSprite"+unnamedLuaSprites;
-				unnamedLuaSprites++;
-				if(spriteName!=null) name=spriteName;
+
+				if(spriteName!=null)
+					name=spriteName;
+				else
+					unnamedLuaSprites++;
 
 				var lSprite = new LuaSprite(sprite,name,spriteName!=null);
 				var classIdx = Lua.gettop(lua.state)+1;
@@ -1880,7 +1880,7 @@ class PlayState extends MusicBeatState
 		if(!note.mustPress){
 			hitPos = opponentStrumLines.members[note.noteData];
 		}
-		return hitPos.y + ((note.initialPos-currentTrackPos) * (currentOptions.downScroll?-1:1));
+		return hitPos.y + ((note.initialPos-currentTrackPos) * (currentOptions.downScroll?-(SONG.speed*.45):SONG.speed*.45));
 	}
 
 	// ADAPTED FROM QUAVER!!!

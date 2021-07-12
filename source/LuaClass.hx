@@ -15,6 +15,7 @@ import flash.display.BitmapData;
 import sys.FileSystem;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxCamera;
+import Shaders;
 typedef LuaProperty = {
     var defaultValue:Any;
     var getter:(State,Any)->Int;
@@ -875,7 +876,15 @@ class LuaCam extends LuaClass {
     return 0;
   }
 
+  private static function setShaders(l:StatePointer):Int{
+    // 1 = self
+    // 2 = table of shaders
+
+    return 0;
+  }
+
   private static var shakeC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(shake);
+  private static var setShadersC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setShaders);
 
   public function new(cam:FlxCamera,name:String,?addToGlobal:Bool=true){
     super();
@@ -891,7 +900,7 @@ class LuaCam extends LuaClass {
           return 1;
         },
         setter:function(l:State){
-          LuaL.error(l,"spriteName is read-only.");
+          LuaL.error(l,"className is read-only.");
           return 0;
         }
       },
@@ -1068,6 +1077,208 @@ class LuaCharacter extends LuaSprite {
       }
     });
   }
+  override function Register(l:State){
+    state=l;
+    super.Register(l);
+  }
+}
+
+class LuaShaderClass extends LuaClass {
+  private static var state:State;
+  private static var effect:LuaEffect;
+  private function SetNumProperty(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+        LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      Reflect.setProperty(effect,Lua.tostring(l,2),Lua.tonumber(l,3));
+      return 0;
+  }
+
+  private static function getProperty(l:StatePointer):Int{
+    // 1 = self
+    // 2 = property
+    var property = LuaL.checkstring(state,2);
+    Lua.getfield(state,1,"className");
+    var name = Lua.tostring(state,-1);
+    var shader = PlayState.currentPState.luaObjects[name];
+    Convert.toLua(state,Reflect.getProperty(shader,property));
+    return 1;
+  }
+
+  private static function setProperty(l:StatePointer):Int{
+    // 1 = self
+    // 2 = property
+    // 3 = value
+    var property = LuaL.checkstring(state,2);
+    var value = Convert.fromLua(state,3);
+    Lua.getfield(state,1,"className");
+    var name = Lua.tostring(state,-1);
+    var shader = PlayState.currentPState.luaObjects[name];
+    Reflect.setProperty(shader,property,value);
+
+    return 1;
+  }
+
+  private static var setvarC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setProperty);
+  private static var getvarC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(getProperty);
+
+  public function new(shader:LuaEffect,shaderName:String,?addToGlobal=false){
+    super();
+    if(PlayState.currentPState.luaObjects.get(shaderName)!=null){
+      var counter:Int = 0;
+      while(PlayState.currentPState.luaObjects.get(shaderName + Std.string(counter))!=null){
+        counter++;
+      }
+      shaderName+=Std.string(counter);
+    }
+    className = shaderName;
+    this.addToGlobal=addToGlobal;
+    PlayState.currentPState.luaObjects[shaderName]=shader;
+    properties = [
+      "className"=>{
+        defaultValue:shaderName,
+        getter:function(l:State,data:Any){
+          Lua.pushstring(l,shaderName);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"className is read-only.");
+          return 0;
+        }
+      },
+
+      "setVar"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,setvarC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"setVar is read-only.");
+          return 0;
+        }
+      },
+
+      "getVar"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,getvarC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"getVar is read-only.");
+          return 0;
+        }
+      },
+    ];
+  }
+
+  override function Register(l:State){
+    state=l;
+    super.Register(l);
+  }
+}
+
+class LuaModchart extends LuaClass {
+  private static var state:State;
+  private var modchart:ModChart;
+  private function SetNumProperty(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+        LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      Reflect.setProperty(modchart,Lua.tostring(l,2),Lua.tonumber(l,3));
+      return 0;
+  }
+
+  private function SetStringProperty(l:State,data:Any){
+    // 1 = self
+    // 2 = key
+    // 3 = value
+    // 4 = metatable
+    if(Lua.type(l,3)!=Lua.LUA_TSTRING){
+      LuaL.error(l,"invalid argument #3 (string expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+      return 0;
+    }
+    Reflect.setProperty(modchart,Lua.tostring(l,2),Lua.tostring(l,3));
+    return 0;
+  }
+
+  private function GetNumProperty(l:State,data:Any){
+      // 1 = self
+      // 2 = key
+      // 3 = metatable
+      Lua.pushnumber(l,Reflect.getProperty(modchart,Lua.tostring(l,2)));
+      return 1;
+  }
+
+  private function SetBoolProperty(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TBOOLEAN){
+        LuaL.error(l,"invalid argument #3 (boolean expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      Reflect.setProperty(modchart,Lua.tostring(l,2),Lua.toboolean(l,3));
+      return 0;
+  }
+
+  private function GetBoolProperty(l:State,data:Any){
+      // 1 = self
+      // 2 = key
+      // 3 = metatable
+      Lua.pushboolean(l,Reflect.getProperty(modchart,Lua.tostring(l,2)));
+      return 1;
+  }
+
+  private function GetStringProperty(l:State,data:Any){
+      // 1 = self
+      // 2 = key
+      // 3 = metatable
+      Lua.pushstring(l,Reflect.getProperty(modchart,Lua.tostring(l,2)));
+      return 1;
+  }
+
+  public function new(modchart:ModChart){
+    super();
+    this.modchart=modchart;
+    className = 'modchart';
+    properties = [
+      "playerNotesFollowReceptors"=>{
+        defaultValue: modchart.playerNotesFollowReceptors,
+        getter:GetBoolProperty,
+        setter:SetBoolProperty,
+      },
+      "opponentNotesFollowReceptors"=>{
+        defaultValue: modchart.opponentNotesFollowReceptors,
+        getter:GetBoolProperty,
+        setter:SetBoolProperty,
+      },
+      "hudVisible"=>{
+        defaultValue: modchart.hudVisible,
+        getter:GetBoolProperty,
+        setter:SetBoolProperty,
+      },
+      "opponentHPDrain"=>{
+        defaultValue: modchart.opponentHPDrain,
+        getter:GetNumProperty,
+        setter:SetNumProperty,
+      },
+
+    ];
+  }
+
   override function Register(l:State){
     state=l;
     super.Register(l);
