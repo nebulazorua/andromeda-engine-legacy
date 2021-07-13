@@ -24,7 +24,7 @@ class BuildingEffect {
     shader.alphaShit.value[0]=alpha;
   }
 }
-
+#if windows
 class LuaEffect {
   public var shader:LuaShader;
   public function new(data:String){
@@ -42,6 +42,7 @@ class LuaShader extends FlxShader
     ';
   }
 }
+#end
 
 class BuildingShader extends FlxShader
 {
