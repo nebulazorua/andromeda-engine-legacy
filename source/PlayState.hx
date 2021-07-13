@@ -41,7 +41,6 @@ import haxe.Json;
 import openfl.display.BlendMode;
 import openfl.display.StageQuality;
 import openfl.filters.ShaderFilter;
-import LuaClass;
 import flash.display.BitmapData;
 import flash.display.Bitmap;
 import Shaders;
@@ -57,6 +56,7 @@ import llua.Convert;
 import llua.Lua;
 import llua.State;
 import llua.LuaL;
+import LuaClass;
 #end
 
 using StringTools;
@@ -101,6 +101,7 @@ class PlayState extends MusicBeatState
 	public var refNotes:FlxTypedGroup<FlxSprite>;
 	public var opponentRefNotes:FlxTypedGroup<FlxSprite>;
 	private var opponentStrumLines:FlxTypedGroup<FlxSprite>;
+	#if windows
 	public var luaSprites:Map<String, Dynamic>;
 	public var luaObjects:Map<String, Dynamic>;
 	public var unnamedLuaSprites:Int=0;
@@ -108,6 +109,7 @@ class PlayState extends MusicBeatState
 	public var dadLua:LuaCharacter;
 	public var gfLua:LuaCharacter;
 	public var bfLua:LuaCharacter;
+	#end
 
 	private var camZooming:Bool = true;
 	private var curSong:String = "";
@@ -158,7 +160,9 @@ class PlayState extends MusicBeatState
 		1,
 		1
 	];
+	#if windows
 	var lua:LuaVM;
+	#end
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
 
@@ -205,7 +209,10 @@ class PlayState extends MusicBeatState
 	var goods:Float = 0;
 	var bads:Float = 0;
 	var shits:Float = 0;
+	#if windows
 	var luaModchartExists = false;
+	#end
+	
 
 	var noteLanes:Array<Array<Note>> = [];
 	var susNoteLanes:Array<Array<Note>> = [];
@@ -235,7 +242,9 @@ class PlayState extends MusicBeatState
 		Cache.Clear();
 		modchart = new ModChart(this);
 		FlxG.sound.music.looped=false;
+		#if windows
 		unnamedLuaSprites=0;
+		#end
 		currentPState=this;
 		currentOptions = OptionUtils.options.clone();
 		ScoreUtils.ratingWindows = OptionUtils.ratingWindowTypes[currentOptions.ratingWindow];
@@ -886,8 +895,11 @@ class PlayState extends MusicBeatState
 
 		playerStrumLines = new FlxTypedGroup<FlxSprite>();
 		opponentStrumLines = new FlxTypedGroup<FlxSprite>();
+		#if windows
 		luaSprites = new Map<String, FlxSprite>();
 		luaObjects = new Map<String, FlxBasic>();
+		#end
+		
 		refNotes = new FlxTypedGroup<FlxSprite>();
 		opponentRefNotes = new FlxTypedGroup<FlxSprite>();
 		playerStrums = new FlxTypedGroup<FlxSprite>();
@@ -1043,6 +1055,7 @@ class PlayState extends MusicBeatState
 
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
+		#if windows
 		if(luaModchartExists && currentOptions.loadModcharts){
 			lua = new LuaVM();
 			lua.setGlobalVar("curBeat",0);
@@ -1148,7 +1161,7 @@ class PlayState extends MusicBeatState
 			if(lua!=null && luaModchartExists)
 				lua.call("init",[]);
 		}
-
+		#end
 		if (isStoryMode)
 		{
 			switch (curSong.toLowerCase())
@@ -1210,7 +1223,7 @@ class PlayState extends MusicBeatState
 		trace(reg1.replace(reg2.replace(a,""),""));
 		return reg1.replace(reg2.replace(a,""),"");
 	}
-
+	#if windows
 	public function swapCharacterByLuaName(spriteName:String,newCharacter:String){
 		var sprite = luaSprites[spriteName];
 		if(sprite!=null){
@@ -1253,7 +1266,7 @@ class PlayState extends MusicBeatState
 
 		}
 	}
-
+	#end
 	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{
 		modchart.hudVisible=false;
@@ -1931,10 +1944,11 @@ class PlayState extends MusicBeatState
 				else
 					phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed * 1.5;
 		}
+		#if windows
 		if(luaModchartExists && lua!=null){
 			lua.call("update",[elapsed]);
 		}
-
+		#end
 		iconP1.visible = modchart.hudVisible;
 		iconP2.visible = modchart.hudVisible;
 		healthBar.visible = modchart.hudVisible;
@@ -2016,8 +2030,10 @@ class PlayState extends MusicBeatState
 		if (health > 2){
 			health = 2;
 			previousHealth = health;
+			#if windows
 			if(luaModchartExists && lua!=null)
 				lua.setGlobalVar("health",health);
+			#end
 		}
 
 
@@ -2090,11 +2106,14 @@ class PlayState extends MusicBeatState
 
 			// Conductor.lastSongPos = FlxG.sound.music.time;
 		}
+		#if windows
 		try{
 			if(luaModchartExists && lua!=null)
 				lua.setGlobalVar("songPosition",Conductor.songPosition);
 		}catch(e:Any){
 			trace(e);
+		#end
+		
 		}
 		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
 		{
@@ -2214,8 +2233,11 @@ class PlayState extends MusicBeatState
 		{
 			health += 1;
 			previousHealth = health;
+			#if windows
 			if(luaModchartExists && lua!=null)
 				lua.setGlobalVar("health",health);
+			#end
+			
 			trace("User is cheating!");
 		}
 
@@ -2405,9 +2427,12 @@ class PlayState extends MusicBeatState
 						if (SONG.notes[Math.floor(curStep / 16)].altAnim)
 							altAnim = '-alt';
 					}
+					#if windows
 					if(luaModchartExists && lua!=null){
 						lua.call("dadNoteHit",[Math.abs(daNote.noteData),daNote.strumTime,Conductor.songPosition]); // TODO: Note lua class???
 					}
+					#end
+					
 					health -= modchart.opponentHPDrain;
 
 						//if(!daNote.isSustainNote){
@@ -3070,7 +3095,6 @@ class PlayState extends MusicBeatState
 		misses++;
 		health -= 0.04;
 		previousHealth=health;
-		if(luaModchartExists && lua!=null)
 		if (combo > 5 && gf.animOffsets.exists('sad'))
 		{
 			gf.playAnim('sad');
@@ -3190,11 +3214,11 @@ class PlayState extends MusicBeatState
 
 		var strumLine = playerStrumLines.members[note.noteData%4];
 
-
+		#if windows
 		if(luaModchartExists && lua!=null){
 			lua.call("goodNoteHit",[note.noteData,note.strumTime,Conductor.songPosition,note.isSustainNote]); // TODO: Note lua class???
 		}
-
+		#end
 
 		if (note.noteData >= 0)
 			health += 0.023;
@@ -3334,10 +3358,12 @@ class PlayState extends MusicBeatState
 	override function stepHit()
 	{
 		super.stepHit();
+		#if windows
 		if(luaModchartExists && lua!=null){
 			lua.setGlobalVar("curStep",curStep);
 			lua.call("stepHit",[curStep]);
 		}
+		#end
 		if (FlxG.sound.music.time-currentOptions.noteOffset > Conductor.songPosition-currentOptions.noteOffset + 20 || FlxG.sound.music.time-currentOptions.noteOffset < Conductor.songPosition-currentOptions.noteOffset - 20)
 		{
 			resyncVocals();
@@ -3362,9 +3388,11 @@ class PlayState extends MusicBeatState
 			{
 				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
 				FlxG.log.add('CHANGED BPM!');
+				#if windows
 				if(luaModchartExists && lua!=null){
 					lua.setGlobalVar("bpm",Conductor.bpm);
 				}
+				#end
 			}
 			// else
 			// Conductor.changeBPM(SONG.bpm);
@@ -3416,11 +3444,12 @@ class PlayState extends MusicBeatState
 			boyfriend.playAnim('hey', true);
 			dad.playAnim('cheer', true);
 		}*/
-
+		#if windows
 		if(luaModchartExists && lua!=null){
 			lua.setGlobalVar("curBeat",curBeat);
 			lua.call("beatHit",[curBeat]);
 		}
+		#end
 
 		switch (curStage)
 		{
