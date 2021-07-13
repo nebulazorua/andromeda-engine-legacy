@@ -1,7 +1,7 @@
 package;
 
 // TODO: Clean up
-
+#if windows
 import llua.Convert;
 import llua.Lua;
 import llua.State;
@@ -1409,3 +1409,4 @@ class LuaNote extends LuaClass {
     super.Register(l);
   }
 }
+#end
