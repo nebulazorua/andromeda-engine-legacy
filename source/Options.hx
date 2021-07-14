@@ -111,27 +111,29 @@ class OptionUtils
 
 class Options
 {
+	public var dummy:Bool = false;
+	public var dummyInt:Int = 0;
+
+	// gameplay
 	public var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L,FlxKey.R];
 	public var ghosttapping:Bool = false;
 	public var failForMissing:Bool = false;
-	public var loadModcharts:Bool = true;
-	public var pauseHoldAnims:Bool = true;
 	public var newInput:Bool = true;
-
-	public var dummy:Bool = false;
-	public var dummyInt:Int = 0;
 	public var ratingWindow:Int = 0;
+	public var noteOffset:Int = 0;
+	public var botPlay:Bool = false;
+	public var loadModcharts:Bool = true;
+
+	// preferences
+	public var pauseHoldAnims:Bool = true;
 	public var showMS:Bool = false;
 	public var ratingInHUD:Bool = false;
-	public var noteOffset:Int = 0;
 	public var downScroll:Bool = false;
 	public var middleScroll:Bool = false;
 	public var menuFlash:Bool = true;
-
 	public var picoShaders:Bool = true;
 	public var picoCamshake:Bool = true;
 	public var senpaiShaders:Bool = true;
-
 	public var freeplayPreview:Bool = true;
 	public var hitSound:Bool = false;
 

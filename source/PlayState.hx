@@ -133,6 +133,9 @@ class PlayState extends MusicBeatState
 	private var pauseHUD:FlxCamera;
 	private var camGame:FlxCamera;
 	public var modchart:ModChart;
+	public var botplayPressTimes:Array<Float> = [0,0,0,0];
+	public var botplayHoldTimes:Array<Float> = [0,0,0,0];
+	public var botplayHoldMaxTimes:Array<Float> = [0,0,0,0];
 
 	public var playerNoteOffsets:Array<Array<Float>> = [
 		[0,0], // left
@@ -243,6 +246,8 @@ class PlayState extends MusicBeatState
 		currentOptions = OptionUtils.options.clone();
 		ScoreUtils.ratingWindows = OptionUtils.ratingWindowTypes[currentOptions.ratingWindow];
 		ScoreUtils.ghostTapping = currentOptions.ghosttapping;
+		ScoreUtils.botPlay = currentOptions.botPlay;
+
 		Conductor.safeZoneOffset = ScoreUtils.ratingWindows[3]; // same as shit ms
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
@@ -1968,19 +1973,19 @@ class PlayState extends MusicBeatState
 			lua.call("update",[elapsed]);
 		}
 
-		iconP1.visible = modchart.hudVisible;
-		iconP2.visible = modchart.hudVisible;
-		healthBar.visible = modchart.hudVisible;
-		healthBarBG.visible = modchart.hudVisible;
-		sicksTxt.visible = modchart.hudVisible;
-		badsTxt.visible = modchart.hudVisible;
-		shitsTxt.visible = modchart.hudVisible;
-		goodsTxt.visible = modchart.hudVisible;
-		missesTxt.visible = modchart.hudVisible;
-		highComboTxt.visible = modchart.hudVisible;
+		iconP1.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
+		iconP2.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
+		healthBar.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
+		healthBarBG.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
+		sicksTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
+		badsTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
+		shitsTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
+		goodsTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
+		missesTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
+		highComboTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
 		scoreTxt.visible = modchart.hudVisible;
 		if(presetTxt!=null)
-			presetTxt.visible = modchart.hudVisible;
+			presetTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
 
 
 		super.update(elapsed);
@@ -2665,6 +2670,10 @@ class PlayState extends MusicBeatState
 	private function popUpScore(noteDiff:Float):Void
 	{
 		var daRating = ScoreUtils.DetermineRating(noteDiff);
+		if(ScoreUtils.botPlay){
+			daRating='sick';
+		}
+
 		totalNotes++;
 		// boyfriend.playAnim('hey');
 		vocals.volume = 1;
@@ -2896,12 +2905,42 @@ class PlayState extends MusicBeatState
 		var holdArray:Array<Bool> = [left,down,up,right];
 		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
 
+		if(ScoreUtils.botPlay){
+			holdArray=[false,false,false,false];
+			controlArray=[false,false,false,false];
+		}
+
+		if(ScoreUtils.botPlay){
+			for(note in hittableNotes){
+				if(note.mustPress && note.canBeHit && note.strumTime<=Conductor.songPosition){
+					if(note.sustainLength>0 && botplayHoldMaxTimes[note.noteData]<note.sustainLength){
+						controlArray[note.noteData]=true;
+						botplayHoldTimes[note.noteData] = (note.sustainLength/1000)+.2;
+					}else if(note.isSustainNote && botplayHoldMaxTimes[note.noteData]==0){
+						holdArray[note.noteData] = true;
+					}
+					if(!note.isSustainNote){
+						controlArray[note.noteData]=true;
+						if(botplayHoldTimes[note.noteData]<=.2){
+							botplayHoldTimes[note.noteData] = .2;
+						}
+					}
+				}
+			}
+			for(idx in 0...botplayHoldTimes.length){
+				if(botplayHoldTimes[idx]>0){
+					holdArray[idx]=true;
+					botplayHoldTimes[idx]-=FlxG.elapsed;
+				}
+			}
+		}
+
 		if(holdArray.contains(true)){
 			for(idx in 0...holdArray.length){
 				var isHeld = holdArray[idx];
 				if(isHeld){
 					for(daNote in susNoteLanes[idx]){
-						if(daNote.isSustainNote && daNote.canBeHit){
+						if(daNote.isSustainNote && daNote.canBeHit && !daNote.wasGoodHit){
 							noteHit(daNote);
 						}
 					}
@@ -2917,7 +2956,7 @@ class PlayState extends MusicBeatState
 				if(pressed){
 					var nextHit = noteLanes[idx][0];
 					if(nextHit!=null){
-						if(nextHit.canBeHit){
+						if(nextHit.canBeHit && !nextHit.wasGoodHit){
 							hitSomething=true;
 							boyfriend.holdTimer=0;
 							noteHit(nextHit);

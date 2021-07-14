@@ -32,12 +32,11 @@ class OptionsMenu extends MusicBeatState
 			new OptionCategory("Modifiers",[
 				new ToggleOption("failForMissing","Sudden Death"),
 			]),
+			new ToggleOption("loadModcharts","Load Lua modcharts"),
 			new ScrollOption("ratingWindow",0,OptionUtils.ratingWindowNames.length-1,OptionUtils.ratingWindowNames),
 			new ToggleOption("ghosttapping","Ghost-tapping","Missing when you hit nothing"),
+			new ToggleOption("botPlay","BotPlay","Let a bot play for you"),
 			new StateOption("Calibrate Offset",new SoundOffsetState()),
-		]),
-		new OptionCategory("Modification",[
-			new ToggleOption("loadModcharts","Load Lua modcharts"),
 		]),
 		new OptionCategory("Preferences",[
 			new ToggleOption("pauseHoldAnims","Holds pause anims", "Do animations get paused on the first frame on holds"),
