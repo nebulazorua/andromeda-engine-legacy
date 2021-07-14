@@ -14,6 +14,7 @@ class Cache {
     charFrames.clear();
     xmlData.clear();
     LuaStorage.objectProperties.clear();
+    LuaStorage.objects.clear();
     trace("CLEARED CACHE!");
   }
 }

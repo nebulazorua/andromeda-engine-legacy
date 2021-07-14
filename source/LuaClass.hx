@@ -16,6 +16,11 @@ import sys.FileSystem;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.FlxCamera;
 import Shaders;
+import Options;
+import flixel.tweens.FlxEase;
+import flixel.tweens.FlxTween;
+import haxe.DynamicAccess;
+
 typedef LuaProperty = {
     var defaultValue:Any;
     var getter:(State,Any)->Int;
@@ -24,6 +29,7 @@ typedef LuaProperty = {
 
 class LuaStorage {
   public static var objectProperties:Map<String,Map<String,LuaProperty>> = [];
+  public static var objects:Map<String,LuaClass> = [];
 }
 
 class LuaClass {
@@ -225,11 +231,11 @@ class LuaWindow extends LuaClass {
 class LuaSprite extends LuaClass {
   private static var state:State;
   private static var stringToCentering:Map<String,FlxAxes> = [
-        "X"=>X,
-        "XY"=>XY,
-        "Y"=>Y,
-        "YX"=>XY
-      ];
+    "X"=>X,
+    "XY"=>XY,
+    "Y"=>Y,
+    "YX"=>XY
+  ];
   public var sprite:FlxSprite;
   private function SetNumProperty(l:State){
       // 1 = self
@@ -306,33 +312,6 @@ class LuaSprite extends LuaClass {
 
   private static var getPropertyC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(getProperty);
 
-  private static function playSpriteAnim(l:StatePointer):Int{
-    // 1 = self
-    // 2 = anim
-    // 3 = forced
-    // 4 = reversed
-    // 5 = frame
-    var anim = LuaL.checkstring(state,2);
-    var forced = false;
-    var reversed = false;
-    var frame:Int = 0;
-
-    if(Lua.isboolean(state,3))
-      forced = Lua.toboolean(state,3);
-
-    if(Lua.isboolean(state,4))
-      reversed = Lua.toboolean(state,4);
-
-    if(Lua.isnumber(state,5))
-      frame = Std.int(Lua.tonumber(state,5));
-
-    Lua.getfield(state,1,"spriteName");
-    var spriteName = Lua.tostring(state,-1);
-    var sprite = PlayState.currentPState.luaSprites[spriteName];
-    sprite.animation.play(anim,forced,reversed,frame);
-    return 0;
-  }
-
   private static function addSpriteAnimByPrefix(l:StatePointer):Int{
     // 1 = self
     // 2 = anim name
@@ -379,8 +358,6 @@ class LuaSprite extends LuaClass {
     var animName = LuaL.checkstring(state,2);
     LuaL.checktable(state,3);
     var frames = Convert.fromLua(state,3);
-    trace("ADDANIM");
-    trace("addAnim: " + frames);
     var framerate:Float = 24;
     var looped:Bool = true;
     var flipX:Bool = false;
@@ -557,9 +534,28 @@ class LuaSprite extends LuaClass {
     return 0;
   }
 
+  private static function tween(l:StatePointer):Int{
+    // 1 = self
+    // 2 = properties
+    // 3 = time
+    // 4 = easing-style
+    LuaL.checktable(state,2);
+    var properties:DynamicAccess<Any> = Convert.fromLua(state,2);
+    var time = LuaL.checknumber(state,3);
+    var style = LuaL.checkstring(state,4);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    var luaObj = LuaStorage.objects[spriteName];
+    FlxTween.tween(sprite,properties,time,{
+      ease: Reflect.field(FlxEase,style),
+    });
+    return 1;
+
+  }
+
   private static var changeAnimFramerateC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(changeAnimFramerate);
   private static var animExistsC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(animExists);
-  private static var playSpriteAnimC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(playSpriteAnim);
   private static var addSpriteAnimByPrefixC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addSpriteAnimByPrefix);
   private static var addSpriteAnimByIndicesC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addSpriteAnimByIndices);
   private static var addSpriteAnimC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addSpriteAnim);
@@ -567,6 +563,7 @@ class LuaSprite extends LuaClass {
   private static var loadGraphicC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(loadGraphic);
   private static var setFramesC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setFrames);
   private static var playAnimSpriteC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(playAnimSprite);
+  private static var tweenC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(tween);
 
   public function new(sprite:FlxSprite,name:String,?addToGlobal:Bool=true){
     super();
@@ -574,6 +571,7 @@ class LuaSprite extends LuaClass {
     this.addToGlobal=addToGlobal;
     this.sprite=sprite;
     PlayState.currentPState.luaSprites[name]=sprite;
+    LuaStorage.objects[name]=this;
     properties=[
       "spriteName"=>{
         defaultValue:name,
@@ -649,6 +647,17 @@ class LuaSprite extends LuaClass {
         },
         setter:function(l:State){
           LuaL.error(l,"setScale is read-only.");
+          return 0;
+        }
+      },
+      "tween"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,tweenC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"tween is read-only.");
           return 0;
         }
       },
@@ -879,7 +888,8 @@ class LuaCam extends LuaClass {
   private static function setShaders(l:StatePointer):Int{
     // 1 = self
     // 2 = table of shaders
-
+    var stuff = Convert.fromLua(state,2);
+    trace(stuff);
     return 0;
   }
 
@@ -960,6 +970,17 @@ class LuaCam extends LuaClass {
           return 0;
         }
       },
+      "setShaders"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,setShadersC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"setShaders is read-only.");
+          return 0;
+        }
+      },
     ];
   }
   override function Register(l:State){
@@ -976,7 +997,6 @@ class LuaCharacter extends LuaSprite {
     var char = LuaL.checkstring(state,2);
     Lua.getfield(state,1,"spriteName");
     var spriteName = Lua.tostring(state,-1);
-    //var sprite = PlayState.currentPState.luaSprites[spriteName];
     PlayState.currentPState.swapCharacterByLuaName(spriteName,char);
 
     return 0;
@@ -1085,7 +1105,7 @@ class LuaCharacter extends LuaSprite {
 
 class LuaShaderClass extends LuaClass {
   private static var state:State;
-  private static var effect:LuaEffect;
+  private static var effect:Any;
   private function SetNumProperty(l:State){
       // 1 = self
       // 2 = key
@@ -1127,7 +1147,7 @@ class LuaShaderClass extends LuaClass {
   private static var setvarC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setProperty);
   private static var getvarC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(getProperty);
 
-  public function new(shader:LuaEffect,shaderName:String,?addToGlobal=false){
+  public function new(shader:Any,shaderName:String,?addToGlobal=false){
     super();
     if(PlayState.currentPState.luaObjects.get(shaderName)!=null){
       var counter:Int = 0;
@@ -1187,6 +1207,7 @@ class LuaShaderClass extends LuaClass {
 class LuaModchart extends LuaClass {
   private static var state:State;
   private var modchart:ModChart;
+  private var options:Options;
   private function SetNumProperty(l:State){
       // 1 = self
       // 2 = key
@@ -1250,11 +1271,23 @@ class LuaModchart extends LuaClass {
       return 1;
   }
 
+
   public function new(modchart:ModChart){
     super();
     this.modchart=modchart;
     className = 'modchart';
     properties = [
+      "className"=>{
+        defaultValue:className,
+        getter:function(l:State,data:Any){
+          Lua.pushstring(l,className);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"className is read-only.");
+          return 0;
+        }
+      },
       "playerNotesFollowReceptors"=>{
         defaultValue: modchart.playerNotesFollowReceptors,
         getter:GetBoolProperty,
@@ -1300,7 +1333,73 @@ class LuaNote extends LuaClass {
       "alpha"=>{
         defaultValue: 1 ,
         getter: function(l:State,data:Any):Int{
-          Lua.pushnumber(l,data);
+          if(plr){
+            Lua.pushnumber(l,PlayState.currentPState.refNotes.members[noteData].alpha);
+            Lua.pushnumber(l,PlayState.currentPState.refReceptors.members[noteData].alpha);
+          }else{
+            Lua.pushnumber(l,PlayState.currentPState.opponentRefNotes.members[noteData].alpha);
+            Lua.pushnumber(l,PlayState.currentPState.opponentRefReceptors.members[noteData].alpha);
+          }
+          return 1;
+        },
+        setter: function(l:State):Int{
+          // 1 = self
+          // 2 = key
+          // 3 = value
+          // 4 = metatable
+          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+            return 0;
+          }
+
+          var alpha = Lua.tonumber(l,3);
+          if(plr){
+            PlayState.currentPState.refNotes.members[noteData].alpha=alpha;
+            PlayState.currentPState.refReceptors.members[noteData].alpha=alpha;
+          }else{
+            PlayState.currentPState.opponentRefNotes.members[noteData].alpha=alpha;
+            PlayState.currentPState.opponentRefReceptors.members[noteData].alpha=alpha;
+          }
+          LuaClass.DefaultSetter(l);
+          return 0;
+        }
+      },
+      "receptorAlpha"=>{
+        defaultValue: 1 ,
+        getter: function(l:State,data:Any):Int{
+          if(plr)
+            Lua.pushnumber(l,PlayState.currentPState.refReceptors.members[noteData].alpha);
+          else
+            Lua.pushnumber(l,PlayState.currentPState.opponentRefReceptors.members[noteData].alpha);
+          return 1;
+        },
+        setter: function(l:State):Int{
+          // 1 = self
+          // 2 = key
+          // 3 = value
+          // 4 = metatable
+          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+            return 0;
+          }
+
+          var alpha = Lua.tonumber(l,3);
+          if(plr)
+            PlayState.currentPState.refReceptors.members[noteData].alpha=alpha;
+          else
+            PlayState.currentPState.opponentRefReceptors.members[noteData].alpha=alpha;
+
+          LuaClass.DefaultSetter(l);
+          return 0;
+        }
+      },
+      "noteAlpha"=>{
+        defaultValue: 1 ,
+        getter: function(l:State,data:Any):Int{
+          if(plr)
+            Lua.pushnumber(l,PlayState.currentPState.refNotes.members[noteData].alpha);
+          else
+            Lua.pushnumber(l,PlayState.currentPState.opponentRefNotes.members[noteData].alpha);
           return 1;
         },
         setter: function(l:State):Int{
@@ -1326,7 +1425,10 @@ class LuaNote extends LuaClass {
       "angle"=>{
         defaultValue: 1 ,
         getter: function(l:State,data:Any):Int{
-          Lua.pushnumber(l,data);
+          if(plr)
+            Lua.pushnumber(l,PlayState.currentPState.refNotes.members[noteData].angle);
+          else
+            Lua.pushnumber(l,PlayState.currentPState.opponentRefNotes.members[noteData].angle);
           return 1;
         },
         setter: function(l:State):Int{
@@ -1353,7 +1455,10 @@ class LuaNote extends LuaClass {
       "xOffset"=>{
         defaultValue: 0,
         getter: function(l:State,data:Any):Int{
-          Lua.pushnumber(l,data);
+          if(plr)
+            Lua.pushnumber(l,PlayState.currentPState.playerNoteOffsets[noteData][0]);
+          else
+            Lua.pushnumber(l,PlayState.currentPState.opponentNoteOffsets[noteData][0]);
           return 1;
         },
         setter: function(l:State):Int{
@@ -1379,7 +1484,10 @@ class LuaNote extends LuaClass {
       "yOffset"=>{
         defaultValue: 0,
         getter: function(l:State,data:Any):Int{
-          Lua.pushnumber(l,data);
+          if(plr)
+            Lua.pushnumber(l,PlayState.currentPState.playerNoteOffsets[noteData][1]);
+          else
+            Lua.pushnumber(l,PlayState.currentPState.opponentNoteOffsets[noteData][1]);
           return 1;
         },
         setter: function(l:State):Int{

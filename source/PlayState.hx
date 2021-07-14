@@ -71,6 +71,7 @@ class PlayState extends MusicBeatState
 	public static var storyWeek:Int = 0;
 	public static var storyPlaylist:Array<String> = [];
 	public static var storyDifficulty:Int = 1;
+	public static var scrollSpeed:Float = 1;
 	public var dontSync:Bool=false;
 	public var currentTrackPos:Float = 0;
 	public var currentVisPos:Float = 0;
@@ -100,6 +101,8 @@ class PlayState extends MusicBeatState
 	private var playerStrumLines:FlxTypedGroup<FlxSprite>;
 	public var refNotes:FlxTypedGroup<FlxSprite>;
 	public var opponentRefNotes:FlxTypedGroup<FlxSprite>;
+	public var refReceptors:FlxTypedGroup<FlxSprite>;
+	public var opponentRefReceptors:FlxTypedGroup<FlxSprite>;
 	private var opponentStrumLines:FlxTypedGroup<FlxSprite>;
 	public var luaSprites:Map<String, Dynamic>;
 	public var luaObjects:Map<String, Dynamic>;
@@ -281,6 +284,7 @@ class PlayState extends MusicBeatState
 			SONG = Song.loadFromJson('tutorial');
 
 		mapVelocityChanges();
+
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
 
@@ -876,9 +880,6 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition = -5000;
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
-		if(currentOptions.downScroll){
-			strumLine.y = FlxG.height-150;
-		}
 		strumLine.scrollFactor.set();
 
 		strumLineNotes = new FlxTypedGroup<FlxSprite>();
@@ -890,6 +891,8 @@ class PlayState extends MusicBeatState
 		luaObjects = new Map<String, FlxBasic>();
 		refNotes = new FlxTypedGroup<FlxSprite>();
 		opponentRefNotes = new FlxTypedGroup<FlxSprite>();
+		refReceptors = new FlxTypedGroup<FlxSprite>();
+		opponentRefReceptors = new FlxTypedGroup<FlxSprite>();
 		playerStrums = new FlxTypedGroup<FlxSprite>();
 		dadStrums = new FlxTypedGroup<FlxSprite>();
 
@@ -924,9 +927,6 @@ class PlayState extends MusicBeatState
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
-		if(currentOptions.downScroll){
-			healthBarBG.y = FlxG.height*.1;
-		}
 
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
@@ -1061,6 +1061,31 @@ class PlayState extends MusicBeatState
 				return Reflect.field(this,variable);
 			});
 
+			Lua_helper.add_callback(lua.state,"setOption", function(variable:String,val:Any){
+				Reflect.setField(currentOptions,variable,val);
+			});
+
+			Lua_helper.add_callback(lua.state,"getOption", function(variable:String){
+				return Reflect.field(currentOptions,variable);
+			});
+
+			/*
+			Lua_helper.add_callback(lua.state,"newShader", function(shaderType:String, ?shaderName:String){
+				var shader:Any;
+				var name = "UnnamedShader"+unnamedLuaShaders;
+
+				if(shaderName!=null)
+					name=shaderName;
+				else
+					unnamedLuaShaders++;
+
+				var lShader = new LuaShaderClass(shader,name,shaderName!=null);
+				var classIdx = Lua.gettop(lua.state)+1;
+				lShader.Register(lua.state);
+				Lua.pushvalue(lua.state,classIdx);
+			});*/
+			// put on pause for now
+
 			Lua_helper.add_callback(lua.state,"newSprite", function(?x:Int=0,?y:Int=0,?drawBehind:Bool=false,?spriteName:String){
 				var sprite = new FlxSprite(x,y);
 				var name = "UnnamedSprite"+unnamedLuaSprites;
@@ -1125,6 +1150,8 @@ class PlayState extends MusicBeatState
 			var upDadNote = new LuaNote(2,false);
 			var rightDadNote = new LuaNote(3,false);
 
+			var luaModchart = new LuaModchart(modchart);
+
 			bfLua = new LuaCharacter(boyfriend,"bf",true);
 			gfLua = new LuaCharacter(gf,"gf",true);
 			dadLua = new LuaCharacter(dad,"dad",true);
@@ -1136,7 +1163,7 @@ class PlayState extends MusicBeatState
 
 			var luaGameCam = new LuaCam(FlxG.camera,"gameCam");
 			var luaHUDCam = new LuaCam(camHUD,"HUDCam");
-			for(i in [leftPlayerNote,downPlayerNote,upPlayerNote,rightPlayerNote,leftDadNote,downDadNote,upDadNote,rightDadNote,window,bfLua,gfLua,dadLua,bfIcon,dadIcon,luaGameCam,luaHUDCam])
+			for(i in [luaModchart,leftPlayerNote,downPlayerNote,upPlayerNote,rightPlayerNote,leftDadNote,downDadNote,upDadNote,rightDadNote,window,bfLua,gfLua,dadLua,bfIcon,dadIcon,luaGameCam,luaHUDCam])
 				i.Register(lua.state);
 
 			try {
@@ -1144,10 +1171,16 @@ class PlayState extends MusicBeatState
 			}catch (e:Exception){
 				trace("ERROR: " + e);
 			};
-
-			if(lua!=null && luaModchartExists)
-				lua.call("init",[]);
 		}
+
+		scrollSpeed = (currentOptions.downScroll?-(SONG.speed*.45):SONG.speed*.45);
+		if(currentOptions.downScroll){
+			strumLine.y = FlxG.height-150;
+		}
+		if(currentOptions.downScroll){
+			healthBarBG.y = FlxG.height*.1;
+		}
+
 
 		if (isStoryMode)
 		{
@@ -1256,7 +1289,6 @@ class PlayState extends MusicBeatState
 
 	function schoolIntro(?dialogueBox:DialogueBox):Void
 	{
-		modchart.hudVisible=false;
 		var black:FlxSprite = new FlxSprite(-100, -100).makeGraphic(FlxG.width * 2, FlxG.height * 2, FlxColor.BLACK);
 		black.scrollFactor.set();
 		add(black);
@@ -1344,7 +1376,6 @@ class PlayState extends MusicBeatState
 
 	function startCountdown():Void
 	{
-		modchart.hudVisible=true;
 		inCutscene = false;
 
 		generateStaticArrows(0);
@@ -1688,10 +1719,12 @@ class PlayState extends MusicBeatState
 				playerStrums.add(babyArrow);
 				playerStrumLines.add(newStrumLine);
 				refNotes.add(newNoteRef);
+				refReceptors.add(newNoteRef);
 			}else{
 				dadStrums.add(babyArrow);
 				opponentStrumLines.add(newStrumLine);
 				opponentRefNotes.add(newNoteRef);
+				opponentRefReceptors.add(newNoteRef);
 			}
 
 			if (!isStoryMode)
@@ -1880,7 +1913,7 @@ class PlayState extends MusicBeatState
 		if(!note.mustPress){
 			hitPos = opponentStrumLines.members[note.noteData];
 		}
-		return hitPos.y + ((note.initialPos-currentTrackPos) * (currentOptions.downScroll?-(SONG.speed*.45):SONG.speed*.45));
+		return hitPos.y + ((note.initialPos-currentTrackPos) * scrollSpeed);
 	}
 
 	// ADAPTED FROM QUAVER!!!
@@ -2286,13 +2319,13 @@ class PlayState extends MusicBeatState
 				var note = strumLineNotes.members[idx];
 				var offset = opponentNoteOffsets[idx%4];
 				var strumLine = opponentStrumLines.members[idx%4];
-				var alpha = opponentRefNotes.members[idx%4].alpha;
-				var angle = opponentRefNotes.members[idx%4].angle;
+				var alpha = opponentRefReceptors.members[idx%4].alpha;
+				var angle = opponentRefReceptors.members[idx%4].angle;
 				if(idx>3){
 					offset = playerNoteOffsets[idx%4];
 					strumLine = playerStrumLines.members[idx%4];
-					alpha = refNotes.members[idx%4].alpha;
-					angle = refNotes.members[idx%4].angle;
+					alpha = refReceptors.members[idx%4].alpha;
+					angle = refReceptors.members[idx%4].angle;
 				}
 				if(modchart.opponentNotesFollowReceptors && idx>3 || idx<=3 && modchart.playerNotesFollowReceptors){
 					note.x = strumLine.x;
@@ -2717,7 +2750,6 @@ class PlayState extends MusicBeatState
 		var daLoop:Float = 0;
 		for (i in seperatedScore)
 		{
-			trace(i);
 			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
 			numScore.screenCenter(XY);
 			numScore.x = coolText.x + (43 * daLoop) - 90;

@@ -154,7 +154,7 @@ class Note extends FlxSprite
 				var offset = prevNote.offset.x;
 				prevNote.animation.play('${colors[noteData]}hold');
 				if(!beingCharted)
-					prevNote.scale.y = Conductor.stepCrochet / 100 * prevNote.scale.y * 1.5 * (PlayState.getSVFromTime(strumTime));
+					prevNote.scale.y = Conductor.stepCrochet / 100 * prevNote.scale.y * 1.5 * ((PlayState.getSVFromTime(strumTime)*PlayState.scrollSpeed)*(1/.45));
 				prevNote.updateHitbox();
 				prevNote.offset.x = offset;
 				// prevNote.setGraphicSize();

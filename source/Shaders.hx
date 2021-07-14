@@ -7,6 +7,7 @@ import openfl.display.ShaderInput;
 import openfl.utils.Assets;
 import flixel.FlxG;
 import openfl.Lib;
+using StringTools;
 typedef ShaderEffect = {
   var shader:Dynamic;
 }
@@ -22,24 +23,6 @@ class BuildingEffect {
   }
   public function setAlpha(alpha:Float){
     shader.alphaShit.value[0]=alpha;
-  }
-}
-
-class LuaEffect {
-  public var shader:LuaShader;
-  public function new(data:String){
-    shader = new LuaShader(data);
-  }
-}
-
-class LuaShader extends FlxShader
-{
-  public function new(fragShader:String){
-    super();
-    glFragmentSource = '
-      #pragma header
-      ${fragShader}
-    ';
   }
 }
 
