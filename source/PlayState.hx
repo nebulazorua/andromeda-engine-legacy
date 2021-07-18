@@ -288,6 +288,7 @@ class PlayState extends MusicBeatState
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
 
+		SONG.sliderVelocities.sort((a,b)->Std.int(a.startTime-b.startTime));
 		mapVelocityChanges();
 
 		Conductor.mapBPMChanges(SONG);
