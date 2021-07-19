@@ -288,6 +288,8 @@ class PlayState extends MusicBeatState
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
 
+		SONG.initialSpeed = SONG.speed*.45;
+
 		SONG.sliderVelocities.sort((a,b)->Std.int(a.startTime-b.startTime));
 		mapVelocityChanges();
 
@@ -1179,7 +1181,7 @@ class PlayState extends MusicBeatState
 			};
 		}
 
-		scrollSpeed = (currentOptions.downScroll?-(SONG.speed*.45):SONG.speed*.45);
+		scrollSpeed = (currentOptions.downScroll?-1:1);
 		if(currentOptions.downScroll){
 			strumLine.y = FlxG.height-150;
 		}
@@ -1720,17 +1722,20 @@ class PlayState extends MusicBeatState
 			var newNoteRef:FlxSprite = new FlxSprite(0,-1000).makeGraphic(10, 10);
 			newNoteRef.scrollFactor.set();
 
+			var newRecepRef:FlxSprite = new FlxSprite(0,-1000).makeGraphic(10, 10);
+			newRecepRef.scrollFactor.set();
+
 			if (player == 1)
 			{
 				playerStrums.add(babyArrow);
 				playerStrumLines.add(newStrumLine);
 				refNotes.add(newNoteRef);
-				refReceptors.add(newNoteRef);
+				refReceptors.add(newRecepRef);
 			}else{
 				dadStrums.add(babyArrow);
 				opponentStrumLines.add(newStrumLine);
 				opponentRefNotes.add(newNoteRef);
-				opponentRefReceptors.add(newNoteRef);
+				opponentRefReceptors.add(newRecepRef);
 			}
 
 			if (!isStoryMode)
@@ -1884,6 +1889,10 @@ class PlayState extends MusicBeatState
 			idx++;
 		}
 		return getPosFromTimeSV(strumTime,idx);
+	}
+
+	public static function getSusLength(strumTime:Float):Float{
+		return (getSVFromTime(strumTime)*(scrollSpeed*(1/.45) ));
 	}
 
 	public static function getSVFromTime(strumTime:Float):Float{
@@ -2344,197 +2353,199 @@ class PlayState extends MusicBeatState
 				note.angle=angle;
 			}
 
-			renderedNotes.forEachAlive(function(daNote:Note)
-			{
-				var strumLine = strumLine;
-				if(modchart.playerNotesFollowReceptors)
-					strumLine = playerStrumLines.members[daNote.noteData];
-
-
-				var alpha = refNotes.members[daNote.noteData].alpha;
-				if(!daNote.mustPress){
-					alpha = opponentRefNotes.members[daNote.noteData].alpha;
-					if(modchart.opponentNotesFollowReceptors)
-						strumLine = opponentStrumLines.members[daNote.noteData];
-				}
-
-				if (daNote.y > FlxG.height)
+			if(startedCountdown){
+				renderedNotes.forEachAlive(function(daNote:Note)
 				{
-					daNote.active = false;
+					var strumLine = strumLine;
+					if(modchart.playerNotesFollowReceptors)
+						strumLine = playerStrumLines.members[daNote.noteData];
 
-					daNote.visible = false;
-				}
-				else
-				{
-					if((daNote.mustPress || !daNote.mustPress && !currentOptions.middleScroll)){
-						daNote.visible = true;
+
+					var alpha = refNotes.members[daNote.noteData].alpha;
+					if(!daNote.mustPress){
+						alpha = opponentRefNotes.members[daNote.noteData].alpha;
+						if(modchart.opponentNotesFollowReceptors)
+							strumLine = opponentStrumLines.members[daNote.noteData];
 					}
 
-					daNote.active = true;
-				}
-
-				if(!daNote.mustPress && currentOptions.middleScroll){
-					daNote.visible=false;
-				}
-
-				var brr = strumLine.y + Note.swagWidth/2;
-				daNote.y = getYPosition(daNote);
-				if(currentOptions.downScroll){
-					if(daNote.isSustainNote){
-						if(daNote.animation.curAnim.name.endsWith("end") && daNote.prevNote!=null){
-							daNote.y += daNote.prevNote.height;
-						}else{
-							daNote.y += daNote.height/2;
-						}
-					}
-					if (daNote.isSustainNote
-						&& daNote.y-daNote.offset.y*daNote.scale.y+daNote.height>=brr
-						&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+					if (daNote.y > FlxG.height)
 					{
-						var swagRect = new FlxRect(0,0,daNote.frameWidth*2,daNote.frameHeight*2);
-						swagRect.height = (brr-daNote.y)/daNote.scale.y;
-						swagRect.y = daNote.frameHeight-swagRect.height;
+						daNote.active = false;
 
-						daNote.clipRect = swagRect;
+						daNote.visible = false;
 					}
-				}else{
-					if (daNote.isSustainNote
-						&& daNote.y + daNote.offset.y * daNote.scale.y <= brr
-						&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
-					{
-						var swagRect = new FlxRect(0,0,daNote.width/daNote.scale.x,daNote.height/daNote.scale.y);
-						swagRect.y = (brr-daNote.y)/daNote.scale.y;
-						swagRect.height -= swagRect.y;
-
-						daNote.clipRect = swagRect;
-					}
-				}
-
-
-				daNote.x = strumLine.x;
-				if(daNote.isSustainNote){
-
-					if(daNote.tooLate)
-						daNote.alpha = .3;
 					else
-						daNote.alpha = FlxMath.lerp(.6, 0, 1-alpha);
-				}else{
-					if(daNote.tooLate)
-						daNote.alpha = .3;
-					else
-						daNote.alpha = alpha;
-				}
-
-				if (!daNote.mustPress && daNote.canBeHit && !daNote.wasGoodHit)
-				{
-					dadStrums.forEach(function(spr:FlxSprite)
 					{
-						if (Math.abs(daNote.noteData) == spr.ID)
-						{
-							spr.animation.play('confirm', true);
-						}
-					});
-					if (SONG.song != 'Tutorial')
-						camZooming = true;
-
-					var altAnim:String = "";
-
-					if (SONG.notes[Math.floor(curStep / 16)] != null)
-					{
-						if (SONG.notes[Math.floor(curStep / 16)].altAnim)
-							altAnim = '-alt';
-					}
-					if(luaModchartExists && lua!=null){
-						lua.call("dadNoteHit",[Math.abs(daNote.noteData),daNote.strumTime,Conductor.songPosition]); // TODO: Note lua class???
-					}
-					health -= modchart.opponentHPDrain;
-
-						//if(!daNote.isSustainNote){
-
-						var anim = "";
-						switch (Math.abs(daNote.noteData))
-						{
-						case 0:
-							//dad.playAnim('singLEFT' + altAnim, true);
-							anim='singLEFT' + altAnim;
-						case 1:
-							//dad.playAnim('singDOWN' + altAnim, true);
-							anim='singDOWN' + altAnim;
-						case 2:
-							//dad.playAnim('singUP' + altAnim, true);
-							anim='singUP' + altAnim;
-						case 3:
-							//dad.playAnim('singRIGHT' + altAnim, true);
-							anim='singRIGHT' + altAnim;
+						if((daNote.mustPress || !daNote.mustPress && !currentOptions.middleScroll)){
+							daNote.visible = true;
 						}
 
+						daNote.active = true;
+					}
 
-						var canHold = daNote.isSustainNote && dad.animation.getByName(anim+"Hold")!=null;
-						if(canHold && !dad.animation.curAnim.name.startsWith(anim)){
-							dad.playAnim(anim,true);
-						}else if(currentOptions.pauseHoldAnims && !canHold){
-							dad.playAnim(anim,true);
-							if(daNote.holdParent )
-								dad.holding=true;
-							else{
-								dad.holding=false;
+					if(!daNote.mustPress && currentOptions.middleScroll){
+						daNote.visible=false;
+					}
+
+					var brr = strumLine.y + Note.swagWidth/2;
+					daNote.y = getYPosition(daNote);
+					if(currentOptions.downScroll){
+						if(daNote.isSustainNote){
+							if(daNote.animation.curAnim.name.endsWith("end") && daNote.prevNote!=null){
+								daNote.y += daNote.prevNote.height;
+							}else{
+								daNote.y += daNote.height/2;
 							}
-						}else if(!currentOptions.pauseHoldAnims && !canHold){
-							dad.playAnim(anim,true);
+						}
+						if (daNote.isSustainNote
+							&& daNote.y-daNote.offset.y*daNote.scale.y+daNote.height>=brr
+							&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+						{
+							var swagRect = new FlxRect(0,0,daNote.frameWidth*2,daNote.frameHeight*2);
+							swagRect.height = (brr-daNote.y)/daNote.scale.y;
+							swagRect.y = daNote.frameHeight-swagRect.height;
+
+							daNote.clipRect = swagRect;
+						}
+					}else{
+						if (daNote.isSustainNote
+							&& daNote.y + daNote.offset.y * daNote.scale.y <= brr
+							&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
+						{
+							var swagRect = new FlxRect(0,0,daNote.width/daNote.scale.x,daNote.height/daNote.scale.y);
+							swagRect.y = (brr-daNote.y)/daNote.scale.y;
+							swagRect.height -= swagRect.y;
+
+							daNote.clipRect = swagRect;
+						}
+					}
+
+
+
+					daNote.x = strumLine.x;
+					if(daNote.isSustainNote){
+
+						if(daNote.tooLate)
+							daNote.alpha = .3;
+						else
+							daNote.alpha = FlxMath.lerp(.6, 0, 1-alpha);
+					}else{
+						if(daNote.tooLate)
+							daNote.alpha = .3;
+						else
+							daNote.alpha = alpha;
+					}
+
+					if (!daNote.mustPress && daNote.canBeHit && !daNote.wasGoodHit)
+					{
+						dadStrums.forEach(function(spr:FlxSprite)
+						{
+							if (Math.abs(daNote.noteData) == spr.ID)
+							{
+								spr.animation.play('confirm', true);
+							}
+						});
+						if (SONG.song != 'Tutorial')
+							camZooming = true;
+
+						var altAnim:String = "";
+
+						if (SONG.notes[Math.floor(curStep / 16)] != null)
+						{
+							if (SONG.notes[Math.floor(curStep / 16)].altAnim)
+								altAnim = '-alt';
+						}
+						if(luaModchartExists && lua!=null){
+							lua.call("dadNoteHit",[Math.abs(daNote.noteData),daNote.strumTime,Conductor.songPosition]); // TODO: Note lua class???
+						}
+						health -= modchart.opponentHPDrain;
+
+							//if(!daNote.isSustainNote){
+
+							var anim = "";
+							switch (Math.abs(daNote.noteData))
+							{
+							case 0:
+								//dad.playAnim('singLEFT' + altAnim, true);
+								anim='singLEFT' + altAnim;
+							case 1:
+								//dad.playAnim('singDOWN' + altAnim, true);
+								anim='singDOWN' + altAnim;
+							case 2:
+								//dad.playAnim('singUP' + altAnim, true);
+								anim='singUP' + altAnim;
+							case 3:
+								//dad.playAnim('singRIGHT' + altAnim, true);
+								anim='singRIGHT' + altAnim;
+							}
+
+
+							var canHold = daNote.isSustainNote && dad.animation.getByName(anim+"Hold")!=null;
+							if(canHold && !dad.animation.curAnim.name.startsWith(anim)){
+								dad.playAnim(anim,true);
+							}else if(currentOptions.pauseHoldAnims && !canHold){
+								dad.playAnim(anim,true);
+								if(daNote.holdParent )
+									dad.holding=true;
+								else{
+									dad.holding=false;
+								}
+							}else if(!currentOptions.pauseHoldAnims && !canHold){
+								dad.playAnim(anim,true);
+							}
+
+						//}
+						dad.holdTimer = 0;
+
+
+						if (SONG.needsVoices)
+							vocals.volume = 1;
+						daNote.wasGoodHit=true;
+						lastHitDadNote=daNote;
+						if(!daNote.isSustainNote){
+							daNote.kill();
+							if(daNote.mustPress)
+								noteLanes[daNote.noteData].remove(daNote);
+
+							hittableNotes.remove(daNote);
+							daNote.destroy();
+						}else if(daNote.mustPress){
+							susNoteLanes[daNote.noteData].remove(daNote);
+						}
+					}
+
+					// WIP interpolation shit? Need to fix the pause issue
+					// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
+
+					if ((!currentOptions.downScroll && daNote.y < -daNote.height || currentOptions.downScroll && daNote.y>FlxG.height) && daNote.mustPress)
+					{
+						if ((daNote.tooLate || !daNote.wasGoodHit))
+						{
+							//health -= 0.0475;
+							noteMiss(daNote.noteData);
+							totalNotes++;
+							vocals.volume = 0;
+							updateAccuracy();
 						}
 
-					//}
-					dad.holdTimer = 0;
+						daNote.active = false;
+						daNote.visible = false;
 
-
-					if (SONG.needsVoices)
-						vocals.volume = 1;
-					daNote.wasGoodHit=true;
-					lastHitDadNote=daNote;
-					if(!daNote.isSustainNote){
 						daNote.kill();
-						if(daNote.mustPress)
-							noteLanes[daNote.noteData].remove(daNote);
-
+						if(daNote.mustPress){
+							if(daNote.isSustainNote)
+								susNoteLanes[daNote.noteData].remove(daNote);
+							else
+								noteLanes[daNote.noteData].remove(daNote);
+						}
 						hittableNotes.remove(daNote);
+
+						renderedNotes.remove(daNote, true);
 						daNote.destroy();
-					}else if(daNote.mustPress){
-						susNoteLanes[daNote.noteData].remove(daNote);
 					}
-				}
-
-				// WIP interpolation shit? Need to fix the pause issue
-				// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
-
-				if ((!currentOptions.downScroll && daNote.y < -daNote.height || currentOptions.downScroll && daNote.y>FlxG.height) && daNote.mustPress)
-				{
-					if ((daNote.tooLate || !daNote.wasGoodHit))
-					{
-						//health -= 0.0475;
-						noteMiss(daNote.noteData);
-						totalNotes++;
-						vocals.volume = 0;
-						updateAccuracy();
-					}
-
-					daNote.active = false;
-					daNote.visible = false;
-
-					daNote.kill();
-					if(daNote.mustPress){
-						if(daNote.isSustainNote)
-							susNoteLanes[daNote.noteData].remove(daNote);
-						else
-							noteLanes[daNote.noteData].remove(daNote);
-					}
-					hittableNotes.remove(daNote);
-
-					renderedNotes.remove(daNote, true);
-					daNote.destroy();
-				}
-			});
+				});
+			}
 		}
-
 		dadStrums.forEach(function(spr:FlxSprite)
 		{
 			if (spr.animation.finished && spr.animation.curAnim.name=='confirm' && (lastHitDadNote==null || !lastHitDadNote.isSustainNote || lastHitDadNote.animation.curAnim==null || lastHitDadNote.animation.curAnim.name.endsWith("end")))
