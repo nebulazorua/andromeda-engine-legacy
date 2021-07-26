@@ -1891,7 +1891,7 @@ class PlayState extends MusicBeatState
 		return getPosFromTimeSV(strumTime,idx);
 	}
 
-	public static function getSusLength(strumTime:Float):Float{
+	public static function getFNFSpeed(strumTime:Float):Float{
 		return (getSVFromTime(strumTime)*(scrollSpeed*(1/.45) ));
 	}
 
@@ -2120,6 +2120,8 @@ class PlayState extends MusicBeatState
 				vocals.volume=0;
 				vocals.stop();
 			}
+
+			
 
 			if (!paused)
 			{
@@ -2422,7 +2424,7 @@ class PlayState extends MusicBeatState
 
 
 
-					daNote.x = strumLine.x;
+					daNote.x = strumLine.x+daNote.manualXOffset;
 					if(daNote.isSustainNote){
 
 						if(daNote.tooLate)

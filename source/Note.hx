@@ -14,6 +14,8 @@ class Note extends FlxSprite
 {
 	public var strumTime:Float = 0;
 
+	public var manualXOffset:Float = 0;
+	public var manualYOffset:Float = 0;
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
 	public var canBeHit:Bool = false;
@@ -130,6 +132,7 @@ class Note extends FlxSprite
 			//x+=width/2;
 			lastSustainPiece=true;
 
+			manualXOffset = width/2;
 			animation.play('${colors[noteData]}holdend');
 			updateHitbox();
 
@@ -139,24 +142,24 @@ class Note extends FlxSprite
 
 			//off -= width / 2;
 			//x -= width / 2;
+
+			manualXOffset -= width/ 2;
 			if (PlayState.curStage.startsWith('school'))
-				off -= 36.5;
+				manualXOffset += 30*scale;
 			else
-				off -= 2;
-
-
-
-			offset.x = off;
+				manualXOffset += 2;
 
 			if (prevNote.isSustainNote)
 			{
 				prevNote.lastSustainPiece=false;
-				var offset = prevNote.offset.x;
 				prevNote.animation.play('${colors[noteData]}hold');
 				if(!beingCharted)
-					prevNote.scale.y = Conductor.stepCrochet / 100 * prevNote.scale.y * 1.5 * (PlayState.getSusLength(strumTime));
+					prevNote.scale.y *= (.45*Conductor.stepCrochet*PlayState.getFNFSpeed(strumTime))/prevNote.height;
 				prevNote.updateHitbox();
-				prevNote.offset.x = offset;
+
+				prevNote.offset.y += -prevNote.offset.y;
+
+				offset.y += -offset.y;
 				// prevNote.setGraphicSize();
 			}
 		}
