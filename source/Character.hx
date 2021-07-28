@@ -13,7 +13,7 @@ class Character extends FlxSprite
 {
 	public var animOffsets:Map<String, Array<Dynamic>>;
 	public var debugMode:Bool = false;
-
+	public var offsetNames:Array<String>=[];
 	public var isPlayer:Bool = false;
 	public var curCharacter:String = 'bf';
 	public var holding:Bool=false;
@@ -625,6 +625,7 @@ class Character extends FlxSprite
 
 	public function addOffset(name:String, x:Float = 0, y:Float = 0)
 	{
+		offsetNames.push(name);
 		animOffsets[name] = [x, y];
 	}
 }

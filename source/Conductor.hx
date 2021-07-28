@@ -22,6 +22,8 @@ class Conductor
 	public static var songPosition:Float;
 	public static var lastSongPos:Float;
 	public static var offset:Float = 0;
+	public static var currentVisPos:Float =0;
+	public static var currentTrackPos:Float = 0;
 
 	public static var safeZoneOffset:Float = 166;
 

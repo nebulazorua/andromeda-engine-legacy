@@ -1919,8 +1919,8 @@ class PlayState extends MusicBeatState
 	}
 
 	function updatePositions(){
-		currentVisPos = Conductor.songPosition+currentOptions.noteOffset;
-		currentTrackPos = getPosFromTime(currentVisPos);
+		Conductor.currentVisPos = Conductor.songPosition+currentOptions.noteOffset;
+		Conductor.currentTrackPos = getPosFromTime(Conductor.currentVisPos);
 	}
 
 	function getYPosition(note:Note):Float{
@@ -1928,7 +1928,7 @@ class PlayState extends MusicBeatState
 		if(!note.mustPress){
 			hitPos = opponentStrumLines.members[note.noteData];
 		}
-		return hitPos.y + ((note.initialPos-currentTrackPos) * scrollSpeed);
+		return hitPos.y + ((note.initialPos-Conductor.currentTrackPos) * scrollSpeed);
 	}
 
 	// ADAPTED FROM QUAVER!!!
@@ -2121,7 +2121,7 @@ class PlayState extends MusicBeatState
 				vocals.stop();
 			}
 
-			
+
 
 			if (!paused)
 			{
@@ -2292,7 +2292,7 @@ class PlayState extends MusicBeatState
 
 		if (unspawnNotes[0] != null)
 		{
-			if (currentTrackPos-getPosFromTime(unspawnNotes[0].strumTime)>-300000)
+			if (Conductor.currentTrackPos-getPosFromTime(unspawnNotes[0].strumTime)>-300000)
 			{
 				var dunceNote:Note = unspawnNotes[0];
 				renderedNotes.add(dunceNote);

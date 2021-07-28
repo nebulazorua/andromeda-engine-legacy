@@ -145,7 +145,7 @@ class Note extends FlxSprite
 
 			manualXOffset -= width/ 2;
 			if (PlayState.curStage.startsWith('school'))
-				manualXOffset += 30*scale;
+				manualXOffset += 30;
 			else
 				manualXOffset += 2;
 
@@ -154,7 +154,7 @@ class Note extends FlxSprite
 				prevNote.lastSustainPiece=false;
 				prevNote.animation.play('${colors[noteData]}hold');
 				if(!beingCharted)
-					prevNote.scale.y *= (.45*Conductor.stepCrochet*PlayState.getFNFSpeed(strumTime))/prevNote.height;
+					prevNote.scale.y *= ((.45*Conductor.stepCrochet*PlayState.getFNFSpeed(strumTime))+1)/prevNote.height;
 				prevNote.updateHitbox();
 
 				prevNote.offset.y += -prevNote.offset.y;
