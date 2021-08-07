@@ -935,9 +935,12 @@ class PlayState extends MusicBeatState
 		healthBarBG.screenCenter(X);
 		healthBarBG.scrollFactor.set();
 		add(healthBarBG);
-
+		if(currentOptions.downScroll){
+			healthBarBG.y = FlxG.height*.1;
+		}
 		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
 			'health', 0, 2);
+
 		healthBar.scrollFactor.set();
 		var p1Color = 0xFF66FF33;
 		var p2Color = 0xFFFF0000; // TODO: GIVE EVERYONE CUSTOM HP BAR COLOURS!!!
@@ -1048,7 +1051,9 @@ class PlayState extends MusicBeatState
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
 		// UI_camera.zoom = 1;
-
+		if(currentOptions.downScroll){
+			strumLine.y = FlxG.height-150;
+		}
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 		if(luaModchartExists && currentOptions.loadModcharts){
@@ -1182,12 +1187,6 @@ class PlayState extends MusicBeatState
 		}
 
 		scrollSpeed = (currentOptions.downScroll?-1:1);
-		if(currentOptions.downScroll){
-			strumLine.y = FlxG.height-150;
-		}
-		if(currentOptions.downScroll){
-			healthBarBG.y = FlxG.height*.1;
-		}
 
 
 		if (isStoryMode)
