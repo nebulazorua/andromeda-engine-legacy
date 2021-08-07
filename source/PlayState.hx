@@ -129,9 +129,11 @@ class PlayState extends MusicBeatState
 
 	private var iconP1:HealthIcon;
 	private var iconP2:HealthIcon;
-	private var camHUD:FlxCamera;
-	private var pauseHUD:FlxCamera;
-	private var camGame:FlxCamera;
+	public var camHUD:FlxCamera;
+	public var camNotes:FlxCamera;
+	public var camSus:FlxCamera;
+	public var pauseHUD:FlxCamera;
+	public var camGame:FlxCamera;
 	public var modchart:ModChart;
 	public var botplayPressTimes:Array<Float> = [0,0,0,0];
 	public var botplayHoldTimes:Array<Float> = [0,0,0,0];
@@ -272,12 +274,18 @@ class PlayState extends MusicBeatState
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
 		camHUD = new FlxCamera();
+		camNotes = new FlxCamera();
+		camSus = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
+		camNotes.bgColor.alpha = 0;
+		camSus.bgColor.alpha = 0;
 		pauseHUD = new FlxCamera();
 		pauseHUD.bgColor.alpha = 0;
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camHUD);
+		FlxG.cameras.add(camSus);
+		FlxG.cameras.add(camNotes);
 		FlxG.cameras.add(pauseHUD);
 
 		FlxCamera.defaultCameras = [camGame];
@@ -588,6 +596,7 @@ class PlayState extends MusicBeatState
 													}
 													modchart.addCamEffect(vcrDistortionGame);
 													modchart.addHudEffect(vcrDistortionHUD);
+													modchart.addNoteEffect(vcrDistortionGame);
 												}
 											}
 
@@ -665,6 +674,7 @@ class PlayState extends MusicBeatState
 													vcrDistortionHUD.setGlitchModifier(.2);
 													modchart.addCamEffect(vcrDistortionGame);
 													modchart.addHudEffect(vcrDistortionHUD);
+													modchart.addNoteEffect(vcrDistortionGame);
 												}
 											}
 
@@ -1034,7 +1044,7 @@ class PlayState extends MusicBeatState
 		add(iconP2);
 
 		strumLineNotes.cameras = [camHUD];
-		renderedNotes.cameras = [camHUD];
+		renderedNotes.cameras = [camNotes];
 		healthBar.cameras = [camHUD];
 		healthBarBG.cameras = [camHUD];
 		iconP1.cameras = [camHUD];
@@ -1185,8 +1195,6 @@ class PlayState extends MusicBeatState
 				trace("ERROR: " + e);
 			};
 		}
-
-		scrollSpeed = (currentOptions.downScroll?-1:1);
 
 
 		if (isStoryMode)
@@ -1554,7 +1562,7 @@ class PlayState extends MusicBeatState
 			susNoteLanes[idx]=[];
 
 		}
-
+		scrollSpeed = (currentOptions.downScroll?-1:1);
 		for (section in noteData)
 		{
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
@@ -1579,6 +1587,7 @@ class PlayState extends MusicBeatState
 				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, getPosFromTime(daStrumTime));
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
+				swagNote.cameras = [camNotes];
 
 				var susLength:Float = swagNote.sustainLength;
 
@@ -1591,7 +1600,7 @@ class PlayState extends MusicBeatState
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 					var sussy = daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet;
 					var sustainNote:Note = new Note(sussy, daNoteData, oldNote, true, getPosFromTime(sussy));
-
+					sustainNote.cameras = [camSus];
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
 
@@ -1927,7 +1936,10 @@ class PlayState extends MusicBeatState
 		if(!note.mustPress){
 			hitPos = opponentStrumLines.members[note.noteData];
 		}
-		return hitPos.y + ((note.initialPos-Conductor.currentTrackPos) * scrollSpeed);
+		if(note.lastSustainPiece && note.prevNote!=null && note.flipY){
+			return note.prevNote.y-note.height;
+		}
+		return hitPos.y + ((note.initialPos-Conductor.currentTrackPos) * scrollSpeed) - note.manualYOffset;
 	}
 
 	// ADAPTED FROM QUAVER!!!
@@ -2368,8 +2380,29 @@ class PlayState extends MusicBeatState
 						if(modchart.opponentNotesFollowReceptors)
 							strumLine = opponentStrumLines.members[daNote.noteData];
 					}
+					var brr = strumLine.y + Note.swagWidth/2;
+					daNote.y = getYPosition(daNote);
 
-					if (daNote.y > FlxG.height)
+					if(currentOptions.downScroll){
+						if(daNote.isSustainNote && (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y-(daNote.offset.y*daNote.scale.y)+daNote.height >= brr)
+						{
+							var swagRect = new FlxRect(0,0,daNote.frameWidth*2,daNote.frameHeight*2);
+							swagRect.height = (brr-daNote.y)/daNote.scale.y;
+							swagRect.y = daNote.frameHeight-swagRect.height;
+
+							daNote.clipRect = swagRect;
+						}
+					}else{
+						if(daNote.isSustainNote && (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y+(daNote.offset.y*daNote.scale.y) <= brr){
+							var swagRect = new FlxRect(0, brr-daNote.y, daNote.width * 2, daNote.height * 2);
+							swagRect.y /= daNote.scale.y;
+							swagRect.height -= swagRect.y;
+
+							daNote.clipRect = swagRect;
+						}
+					}
+
+					if (daNote.y > FlxG.height+300 || daNote.y < -300)
 					{
 						daNote.active = false;
 
@@ -2387,40 +2420,6 @@ class PlayState extends MusicBeatState
 					if(!daNote.mustPress && currentOptions.middleScroll){
 						daNote.visible=false;
 					}
-
-					var brr = strumLine.y + Note.swagWidth/2;
-					daNote.y = getYPosition(daNote);
-					if(currentOptions.downScroll){
-						if(daNote.isSustainNote){
-							if(daNote.animation.curAnim.name.endsWith("end") && daNote.prevNote!=null){
-								daNote.y += daNote.prevNote.height;
-							}else{
-								daNote.y += daNote.height/2;
-							}
-						}
-						if (daNote.isSustainNote
-							&& daNote.y-daNote.offset.y*daNote.scale.y+daNote.height>=brr
-							&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
-						{
-							var swagRect = new FlxRect(0,0,daNote.frameWidth*2,daNote.frameHeight*2);
-							swagRect.height = (brr-daNote.y)/daNote.scale.y;
-							swagRect.y = daNote.frameHeight-swagRect.height;
-
-							daNote.clipRect = swagRect;
-						}
-					}else{
-						if (daNote.isSustainNote
-							&& daNote.y + daNote.offset.y * daNote.scale.y <= brr
-							&& (!daNote.mustPress || (daNote.wasGoodHit || (daNote.prevNote.wasGoodHit && !daNote.canBeHit))))
-						{
-							var swagRect = new FlxRect(0,0,daNote.width/daNote.scale.x,daNote.height/daNote.scale.y);
-							swagRect.y = (brr-daNote.y)/daNote.scale.y;
-							swagRect.height -= swagRect.y;
-
-							daNote.clipRect = swagRect;
-						}
-					}
-
 
 
 					daNote.x = strumLine.x+daNote.manualXOffset;

@@ -135,10 +135,10 @@ class Note extends FlxSprite
 			manualXOffset = width/2;
 			animation.play('${colors[noteData]}holdend');
 			updateHitbox();
-
-			if(PlayState.currentPState.currentOptions.downScroll){
+			if(PlayState.currentPState.currentOptions.downScroll || PlayState.getSVFromTime(strumTime)<0 ){
 				flipY=true;
 			}
+
 
 			//off -= width / 2;
 			//x -= width / 2;
@@ -146,21 +146,14 @@ class Note extends FlxSprite
 			manualXOffset -= width/ 2;
 			if (PlayState.curStage.startsWith('school'))
 				manualXOffset += 30;
-			else
-				manualXOffset += 2;
-
 			if (prevNote.isSustainNote)
 			{
 				prevNote.lastSustainPiece=false;
 				prevNote.animation.play('${colors[noteData]}hold');
 				if(!beingCharted)
-					prevNote.scale.y *= ((Conductor.stepCrochet*PlayState.getFNFSpeed(strumTime)))/prevNote.height;
+					prevNote.scale.y *= Conductor.stepCrochet/100*1.5*PlayState.getFNFSpeed(strumTime);
+					//prevNote.scale.y *= (.46*(Conductor.stepCrochet*PlayState.getFNFSpeed(strumTime)))/prevNote.height;
 				prevNote.updateHitbox();
-
-				prevNote.offset.y += -prevNote.offset.y;
-
-				offset.y += -offset.y;
-				// prevNote.setGraphicSize();
 			}
 		}
 	}
