@@ -154,7 +154,7 @@ class Note extends FlxSprite
 				prevNote.lastSustainPiece=false;
 				prevNote.animation.play('${colors[noteData]}hold');
 				if(!beingCharted)
-					prevNote.scale.y *= ((Conductor.stepCrochet*PlayState.getFNFSpeed(strumTime))+1)/prevNote.height;
+					prevNote.scale.y *= ((Conductor.stepCrochet*PlayState.getFNFSpeed(strumTime)))/prevNote.height;
 				prevNote.updateHitbox();
 
 				prevNote.offset.y += -prevNote.offset.y;
