@@ -124,16 +124,19 @@ class Options
 	public var botPlay:Bool = false;
 	public var loadModcharts:Bool = true;
 
+	// appearance
+	public var backTrans:Float = 0;
+	public var downScroll:Bool = false;
+	public var middleScroll:Bool = false;
+	public var picoShaders:Bool = true;
+	public var picoCamshake:Bool = true;
+	public var senpaiShaders:Bool = true;
+
 	// preferences
 	public var pauseHoldAnims:Bool = true;
 	public var showMS:Bool = false;
 	public var ratingInHUD:Bool = false;
-	public var downScroll:Bool = false;
-	public var middleScroll:Bool = false;
 	public var menuFlash:Bool = true;
-	public var picoShaders:Bool = true;
-	public var picoCamshake:Bool = true;
-	public var senpaiShaders:Bool = true;
 	public var freeplayPreview:Bool = true;
 	public var hitSound:Bool = false;
 
@@ -284,6 +287,124 @@ class ToggleOption extends Option
 		return false;
 	}
 }
+
+//StepOption("backTrans","Background Transparency",10,0,100,"%", "", "How transparent the background is")
+class StepOption extends Option
+{
+	private var property = "dummyInt";
+	private var defaultName = "default";
+	private var max:Float = 100;
+	private var min:Float = 0;
+	private var step:Float = 0;
+	private var suffix:String='';
+	private var prefix:String='';
+
+
+	private var leftArrow:FlxSprite;
+	private var rightArrow:FlxSprite;
+	public function new(property:String,name:String,?step:Float=1,?min:Float=0,?max:Float=100,?suffix:String='',?prefix:String='',?desc:String=''){
+		super();
+		this.property=property;
+		this.defaultName = name;
+		this.step=step;
+		this.min=min;
+		this.max=max;
+		this.suffix=suffix;
+		this.prefix=prefix;
+		this.description=desc;
+
+		var value = Reflect.field(OptionUtils.options,property);
+		leftArrow = new FlxSprite(0,0);
+		leftArrow.frames = Paths.getSparrowAtlas("arrows");
+		leftArrow.setGraphicSize(Std.int(leftArrow.width*.7));
+		leftArrow.updateHitbox();
+		leftArrow.animation.addByPrefix("pressed","arrow push left",24,false);
+		leftArrow.animation.addByPrefix("static","arrow left",24,false);
+		leftArrow.animation.play("static");
+
+		rightArrow = new FlxSprite(0,0);
+		rightArrow.frames = Paths.getSparrowAtlas("arrows");
+		rightArrow.setGraphicSize(Std.int(rightArrow.width*.7));
+		rightArrow.updateHitbox();
+		rightArrow.animation.addByPrefix("pressed","arrow push right",24,false);
+		rightArrow.animation.addByPrefix("static","arrow right",24,false);
+		rightArrow.animation.play("static");
+
+		add(rightArrow);
+		add(leftArrow);
+
+		this.name = '${defaultName} ${prefix}${value}${suffix}';
+
+	};
+
+	override function update(elapsed:Float){
+		super.update(elapsed);
+		//sprTracker.x + sprTracker.width + 10
+		if(PlayerSettings.player1.controls.LEFT){
+			leftArrow.animation.play("pressed");
+			leftArrow.offset.x = 0;
+			leftArrow.offset.y = -3;
+		}else{
+			leftArrow.animation.play("static");
+			leftArrow.offset.x = 0;
+			leftArrow.offset.y = 0;
+		}
+
+		if(PlayerSettings.player1.controls.RIGHT){
+			rightArrow.animation.play("pressed");
+			rightArrow.offset.x = 0;
+			rightArrow.offset.y = -3;
+		}else{
+			rightArrow.animation.play("static");
+			rightArrow.offset.x = 0;
+			rightArrow.offset.y = 0;
+		}
+		rightArrow.x = text.x+text.width+10;
+		leftArrow.x = text.x-60;
+		leftArrow.y = text.y-10;
+		rightArrow.y = text.y-10;
+	}
+
+	public override function createOptionText(curSelected:Int,optionText:FlxTypedGroup<Option>):Dynamic{
+    remove(text);
+    text = new Alphabet(0, (70 * curSelected) + 30, name, true, false);
+    text.movementType = "list";
+    text.isMenuItem = true;
+		text.offsetX = 135;
+		text.gotoTargetPosition();
+    add(text);
+    return text;
+  }
+
+	public override function left():Bool{
+		var value:Float = Reflect.field(OptionUtils.options,property)-this.step;
+
+		if(value<min)
+			value=max;
+
+		if(value>max)
+			value=min;
+
+		Reflect.setField(OptionUtils.options,property,value);
+		name = '${defaultName} ${prefix}${value}${suffix}';
+
+		return true;
+	};
+	public override function right():Bool{
+		var value:Float = Reflect.field(OptionUtils.options,property)+this.step;
+
+		if(value<min)
+			value=max;
+		if(value>max)
+			value=min;
+
+		Reflect.setField(OptionUtils.options,property,value);
+
+		name = '${defaultName} ${prefix}${value}${suffix}';
+		return true;
+	};
+}
+
 
 class ScrollOption extends Option
 {

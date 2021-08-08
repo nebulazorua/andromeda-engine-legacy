@@ -68,6 +68,7 @@ class ModChart {
       newCamEffects.push(new ShaderFilter(i.shader));
     }
     playState.camGame.setFilters(newCamEffects);
+    playState.camRating.setFilters(newCamEffects);
   }
 
   public function removeCamEffect(effect:ShaderEffect){
@@ -77,6 +78,7 @@ class ModChart {
       newCamEffects.push(new ShaderFilter(i.shader));
     }
     playState.camGame.setFilters(newCamEffects);
+    playState.camRating.setFilters(newCamEffects);
   }
 
   public function addHudEffect(effect:ShaderEffect){

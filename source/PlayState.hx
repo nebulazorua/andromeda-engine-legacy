@@ -137,6 +137,7 @@ class PlayState extends MusicBeatState
 	public var camNotes:FlxCamera;
 	public var camSus:FlxCamera;
 	public var pauseHUD:FlxCamera;
+	public var camRating:FlxCamera;
 	public var camGame:FlxCamera;
 	public var modchart:ModChart;
 	public var botplayPressTimes:Array<Float> = [0,0,0,0];
@@ -305,17 +306,23 @@ class PlayState extends MusicBeatState
 
 		// var gameCam:FlxCamera = FlxG.camera;
 		camGame = new FlxCamera();
+		camRating = new FlxCamera();
 		camHUD = new FlxCamera();
 		camNotes = new FlxCamera();
 		camSus = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
 		camNotes.bgColor.alpha = 0;
+		camRating.bgColor.alpha = 0;
 		camSus.bgColor.alpha = 0;
 		pauseHUD = new FlxCamera();
 		pauseHUD.bgColor.alpha = 0;
 
+		camGame.alpha = 1-(currentOptions.backTrans/100);
+
 		FlxG.cameras.reset(camGame);
+		FlxG.cameras.add(camRating);
 		FlxG.cameras.add(camHUD);
+
 		FlxG.cameras.add(camSus);
 		FlxG.cameras.add(camNotes);
 		FlxG.cameras.add(pauseHUD);
@@ -965,6 +972,7 @@ class PlayState extends MusicBeatState
 		add(camFollow);
 
 		FlxG.camera.follow(camFollow, LOCKON, 0.01);
+		camRating.follow(camFollow,LOCKON,.01);
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
 		FlxG.camera.zoom = defaultCamZoom;
 		FlxG.camera.focusOn(camFollow.getPosition());
@@ -1012,7 +1020,7 @@ class PlayState extends MusicBeatState
 		// healthBar
 		add(healthBar);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 150, healthBarBG.y + 50, 0, "", 20);
+		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 150, healthBarBG.y + 25, 0, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 		add(scoreTxt);
@@ -1465,6 +1473,7 @@ class PlayState extends MusicBeatState
 					FlxG.sound.play(Paths.sound('intro3'), 0.6);
 				case 1:
 					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
+					ready.cameras=[camHUD];
 					ready.scrollFactor.set();
 					ready.updateHitbox();
 
@@ -1488,6 +1497,7 @@ class PlayState extends MusicBeatState
 					if (curStage.startsWith('school'))
 						set.setGraphicSize(Std.int(set.width * daPixelZoom));
 
+					set.cameras=[camHUD];
 					set.screenCenter();
 					add(set);
 					FlxTween.tween(set, {y: set.y += 100, alpha: 0}, Conductor.crochet / 1000, {
@@ -1504,6 +1514,8 @@ class PlayState extends MusicBeatState
 
 					if (curStage.startsWith('school'))
 						go.setGraphicSize(Std.int(go.width * daPixelZoom));
+
+					go.cameras=[camHUD];
 
 					go.updateHitbox();
 
@@ -2638,6 +2650,11 @@ class PlayState extends MusicBeatState
 
 		}
 
+		camRating.zoom=camGame.zoom;
+		camNotes.zoom = camHUD.zoom;
+		camSus.zoom = camNotes.zoom;
+
+
 		if(Conductor.songPosition-currentOptions.noteOffset>=FlxG.sound.music.length){
 			if(FlxG.sound.music.volume>0 || vocals.volume>0)
 				endSong();
@@ -2818,10 +2835,10 @@ class PlayState extends MusicBeatState
 
 		comboSpr.updateHitbox();
 		rating.updateHitbox();
+		var ratingCameras = [camRating];
+
 		if(currentOptions.ratingInHUD){
-			comboSpr.cameras = [camHUD];
-			rating.cameras = [camHUD];
-			coolText.cameras = [camHUD];
+			ratingCameras = [camHUD];
 
 			coolText.scrollFactor.set(0,0);
 			rating.scrollFactor.set(0,0);
@@ -2831,6 +2848,10 @@ class PlayState extends MusicBeatState
 			coolText.x -= 175;
 			comboSpr.x -= 175;
 		}
+		comboSpr.cameras = ratingCameras;
+		rating.cameras=ratingCameras;
+		coolText.cameras=ratingCameras;
+
 		var seperatedScore:Array<String> = Std.string(combo).split("");
 		var displayedMS = truncateFloat(noteDiff,2);
 		var seperatedMS:Array<String> = Std.string(displayedMS).split("");
@@ -2858,9 +2879,9 @@ class PlayState extends MusicBeatState
 			numScore.velocity.x = FlxG.random.float(-5, 5);
 
 			if(currentOptions.ratingInHUD){
-				numScore.cameras = [camHUD];
 				numScore.scrollFactor.set(0,0);
 			}
+			numScore.cameras=ratingCameras;
 			if(combo>=10){
 				add(numScore);
 			}
@@ -2923,9 +2944,9 @@ class PlayState extends MusicBeatState
 				numScore.velocity.x = FlxG.random.float(-2.5, 2.5);
 
 				if(currentOptions.ratingInHUD){
-					numScore.cameras = [camHUD];
 					numScore.scrollFactor.set(0,0);
 				}
+				numScore.cameras=ratingCameras;
 
 				add(numScore);
 
