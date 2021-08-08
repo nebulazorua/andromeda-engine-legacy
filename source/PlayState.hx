@@ -172,10 +172,10 @@ class PlayState extends MusicBeatState
 	];
 
 	var playerIncomingAngles:Array<Float> = [
-		-45.0,
-		-15.0,
-		15.0,
-		45.0
+		0.0,
+		0.0,
+		0.0,
+		0.0
 	];
 
 	var opponentIncomingAngles:Array<Float> = [
@@ -1976,9 +1976,10 @@ class PlayState extends MusicBeatState
 			dir = opponentDirections[note.noteData];
 			angle = opponentIncomingAngles[note.noteData];
 		}
-		if(note.lastSustainPiece && note.prevNote!=null && note.flipY){
+		/*if(note.lastSustainPiece && note.prevNote!=null && note.flipY){
 			return note.prevNote.y-note.height;
-		}
+		}*/
+
 		return hitPos.y + (Math.cos(angle*Math.PI/180)*(note.initialPos-Conductor.currentTrackPos) * scrollSpeed) - note.manualYOffset;
 	}
 
@@ -1993,10 +1994,7 @@ class PlayState extends MusicBeatState
 			angle = opponentIncomingAngles[note.noteData];
 		}
 		var offset = note.manualXOffset;
-		if(note.isSustainNote && note.lastSustainPiece){
-			offset=0;
-		}
-		return hitPos.x + (Math.sin(angle*Math.PI/180)*(note.initialPos-Conductor.currentTrackPos) * scrollSpeed) + offset;
+		return hitPos.x + offset + (Math.sin(angle*Math.PI/180)*(note.initialPos-Conductor.currentTrackPos) * scrollSpeed) ;
 	}
 
 	// ADAPTED FROM QUAVER!!!
@@ -2444,14 +2442,14 @@ class PlayState extends MusicBeatState
 					daNote.y = getYPosition(daNote);
 
 					if(currentOptions.downScroll){
-						if(daNote.isSustainNote && (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y-(daNote.offset.y*daNote.scale.y)+daNote.height >= brr)
-						{
-							var swagRect = new FlxRect(0,0,daNote.frameWidth*2,daNote.frameHeight*2);
-							swagRect.height = (brr-daNote.y)/daNote.scale.y;
-							swagRect.y = daNote.frameHeight-swagRect.height;
+						if(daNote.isSustainNote && (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y-daNote.offset.y*daNote.scale.y+daNote.height >= brr)
+							{
+								var swagRect = new FlxRect(0,0,daNote.frameWidth*2,daNote.frameHeight*2);
+								swagRect.height = (brr-daNote.y)/daNote.scale.y;
+								swagRect.y = daNote.frameHeight-swagRect.height;
 
-							daNote.clipRect = swagRect;
-						}
+								daNote.clipRect = swagRect;
+							}
 					}else{
 						if(daNote.isSustainNote && (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y+(daNote.offset.y*daNote.scale.y) <= brr){
 							var swagRect = new FlxRect(0, brr-daNote.y, daNote.width * 2, daNote.height * 2);
@@ -2579,7 +2577,7 @@ class PlayState extends MusicBeatState
 					// WIP interpolation shit? Need to fix the pause issue
 					// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-					if (daNote.tooLate && daNote.mustPress || daNote.isSustainNote && daNote.wasGoodHit && (currentOptions.downScroll && daNote.y>strumLine.y+daNote.height*2 || !currentOptions.downScroll && daNote.y<strumLine.y+daNote.height*2) )
+					if (daNote.tooLate || currentOptions.downScroll && daNote.y>FlxG.height+daNote.height || !currentOptions.downScroll && daNote.y<-daNote.height )
 					{
 						if (daNote.tooLate)
 						{
