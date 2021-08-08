@@ -1,5 +1,7 @@
 package;
 
+// https://github.com/TheLostGhostS/Ghost-engine-source-code/tree/main/Ghost%20engine
+// CREDIT TO THEM FOR INCOMING ANGLE STUFF
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -151,6 +153,34 @@ class PlayState extends MusicBeatState
 		[0,0], // down
 		[0,0], // up
 		[0,0] // right
+	];
+
+	public var playerDirections:Array<Array<Float>> = [
+		[0,1], // left
+		[0,1], // down
+		[0,1], // up
+		[0,1], // right
+	];
+
+	public var opponentDirections:Array<Array<Float>> = [
+		[0,1], // left
+		[0,1], // down
+		[0,1], // up
+		[0,1], // right
+	];
+
+	var playerIncomingAngles:Array<Float> = [
+		0.0,
+		0.0,
+		0.0,
+		0.0
+	];
+
+	var opponentIncomingAngles:Array<Float> = [
+		0.0,
+		0.0,
+		0.0,
+		0.0
 	];
 
 	public var playerNoteAlpha:Array<Float>=[
@@ -1903,6 +1933,10 @@ class PlayState extends MusicBeatState
 		return (getSVFromTime(strumTime)*(scrollSpeed*(1/.45) ));
 	}
 
+	public static function getScale(strumTime:Float):Float{
+		return Conductor.stepCrochet/100*1.5*PlayState.getFNFSpeed(strumTime);
+	}
+
 	public static function getSVFromTime(strumTime:Float):Float{
 		var idx:Int = 0;
 		while(idx<SONG.sliderVelocities.length){
@@ -1933,13 +1967,34 @@ class PlayState extends MusicBeatState
 
 	function getYPosition(note:Note):Float{
 		var hitPos = playerStrumLines.members[note.noteData];
+		var dir = playerDirections[note.noteData];
+		var angle = playerIncomingAngles[note.noteData];
 		if(!note.mustPress){
 			hitPos = opponentStrumLines.members[note.noteData];
+			dir = opponentDirections[note.noteData];
+			angle = opponentIncomingAngles[note.noteData];
 		}
 		if(note.lastSustainPiece && note.prevNote!=null && note.flipY){
 			return note.prevNote.y-note.height;
 		}
-		return hitPos.y + ((note.initialPos-Conductor.currentTrackPos) * scrollSpeed) - note.manualYOffset;
+		return hitPos.y + (Math.cos(angle*Math.PI/180)*(note.initialPos-Conductor.currentTrackPos) * scrollSpeed) - note.manualYOffset;
+	}
+
+
+	function getXPosition(note:Note):Float{
+		var hitPos = playerStrumLines.members[note.noteData];
+		var dir = playerDirections[note.noteData];
+		var angle = playerIncomingAngles[note.noteData];
+		if(!note.mustPress){
+			hitPos = opponentStrumLines.members[note.noteData];
+			dir = opponentDirections[note.noteData];
+			angle = opponentIncomingAngles[note.noteData];
+		}
+		var offset = note.manualXOffset;
+		if(note.isSustainNote && note.lastSustainPiece){
+			offset=0;
+		}
+		return hitPos.x + (Math.sin(angle*Math.PI/180)*(note.initialPos-Conductor.currentTrackPos) * scrollSpeed) + offset;
 	}
 
 	// ADAPTED FROM QUAVER!!!
@@ -2375,12 +2430,15 @@ class PlayState extends MusicBeatState
 
 
 					var alpha = refNotes.members[daNote.noteData].alpha;
+					var incomingAngle = playerIncomingAngles[daNote.noteData];
 					if(!daNote.mustPress){
 						alpha = opponentRefNotes.members[daNote.noteData].alpha;
+						incomingAngle = opponentIncomingAngles[daNote.noteData];
 						if(modchart.opponentNotesFollowReceptors)
 							strumLine = opponentStrumLines.members[daNote.noteData];
 					}
 					var brr = strumLine.y + Note.swagWidth/2;
+					daNote.x = getXPosition(daNote);
 					daNote.y = getYPosition(daNote);
 
 					if(currentOptions.downScroll){
@@ -2417,13 +2475,15 @@ class PlayState extends MusicBeatState
 						daNote.active = true;
 					}
 
+
+
 					if(!daNote.mustPress && currentOptions.middleScroll){
 						daNote.visible=false;
 					}
 
+					if(daNote.isSustainNote ){
+						daNote.angle = -incomingAngle;
 
-					daNote.x = strumLine.x+daNote.manualXOffset;
-					if(daNote.isSustainNote){
 
 						if(daNote.tooLate)
 							daNote.alpha = .3;
@@ -2517,9 +2577,9 @@ class PlayState extends MusicBeatState
 					// WIP interpolation shit? Need to fix the pause issue
 					// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-					if ((!currentOptions.downScroll && daNote.y < -daNote.height || currentOptions.downScroll && daNote.y>FlxG.height) && daNote.mustPress)
+					if (daNote.tooLate && daNote.mustPress || daNote.isSustainNote && daNote.wasGoodHit && (currentOptions.downScroll && daNote.y>strumLine.y+daNote.height || !currentOptions.downScroll && daNote.y<strumLine.y+daNote.height) )
 					{
-						if ((daNote.tooLate || !daNote.wasGoodHit))
+						if (daNote.tooLate)
 						{
 							//health -= 0.0475;
 							noteMiss(daNote.noteData);
@@ -2538,16 +2598,22 @@ class PlayState extends MusicBeatState
 							else
 								noteLanes[daNote.noteData].remove(daNote);
 						}
+
 						hittableNotes.remove(daNote);
 
 						renderedNotes.remove(daNote, true);
 						daNote.destroy();
+
 					}
 				});
 			}
 		}
+		if(lastHitDadNote==null || !lastHitDadNote.alive || !lastHitDadNote.exists ){
+			lastHitDadNote=null;
+		}
 		dadStrums.forEach(function(spr:FlxSprite)
 		{
+
 			if (spr.animation.finished && spr.animation.curAnim.name=='confirm' && (lastHitDadNote==null || !lastHitDadNote.isSustainNote || lastHitDadNote.animation.curAnim==null || lastHitDadNote.animation.curAnim.name.endsWith("end")))
 			{
 				spr.animation.play('static',true);
