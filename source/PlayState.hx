@@ -1,7 +1,9 @@
 package;
 
 // https://github.com/TheLostGhostS/Ghost-engine-source-code/tree/main/Ghost%20engine
-// CREDIT TO THEM FOR INCOMING ANGLE STUFF
+// CREDIT TO THEM FOR INCOMING ANGLE MATH
+// IM BAD AT MATH LOL!!
+
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -170,10 +172,10 @@ class PlayState extends MusicBeatState
 	];
 
 	var playerIncomingAngles:Array<Float> = [
-		0.0,
-		0.0,
-		0.0,
-		0.0
+		-45.0,
+		-15.0,
+		15.0,
+		45.0
 	];
 
 	var opponentIncomingAngles:Array<Float> = [
@@ -2577,7 +2579,7 @@ class PlayState extends MusicBeatState
 					// WIP interpolation shit? Need to fix the pause issue
 					// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-					if (daNote.tooLate && daNote.mustPress || daNote.isSustainNote && daNote.wasGoodHit && (currentOptions.downScroll && daNote.y>strumLine.y+daNote.height || !currentOptions.downScroll && daNote.y<strumLine.y+daNote.height) )
+					if (daNote.tooLate && daNote.mustPress || daNote.isSustainNote && daNote.wasGoodHit && (currentOptions.downScroll && daNote.y>strumLine.y+daNote.height*2 || !currentOptions.downScroll && daNote.y<strumLine.y+daNote.height*2) )
 					{
 						if (daNote.tooLate)
 						{
