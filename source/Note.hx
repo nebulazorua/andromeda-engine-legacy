@@ -10,7 +10,7 @@ import polymod.format.ParseRules.TargetSignatureElement;
 
 using StringTools;
 
-class Note extends FlxSprite
+class Note extends FlxSprite // TODO: extend NoteGraphic instead
 {
 	public var strumTime:Float = 0;
 

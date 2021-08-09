@@ -60,13 +60,21 @@ class ChartingState extends MusicBeatState
 
 	var GRID_SIZE:Int = 40;
 
-	var dummyArrow:FlxSprite;
+	var dummyArrow:NoteGraphic;
 	var useHitSounds = false;
 	var curRenderedNotes:FlxTypedGroup<Note>;
 	var curRenderedSustains:FlxTypedGroup<Note>;
 	var curRenderedMarkers:FlxTypedGroup<FlxSprite>;
 
 	var gridBG:FlxSprite;
+	var quantization:Int = 16;
+	var quantIdx = 0;
+	var quantizations:Array<Int> = [
+		16,
+		8,
+		6, // because echo needs 1/6 lmao
+		4,
+	];
 
 	var _song:SwagSong;
 	var velChanges:Array<VelocityChange> = [];
@@ -153,7 +161,11 @@ class ChartingState extends MusicBeatState
 		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(FlxG.width / 2), 4);
 		add(strumLine);
 
-		dummyArrow = new FlxSprite().makeGraphic(GRID_SIZE, GRID_SIZE);
+		dummyArrow = new NoteGraphic();
+		dummyArrow.setDir(0,false,false);
+		dummyArrow.setGraphicSize(GRID_SIZE,GRID_SIZE);
+		dummyArrow.updateHitbox();
+		dummyArrow.alpha=.5;
 		add(dummyArrow);
 
 		var tabs = [
@@ -530,6 +542,14 @@ class ChartingState extends MusicBeatState
 	{
 		curStep = recalculateSteps();
 
+		if(FlxG.keys.justPressed.ALT){
+			quantIdx+=1;
+			if(quantIdx>quantizations.length-1)
+				quantIdx = 0;
+
+			quantization = quantizations[quantIdx];
+		}
+
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
@@ -629,10 +649,13 @@ class ChartingState extends MusicBeatState
 			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
 		{
 			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
+			dummyArrow.setDir(Math.floor(FlxG.mouse.x / GRID_SIZE)%4,false,false);
+			dummyArrow.setGraphicSize(GRID_SIZE,GRID_SIZE);
+			dummyArrow.updateHitbox();
 			if (FlxG.keys.pressed.SHIFT)
 				dummyArrow.y = FlxG.mouse.y;
 			else
-				dummyArrow.y = Math.floor(FlxG.mouse.y / GRID_SIZE) * GRID_SIZE;
+				dummyArrow.y = Math.floor(FlxG.mouse.y / (GRID_SIZE*quantization/16)) * (GRID_SIZE*quantization/16);
 		}
 
 		if (FlxG.keys.justPressed.ENTER)
@@ -769,7 +792,13 @@ class ChartingState extends MusicBeatState
 			+ " / "
 			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
 			+ "\nSection: "
-			+ curSection;
+			+ curSection
+			+ "\nStep: "
+			+ curStep
+			+ "\nBeat: "
+			+ curBeat
+			+ "\nSnap: 1/"
+			+ quantization + "\n(Press ALT to switch)";
 		super.update(elapsed);
 	}
 
