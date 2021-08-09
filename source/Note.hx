@@ -167,16 +167,16 @@ class Note extends FlxSprite // TODO: extend NoteGraphic instead
 		if (mustPress)
 		{
 			var diff = strumTime-Conductor.songPosition;
-			
+
 			if(isSustainNote){
-				if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
-					&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * .25))
+				if (diff < (Conductor.safeZoneOffset * 1.5)
+					&& diff > (Conductor.safeZoneOffset * .25))
 					canBeHit = true;
 				else
 					canBeHit = false;
 			}else{
-				if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
-					&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 1))
+				if (diff < (Conductor.safeZoneOffset * 1.5)
+					&& diff > (Conductor.safeZoneOffset * 1))
 					canBeHit = true;
 				else
 					canBeHit = false;
