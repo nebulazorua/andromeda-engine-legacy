@@ -167,14 +167,14 @@ class Note extends FlxSprite // TODO: extend NoteGraphic instead
 		if (mustPress)
 		{
 			if(isSustainNote){
-				if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
-					&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * .25))
+				if (strumTime > Conductor.currentVisPos - (Conductor.safeZoneOffset * 1.5)
+					&& strumTime < Conductor.currentVisPos + (Conductor.safeZoneOffset * .25))
 					canBeHit = true;
 				else
 					canBeHit = false;
 			}else{
-				if (strumTime > Conductor.songPosition - (Conductor.safeZoneOffset * 1.5)
-					&& strumTime < Conductor.songPosition + (Conductor.safeZoneOffset * 1))
+				if (strumTime > Conductor.currentVisPos - (Conductor.safeZoneOffset * 1.5)
+					&& strumTime < Conductor.currentVisPos + (Conductor.safeZoneOffset * 1))
 					canBeHit = true;
 				else
 					canBeHit = false;
@@ -183,12 +183,12 @@ class Note extends FlxSprite // TODO: extend NoteGraphic instead
 
 
 
-			if (strumTime < Conductor.songPosition - Conductor.safeZoneOffset && !wasGoodHit)
+			if (strumTime < Conductor.currentVisPos - Conductor.safeZoneOffset && !wasGoodHit)
 				tooLate = true;
 		}
 		else
 		{
-			if (strumTime <= Conductor.songPosition)
+			if (strumTime <= Conductor.currentVisPos)
 				canBeHit = true;
 		}
 

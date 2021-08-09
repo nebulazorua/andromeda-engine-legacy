@@ -1989,7 +1989,7 @@ class PlayState extends MusicBeatState
 			angle = opponentIncomingAngles[note.noteData];
 		}
 
-		return hitPos.y + (Math.cos(angle*Math.PI/180)*(note.initialPos-Conductor.currentTrackPos)+currentOptions.noteOffset * scrollSpeed) - note.manualYOffset;
+		return hitPos.y + (Math.cos(angle*Math.PI/180)*(note.initialPos-Conductor.currentTrackPos) * scrollSpeed) - note.manualYOffset;
 	}
 
 
