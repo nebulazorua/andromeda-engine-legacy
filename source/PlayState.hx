@@ -934,7 +934,7 @@ class PlayState extends MusicBeatState
 		doof.scrollFactor.set();
 		doof.finishThing = startCountdown;
 
-		Conductor.songPosition = -5000;
+		Conductor.rawSongPos = -5000;
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
@@ -1438,8 +1438,8 @@ class PlayState extends MusicBeatState
 
 		talking = false;
 		startedCountdown = true;
-		Conductor.songPosition = 0;
-		Conductor.songPosition -= Conductor.crochet * 5;
+		Conductor.rawSongPos = 0;
+		Conductor.rawSongPos -= Conductor.crochet * 5;
 
 		var swagCounter:Int = 0;
 
@@ -1862,7 +1862,7 @@ class PlayState extends MusicBeatState
 			#if desktop
 			if (startTimer.finished)
 			{
-				DiscordClient.changePresence(detailsText + SONG.song + " (" + storyDifficultyText + ")", grade + " | Acc: " + truncateFloat(accuracy*100,2) + "%", iconRPC, true, songLength- Conductor.songPosition);
+				DiscordClient.changePresence(detailsText + SONG.song + " (" + storyDifficultyText + ")", grade + " | Acc: " + truncateFloat(accuracy*100,2) + "%", iconRPC, true, songLength- Conductor.rawSongPos);
 			}
 			else
 			{
@@ -1879,9 +1879,9 @@ class PlayState extends MusicBeatState
 		#if desktop
 		if (health > 0 && !paused)
 		{
-			if (Conductor.songPosition > 0.0)
+			if (Conductor.rawSongPos > 0.0)
 			{
-				DiscordClient.changePresence(detailsText + SONG.song + " (" + storyDifficultyText + ")", grade + " | Acc: " + truncateFloat(accuracy*100,2) + "%", iconRPC, true, songLength-Conductor.songPosition);
+				DiscordClient.changePresence(detailsText + SONG.song + " (" + storyDifficultyText + ")", grade + " | Acc: " + truncateFloat(accuracy*100,2) + "%", iconRPC, true, songLength-Conductor.rawSongPos);
 			}
 			else
 			{
@@ -1911,8 +1911,8 @@ class PlayState extends MusicBeatState
 			vocals.pause();
 
 			FlxG.sound.music.play();
-			Conductor.songPosition = FlxG.sound.music.time;
-			vocals.time = Conductor.songPosition;
+			Conductor.rawSongPos = FlxG.sound.music.time;
+			vocals.time = Conductor.rawSongPos;
 			vocals.play();
 		}
 	}
@@ -1975,7 +1975,7 @@ class PlayState extends MusicBeatState
 	}
 
 	function updatePositions(){
-		Conductor.currentVisPos = Conductor.songPosition+currentOptions.noteOffset;
+		Conductor.currentVisPos = Conductor.songPosition;
 		Conductor.currentTrackPos = getPosFromTime(Conductor.currentVisPos);
 	}
 
@@ -2072,8 +2072,6 @@ class PlayState extends MusicBeatState
 		if(presetTxt!=null)
 			presetTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
 
-
-		super.update(elapsed);
 
 		scoreTxt.text = "Score:" + songScore + " | Accuracy:" + truncateFloat(accuracy*100, 2) + "% | " + grade;
 
@@ -2181,20 +2179,22 @@ class PlayState extends MusicBeatState
 		{
 			if (startedCountdown)
 			{
-				Conductor.songPosition += FlxG.elapsed * 1000;
-				if (Conductor.songPosition >= 0)
+				Conductor.rawSongPos += FlxG.elapsed * 1000;
+				if (Conductor.rawSongPos >= 0)
 					startSong();
 			}
+			Conductor.songPosition = Conductor.rawSongPos;
 		}
 		else
 		{
 			// Conductor.songPosition = FlxG.sound.music.time;
-			Conductor.songPosition += FlxG.elapsed * 1000;
-			if(Conductor.songPosition>=vocals.length){
+			Conductor.rawSongPos += FlxG.elapsed * 1000;
+			if(Conductor.rawSongPos>=vocals.length){
 				dontSync=true;
 				vocals.volume=0;
 				vocals.stop();
 			}
+			Conductor.songPosition = Conductor.rawSongPos+currentOptions.noteOffset;
 
 
 
@@ -2204,10 +2204,10 @@ class PlayState extends MusicBeatState
 				previousFrameTime = FlxG.game.ticks;
 
 				// Interpolation type beat
-				if (Conductor.lastSongPos != Conductor.songPosition)
+				if (Conductor.lastSongPos != Conductor.rawSongPos)
 				{
-					songTime = (songTime + Conductor.songPosition) / 2;
-					Conductor.lastSongPos = Conductor.songPosition;
+					songTime = (songTime + Conductor.rawSongPos) / 2;
+					Conductor.lastSongPos = Conductor.rawSongPos;
 					// Conductor.songPosition += FlxG.elapsed * 1000;
 					// trace('MISSED FRAME');
 				}
@@ -2216,8 +2216,10 @@ class PlayState extends MusicBeatState
 			// Conductor.lastSongPos = FlxG.sound.music.time;
 		}
 		try{
-			if(luaModchartExists && lua!=null)
+			if(luaModchartExists && lua!=null){
 				lua.setGlobalVar("songPosition",Conductor.songPosition);
+				lua.setGlobalVar("rawSongPos",Conductor.rawSongPos);
+			}
 		}catch(e:Any){
 			trace(e);
 		}
@@ -2652,13 +2654,14 @@ class PlayState extends MusicBeatState
 		camSus.zoom = camNotes.zoom;
 
 
-		if(Conductor.songPosition-currentOptions.noteOffset>=FlxG.sound.music.length){
+		if(Conductor.rawSongPos>=FlxG.sound.music.length){
 			if(FlxG.sound.music.volume>0 || vocals.volume>0)
 				endSong();
 
 			FlxG.sound.music.volume=0;
 			vocals.volume=0;
 		}
+			super.update(elapsed);
 		#if debug
 		if (FlxG.keys.justPressed.ONE)
 			endSong();
@@ -3505,9 +3508,11 @@ class PlayState extends MusicBeatState
 			lua.setGlobalVar("curStep",curStep);
 			lua.call("stepHit",[curStep]);
 		}
-		if (FlxG.sound.music.time-currentOptions.noteOffset > Conductor.songPosition-currentOptions.noteOffset + 20 || FlxG.sound.music.time-currentOptions.noteOffset < Conductor.songPosition-currentOptions.noteOffset - 20)
-		{
-			resyncVocals();
+		if (FlxG.sound.music != null && !startingSong){
+			if (FlxG.sound.music.time > Conductor.rawSongPos + 20 || FlxG.sound.music.time < Conductor.rawSongPos - 20)
+			{
+				resyncVocals();
+			}
 		}
 
 		if (dad.curCharacter == 'spooky' && curStep % 4 == 2)

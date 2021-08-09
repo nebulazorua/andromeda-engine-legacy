@@ -1,5 +1,6 @@
 package;
 
+import Options;
 import Conductor.BPMChangeEvent;
 import Section.SwagSection;
 import Song.SwagSong;
@@ -550,7 +551,7 @@ class ChartingState extends MusicBeatState
 			quantization = quantizations[quantIdx];
 		}
 
-		Conductor.songPosition = FlxG.sound.music.time;
+		Conductor.songPosition = FlxG.sound.music.time + OptionUtils.options.noteOffset;
 		_song.song = typingShit.text;
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
