@@ -1988,11 +1988,8 @@ class PlayState extends MusicBeatState
 			dir = opponentDirections[note.noteData];
 			angle = opponentIncomingAngles[note.noteData];
 		}
-		/*if(note.lastSustainPiece && note.prevNote!=null && note.flipY){
-			return note.prevNote.y-note.height;
-		}*/
 
-		return hitPos.y + (Math.cos(angle*Math.PI/180)*(note.initialPos-Conductor.currentTrackPos) * scrollSpeed) - note.manualYOffset;
+		return hitPos.y + (Math.cos(angle*Math.PI/180)*(note.initialPos-Conductor.currentTrackPos)+currentOptions.noteOffset * scrollSpeed) - note.manualYOffset;
 	}
 
 
