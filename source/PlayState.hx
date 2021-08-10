@@ -935,6 +935,7 @@ class PlayState extends MusicBeatState
 		doof.finishThing = startCountdown;
 
 		Conductor.rawSongPos = -5000;
+		Conductor.songPosition=Conductor.rawSongPos;
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
 		strumLine.scrollFactor.set();
@@ -1440,7 +1441,7 @@ class PlayState extends MusicBeatState
 		startedCountdown = true;
 		Conductor.rawSongPos = 0;
 		Conductor.rawSongPos -= Conductor.crochet * 5;
-
+		Conductor.songPosition=Conductor.rawSongPos;
 		var swagCounter:Int = 0;
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
@@ -1907,13 +1908,18 @@ class PlayState extends MusicBeatState
 
 	function resyncVocals():Void
 	{
+		trace("resync",FlxG.sound.music.time,Conductor.rawSongPos);
 		if(!dontSync){
+			trace("RESYNCING");
 			vocals.pause();
 
 			FlxG.sound.music.play();
 			Conductor.rawSongPos = FlxG.sound.music.time;
 			vocals.time = Conductor.rawSongPos;
+			Conductor.songPosition=Conductor.rawSongPos+currentOptions.noteOffset;
 			vocals.play();
+		}else{
+			trace("WTF???");
 		}
 	}
 
@@ -2175,6 +2181,8 @@ class PlayState extends MusicBeatState
 				}
 				#end
 			}
+
+		super.update(elapsed);
 		if (startingSong)
 		{
 			if (startedCountdown)
@@ -2189,7 +2197,7 @@ class PlayState extends MusicBeatState
 		{
 			// Conductor.songPosition = FlxG.sound.music.time;
 			Conductor.rawSongPos += FlxG.elapsed * 1000;
-			if(Conductor.rawSongPos>=vocals.length){
+			if(Conductor.rawSongPos>=vocals.length && vocals.length>0){
 				dontSync=true;
 				vocals.volume=0;
 				vocals.stop();
@@ -2662,7 +2670,6 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.volume=0;
 			vocals.volume=0;
 		}
-			super.update(elapsed);
 		#if debug
 		if (FlxG.keys.justPressed.ONE)
 			endSong();
