@@ -34,6 +34,7 @@ using StringTools;
 class TitleState extends MusicBeatState
 {
 	static var initialized:Bool = false;
+	public var currentOptions:Options;
 
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
@@ -52,6 +53,7 @@ class TitleState extends MusicBeatState
 		#end
 
 		OptionUtils.bindSave();
+		currentOptions = OptionUtils.options.clone();
 		OptionUtils.loadOptions(OptionUtils.options);
 		PlayerSettings.init();
 
@@ -108,8 +110,11 @@ class TitleState extends MusicBeatState
 
 	var logoBl:FlxSprite;
 	var gfDance:FlxSprite;
+	var speaker:FlxSprite;
 	var danceLeft:Bool = false;
 	var titleText:FlxSprite;
+	var bg:FlxSprite;
+	var bgLit:FlxSprite;
 
 	function startIntro()
 	{
@@ -149,24 +154,72 @@ class TitleState extends MusicBeatState
 		// bg.updateHitbox();
 		add(bg);
 
-		logoBl = new FlxSprite(-150, -100);
-		logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
-		logoBl.antialiasing = true;
-		logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
-		logoBl.animation.play('bump');
-		logoBl.updateHitbox();
-		// logoBl.screenCenter();
-		// logoBl.color = FlxColor.BLACK;
+		if(currentOptions.oldTitle)
+		{
+			logoBl = new FlxSprite(-150, -100);
+			logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
+			logoBl.antialiasing = true;
+			logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
+			logoBl.animation.play('bump');
+			logoBl.updateHitbox();
+		}
+		else
+		{
+			bg = new FlxSprite(FlxG.width, FlxG.height).loadGraphic(Paths.image('titleBG'));
+			bg.updateHitbox();
+			bg.screenCenter();
+			bg.antialiasing = true;
+			add(bg);
+			bg.visible = true;
+
+			bgLit = new FlxSprite(FlxG.width, FlxG.height).loadGraphic(Paths.image('titleBGLit'));
+			bgLit.updateHitbox();
+			bgLit.screenCenter();
+			bgLit.antialiasing = true;
+			add(bgLit);
+			bgLit.visible = false;
+
+			logoBl = new FlxSprite(285, -70);
+			logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
+			logoBl.antialiasing = true;
+			logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
+			logoBl.animation.play('bump');
+			logoBl.setGraphicSize(Std.int(logoBl.width * 0.72));
+			logoBl.scrollFactor.set();
+			logoBl.updateHitbox();
+
+			speaker = new FlxSprite(FlxG.width * 0.5, FlxG.height * 0.4);
+			speaker.frames = Paths.getSparrowAtlas('titleSpeaker');
+			speaker.animation.addByPrefix('lit', 'speakers', 24);
+			speaker.animation.addByPrefix('normal', 'alt speakers', 24);
+			speaker.screenCenter(X);
+			speaker.setGraphicSize(Std.int(speaker.width * 0.72));
+			speaker.antialiasing = true;
+			add(speaker);
+
+			speaker.animation.play('normal');
+		}
+		//i know its wasteful but im a lazy ass
 
 		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
 		gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
 		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 		gfDance.antialiasing = true;
-		add(gfDance);
+		if(currentOptions.oldTitle)
+		{
+			add(gfDance);
+		}
 		add(logoBl);
 
-		titleText = new FlxSprite(100, FlxG.height * 0.8);
+		if(currentOptions.oldTitle)
+		{
+			titleText = new FlxSprite(100, FlxG.height * 0.8);
+		}
+		else
+		{
+			titleText = new FlxSprite(FlxG.width * 0.099, FlxG.height * 0.825);
+		}
 		titleText.frames = Paths.getSparrowAtlas('titleEnter');
 		titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
 		titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
@@ -282,6 +335,12 @@ class TitleState extends MusicBeatState
 			#end
 
 			titleText.animation.play('press');
+			if(currentOptions.oldTitle)
+			{
+				speaker.animation.play('lit');
+				//bg.visible = false;
+				bgLit.visible = true;
+			}
 
 			FlxG.camera.flash(FlxColor.WHITE, 1);
 			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);

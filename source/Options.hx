@@ -141,6 +141,7 @@ class Options
 	public var picoCamshake:Bool = true;
 	public var senpaiShaders:Bool = true;
 	public var oldMenus:Bool = false;
+	public var oldTitle:Bool = false;
 	public var healthBarColors:Bool = true;
 
 	// preferences

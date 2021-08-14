@@ -1,0 +1,55 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="speaker.png">
+	<!-- Created with Adobe Animate version 20.0.3.25487 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="speakers0000" x="0" y="0" width="703" height="352"/>
+	<SubTexture name="speakers0001" x="0" y="0" width="703" height="352"/>
+	<SubTexture name="speakers0002" x="703" y="0" width="703" height="352"/>
+	<SubTexture name="speakers0003" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0004" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0005" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0006" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0007" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0008" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0009" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0010" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0011" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0012" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0013" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0014" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0015" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0016" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0017" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0018" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0019" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0020" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0021" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0022" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0023" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="speakers0024" x="0" y="352" width="703" height="352"/>
+	<SubTexture name="alt speakers0000" x="703" y="352" width="703" height="352"/>
+	<SubTexture name="alt speakers0001" x="703" y="352" width="703" height="352"/>
+	<SubTexture name="alt speakers0002" x="0" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0003" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0004" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0005" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0006" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0007" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0008" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0009" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0010" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0011" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0012" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0013" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0014" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0015" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0016" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0017" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0018" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0019" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0020" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0021" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0022" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0023" x="703" y="704" width="703" height="352"/>
+	<SubTexture name="alt speakers0024" x="703" y="704" width="703" height="352"/>
+</TextureAtlas>

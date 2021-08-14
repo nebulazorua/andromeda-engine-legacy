@@ -52,6 +52,7 @@ class OptionsMenu extends MusicBeatState
 			]),
 			new StepOption("backTrans","BG Transparency",10,0,100,"%","","How transparent the background is"),
 			new ToggleOption("oldMenus","Old Menus","The old menus based on original FNF are used"),
+			new ToggleOption("oldTitle","Old Title Screen","The old menus based on original FNF are used"),
 			new ToggleOption("healthBarColors","Dynamic Health Bar","temp"),
 		]),
 		new OptionCategory("Preferences",[
