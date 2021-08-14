@@ -29,7 +29,7 @@ class MainMenuState extends MusicBeatState
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
 	var logoBl:FlxSprite;
-	var gfDance:FlxSprite;
+	var gfDance:Character;
 
 	#if !switch
 	var optionShit:Array<String> = ['story mode', 'freeplay', 'options'];
@@ -41,7 +41,15 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 
 	function onMouseDown(object:FlxObject){
+		if(object==gfDance){
 
+			var anims = ["singUP","singLEFT","singRIGHT","singDOWN"];
+			var sounds = ["GF_1","GF_2","GF_3","GF_4"];
+			var anim = FlxG.random.int(0,3);
+			gfDance.holdTimer=0;
+			gfDance.playAnim(anims[anim]);
+			FlxG.sound.play(Paths.sound(sounds[anim]));
+		}
 	}
 
 	function onMouseUp(object:FlxObject){
@@ -131,15 +139,14 @@ class MainMenuState extends MusicBeatState
 			logoBl.updateHitbox();
 			add(logoBl);
 
-			gfDance = new FlxSprite(FlxG.width * 0.4 + 20, FlxG.height * 0.07);
-			gfDance.frames = Paths.getSparrowAtlas('characters/GF_assets', 'shared');
-			gfDance.animation.addByPrefix('danceLeft', 'GF Dancing Beat0');
-			gfDance.animation.addByPrefix('cheer', 'GF Cheer0');
+			gfDance = new Character(FlxG.width * 0.4 + 20, FlxG.height * 0.07,"gf",false);
 			gfDance.antialiasing = true;
 			gfDance.scrollFactor.set();
 			add(gfDance);
 
-			gfDance.animation.play('danceLeft');
+			gfDance.playAnim('danceLeft');
+
+			FlxMouseEventManager.add(gfDance,onMouseDown,onMouseUp,onMouseOver,onMouseOut);
 		}
 
 		menuItems = new FlxTypedGroup<FlxSprite>();
@@ -202,13 +209,20 @@ class MainMenuState extends MusicBeatState
 	}
 
 	var selectedSomethin:Bool = false;
-
+	override function beatHit(){
+		super.beatHit();
+		if (!gfDance.animation.curAnim.name.startsWith("sing") && gfDance.animation.curAnim.name!="cheer")
+			gfDance.dance();
+	}
 	override function update(elapsed:Float)
 	{
 		if (FlxG.sound.music.volume < 0.8)
 		{
 			FlxG.sound.music.volume += 0.5 * FlxG.elapsed;
 		}
+
+		if (FlxG.sound.music != null)
+			Conductor.songPosition = FlxG.sound.music.time;
 
 		FlxG.mouse.visible=true;
 
@@ -240,7 +254,7 @@ class MainMenuState extends MusicBeatState
 				{
 					if(!currentOptions.oldMenus)
 					{
-						gfDance.animation.play('cheer');
+						gfDance.playAnim('cheer');
 					}
 					selectedSomethin = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));

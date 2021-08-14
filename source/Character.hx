@@ -250,7 +250,7 @@ class Character extends FlxSprite
 
 				loadOffsets();
 				playAnim('idle');
-			
+
 			case 'pico':
 				iconColor = 'B7D855';
 				tex = Paths.getSparrowAtlas('characters/Pico_FNF_assetss','shared');
@@ -281,8 +281,8 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 				flipX = true;
-	
-			
+
+
 			case 'mom':
 				iconColor = 'D8558E';
 				tex = Paths.getSparrowAtlas('characters/Mom_Assets','shared');
@@ -402,20 +402,6 @@ class Character extends FlxSprite
 
 		default:
 			var xmlData:String = '';
-			/*if(Cache.xmlData[curCharacter]!=null){
-				xmlData=Cache.xmlData[curCharacter];
-			}else{
-				xmlData=File.getContent("assets/shared/images/characters/"+curCharacter+".xml");
-				Cache.xmlData[curCharacter]=xmlData;
-			}
-			var bitmapData:BitmapData;
-			if(FlxG.bitmap.get(curCharacter + "CharFrames")!=null){
-				bitmapData = FlxG.bitmap.get(curCharacter + "CharFrames").bitmap;
-			}else{
-				bitmapData = BitmapData.fromFile("assets/shared/images/characters/"+curCharacter+".png");
-				FlxG.bitmap.add(bitmapData,true,curCharacter+"CharFrames");
-			}*/
-
 			if(Cache.charFrames[curCharacter]!=null){
 				frames=Cache.charFrames[curCharacter];
 			}else{
@@ -423,11 +409,6 @@ class Character extends FlxSprite
 				Cache.charFrames[curCharacter]=frames;
 			}
 			FlxG.bitmap.dumpCache();
-
-
-
-
-
 			loadAnimations();
 			loadOffsets();
 
