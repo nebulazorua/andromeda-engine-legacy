@@ -993,32 +993,8 @@ class PlayState extends MusicBeatState
 			'health', 0, 2);
 
 		healthBar.scrollFactor.set();
-		var p1Color = 0xFF66FF33;
-		var p2Color = 0xFFFF0000; // TODO: GIVE EVERYONE CUSTOM HP BAR COLOURS!!!
-		// AND MAKE IT BETTER WITH A NOTEPAD FILE OR SOMETHING!!
-
-		switch(SONG.player1){
-			case 'bf-neb':
-				p1Color = 0xFF9534EB;
-			case 'bf' | 'bf-car' | 'bf-pixel' | 'bf-christmas':
-				p1Color = 0xFF31B0D1;
-			default:
-				p1Color = 0xFF66FF33;
-		}
-
-		switch(SONG.player2){
-			case 'bf-neb':
-				p2Color = 0xFF9534EB;
-			case 'bf' | 'bf-car' | 'bf-pixel' | 'bf-christmas':
-				p2Color = 0xFF31B0D1;
-			default:
-				p2Color=0xFFFF0000;
-		}
-
-
-
-		healthBar.createFilledBar(p2Color,p1Color);
-		// healthBar
+		healthBar.createFilledBar(FlxColor.fromString('#FF' + dad.iconColor), FlxColor.fromString('#FF' + boyfriend.iconColor));
+		//thanks ash, love ya
 		add(healthBar);
 
 		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 150, healthBarBG.y + 25, 0, "", 20);
