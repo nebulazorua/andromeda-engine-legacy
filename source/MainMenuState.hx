@@ -196,7 +196,8 @@ class MainMenuState extends MusicBeatState
 			for(idx in 0...menuItems.members.length){
 				var obj = menuItems.members[idx];
 				trace(optionShit[idx],FlxG.mouse.overlaps(obj));
-				if(FlxG.mouse.overlaps(obj)){
+				if(FlxG.mouse.overlaps(obj) && idx!=curSelected){
+					FlxG.sound.play(Paths.sound('scrollMenu'));
 					changeItem(idx,true);
 				}
 			}
