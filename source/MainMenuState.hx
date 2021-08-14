@@ -214,7 +214,13 @@ class MainMenuState extends MusicBeatState
 				else
 				{
 					if(!currentOptions.oldMenus)
+<<<<<<< HEAD
 						gfDance.animation.play('cheer');
+=======
+					{
+						gfDance.animation.play('cheer');
+					}
+>>>>>>> 1c1f030177056daa6f192a96665395786ca95af8
 					selectedSomethin = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));
 					if(OptionUtils.options.menuFlash){

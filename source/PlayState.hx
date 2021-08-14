@@ -993,7 +993,21 @@ class PlayState extends MusicBeatState
 			'health', 0, 2);
 
 		healthBar.scrollFactor.set();
-		healthBar.createFilledBar(FlxColor.fromString('#FF' + dad.iconColor), FlxColor.fromString('#FF' + boyfriend.iconColor));
+		if(currentOptions.healthBarColors)
+		{
+			if(currentOptions.hpMode)
+			{
+				healthBar.createFilledBar(0xFF454646, FlxColor.fromString('#FF' + boyfriend.iconColor));
+			}
+			else
+			{
+				healthBar.createFilledBar(FlxColor.fromString('#FF' + dad.iconColor), FlxColor.fromString('#FF' + boyfriend.iconColor));
+			}
+		}
+		else
+		{
+			healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
+		}
 		//thanks ash, love ya
 		add(healthBar);
 
@@ -1058,7 +1072,10 @@ class PlayState extends MusicBeatState
 
 		iconP2 = new HealthIcon(SONG.player2, false);
 		iconP2.y = healthBar.y - (iconP2.height / 2);
-		add(iconP2);
+		if(!currentOptions.hpMode)
+		{
+			add(iconP2);
+		}
 
 		strumLineNotes.cameras = [camHUD];
 		renderedNotes.cameras = [camNotes];
@@ -1520,6 +1537,7 @@ class PlayState extends MusicBeatState
 
 	function startSong():Void
 	{
+
 		startingSong = false;
 
 		previousFrameTime = FlxG.game.ticks;
@@ -2009,6 +2027,13 @@ class PlayState extends MusicBeatState
 		}
 		modchart.update(elapsed);
 
+		if (currentOptions.healthDrain == 1 && FlxG.sound.music.playing && !inCutscene && health > 0.00055)
+			health -= 0.00055 * (elapsed / (1/60));
+		if (currentOptions.healthDrain == 2 && FlxG.sound.music.playing && !inCutscene && health > 0.0007)
+			health -= 0.0007 * (elapsed / (1/60));
+		if (currentOptions.healthDrain == 3 && FlxG.sound.music.playing && !inCutscene && health > 0.00085)
+			health -= 0.00085 * (elapsed / (1/60));
+
 		if (FlxG.keys.justPressed.NINE)
 		{
 			if (iconP1.animation.curAnim.name == 'bf-old')
@@ -2161,6 +2186,10 @@ class PlayState extends MusicBeatState
 		super.update(elapsed);
 		if (startingSong)
 		{
+			if(currentOptions.hpMode)
+			{
+				health += 1;
+			}
 			if (startedCountdown)
 			{
 				Conductor.rawSongPos += FlxG.elapsed * 1000;
@@ -2551,7 +2580,11 @@ class PlayState extends MusicBeatState
 
 						//}
 						dad.holdTimer = 0;
-
+						
+						if (currentOptions.fightsBack && health > 0)
+							{
+								health -= 0.0182;
+							}
 
 						if (SONG.needsVoices)
 							vocals.volume = 1;
@@ -3349,11 +3382,13 @@ class PlayState extends MusicBeatState
 			lua.call("goodNoteHit",[note.noteData,note.strumTime,Conductor.songPosition,note.isSustainNote]); // TODO: Note lua class???
 		}
 
-
-		if (note.noteData >= 0)
-			health += 0.023;
-		else
-			health += 0.004;
+		if(!currentOptions.hpMode)
+		{
+			if (note.noteData >= 0)
+				health += 0.023;
+			else
+				health += 0.004;
+		}
 
 		previousHealth=health;
 
