@@ -46,7 +46,8 @@ class OptionsMenu extends MusicBeatState
 				new ToggleOption("picoCamshake","Week 3 cam shake","Does the train cause a camera shake in week 3"),
 				new ToggleOption("senpaiShaders","Week 6 shaders","Is the CRT effect active in week 6"),
 			]),
-			new StepOption("backTrans","BG Transparency",10,0,100,"%","","How transparent the background is")
+			new StepOption("backTrans","BG Transparency",10,0,100,"%","","How transparent the background is"),
+			new ToggleOption("oldMenus","Old Menus","The old menus based on original FNF are used"),
 		]),
 		new OptionCategory("Preferences",[
 		new ToggleOption("ratingInHUD","Ratings in HUD","Are ratings part of the UI"),
@@ -70,9 +71,9 @@ class OptionsMenu extends MusicBeatState
 		DiscordClient.changePresence("Changing options", null);
 		#end
 		category=defCat;
-		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuDesat"));
+		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuBG"));
 
-		menuBG.color = 0xFFa271de;
+		menuBG.color = 0xFFA271DE;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));
 		menuBG.updateHitbox();
 		menuBG.screenCenter();
