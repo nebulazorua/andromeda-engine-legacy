@@ -132,7 +132,7 @@ class MainMenuState extends MusicBeatState
 					menuItem.scrollFactor.set();
 					menuItem.antialiasing = true;
 				}
-		
+
 			logoBl = new FlxSprite(-70, -70);
 			logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
 			logoBl.antialiasing = true;
