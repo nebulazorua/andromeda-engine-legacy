@@ -2,24 +2,24 @@
 <TextureAtlas imagePath="FNF_main_menu_assets_new.png">
 	<!-- Created with Adobe Animate version 20.0.3.25487 -->
 	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="freeplay alt0000" x="1503" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay alt0001" x="1503" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay alt0002" x="1503" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay alt0003" x="0" y="453" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay alt0004" x="0" y="453" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay alt0005" x="0" y="453" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay alt0006" x="501" y="453" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay alt0007" x="501" y="453" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay alt0008" x="501" y="453" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay basic0000" x="0" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay basic0001" x="0" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay basic0002" x="0" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay basic0003" x="501" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay basic0004" x="501" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay basic0005" x="501" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay basic0006" x="1002" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay basic0007" x="1002" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
-	<SubTexture name="freeplay basic0008" x="1002" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="0" frameHeight="0"/>
+	<SubTexture name="freeplay alt0000" x="1503" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay alt0001" x="1503" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay alt0002" x="1503" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay alt0003" x="0" y="453" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay alt0004" x="0" y="453" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay alt0005" x="0" y="453" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay alt0006" x="501" y="453" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay alt0007" x="501" y="453" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay alt0008" x="501" y="453" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay basic0000" x="0" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay basic0001" x="0" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay basic0002" x="0" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay basic0003" x="501" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay basic0004" x="501" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay basic0005" x="501" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay basic0006" x="1002" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay basic0007" x="1002" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
+	<SubTexture name="freeplay basic0008" x="1002" y="298" width="501" height="155" frameX="0" frameY="10" frameWidth="501" frameHeight="155"/>
 	<SubTexture name="options alt0000" x="1491" y="569" width="489" height="116"/>
 	<SubTexture name="options alt0001" x="1491" y="569" width="489" height="116"/>
 	<SubTexture name="options alt0002" x="1491" y="569" width="489" height="116"/>
