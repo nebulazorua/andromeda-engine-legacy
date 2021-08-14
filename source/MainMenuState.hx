@@ -146,6 +146,7 @@ class MainMenuState extends MusicBeatState
 			gfDance = new FlxSprite(FlxG.width * 0.4 + 20, FlxG.height * 0.07);
 			gfDance.frames = Paths.getSparrowAtlas('characters/GF_assets', 'shared');
 			gfDance.animation.addByPrefix('danceLeft', 'GF Dancing Beat0');
+			gfDance.animation.addByPrefix('cheer', 'GF Cheer0');
 			gfDance.antialiasing = true;
 			gfDance.scrollFactor.set();
 			add(gfDance);
@@ -203,6 +204,7 @@ class MainMenuState extends MusicBeatState
 				}
 				else
 				{
+					gfDance.animation.play('cheer');
 					selectedSomethin = true;
 					FlxG.sound.play(Paths.sound('confirmMenu'));
 					if(OptionUtils.options.menuFlash){

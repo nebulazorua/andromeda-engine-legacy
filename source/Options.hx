@@ -132,6 +132,7 @@ class Options
 	public var picoCamshake:Bool = true;
 	public var senpaiShaders:Bool = true;
 	public var oldMenus:Bool = false;
+	public var oldTitle:Bool = false;
 
 	// preferences
 	public var pauseHoldAnims:Bool = true;
