@@ -19,7 +19,6 @@ import Discord.DiscordClient;
 #end
 class OptionsMenu extends MusicBeatState
 {
-
 	public static var instance:OptionsMenu;
 	private var defCat:OptionCategory = new OptionCategory("Default",[
 		new OptionCategory("Gameplay",[
@@ -32,9 +31,6 @@ class OptionsMenu extends MusicBeatState
 			]),
 			new OptionCategory("Modifiers",[
 				new ToggleOption("failForMissing","Sudden Death"),
-				new ScrollOption("healthDrain",0,OptionUtils.healthDrainNames.length-1,OptionUtils.healthDrainNames),
-				new ToggleOption("fightsBack","Opponent Fights Back"),
-				new ToggleOption("hpMode","Health Points"),
 			]),
 			new ToggleOption("loadModcharts","Load Lua modcharts"),
 			new ScrollOption("ratingWindow",0,OptionUtils.ratingWindowNames.length-1,OptionUtils.ratingWindowNames),
@@ -52,7 +48,6 @@ class OptionsMenu extends MusicBeatState
 			]),
 			new StepOption("backTrans","BG Transparency",10,0,100,"%","","How transparent the background is"),
 			new ToggleOption("oldMenus","Old Menus","The old menus based on original FNF are used"),
-			new ToggleOption("healthBarColors","Dynamic Health Bar","temp"),
 		]),
 		new OptionCategory("Preferences",[
 		new ToggleOption("ratingInHUD","Ratings in HUD","Are ratings part of the UI"),

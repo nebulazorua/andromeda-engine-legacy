@@ -1,0 +1,33 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="bfPortrait.png">
+	<!-- Created with Adobe Animate version 20.0.3.25487 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="hey0000" x="0" y="0" width="307" height="254"/>
+	<SubTexture name="hey0001" x="307" y="0" width="307" height="254"/>
+	<SubTexture name="hey0002" x="614" y="0" width="307" height="254"/>
+	<SubTexture name="hey0003" x="921" y="0" width="307" height="254"/>
+	<SubTexture name="heyMiss0000" x="1228" y="0" width="307" height="255"/>
+	<SubTexture name="heyMiss0001" x="1535" y="0" width="307" height="255"/>
+	<SubTexture name="heyMiss0002" x="0" y="255" width="307" height="255"/>
+	<SubTexture name="heyMiss0003" x="307" y="255" width="307" height="255"/>
+	<SubTexture name="miss0000" x="614" y="255" width="342" height="245"/>
+	<SubTexture name="miss0001" x="956" y="255" width="342" height="245"/>
+	<SubTexture name="miss0002" x="1298" y="255" width="342" height="245"/>
+	<SubTexture name="miss0003" x="1640" y="255" width="342" height="245"/>
+	<SubTexture name="normal0000" x="0" y="510" width="339" height="243"/>
+	<SubTexture name="normal0001" x="339" y="510" width="339" height="243"/>
+	<SubTexture name="normal0002" x="678" y="510" width="339" height="243"/>
+	<SubTexture name="normal0003" x="1017" y="510" width="339" height="243"/>
+	<SubTexture name="shock0000" x="1356" y="510" width="332" height="251"/>
+	<SubTexture name="shock0001" x="1688" y="510" width="332" height="251"/>
+	<SubTexture name="shock0002" x="0" y="761" width="332" height="251"/>
+	<SubTexture name="shock0003" x="332" y="761" width="332" height="251"/>
+	<SubTexture name="talk0000" x="664" y="761" width="339" height="243"/>
+	<SubTexture name="talk0001" x="1003" y="761" width="339" height="243"/>
+	<SubTexture name="talk0002" x="1342" y="761" width="339" height="243"/>
+	<SubTexture name="talk0003" x="1681" y="761" width="339" height="243"/>
+	<SubTexture name="talkMiss0000" x="664" y="761" width="339" height="243"/>
+	<SubTexture name="talkMiss0001" x="1003" y="761" width="339" height="243"/>
+	<SubTexture name="talkMiss0002" x="0" y="1012" width="339" height="243"/>
+	<SubTexture name="talkMiss0003" x="339" y="1012" width="339" height="243"/>
+</TextureAtlas>

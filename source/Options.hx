@@ -23,6 +23,12 @@ class OptionUtils
 		"Judge Four",
 		"EMFNF2",
 	];
+	public static var healthDrainNames:Array<String>=[
+		"No Health Drain",
+		"Basic Health Drain",
+		"Average Health Drain",
+		"Heavy Health Drain",
+	];
 	public static var ratingWindowTypes:Array<Array<Float>> = [
 		[ // Vanilla
 			32, // sick
@@ -118,6 +124,9 @@ class Options
 	public var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L,FlxKey.R];
 	public var ghosttapping:Bool = false;
 	public var failForMissing:Bool = false;
+	public var healthDrain:Int = 0;
+	public var fightsBack:Bool = false;
+	public var hpMode:Bool = false;
 	public var newInput:Bool = true;
 	public var ratingWindow:Int = 0;
 	public var noteOffset:Int = 0;
@@ -132,7 +141,7 @@ class Options
 	public var picoCamshake:Bool = true;
 	public var senpaiShaders:Bool = true;
 	public var oldMenus:Bool = false;
-	public var oldTitle:Bool = false;
+	public var healthBarColors:Bool = true;
 
 	// preferences
 	public var pauseHoldAnims:Bool = true;
