@@ -1039,7 +1039,7 @@ class ChartingState extends MusicBeatState
  				}
  				for(i in curRenderedSustains){
 					switch(i.noteType){
-						case 0:
+						default:
 		 					if(i.animation.curAnim.name.endsWith("end") ){
 		 						if(PlayState.curStage.startsWith("school")){
 		 							i.setGraphicSize(Std.int(GRID_SIZE*.35), Std.int(GRID_SIZE*.35));
@@ -1063,15 +1063,10 @@ class ChartingState extends MusicBeatState
 		 						}
 		 						i.x = Math.floor(i.rawNoteData * GRID_SIZE);
 		 					}
-						case 1:
-							i.setGraphicSize(Std.int(GRID_SIZE*.75),GRID_SIZE);
-							i.updateHitbox();
-							i.offset.x-=.5;
-							//i.y = Math.floor(getYfromStrum((i.strumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps)));
+						}
 					}
  				}
  			}
- 		}
 	}
 
 	private function addSection(lengthInSteps:Int = 16):Void
