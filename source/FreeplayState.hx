@@ -13,6 +13,10 @@ import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import lime.utils.Assets;
 import Options;
+import flixel.FlxObject;
+import flixel.input.mouse.FlxMouseEventManager;
+import flash.events.MouseEvent;
+import flixel.FlxState;
 
 using StringTools;
 
@@ -33,6 +37,36 @@ class FreeplayState extends MusicBeatState
 	private var curPlaying:Bool = false;
 
 	private var iconArray:Array<HealthIcon> = [];
+
+	function onMouseDown(object:FlxObject){
+		for(idx in 0...grpSongs.members.length){
+			var obj = grpSongs.members[idx];
+			var icon = iconArray[idx];
+			if(obj==object || icon==object){
+				if(idx!=curSelected){
+					changeSelection(idx,false);
+				}else{
+					selectSong();
+				}
+			}
+		}
+	}
+
+	function onMouseUp(object:FlxObject){
+
+	}
+
+	function onMouseOver(object:FlxObject){
+
+	}
+
+	function onMouseOut(object:FlxObject){
+
+	}
+
+	function scroll(event:MouseEvent){
+		changeSelection(-event.delta);
+	}
 
 	override function create()
 	{
@@ -63,6 +97,8 @@ class FreeplayState extends MusicBeatState
 		#if debug
 		isDebug = true;
 		#end
+
+		FlxG.stage.addEventListener(MouseEvent.MOUSE_WHEEL,scroll);
 
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
 			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
@@ -98,6 +134,8 @@ class FreeplayState extends MusicBeatState
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName.split("-").join(" "), true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
+
+			FlxMouseEventManager.add(songText,onMouseDown,onMouseUp,onMouseOver,onMouseOut);
 			grpSongs.add(songText);
 
 			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
@@ -106,6 +144,7 @@ class FreeplayState extends MusicBeatState
 			// using a FlxGroup is too much fuss!
 			iconArray.push(icon);
 			add(icon);
+			FlxMouseEventManager.add(icon,onMouseDown,onMouseUp,onMouseOver,onMouseOut);
 
 			// songText.x += 40;
 			// DONT PUT X IN THE FIRST PARAMETER OF new ALPHABET() !!
@@ -179,7 +218,19 @@ class FreeplayState extends MusicBeatState
 				num++;
 		}
 	}
+	function selectSong(){
+		var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
 
+		trace(poop);
+
+		PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
+		PlayState.isStoryMode = false;
+		PlayState.storyDifficulty = curDifficulty;
+
+		PlayState.storyWeek = songs[curSelected].week;
+		trace('CUR WEEK' + PlayState.storyWeek);
+		LoadingState.loadAndSwitchState(new PlayState());
+	}
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
@@ -221,17 +272,7 @@ class FreeplayState extends MusicBeatState
 
 		if (accepted)
 		{
-			var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
-
-			trace(poop);
-
-			PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
-			PlayState.isStoryMode = false;
-			PlayState.storyDifficulty = curDifficulty;
-
-			PlayState.storyWeek = songs[curSelected].week;
-			trace('CUR WEEK' + PlayState.storyWeek);
-			LoadingState.loadAndSwitchState(new PlayState());
+			selectSong();
 		}
 	}
 
@@ -259,7 +300,7 @@ class FreeplayState extends MusicBeatState
 		}
 	}
 
-	function changeSelection(change:Int = 0)
+	function changeSelection(change:Int = 0,additive:Bool=true)
 	{
 		#if !switch
 		//NGio.logEvent('Fresh');
@@ -268,12 +309,16 @@ class FreeplayState extends MusicBeatState
 		// NGio.logEvent('Fresh');
 		FlxG.sound.play(Paths.sound('scrollMenu'), 0.4);
 
-		curSelected += change;
+		if(additive){
+			curSelected += change;
 
-		if (curSelected < 0)
-			curSelected = songs.length - 1;
-		if (curSelected >= songs.length)
-			curSelected = 0;
+			if (curSelected < 0)
+				curSelected = songs.length - 1;
+			if (curSelected >= songs.length)
+				curSelected = 0;
+		}else{
+			curSelected=change;
+		}
 
 		// selector.y = (70 * curSelected) + 30;
 
@@ -311,6 +356,13 @@ class FreeplayState extends MusicBeatState
 				// item.setGraphicSize(Std.int(item.width));
 			}
 		}
+	}
+
+	override function switchTo(next:FlxState){
+		// Do all cleanup of stuff here! This makes it so you dont need to copy+paste shit to every switchState
+		FlxG.stage.removeEventListener(MouseEvent.MOUSE_WHEEL,scroll);
+
+		return super.switchTo(next);
 	}
 }
 

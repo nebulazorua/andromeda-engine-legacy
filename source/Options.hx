@@ -127,7 +127,8 @@ class Options
 	public var healthDrain:Int = 0;
 	public var fightsBack:Bool = false;
 	public var hpMode:Bool = false;
-	public var newInput:Bool = true;
+
+	public var pollingInput:Bool = false;
 	public var ratingWindow:Int = 0;
 	public var noteOffset:Int = 0;
 	public var botPlay:Bool = false;

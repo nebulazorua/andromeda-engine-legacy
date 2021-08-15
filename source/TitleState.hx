@@ -53,8 +53,8 @@ class TitleState extends MusicBeatState
 		#end
 
 		OptionUtils.bindSave();
-		currentOptions = OptionUtils.options.clone();
 		OptionUtils.loadOptions(OptionUtils.options);
+		currentOptions = OptionUtils.options;
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -197,7 +197,7 @@ class TitleState extends MusicBeatState
 			speaker.antialiasing = true;
 			add(speaker);
 
-			speaker.animation.play('normal');
+			speaker.animation.play('normal',true);
 		}
 		//i know its wasteful but im a lazy ass
 
@@ -221,8 +221,8 @@ class TitleState extends MusicBeatState
 			titleText = new FlxSprite(FlxG.width * 0.099, FlxG.height * 0.825);
 		}
 		titleText.frames = Paths.getSparrowAtlas('titleEnter');
-		titleText.animation.addByPrefix('idle', "Press Enter to Begin", 24);
-		titleText.animation.addByPrefix('press', "ENTER PRESSED", 24);
+		titleText.animation.addByPrefix('idle', "Press Enter to Begin0", 24);
+		titleText.animation.addByPrefix('press', "ENTER PRESSED0", 24);
 		titleText.antialiasing = true;
 		titleText.animation.play('idle');
 		titleText.updateHitbox();
@@ -326,6 +326,7 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
+			titleText.animation.play('press',true);
 			#if !switch
 			//NGio.unlockMedal(60960);
 
@@ -334,15 +335,14 @@ class TitleState extends MusicBeatState
 				//NGio.unlockMedal(61034);
 			#end
 
-			titleText.animation.play('press');
-			if(currentOptions.oldTitle)
+			if(!currentOptions.oldTitle)
 			{
-				speaker.animation.play('lit');
+				speaker.animation.play('lit',true);
 				//bg.visible = false;
 				bgLit.visible = true;
 			}
 
-			FlxG.camera.flash(FlxColor.WHITE, 1);
+			FlxG.camera.flash(FlxColor.WHITE, 1, null, true);
 			FlxG.sound.play(Paths.sound('confirmMenu'), 0.7);
 
 			transitioning = true;
@@ -484,7 +484,7 @@ class TitleState extends MusicBeatState
 		{
 			remove(ngSpr);
 
-			FlxG.camera.flash(FlxColor.WHITE, 4);
+			FlxG.camera.flash(FlxColor.WHITE, 2);
 			remove(credGroup);
 			skippedIntro = true;
 		}
