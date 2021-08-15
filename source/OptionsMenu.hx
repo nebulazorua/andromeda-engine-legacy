@@ -36,7 +36,7 @@ class OptionsMenu extends MusicBeatState
 				new ToggleOption("fightsBack","Opponent Fights Back"),
 				new ToggleOption("hpMode","HP disabled"),
 			]),
-			new ToggleOption("pollingInput","Frame-based input","Should inputs get checked every frame"),
+			new ToggleOption("pollingInput","Old input","Should inputs get checked every frame"),
 			#if windows
 			new ToggleOption("loadModcharts","Load Lua modcharts","Should modcharts which run on lua load"),
 			#end
