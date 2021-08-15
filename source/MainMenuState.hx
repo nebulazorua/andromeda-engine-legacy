@@ -40,18 +40,20 @@ class MainMenuState extends MusicBeatState
 	var camFollow:FlxObject;
 
 	function onMouseDown(object:FlxObject){
-		if(object==gfDance){
-			var anims = ["singUP","singLEFT","singRIGHT","singDOWN"];
-			var sounds = ["GF_1","GF_2","GF_3","GF_4"];
-			var anim = FlxG.random.int(0,3);
-			gfDance.holdTimer=0;
-			gfDance.playAnim(anims[anim]);
-			FlxG.sound.play(Paths.sound(sounds[anim]));
-		}else{
-			for(obj in menuItems.members){
-				if(obj==object){
-					accept();
-					break;
+		if(!selectedSomethin){
+			if(object==gfDance){
+				var anims = ["singUP","singLEFT","singRIGHT","singDOWN"];
+				var sounds = ["GF_1","GF_2","GF_3","GF_4"];
+				var anim = FlxG.random.int(0,3);
+				gfDance.holdTimer=0;
+				gfDance.playAnim(anims[anim]);
+				FlxG.sound.play(Paths.sound(sounds[anim]));
+			}else{
+				for(obj in menuItems.members){
+					if(obj==object){
+						accept();
+						break;
+					}
 				}
 			}
 		}
@@ -62,12 +64,14 @@ class MainMenuState extends MusicBeatState
 	}
 
 	function onMouseOver(object:FlxObject){
-		for(idx in 0...menuItems.members.length){
-			var obj = menuItems.members[idx];
-			if(obj==object){
-				if(idx!=curSelected){
-					FlxG.sound.play(Paths.sound('scrollMenu'));
-					changeItem(idx,true);
+		if(!selectedSomethin){
+			for(idx in 0...menuItems.members.length){
+				var obj = menuItems.members[idx];
+				if(obj==object){
+					if(idx!=curSelected){
+						FlxG.sound.play(Paths.sound('scrollMenu'));
+						changeItem(idx,true);
+					}
 				}
 			}
 		}
