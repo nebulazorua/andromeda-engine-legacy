@@ -53,8 +53,8 @@ class TitleState extends MusicBeatState
 		#end
 
 		OptionUtils.bindSave();
-		currentOptions = OptionUtils.options.clone();
 		OptionUtils.loadOptions(OptionUtils.options);
+		currentOptions = OptionUtils.options;
 		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
@@ -197,7 +197,7 @@ class TitleState extends MusicBeatState
 			speaker.antialiasing = true;
 			add(speaker);
 
-			speaker.animation.play('normal');
+			speaker.animation.play('normal',true);
 		}
 		//i know its wasteful but im a lazy ass
 
@@ -334,10 +334,10 @@ class TitleState extends MusicBeatState
 				//NGio.unlockMedal(61034);
 			#end
 
-			titleText.animation.play('press');
-			if(currentOptions.oldTitle)
+			titleText.animation.play('press',true);
+			if(!currentOptions.oldTitle)
 			{
-				speaker.animation.play('lit');
+				speaker.animation.play('lit',true);
 				//bg.visible = false;
 				bgLit.visible = true;
 			}

@@ -2098,7 +2098,6 @@ class PlayState extends MusicBeatState
 			{
 				// gitaroo man easter egg
 				FlxG.switchState(new GitarooPause());
-				Cache.Clear();
 			}
 			else
 				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
@@ -2110,17 +2109,7 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.SEVEN)
 		{
-
-
-			#if windows
-			if(lua!=null){
-				lua.destroy();
-				trace("cringe");
-				lua=null;
-			}
-			#end
 			FlxG.switchState(new ChartingState());
-			Cache.Clear();
 
 			#if desktop
 			DiscordClient.changePresence("Chart Editor", null, null, true);
@@ -2164,23 +2153,9 @@ class PlayState extends MusicBeatState
 
 		if (FlxG.keys.justPressed.EIGHT){
 				FlxG.switchState(new AnimationDebug(SONG.player2));
-				Cache.Clear();
-				#if windows
-				if(lua!=null){
-					lua.destroy();
-					lua=null;
-				}
-				#end
 			}
 			if (FlxG.keys.justPressed.NINE){
 				FlxG.switchState(new AnimationDebug(SONG.player1));
-				Cache.Clear();
-				#if windows
-				if(lua!=null){
-					lua.destroy();
-					lua=null;
-				}
-				#end
 			}
 
 		super.update(elapsed);
@@ -2580,7 +2555,7 @@ class PlayState extends MusicBeatState
 
 						//}
 						dad.holdTimer = 0;
-						
+
 						if (currentOptions.fightsBack && health > 0)
 							{
 								health -= 0.0182;
@@ -2720,7 +2695,6 @@ class PlayState extends MusicBeatState
 				transOut = FlxTransitionableState.defaultTransOut;
 
 				FlxG.switchState(new StoryMenuState());
-				Cache.Clear();
 
 				// if ()
 				StoryMenuState.weekUnlocked[Std.int(Math.min(storyWeek + 1, StoryMenuState.weekUnlocked.length - 1))] = true;
@@ -2773,7 +2747,6 @@ class PlayState extends MusicBeatState
 		{
 			trace('WENT BACK TO FREEPLAY??');
 			FlxG.switchState(new FreeplayState());
-			Cache.Clear();
 		}
 	}
 
@@ -3664,4 +3637,17 @@ class PlayState extends MusicBeatState
 	}
 
 	var curLight:Int = 0;
+
+	override function switchTo(next:FlxState){
+		// Do all cleanup of stuff here! This makes it so you dont need to copy+paste shit to every switchState
+		#if windows
+		if(lua!=null){
+			lua.destroy();
+			trace("cringe");
+			lua=null;
+		}
+		#end
+		Cache.Clear();
+		return super.switchTo(next);
+	}
 }

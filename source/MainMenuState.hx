@@ -28,7 +28,6 @@ class MainMenuState extends MusicBeatState
 	public var currentOptions:Options;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
-	var logoBl:FlxSprite;
 	var gfDance:Character;
 
 	#if !switch
@@ -42,13 +41,19 @@ class MainMenuState extends MusicBeatState
 
 	function onMouseDown(object:FlxObject){
 		if(object==gfDance){
-
 			var anims = ["singUP","singLEFT","singRIGHT","singDOWN"];
 			var sounds = ["GF_1","GF_2","GF_3","GF_4"];
 			var anim = FlxG.random.int(0,3);
 			gfDance.holdTimer=0;
 			gfDance.playAnim(anims[anim]);
 			FlxG.sound.play(Paths.sound(sounds[anim]));
+		}else{
+			for(obj in menuItems.members){
+				if(obj==object){
+					accept();
+					break;
+				}
+			}
 		}
 	}
 
@@ -57,7 +62,6 @@ class MainMenuState extends MusicBeatState
 	}
 
 	function onMouseOver(object:FlxObject){
-		trace(object);
 		for(idx in 0...menuItems.members.length){
 			var obj = menuItems.members[idx];
 			if(obj==object){
@@ -71,6 +75,84 @@ class MainMenuState extends MusicBeatState
 
 	function onMouseOut(object:FlxObject){
 
+	}
+
+	function accept(){
+		if (optionShit[curSelected] == 'donate')
+		{
+			#if linux
+			Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
+			#else
+			FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
+			#end
+		}
+		else
+		{
+			if(!currentOptions.oldMenus)
+			{
+				gfDance.playAnim('cheer');
+			}
+			selectedSomethin = true;
+			FlxG.sound.play(Paths.sound('confirmMenu'));
+			if(OptionUtils.options.menuFlash){
+				FlxFlicker.flicker(magenta, 1.1, 0.15, false);
+			}else{
+				magenta.visible=true;
+			}
+
+			menuItems.forEach(function(spr:FlxSprite)
+			{
+				if (curSelected != spr.ID)
+				{
+					FlxTween.tween(spr, {alpha: 0}, 0.4, {
+						ease: FlxEase.quadOut,
+						onComplete: function(twn:FlxTween)
+						{
+							spr.kill();
+						}
+					});
+				}
+				else
+				{
+					if(OptionUtils.options.menuFlash){
+						FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
+						{
+							var daChoice:String = optionShit[curSelected];
+
+							switch (daChoice)
+							{
+								case 'story mode':
+									FlxG.switchState(new StoryMenuState());
+									trace("Story Menu Selected");
+								case 'freeplay':
+									FlxG.switchState(new FreeplayState());
+									trace("Freeplay Menu Selected");
+
+								case 'options':
+									FlxG.switchState(new OptionsMenu());
+							}
+						});
+					}else{
+						new FlxTimer().start(1, function(tmr:FlxTimer){
+							var daChoice:String = optionShit[curSelected];
+
+							switch (daChoice)
+							{
+								case 'story mode':
+									FlxG.switchState(new StoryMenuState());
+									trace("Story Menu Selected");
+								case 'freeplay':
+									FlxG.switchState(new FreeplayState());
+									trace("Freeplay Menu Selected");
+
+								case 'options':
+									FlxG.switchState(new OptionsMenu());
+							}
+						});
+					}
+				}
+			});
+		}
 	}
 
 	override function create()
@@ -129,15 +211,6 @@ class MainMenuState extends MusicBeatState
 		// magenta.scrollFactor.set();
 
 		if(!currentOptions.oldMenus){
-			logoBl = new FlxSprite(-70, -70);
-			logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
-			logoBl.antialiasing = true;
-			logoBl.animation.addByPrefix('bump', 'logo bumpin', 24);
-			logoBl.animation.play('bump');
-			logoBl.setGraphicSize(Std.int(logoBl.width * 0.68));
-			logoBl.scrollFactor.set();
-			logoBl.updateHitbox();
-			add(logoBl);
 
 			gfDance = new Character(FlxG.width * 0.4 + 20, FlxG.height * 0.07,"gf",false);
 			gfDance.antialiasing = true;
@@ -178,7 +251,7 @@ class MainMenuState extends MusicBeatState
 
 			for (i in 0...optionShit.length)
 				{
-					var menuItem:FlxSprite = new FlxSprite(20, 300 + (i * 140));
+					var menuItem:FlxSprite = new FlxSprite(20, FlxG.height/2 + ((i-1) * 160));
 					menuItem.frames = tex;
 					menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
 					menuItem.animation.addByPrefix('selected', optionShit[i] + " alt", 24);
@@ -240,83 +313,9 @@ class MainMenuState extends MusicBeatState
 				changeItem(1);
 			}
 
-			if (controls.ACCEPT || FlxG.mouse.justPressed && FlxG.mouse.overlaps(menuItems.members[curSelected]) )
+			if (controls.ACCEPT)
 			{
-				if (optionShit[curSelected] == 'donate')
-				{
-					#if linux
-					Sys.command('/usr/bin/xdg-open', ["https://ninja-muffin24.itch.io/funkin", "&"]);
-					#else
-					FlxG.openURL('https://ninja-muffin24.itch.io/funkin');
-					#end
-				}
-				else
-				{
-					if(!currentOptions.oldMenus)
-					{
-						gfDance.playAnim('cheer');
-					}
-					selectedSomethin = true;
-					FlxG.sound.play(Paths.sound('confirmMenu'));
-					if(OptionUtils.options.menuFlash){
-						FlxFlicker.flicker(magenta, 1.1, 0.15, false);
-					}else{
-						magenta.visible=true;
-					}
-
-					menuItems.forEach(function(spr:FlxSprite)
-					{
-						if (curSelected != spr.ID)
-						{
-							FlxTween.tween(spr, {alpha: 0}, 0.4, {
-								ease: FlxEase.quadOut,
-								onComplete: function(twn:FlxTween)
-								{
-									spr.kill();
-								}
-							});
-						}
-						else
-						{
-							if(OptionUtils.options.menuFlash){
-								FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
-								{
-									var daChoice:String = optionShit[curSelected];
-
-									switch (daChoice)
-									{
-										case 'story mode':
-											FlxG.switchState(new StoryMenuState());
-											trace("Story Menu Selected");
-										case 'freeplay':
-											FlxG.switchState(new FreeplayState());
-											trace("Freeplay Menu Selected");
-
-										case 'options':
-											FlxG.switchState(new OptionsMenu());
-									}
-								});
-							}else{
-								new FlxTimer().start(1, function(tmr:FlxTimer){
-									var daChoice:String = optionShit[curSelected];
-
-									switch (daChoice)
-									{
-										case 'story mode':
-											FlxG.switchState(new StoryMenuState());
-											trace("Story Menu Selected");
-										case 'freeplay':
-											FlxG.switchState(new FreeplayState());
-											trace("Freeplay Menu Selected");
-
-										case 'options':
-											FlxG.switchState(new OptionsMenu());
-									}
-								});
-							}
-						}
-					});
-				}
+				accept();
 			}
 		}
 
