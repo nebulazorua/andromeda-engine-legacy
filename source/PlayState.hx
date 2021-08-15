@@ -52,6 +52,8 @@ import Shaders;
 import haxe.Exception;
 import openfl.utils.Assets;
 import ModChart;
+import flash.events.KeyboardEvent;
+
 #if windows
 import vm.lua.LuaVM;
 import vm.lua.Exception;
@@ -2635,10 +2637,8 @@ class PlayState extends MusicBeatState
 		});
 
 		if (!inCutscene){
-			if(currentOptions.newInput)
+			//if(currentOptions.pollingInput)
 				keyShit();
-			else
-				oldKeyShit();
 
 		}
 
@@ -2979,6 +2979,10 @@ class PlayState extends MusicBeatState
 		curSection += 1;
 	}
 
+	private function handleInput(event:KeyboardEvent){
+
+	}
+
 	private function keyShit():Void
 	{
 		var up = controls.UP;
@@ -3111,118 +3115,6 @@ class PlayState extends MusicBeatState
 		});
 
 	}
-
-	private function oldKeyShit():Void
-	{
-		// HOLDING
-		var up = controls.UP;
-		var right = controls.RIGHT;
-		var down = controls.DOWN;
-		var left = controls.LEFT;
-
-		var upP = controls.UP_P;
-		var rightP = controls.RIGHT_P;
-		var downP = controls.DOWN_P;
-		var leftP = controls.LEFT_P;
-
-		var holdArray:Array<Bool> = [left,down,up,right];
-		var controlArray:Array<Bool> = [leftP, downP, upP, rightP];
-
-		if((left || right || up || down) && generatedMusic ){
-			var hitting=[];
-			for(daNote in hittableNotes){
-				if(daNote.isSustainNote && daNote.canBeHit && daNote.mustPress && holdArray[daNote.noteData]){
-					noteHit(daNote);
-				}
-			};
-
-		};
-
-		if ((upP || rightP || downP || leftP) && generatedMusic)
-			{
-				boyfriend.holdTimer=0;
-				var possibleNotes:Array<Note> = [];
-				var ignoreList = [];
-				var what = [];
-				for(daNote in hittableNotes){
-					if(daNote.canBeHit && daNote.mustPress && !daNote.tooLate && !daNote.wasGoodHit && !daNote.isSustainNote){
-						if(ignoreList.contains(daNote.noteData)){
-							for(note in possibleNotes){
-								if(note.noteData==daNote.noteData && Math.abs(daNote.strumTime-note.strumTime)<10){
-									what.push(daNote);
-								}else if(note.noteData==daNote.noteData && daNote.strumTime<note.strumTime){
-									possibleNotes.remove(note);
-									possibleNotes.push(daNote);
-								}
-							}
-						}else{
-							possibleNotes.push(daNote);
-							ignoreList.push(daNote.noteData);
-						};
-					};
-				};
-
-				for(daNote in what){
-					daNote.kill();
-					renderedNotes.remove(daNote,true);
-					noteLanes[daNote.noteData].remove(daNote);
-					hittableNotes.remove(daNote);
-					daNote.destroy();
-				};
-
-				possibleNotes.sort((a, b) -> Std.int(a.strumTime - b.strumTime));
-
-				if(perfectMode){
-					noteHit(possibleNotes[0]);
-				}else if(possibleNotes.length>0){
-					for (idx in 0...controlArray.length){
-						var pressed = controlArray[idx];
-						if(pressed && ignoreList.contains(idx)==false && currentOptions.ghosttapping==false )
-							badNoteCheck();
-					}
-					for (daNote in possibleNotes){
-						if(controlArray[daNote.noteData])
-							noteHit(daNote);
-					};
-				}else{
-					if(currentOptions.ghosttapping==false){
-						badNoteCheck();
-					}
-				};
-				}
-
-			var bfVar:Float=4;
-			if(boyfriend.curCharacter=='dad')
-				bfVar=6.1;
-
-			if (boyfriend.holdTimer > Conductor.stepCrochet * bfVar * 0.001 && !up && !down && !right && !left)
-			{
-				if (boyfriend.animation.curAnim.name.startsWith('sing') && !boyfriend.animation.curAnim.name.endsWith('miss'))
-				{
-					boyfriend.dance();
-				}
-			}
-
-
-			playerStrums.forEach(function(spr:FlxSprite)
-			{
-				if(controlArray[spr.ID] && spr.animation.curAnim.name!="confirm")
-					spr.animation.play("pressed");
-
-				if(!holdArray[spr.ID]){
-					spr.animation.play("static");
-				}
-				if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
-				{
-					spr.centerOffsets();
-					spr.offset.x -= 13;
-					spr.offset.y -= 13;
-				}
-				else
-					spr.centerOffsets();
-			});
-	}
-
 
 	function noteMiss(direction:Int = 1):Void
 	{
@@ -3648,6 +3540,7 @@ class PlayState extends MusicBeatState
 		}
 		#end
 		Cache.Clear();
+		//FlxG.stage.removeEventListener(KwyboardEvent.KEY_DOWN,handleInput);
 		return super.switchTo(next);
 	}
 }
