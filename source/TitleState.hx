@@ -326,7 +326,7 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-			titleText.animation.play('press',true);
+
 			#if !switch
 			//NGio.unlockMedal(60960);
 
@@ -334,6 +334,7 @@ class TitleState extends MusicBeatState
 			if (Date.now().getDay() == 5)
 				//NGio.unlockMedal(61034);
 			#end
+			titleText.animation.play('press',true);
 
 			if(!currentOptions.oldTitle)
 			{
