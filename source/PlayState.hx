@@ -2844,7 +2844,6 @@ class PlayState extends MusicBeatState
 		coolText.x = FlxG.width * 0.55;
 		//
 
-		var rating:FlxSprite = new FlxSprite();
 		var score:Int = ScoreUtils.RatingToScore(daRating);
 
 		if(daRating=='shit')
@@ -2868,6 +2867,7 @@ class PlayState extends MusicBeatState
 			pixelShitPart2 = '-pixel';
 		}
 
+		var rating:FlxSprite = new FlxSprite();
 		rating.loadGraphic(Paths.image(pixelShitPart1 + daRating + pixelShitPart2));
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
@@ -2875,29 +2875,23 @@ class PlayState extends MusicBeatState
 		rating.acceleration.y = 550;
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
+		if(!currentOptions.showRatings)
+			rating.visible=false;
 
-		var comboSpr:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'combo' + pixelShitPart2));
-		comboSpr.screenCenter();
-		comboSpr.x = coolText.x;
-		comboSpr.acceleration.y = 600;
-		comboSpr.velocity.y -= 150;
-		comboSpr.velocity.x += FlxG.random.int(1, 10);
 		add(rating);
+
+
 
 		if (!curStage.startsWith('school'))
 		{
 			rating.setGraphicSize(Std.int(rating.width * 0.7));
 			rating.antialiasing = true;
-			comboSpr.setGraphicSize(Std.int(comboSpr.width * 0.7));
-			comboSpr.antialiasing = true;
 		}
 		else
 		{
 			rating.setGraphicSize(Std.int(rating.width * daPixelZoom * 0.7));
-			comboSpr.setGraphicSize(Std.int(comboSpr.width * daPixelZoom * 0.7));
 		}
 
-		comboSpr.updateHitbox();
 		rating.updateHitbox();
 		var ratingCameras = [camRating];
 
@@ -2906,61 +2900,60 @@ class PlayState extends MusicBeatState
 
 			coolText.scrollFactor.set(0,0);
 			rating.scrollFactor.set(0,0);
-			comboSpr.scrollFactor.set(0,0);
 
 			rating.x -= 175;
 			coolText.x -= 175;
-			comboSpr.x -= 175;
 		}
-		comboSpr.cameras = ratingCameras;
 		rating.cameras=ratingCameras;
 		coolText.cameras=ratingCameras;
 
 		var seperatedScore:Array<String> = Std.string(combo).split("");
 		var displayedMS = truncateFloat(noteDiff,2);
 		var seperatedMS:Array<String> = Std.string(displayedMS).split("");
-		var daLoop:Float = 0;
-		for (i in seperatedScore)
-		{
-			var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
-			numScore.screenCenter(XY);
-			numScore.x = coolText.x + (43 * daLoop) - 90;
-			numScore.y += 80;
-
-			if (!curStage.startsWith('school'))
+		if(currentOptions.showComboCounter){
+			var daLoop:Float = 0;
+			for (i in seperatedScore)
 			{
-				numScore.antialiasing = true;
-				numScore.setGraphicSize(Std.int(numScore.width * 0.5));
-			}
-			else
-			{
-				numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
-			}
-			numScore.updateHitbox();
+				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
+				numScore.screenCenter(XY);
+				numScore.x = coolText.x + (43 * daLoop) - 90;
+				numScore.y += 80;
 
-			numScore.acceleration.y = FlxG.random.int(200, 300);
-			numScore.velocity.y -= FlxG.random.int(140, 160);
-			numScore.velocity.x = FlxG.random.float(-5, 5);
-
-			if(currentOptions.ratingInHUD){
-				numScore.scrollFactor.set(0,0);
-			}
-			numScore.cameras=ratingCameras;
-			if(combo>=10){
-				add(numScore);
-			}
-			FlxTween.tween(numScore, {alpha: 0}, 0.2, {
-				onComplete: function(tween:FlxTween)
+				if (!curStage.startsWith('school'))
 				{
-					numScore.destroy();
-				},
-				startDelay: Conductor.crochet * 0.002
-			});
+					numScore.antialiasing = true;
+					numScore.setGraphicSize(Std.int(numScore.width * 0.5));
+				}
+				else
+				{
+					numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
+				}
+				numScore.updateHitbox();
 
-			daLoop++;
+				numScore.acceleration.y = FlxG.random.int(200, 300);
+				numScore.velocity.y -= FlxG.random.int(140, 160);
+				numScore.velocity.x = FlxG.random.float(-5, 5);
+
+				if(currentOptions.ratingInHUD){
+					numScore.scrollFactor.set(0,0);
+				}
+				numScore.cameras=ratingCameras;
+				if(combo>=10){
+					add(numScore);
+				}
+				FlxTween.tween(numScore, {alpha: 0}, 0.2, {
+					onComplete: function(tween:FlxTween)
+					{
+						numScore.destroy();
+					},
+					startDelay: Conductor.crochet * 0.002
+				});
+
+				daLoop++;
+			}
 		}
 
-		daLoop=0;
+		var daLoop:Float=0;
 		if(currentOptions.showMS){
 			for (i in seperatedMS)
 			{
@@ -3034,14 +3027,9 @@ class PlayState extends MusicBeatState
 		// add(coolText);
 
 		FlxTween.tween(rating, {alpha: 0}, 0.2, {
-			startDelay: Conductor.crochet * 0.001
-		});
-
-		FlxTween.tween(comboSpr, {alpha: 0}, 0.2, {
 			onComplete: function(tween:FlxTween)
 			{
 				coolText.destroy();
-				comboSpr.destroy();
 
 				rating.destroy();
 			},

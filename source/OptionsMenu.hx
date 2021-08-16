@@ -59,9 +59,11 @@ class OptionsMenu extends MusicBeatState
 			new ToggleOption("healthBarColors","Dynamic Health Bar","temp"),
 		]),
 		new OptionCategory("Preferences",[
+			new ToggleOption("showComboCounter","Show combo","Ratings show your combo when you hit a note"),
+			new ToggleOption("showRatings","Show ratings","Ratings show up when you hit a note"),
+			new ToggleOption("showMS","Hit MS","Display the milliseconds for when you hit a note"),
 			new ToggleOption("ratingInHUD","Ratings in HUD","Are ratings part of the UI"),
 			new ToggleOption("pauseHoldAnims","Holds pause anims", "Do animations get paused on the first frame on holds"),
-			new ToggleOption("showMS","Hit MS","Display the milliseconds for when you hit a note"),
 			new ToggleOption("menuFlash","Flashing in menus","Do the background and buttons flash when selecting them in menus"),
 			new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),
 			new ToggleOption("freeplayPreview","Song preview in freeplay","Do songs get played when selecting them in the freeplay menu"),

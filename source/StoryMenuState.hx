@@ -17,6 +17,7 @@ import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
 import flash.events.MouseEvent;
 import flixel.FlxState;
+import flixel.input.mouse.FlxMouseEventManager;
 
 using StringTools;
 
@@ -184,6 +185,7 @@ class StoryMenuState extends MusicBeatState
 		leftArrow.animation.addByPrefix('idle', "arrow left");
 		leftArrow.animation.addByPrefix('press', "arrow push left");
 		leftArrow.animation.play('idle');
+		leftArrow.updateHitbox();
 		difficultySelectors.add(leftArrow);
 
 		sprDifficulty = new FlxSprite(leftArrow.x + 130, leftArrow.y);
@@ -201,6 +203,7 @@ class StoryMenuState extends MusicBeatState
 		rightArrow.animation.addByPrefix('idle', 'arrow right');
 		rightArrow.animation.addByPrefix('press', "arrow push right", 24, false);
 		rightArrow.animation.play('idle');
+		rightArrow.updateHitbox();
 		difficultySelectors.add(rightArrow);
 
 		trace("Line 150");
@@ -259,19 +262,19 @@ class StoryMenuState extends MusicBeatState
 					changeWeek(1);
 				}
 
-				if (controls.RIGHT)
+				if (controls.RIGHT || FlxG.mouse.overlaps(rightArrow) && FlxG.mouse.pressed )
 					rightArrow.animation.play('press')
 				else
 					rightArrow.animation.play('idle');
 
-				if (controls.LEFT)
+				if (controls.LEFT || FlxG.mouse.overlaps(leftArrow) && FlxG.mouse.pressed)
 					leftArrow.animation.play('press');
 				else
 					leftArrow.animation.play('idle');
 
-				if (controls.RIGHT_P)
+				if (controls.RIGHT_P || FlxG.mouse.overlaps(rightArrow) && FlxG.mouse.justPressed )
 					changeDifficulty(1);
-				if (controls.LEFT_P)
+				if (controls.LEFT_P || FlxG.mouse.overlaps(leftArrow) && FlxG.mouse.justPressed)
 					changeDifficulty(-1);
 			}
 

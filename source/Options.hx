@@ -148,6 +148,9 @@ class Options
 	// preferences
 	public var pauseHoldAnims:Bool = true;
 	public var showMS:Bool = false;
+	public var showComboCounter:Bool = true;
+	public var showRatings:Bool = true;
+	
 	public var ratingInHUD:Bool = false;
 	public var menuFlash:Bool = true;
 	public var freeplayPreview:Bool = true;
