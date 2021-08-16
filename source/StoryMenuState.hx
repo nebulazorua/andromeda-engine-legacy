@@ -15,6 +15,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import lime.net.curl.CURLCode;
+import flash.events.MouseEvent;
 
 using StringTools;
 
@@ -458,5 +459,5 @@ class StoryMenuState extends MusicBeatState
 
 		return super.switchTo(next);
 	}
-	
+
 }
