@@ -219,6 +219,8 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 165");
 
+		FlxG.stage.addEventListener(MouseEvent.MOUSE_WHEEL,scroll);
+
 		super.create();
 	}
 
@@ -370,6 +372,10 @@ class StoryMenuState extends MusicBeatState
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
 
+	function scroll(event:MouseEvent){
+		changeWeek(-event.delta);
+	}
+
 	function changeWeek(change:Int = 0):Void
 	{
 		curWeek += change;
@@ -445,4 +451,12 @@ class StoryMenuState extends MusicBeatState
 		intendedScore = Highscore.getWeekScore(curWeek, curDifficulty);
 		#end
 	}
+
+	override function switchTo(next:FlxState){
+		// Do all cleanup of stuff here! This makes it so you dont need to copy+paste shit to every switchState
+		FlxG.stage.removeEventListener(MouseEvent.MOUSE_WHEEL,scroll);
+
+		return super.switchTo(next);
+	}
+	
 }

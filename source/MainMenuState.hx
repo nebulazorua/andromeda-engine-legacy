@@ -182,20 +182,12 @@ class MainMenuState extends MusicBeatState
 		bg.updateHitbox();
 		bg.screenCenter();
 		bg.antialiasing = true;
-		if(currentOptions.oldMenus)
-		{
-			bg.color = 0xFFFFFDB0;
-		}
-		else
-		{
-			bg.color = 0xFFF9CB97;
-		}
 		add(bg);
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
-		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
+		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuBGMagenta'));
 		magenta.scrollFactor.x = 0;
 		magenta.scrollFactor.y = 0.13;
 		magenta.setGraphicSize(Std.int(magenta.width * 1.1));
@@ -203,14 +195,7 @@ class MainMenuState extends MusicBeatState
 		magenta.screenCenter();
 		magenta.visible = false;
 		magenta.antialiasing = true;
-		if(currentOptions.oldMenus)
-			{
-				magenta.color = 0xFFFF87DA;
-			}
-			else
-			{
-				magenta.color = 0xFFF9CB97;
-			}
+
 		add(magenta);
 		// magenta.scrollFactor.set();
 
