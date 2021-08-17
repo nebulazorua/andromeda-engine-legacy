@@ -273,8 +273,10 @@ class MainMenuState extends MusicBeatState
 	var selectedSomethin:Bool = false;
 	override function beatHit(){
 		super.beatHit();
-		if (!gfDance.animation.curAnim.name.startsWith("sing") && gfDance.animation.curAnim.name!="cheer")
-			gfDance.dance();
+		if(gfDance!=null){
+			if (!gfDance.animation.curAnim.name.startsWith("sing") && gfDance.animation.curAnim.name!="cheer")
+				gfDance.dance();
+		}
 	}
 	override function update(elapsed:Float)
 	{
