@@ -11,7 +11,11 @@ class HealthIcon extends FlxSprite
 
 	public function changeCharacter(char:String){
 		loadGraphic(Paths.image('iconGrid'), true, 150, 150);
-
+		if(char=='senpai' || char=='senpai-angry' || char=='spirit'){
+			antialiasing=false;
+		}else{
+			antialiasing=true;
+		}
 		animation.add('bf', [0, 1], 0, false);
 		animation.add('bf-car', [0, 1], 0, false);
 		animation.add('bf-christmas', [0, 1], 0, false);
