@@ -2615,7 +2615,7 @@ class PlayState extends MusicBeatState
 						//}
 						dad.holdTimer = 0;
 
-						if (currentOptions.fightsBack && health > 0)
+						if (currentOptions.fightsBack && health>.0182)
 							{
 								health -= 0.0182;
 							}

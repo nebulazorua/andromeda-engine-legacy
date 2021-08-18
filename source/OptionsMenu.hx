@@ -67,6 +67,9 @@ class OptionsMenu extends MusicBeatState
 			new ToggleOption("menuFlash","Flashing in menus","Do the background and buttons flash when selecting them in menus"),
 			new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),
 			new ToggleOption("freeplayPreview","Song preview in freeplay","Do songs get played when selecting them in the freeplay menu"),
+		]),
+		new OptionCategory("Experimental",[
+			new ToggleOption("holdsOneNote","Holds are long notes","Should holds be treated like a single, long note")
 		])
 	]);
 

@@ -150,11 +150,14 @@ class Options
 	public var showMS:Bool = false;
 	public var showComboCounter:Bool = true;
 	public var showRatings:Bool = true;
-	
+
 	public var ratingInHUD:Bool = false;
 	public var menuFlash:Bool = true;
 	public var freeplayPreview:Bool = true;
 	public var hitSound:Bool = false;
+
+	// experimental
+	public var holdsOneNote:Bool = false;
 
 	public function loadOptions(){
 

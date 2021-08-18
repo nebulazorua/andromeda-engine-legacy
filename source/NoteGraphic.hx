@@ -12,9 +12,7 @@ using StringTools;
 
 class NoteGraphic extends FlxSprite
 {
-
-	public var isSustainNote:Bool = false;
-
+	public var skin = 'default';
 	public static var swagWidth:Float = 160 * 0.7;
 
 	public function new() // TODO: NoteType
@@ -26,27 +24,13 @@ class NoteGraphic extends FlxSprite
 		switch (daStage)
 		{
 			case 'school' | 'schoolEvil':
+				skin='pixel';
 				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
 
 				animation.add('greenScroll', [6]);
 				animation.add('redScroll', [7]);
 				animation.add('blueScroll', [5]);
 				animation.add('purpleScroll', [4]);
-
-				if (isSustainNote)
-				{
-					loadGraphic(Paths.image('weeb/pixelUI/arrowEnds'), true, 7, 6);
-
-					animation.add('purpleholdend', [4]);
-					animation.add('greenholdend', [6]);
-					animation.add('redholdend', [7]);
-					animation.add('blueholdend', [5]);
-
-					animation.add('purplehold', [0]);
-					animation.add('greenhold', [2]);
-					animation.add('redhold', [3]);
-					animation.add('bluehold', [1]);
-				}
 
 				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 				updateHitbox();
@@ -73,6 +57,7 @@ class NoteGraphic extends FlxSprite
 				updateHitbox();
 				antialiasing = true;
 		}
+		animation.play("greenhold");
 	}
 
 	public function setDir(dir:Int=0,?sussy:Bool=false,?end:Bool=false){
@@ -82,10 +67,36 @@ class NoteGraphic extends FlxSprite
 			suffix='hold';
 			if(end)suffix+='end';
 		};
+		if(sussy && skin=='pixel' && !animation.curAnim.name.contains("hold")){
 
+			loadGraphic(Paths.image('weeb/pixelUI/arrowEnds'), true, 7, 6);
+
+			animation.add('purpleholdend', [4]);
+			animation.add('greenholdend', [6]);
+			animation.add('redholdend', [7]);
+			animation.add('blueholdend', [5]);
+
+			animation.add('purplehold', [0]);
+			animation.add('greenhold', [2]);
+			animation.add('redhold', [3]);
+			animation.add('bluehold', [1]);
+
+			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+			updateHitbox();
+
+		}else if(skin=='pixel' && !sussy){
+			loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
+
+			animation.add('greenScroll', [6]);
+			animation.add('redScroll', [7]);
+			animation.add('blueScroll', [5]);
+			animation.add('purpleScroll', [4]);
+
+			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+			updateHitbox();
+		}
 		if(colors[dir]!=null){
 			animation.play('${colors[dir]}${suffix}',true);
 		}
-		updateHitbox();
 	}
 }

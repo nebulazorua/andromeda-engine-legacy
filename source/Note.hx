@@ -4,43 +4,44 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
+import flixel.group.FlxSpriteGroup;
+
 #if polymod
 import polymod.format.ParseRules.TargetSignatureElement;
 #end
 
 using StringTools;
 
-class Note extends FlxSprite // TODO: extend NoteGraphic instead
+class LongNote extends FlxSpriteGroup
+{
+
+}
+
+class Note extends NoteGraphic
 {
 	public var strumTime:Float = 0;
-
 	public var manualXOffset:Float = 0;
 	public var manualYOffset:Float = 0;
 	public var mustPress:Bool = false;
 	public var noteData:Int = 0;
 	public var canBeHit:Bool = false;
+	public var isSustainNote:Bool = false;
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
+	public var noteGraphic:NoteGraphic;
 	public var hit:Bool = false;
 	public var rating:String = "sick";
 	public var lastSustainPiece = false;
 	public var defaultX:Float = 0;
 	public var sustainLength:Float = 0;
-	public var isSustainNote:Bool = false;
 	public var rawNoteData:Int = 0; // for charting shit and thats it LOL
 	public var holdParent:Bool=false;
 	public var noteType:Int = 0;
 	public var beingCharted:Bool=false;
 	public var initialPos:Float = 0;
 
-	public var noteScore:Float = 1;
-
 	public static var swagWidth:Float = 160 * 0.7;
-	public static var PURP_NOTE:Int = 0;
-	public static var GREEN_NOTE:Int = 2;
-	public static var BLUE_NOTE:Int = 1;
-	public static var RED_NOTE:Int = 3;
 
 	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?initialPos:Float=0, ?beingCharted=false)
 	{
@@ -63,7 +64,7 @@ class Note extends FlxSprite // TODO: extend NoteGraphic instead
 
 		var daStage:String = PlayState.curStage;
 
-		switch (daStage)
+		/*switch (daStage)
 		{
 			case 'school' | 'schoolEvil':
 				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
@@ -112,19 +113,19 @@ class Note extends FlxSprite // TODO: extend NoteGraphic instead
 				setGraphicSize(Std.int(width * 0.7));
 				updateHitbox();
 				antialiasing = true;
-		}
+		}*/
 
 		var colors = ["purple","blue","green","red"];
 
 		x += swagWidth * noteData;
-		animation.play('${colors[noteData]}Scroll');
+		//noteGraphic.animation.play('${colors[noteData]}Scroll');
+		setDir(noteData,false,false);
 
 		// trace(prevNote);
 
 		if (isSustainNote && prevNote != null)
 		{
 			prevNote.holdParent=true;
-			noteScore * 0.2;
 			alpha = 0.6;
 
 			//var off = -width;
@@ -133,7 +134,8 @@ class Note extends FlxSprite // TODO: extend NoteGraphic instead
 			lastSustainPiece=true;
 
 			manualXOffset = width/2;
-			animation.play('${colors[noteData]}holdend');
+			//noteGraphic.animation.play('${colors[noteData]}holdend');
+			setDir(noteData,true,true);
 			updateHitbox();
 			if(!beingCharted){
 				if(PlayState.currentPState.currentOptions.downScroll || PlayState.getSVFromTime(strumTime)<0 ){
@@ -151,10 +153,10 @@ class Note extends FlxSprite // TODO: extend NoteGraphic instead
 			if (prevNote.isSustainNote)
 			{
 				prevNote.lastSustainPiece=false;
-				prevNote.animation.play('${colors[noteData]}hold');
+				//prevNote.noteGraphic.animation.play('${colors[noteData]}hold');
+				prevNote.setDir(noteData,true,false);
 				if(!beingCharted)
 					prevNote.scale.y *= Conductor.stepCrochet/100*1.5*PlayState.getFNFSpeed(strumTime);
-					//prevNote.scale.y *= (.46*(Conductor.stepCrochet*PlayState.getFNFSpeed(strumTime)))/prevNote.height;
 				prevNote.updateHitbox();
 			}
 		}
@@ -163,7 +165,6 @@ class Note extends FlxSprite // TODO: extend NoteGraphic instead
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
-
 		if (mustPress)
 		{
 			var diff = strumTime-Conductor.songPosition;
