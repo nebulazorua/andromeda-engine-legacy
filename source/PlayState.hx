@@ -3610,7 +3610,6 @@ class PlayState extends MusicBeatState
 		#if windows
 		if(lua!=null){
 			lua.destroy();
-			trace("cringe");
 			lua=null;
 		}
 		#end
