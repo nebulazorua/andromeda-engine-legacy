@@ -25,7 +25,7 @@ class NoteGraphic extends FlxSprite
 		{
 			case 'school' | 'schoolEvil':
 				skin='pixel';
-				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
+				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels',"shared"), true, 17, 17);
 
 				animation.add('greenScroll', [6]);
 				animation.add('redScroll', [7]);
@@ -36,7 +36,7 @@ class NoteGraphic extends FlxSprite
 				updateHitbox();
 
 			default:
-				frames = Paths.getSparrowAtlas('NOTE_assets');
+				frames = Paths.getSparrowAtlas('NOTE_assets',"shared");
 
 				animation.addByPrefix('greenScroll', 'green0');
 				animation.addByPrefix('redScroll', 'red0');
@@ -57,7 +57,7 @@ class NoteGraphic extends FlxSprite
 				updateHitbox();
 				antialiasing = true;
 		}
-		animation.play("greenhold");
+		animation.play("greenScroll");
 	}
 
 	public function setDir(dir:Int=0,?sussy:Bool=false,?end:Bool=false){

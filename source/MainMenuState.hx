@@ -21,6 +21,7 @@ using StringTools;
 import flixel.util.FlxTimer;
 import Options;
 import flixel.input.mouse.FlxMouseEventManager;
+import Note;
 
 class MainMenuState extends MusicBeatState
 {
@@ -255,6 +256,8 @@ class MainMenuState extends MusicBeatState
 					FlxMouseEventManager.add(menuItem,onMouseDown,onMouseUp,onMouseOver,onMouseOut);
 				}
 		}
+
+
 
 		FlxG.camera.follow(camFollow, null, 0.06);
 
