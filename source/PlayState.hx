@@ -105,8 +105,8 @@ class PlayState extends MusicBeatState
 	private static var prevCamFollow:FlxObject;
 	private var lastHitDadNote:Note;
 	private var strumLineNotes:FlxTypedGroup<FlxSprite>;
-	private var playerStrums:FlxTypedGroup<FlxSprite>;
-	private var dadStrums:FlxTypedGroup<FlxSprite>;
+	private var playerStrums:FlxTypedGroup<Receptor>;
+	private var dadStrums:FlxTypedGroup<Receptor>;
 	private var playerStrumLines:FlxTypedGroup<FlxSprite>;
 	public var refNotes:FlxTypedGroup<FlxSprite>;
 	public var opponentRefNotes:FlxTypedGroup<FlxSprite>;
@@ -958,8 +958,8 @@ class PlayState extends MusicBeatState
 		opponentRefNotes = new FlxTypedGroup<FlxSprite>();
 		refReceptors = new FlxTypedGroup<FlxSprite>();
 		opponentRefReceptors = new FlxTypedGroup<FlxSprite>();
-		playerStrums = new FlxTypedGroup<FlxSprite>();
-		dadStrums = new FlxTypedGroup<FlxSprite>();
+		playerStrums = new FlxTypedGroup<Receptor>();
+		dadStrums = new FlxTypedGroup<Receptor>();
 
 		// startCountdown();
 
@@ -1204,15 +1204,24 @@ class PlayState extends MusicBeatState
 				};
 			});
 
-			var leftPlayerNote = new LuaNote(0,true);
-			var downPlayerNote = new LuaNote(1,true);
-			var upPlayerNote = new LuaNote(2,true);
-			var rightPlayerNote = new LuaNote(3,true);
+			/*var leftPlayerNote = new LuaReceptor(0,true);
+			var downPlayerNote = new LuaReceptor(1,true);
+			var upPlayerNote = new LuaReceptor(2,true);
+			var rightPlayerNote = new LuaReceptor(3,true);
 
-			var leftDadNote = new LuaNote(0,false);
-			var downDadNote = new LuaNote(1,false);
-			var upDadNote = new LuaNote(2,false);
-			var rightDadNote = new LuaNote(3,false);
+			var leftDadNote = new LuaReceptor(0,false);
+			var downDadNote = new LuaReceptor(1,false);
+			var upDadNote = new LuaReceptor(2,false);
+			var rightDadNote = new LuaReceptor(3,false);*/
+			var dirs = ["left","down","up","right"];
+			for(dir in 0...playerStrums.length){
+				var receptor = playerStrums.members[dir];
+				new LuaReceptor(receptor, '${dirs[dir]}PlrNote');
+			}
+			for(dir in 0...dadStrums.length){
+				var receptor = playerStrums.members[dir];
+				new LuaReceptor(receptor, '${dirs[dir]}DadNote');
+			}
 
 			var luaModchart = new LuaModchart(modchart);
 
@@ -1227,7 +1236,7 @@ class PlayState extends MusicBeatState
 
 			var luaGameCam = new LuaCam(FlxG.camera,"gameCam");
 			var luaHUDCam = new LuaCam(camHUD,"HUDCam");
-			for(i in [luaModchart,leftPlayerNote,downPlayerNote,upPlayerNote,rightPlayerNote,leftDadNote,downDadNote,upDadNote,rightDadNote,window,bfLua,gfLua,dadLua,bfIcon,dadIcon,luaGameCam,luaHUDCam])
+			for(i in [luaModchart,window,bfLua,gfLua,dadLua,bfIcon,dadIcon,luaGameCam,luaHUDCam])
 				i.Register(lua.state);
 
 			try {
@@ -1737,61 +1746,19 @@ class PlayState extends MusicBeatState
 			var dirs = ["left","down","up","right"];
 			var clrs = ["purple","blue","green","red"];
 
-			var babyArrow:FlxSprite = new FlxSprite(0, strumLine.y);
+			var skin:String = 'default';
+			switch(curStage){
+				case 'school' | 'schoolEvil':
+					skin = 'pixel';
+				default:
+					skin='default';
+			}
+
+			var babyArrow:Receptor = new Receptor(0, strumLine.y, i, skin);
 			if(currentOptions.middleScroll && player==0)
 				babyArrow.visible=false;
 
-			switch (curStage)
-			{
-				case 'school' | 'schoolEvil':
-					babyArrow.loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
-					babyArrow.animation.add('green', [6]);
-					babyArrow.animation.add('red', [7]);
-					babyArrow.animation.add('blue', [5]);
-					babyArrow.animation.add('purplel', [4]);
-
-					babyArrow.setGraphicSize(Std.int(babyArrow.width * daPixelZoom));
-					babyArrow.updateHitbox();
-					babyArrow.antialiasing = false;
-
-					switch (Math.abs(i))
-					{
-						case 0:
-							babyArrow.x += Note.swagWidth * 0;
-							babyArrow.animation.add('static', [0]);
-							babyArrow.animation.add('pressed', [4, 8], 12, false);
-							babyArrow.animation.add('confirm', [12, 16], 24, false);
-						case 1:
-							babyArrow.x += Note.swagWidth * 1;
-							babyArrow.animation.add('static', [1]);
-							babyArrow.animation.add('pressed', [5, 9], 12, false);
-							babyArrow.animation.add('confirm', [13, 17], 24, false);
-						case 2:
-							babyArrow.x += Note.swagWidth * 2;
-							babyArrow.animation.add('static', [2]);
-							babyArrow.animation.add('pressed', [6, 10], 12, false);
-							babyArrow.animation.add('confirm', [14, 18], 24, false);
-						case 3:
-							babyArrow.x += Note.swagWidth * 3;
-							babyArrow.animation.add('static', [3]);
-							babyArrow.animation.add('pressed', [7, 11], 12, false);
-							babyArrow.animation.add('confirm', [15, 19], 24, false);
-					}
-
-				default:
-					babyArrow.frames = Paths.getSparrowAtlas('NOTE_assets');
-
-					babyArrow.antialiasing = true;
-					babyArrow.setGraphicSize(Std.int(babyArrow.width * 0.7));
-
-					var idx = Std.int(Math.abs(i));
-					var dir = dirs[idx];
-					babyArrow.x += Note.swagWidth*idx;
-					babyArrow.animation.addByPrefix('static', 'arrow${dir.toUpperCase()}');
-					babyArrow.animation.addByPrefix('pressed', '${dir} press', 24, false);
-					babyArrow.animation.addByPrefix('confirm', '${dir} confirm', 24, false);
-			}
-
+			babyArrow.x += Note.swagWidth*i;
 			babyArrow.updateHitbox();
 			babyArrow.scrollFactor.set();
 
@@ -1826,7 +1793,7 @@ class PlayState extends MusicBeatState
 				FlxTween.tween(newStrumLine,{y: babyArrow.y + 10}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			}
 
-			babyArrow.animation.play('static');
+			babyArrow.playAnim('static');
 			if(!currentOptions.middleScroll){
 				babyArrow.x += 50;
 				babyArrow.x += ((FlxG.width / 2) * player);
@@ -2021,6 +1988,9 @@ class PlayState extends MusicBeatState
 			dir = opponentDirections[note.noteData];
 			angle = opponentIncomingAngles[note.noteData];
 		}
+		if(currentOptions.downScroll){
+			angle=-angle;
+		}
 
 		return hitPos.y + (Math.cos(angle*Math.PI/180)*(note.initialPos-Conductor.currentTrackPos) * scrollSpeed) - note.manualYOffset;
 	}
@@ -2034,6 +2004,9 @@ class PlayState extends MusicBeatState
 			hitPos = opponentStrumLines.members[note.noteData];
 			dir = opponentDirections[note.noteData];
 			angle = opponentIncomingAngles[note.noteData];
+		}
+		if(currentOptions.downScroll){
+			angle=-angle;
 		}
 		var offset = note.manualXOffset;
 		return hitPos.x + offset + (Math.sin(angle*Math.PI/180)*(note.initialPos-Conductor.currentTrackPos) * scrollSpeed) ;
@@ -2462,7 +2435,7 @@ class PlayState extends MusicBeatState
 				}
 
 				note.alpha = alpha;
-				note.angle=angle;
+				//note.angle=angle;
 			}
 
 			if(startedCountdown){
@@ -2556,11 +2529,11 @@ class PlayState extends MusicBeatState
 
 					if (!daNote.mustPress && daNote.canBeHit && !daNote.wasGoodHit)
 					{
-						dadStrums.forEach(function(spr:FlxSprite)
+						dadStrums.forEach(function(spr:Receptor)
 						{
 							if (Math.abs(daNote.noteData) == spr.ID)
 							{
-								spr.animation.play('confirm', true);
+								spr.playAnim('confirm', true);
 							}
 						});
 						if (SONG.song != 'Tutorial')
@@ -2674,23 +2647,14 @@ class PlayState extends MusicBeatState
 		if(lastHitDadNote==null || !lastHitDadNote.alive || !lastHitDadNote.exists ){
 			lastHitDadNote=null;
 		}
-		dadStrums.forEach(function(spr:FlxSprite)
+		dadStrums.forEach(function(spr:Receptor)
 		{
 
 			if (spr.animation.finished && spr.animation.curAnim.name=='confirm' && (lastHitDadNote==null || !lastHitDadNote.isSustainNote || lastHitDadNote.animation.curAnim==null || lastHitDadNote.animation.curAnim.name.endsWith("end")))
 			{
-				spr.animation.play('static',true);
-				spr.centerOffsets();
+				spr.playAnim('static',true);
 			}
 
-			if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
-			{
-				spr.centerOffsets();
-				spr.offset.x -= 13;
-				spr.offset.y -= 13;
-			}
-			else
-				spr.centerOffsets();
 		});
 
 		if (!inCutscene){
@@ -3042,23 +3006,23 @@ class PlayState extends MusicBeatState
 	}
 
 	function updateReceptors(){
-		playerStrums.forEach(function(spr:FlxSprite)
+		playerStrums.forEach(function(spr:Receptor)
 		{
 			if(pressedKeys[spr.ID] && spr.animation.curAnim.name!="confirm" && spr.animation.curAnim.name!="pressed" )
-				spr.animation.play("pressed");
+				spr.playAnim("pressed");
 
 			if(!pressedKeys[spr.ID]){
-				spr.animation.play("static");
+				spr.playAnim("static");
 			}
 
-			if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
+			/*if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
 			{
 				spr.centerOffsets();
 				spr.offset.x -= 13;
 				spr.offset.y -= 13;
 			}
 			else
-				spr.centerOffsets();
+				spr.centerOffsets();*/
 		});
 	}
 
@@ -3272,11 +3236,11 @@ class PlayState extends MusicBeatState
 					goodNoteHit(note);
 			}
 			note.wasGoodHit=true;
-			playerStrums.forEach(function(spr:FlxSprite)
+			playerStrums.forEach(function(spr:Receptor)
 			{
 				if (Math.abs(note.noteData) == spr.ID)
 				{
-					spr.animation.play('confirm', true);
+					spr.playAnim('confirm', true);
 				}
 			});
 			updateReceptors();

@@ -988,6 +988,22 @@ class LuaCam extends LuaClass {
     super.Register(l);
   }
 }
+
+class LuaReceptor extends LuaSprite {
+  private static var state:State;
+  public var receptor:Receptor;
+
+  override function Register(l:State){
+    state=l;
+    super.Register(l);
+  }
+
+  public function new(receptor:Receptor,name:String,?addToGlobal:Bool=true){
+    super(receptor,name,addToGlobal);
+
+  }
+}
+
 class LuaCharacter extends LuaSprite {
   private static var state:State;
 
@@ -1318,7 +1334,7 @@ class LuaModchart extends LuaClass {
   }
 }
 
-class LuaNote extends LuaClass {
+/*class LuaReceptor extends LuaClass {
   private static var state:State;
   private static var internalNames = [
     "left",
@@ -1516,4 +1532,4 @@ class LuaNote extends LuaClass {
     state=l;
     super.Register(l);
   }
-}
+}*/

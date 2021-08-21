@@ -180,6 +180,7 @@ class Note extends NoteGraphic
 			manualXOffset = width/2;
 			setDir(noteData,true,true);
 			updateHitbox();
+
 			if(!beingCharted){
 				if(PlayState.currentPState.currentOptions.downScroll || PlayState.getSVFromTime(strumTime)<0 ){
 					flipY=true;
@@ -201,6 +202,7 @@ class Note extends NoteGraphic
 				if(!beingCharted)
 					prevNote.scale.y *= Conductor.stepCrochet/100*1.5*PlayState.getFNFSpeed(strumTime);
 				prevNote.updateHitbox();
+
 			}
 		}
 	}
