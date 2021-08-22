@@ -2459,9 +2459,10 @@ class PlayState extends MusicBeatState
 					daNote.y = getYPosition(daNote);
 
 					if(currentOptions.downScroll){
+
 						if(daNote.isSustainNote && (!daNote.mustPress || daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit) && daNote.y-daNote.offset.y*daNote.scale.y+daNote.height >= brr)
 							{
-								var swagRect = new FlxRect(0,0,daNote.frameWidth*2,daNote.frameHeight*2);
+								var swagRect = new FlxRect(0,0,daNote.frameWidth,daNote.frameHeight);
 								swagRect.height = (brr-daNote.y)/daNote.scale.y;
 								swagRect.y = daNote.frameHeight-swagRect.height;
 

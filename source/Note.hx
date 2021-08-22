@@ -173,7 +173,6 @@ class Note extends NoteGraphic
 			alpha = 0.6;
 
 			//var off = -width;
-			var off = -width/4;
 			//x+=width/2;
 			lastSustainPiece=true;
 
@@ -182,8 +181,11 @@ class Note extends NoteGraphic
 			updateHitbox();
 
 			if(!beingCharted){
-				if(PlayState.currentPState.currentOptions.downScroll || PlayState.getSVFromTime(strumTime)<0 ){
+				if(PlayState.currentPState.currentOptions.downScroll ){
 					flipY=true;
+				}
+				if(PlayState.getSVFromTime(strumTime)<0){
+					flipY=!flipY;
 				}
 			}
 
@@ -192,8 +194,8 @@ class Note extends NoteGraphic
 			//x -= width / 2;
 
 			manualXOffset -= width/ 2;
-			if (PlayState.curStage.startsWith('school'))
-				manualXOffset += 30;
+			//if (PlayState.curStage.startsWith('school'))
+			//	manualXOffset += 30;
 			if (prevNote.isSustainNote)
 			{
 				prevNote.lastSustainPiece=false;
@@ -202,7 +204,6 @@ class Note extends NoteGraphic
 				if(!beingCharted)
 					prevNote.scale.y *= Conductor.stepCrochet/100*1.5*PlayState.getFNFSpeed(strumTime);
 				prevNote.updateHitbox();
-
 			}
 		}
 	}

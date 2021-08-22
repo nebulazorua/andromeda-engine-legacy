@@ -41,7 +41,7 @@ class Receptor extends FlxSprite {
         animation.add('blue', [5]);
         animation.add('purplel', [4]);
 
-        setGraphicSize(Std.int((width * PlayState.daPixelZoom) * daScale));
+        setGraphicSize(Std.int((width * PlayState.daPixelZoom) * daScale/.7));
         updateHitbox();
         antialiasing = false;
 
@@ -56,15 +56,10 @@ class Receptor extends FlxSprite {
     animation.play(anim,force);
     updateHitbox();
     offset.set((frameWidth/2)-(54*(.7/noteScale) ),(frameHeight/2)-(56*(.7/noteScale) ) );
-    angle = baseAngle+desiredAngle;
   }
 
   override function update(elapsed:Float){
     angle = baseAngle+desiredAngle;
     super.update(elapsed);
-    if(FlxG.keys.justPressed.Z){
-      trace("a");
-      baseAngle+=10;
-    }
   }
 }
