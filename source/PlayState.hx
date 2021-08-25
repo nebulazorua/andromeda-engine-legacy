@@ -179,20 +179,6 @@ class PlayState extends MusicBeatState
 		[0,1], // right
 	];
 
-	var playerIncomingAngles:Array<Float> = [
-		0.0,
-		0.0,
-		0.0,
-		0.0
-	];
-
-	var opponentIncomingAngles:Array<Float> = [
-		0.0,
-		0.0,
-		0.0,
-		0.0
-	];
-
 	public var playerNoteAlpha:Array<Float>=[
 		1,
 		1,
@@ -1785,14 +1771,6 @@ class PlayState extends MusicBeatState
 				opponentRefReceptors.add(newRecepRef);
 			}
 
-			if (!isStoryMode)
-			{
-				newStrumLine.y -= 10;
-				babyArrow.alpha = 0;
-				FlxTween.tween(newNoteRef, {alpha: 1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
-				FlxTween.tween(newStrumLine,{y: babyArrow.y + 10}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
-			}
-
 			babyArrow.playAnim('static');
 			if(!currentOptions.middleScroll){
 				babyArrow.x += 50;
@@ -1800,6 +1778,16 @@ class PlayState extends MusicBeatState
 			}
 
 			newStrumLine.x = babyArrow.x;
+
+			babyArrow.defaultX = babyArrow.x;
+			babyArrow.defaultY = babyArrow.y;
+
+			if (!isStoryMode)
+			{
+				babyArrow.y -= 10;
+				babyArrow.alpha = 0;
+				FlxTween.tween(babyArrow,{y: babyArrow.y + 10, alpha:1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+			}
 
 			strumLineNotes.add(babyArrow);
 		}
@@ -1980,14 +1968,12 @@ class PlayState extends MusicBeatState
 	}
 
 	function getYPosition(note:Note):Float{
-		var hitPos = playerStrumLines.members[note.noteData];
-		var dir = playerDirections[note.noteData];
-		var angle = playerIncomingAngles[note.noteData];
+		var hitPos = playerStrums.members[note.noteData];
+
 		if(!note.mustPress){
-			hitPos = opponentStrumLines.members[note.noteData];
-			dir = opponentDirections[note.noteData];
-			angle = opponentIncomingAngles[note.noteData];
+			hitPos = dadStrums.members[note.noteData];
 		}
+		var angle = hitPos.incomingAngle;
 		if(currentOptions.downScroll){
 			angle=-angle;
 		}
@@ -1997,14 +1983,11 @@ class PlayState extends MusicBeatState
 
 
 	function getXPosition(note:Note):Float{
-		var hitPos = playerStrumLines.members[note.noteData];
-		var dir = playerDirections[note.noteData];
-		var angle = playerIncomingAngles[note.noteData];
+		var hitPos = playerStrums.members[note.noteData];
 		if(!note.mustPress){
-			hitPos = opponentStrumLines.members[note.noteData];
-			dir = opponentDirections[note.noteData];
-			angle = opponentIncomingAngles[note.noteData];
+			hitPos = dadStrums.members[note.noteData];
 		}
+		var angle = hitPos.incomingAngle;
 		if(currentOptions.downScroll){
 			angle=-angle;
 		}
@@ -2398,62 +2381,30 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 		{
-			for(idx in 0...playerStrumLines.length){
-				var line = playerStrumLines.members[idx];
-				if(currentOptions.middleScroll){
-					line.screenCenter(X);
-					line.x += Note.swagWidth*(-2+idx) + playerNoteOffsets[idx][0];
-				}else{
-					line.x = (Note.swagWidth*idx) + 50 + ((FlxG.width / 2)) + playerNoteOffsets[idx][0];
-				}
-				line.y = strumLine.y+playerNoteOffsets[idx][1];
-			}
-			for(idx in 0...opponentStrumLines.length){
-				var line = opponentStrumLines.members[idx];
-
-				line.x = (Note.swagWidth*idx) + 50 +opponentNoteOffsets[idx][0];
-				line.y = strumLine.y+opponentNoteOffsets[idx][1];
-			}
-
 			for (idx in 0...strumLineNotes.length){
 				var note = strumLineNotes.members[idx];
 				var offset = opponentNoteOffsets[idx%4];
-				var strumLine = opponentStrumLines.members[idx%4];
-				var alpha = opponentRefReceptors.members[idx%4].alpha;
-				var angle = opponentRefReceptors.members[idx%4].angle;
+				var strumLine = dadStrums.members[idx%4];
 				if(idx>3){
 					offset = playerNoteOffsets[idx%4];
-					strumLine = playerStrumLines.members[idx%4];
-					alpha = refReceptors.members[idx%4].alpha;
-					angle = refReceptors.members[idx%4].angle;
+					strumLine = playerStrums.members[idx%4];
 				}
-				if(modchart.opponentNotesFollowReceptors && idx>3 || idx<=3 && modchart.playerNotesFollowReceptors){
-					note.x = strumLine.x;
-					note.y = strumLine.y;
-				}else{
-
-				}
-
-				note.alpha = alpha;
 				//note.angle=angle;
 			}
 
 			if(startedCountdown){
 				renderedNotes.forEachAlive(function(daNote:Note)
 				{
-					var strumLine = strumLine;
-					if(modchart.playerNotesFollowReceptors)
-						strumLine = playerStrumLines.members[daNote.noteData];
+					var strumLine = playerStrums.members[daNote.noteData];
 
 
 					var alpha = refNotes.members[daNote.noteData].alpha;
-					var incomingAngle = playerIncomingAngles[daNote.noteData];
+
 					if(!daNote.mustPress){
 						alpha = opponentRefNotes.members[daNote.noteData].alpha;
-						incomingAngle = opponentIncomingAngles[daNote.noteData];
-						if(modchart.opponentNotesFollowReceptors)
-							strumLine = opponentStrumLines.members[daNote.noteData];
+						strumLine = dadStrums.members[daNote.noteData];
 					}
+					var incomingAngle = strumLine.incomingAngle;
 					var brr = strumLine.y + Note.swagWidth/2;
 					daNote.x = getXPosition(daNote);
 					daNote.y = getYPosition(daNote);
@@ -3280,7 +3231,7 @@ class PlayState extends MusicBeatState
 		if(currentOptions.hitSound && !note.isSustainNote)
 			FlxG.sound.play(Paths.sound('Normal_Hit'),1);
 
-		var strumLine = playerStrumLines.members[note.noteData%4];
+		var strumLine = playerStrums.members[note.noteData%4];
 
 
 		if(luaModchartExists && lua!=null){

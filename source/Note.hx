@@ -195,7 +195,7 @@ class Note extends NoteGraphic
 
 			manualXOffset -= width/ 2;
 			//if (PlayState.curStage.startsWith('school'))
-			//	manualXOffset += 30;
+			//	manualX Offset += 30;
 			if (prevNote.isSustainNote)
 			{
 				prevNote.lastSustainPiece=false;
@@ -206,7 +206,7 @@ class Note extends NoteGraphic
 				prevNote.updateHitbox();
 			}
 		}
-	}
+	} 
 
 	override function update(elapsed:Float)
 	{
