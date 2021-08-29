@@ -16,6 +16,8 @@ class Receptor extends FlxSprite {
   public var incomingAngle:Float = 0;
   public var defaultX:Float = 0;
   public var defaultY:Float = 0;
+  public var incomingNoteAlpha:Float = 1;
+  
 
   public function new(x:Float,y:Float,noteData:Int,skin:String='default',daScale:Float=.7){
     super(x,y);

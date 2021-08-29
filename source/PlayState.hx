@@ -150,7 +150,7 @@ class PlayState extends MusicBeatState
 	public var botplayPressTimes:Array<Float> = [0,0,0,0];
 	public var botplayHoldTimes:Array<Float> = [0,0,0,0];
 	public var botplayHoldMaxTimes:Array<Float> = [0,0,0,0];
-	
+
 	var lua:LuaVM;
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
@@ -2347,29 +2347,15 @@ class PlayState extends MusicBeatState
 
 		if (generatedMusic)
 		{
-			for (idx in 0...strumLineNotes.length){
-				var note = strumLineNotes.members[idx];
-				var offset = opponentNoteOffsets[idx%4];
-				var strumLine = dadStrums.members[idx%4];
-				if(idx>3){
-					offset = playerNoteOffsets[idx%4];
-					strumLine = playerStrums.members[idx%4];
-				}
-				//note.angle=angle;
-			}
-
 			if(startedCountdown){
 				renderedNotes.forEachAlive(function(daNote:Note)
 				{
 					var strumLine = playerStrums.members[daNote.noteData];
 
-
-					var alpha = refNotes.members[daNote.noteData].alpha;
-
 					if(!daNote.mustPress){
-						alpha = opponentRefNotes.members[daNote.noteData].alpha;
 						strumLine = dadStrums.members[daNote.noteData];
 					}
+					var alpha = strumLine.incomingNoteAlpha;
 					var incomingAngle = strumLine.incomingAngle;
 					var brr = strumLine.y + Note.swagWidth/2;
 					daNote.x = getXPosition(daNote);

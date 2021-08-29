@@ -1025,6 +1025,12 @@ class LuaReceptor extends LuaSprite {
       setter:SetNumProperty
     });
 
+    properties.set("incomingNoteAlpha",{
+      defaultValue:receptor.incomingNoteAlpha,
+      getter:GetNumProperty,
+      setter:SetNumProperty
+    });
+
     properties.set("x",{
       defaultValue:receptor.x,
       getter:GetNumProperty,
