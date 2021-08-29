@@ -2440,8 +2440,6 @@ class PlayState extends MusicBeatState
 								spr.playAnim('confirm', true);
 							}
 						});
-						if (SONG.song != 'Tutorial')
-							camZooming = true;
 
 						var altAnim:String = "";
 
@@ -2584,7 +2582,7 @@ class PlayState extends MusicBeatState
 
 		}
 
-		camRating.zoom=camGame.zoom;
+		camRating.zoom = camGame.zoom;
 		camNotes.zoom = camHUD.zoom;
 		camSus.zoom = camNotes.zoom;
 
