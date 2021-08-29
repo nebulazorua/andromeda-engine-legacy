@@ -128,6 +128,7 @@ class Options
 	public var fightsBack:Bool = false;
 	public var hpMode:Bool = false;
 
+
 	public var pollingInput:Bool = false;
 	public var ratingWindow:Int = 0;
 	public var noteOffset:Int = 0;
@@ -144,6 +145,7 @@ class Options
 	public var oldMenus:Bool = false;
 	public var oldTitle:Bool = false;
 	public var healthBarColors:Bool = true;
+	public var camFollowsAnims:Bool = false; 
 
 	// preferences
 	public var pauseHoldAnims:Bool = true;

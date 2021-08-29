@@ -150,48 +150,7 @@ class PlayState extends MusicBeatState
 	public var botplayPressTimes:Array<Float> = [0,0,0,0];
 	public var botplayHoldTimes:Array<Float> = [0,0,0,0];
 	public var botplayHoldMaxTimes:Array<Float> = [0,0,0,0];
-
-	public var playerNoteOffsets:Array<Array<Float>> = [
-		[0,0], // left
-		[0,0], // down
-		[0,0], // up
-		[0,0]// right
-	];
-
-	public var opponentNoteOffsets:Array<Array<Float>> = [
-		[0,0], // left
-		[0,0], // down
-		[0,0], // up
-		[0,0] // right
-	];
-
-	public var playerDirections:Array<Array<Float>> = [
-		[0,1], // left
-		[0,1], // down
-		[0,1], // up
-		[0,1], // right
-	];
-
-	public var opponentDirections:Array<Array<Float>> = [
-		[0,1], // left
-		[0,1], // down
-		[0,1], // up
-		[0,1], // right
-	];
-
-	public var playerNoteAlpha:Array<Float>=[
-		1,
-		1,
-		1,
-		1
-	];
-
-	public var opponentNoteAlpha:Array<Float>=[
-		1,
-		1,
-		1,
-		1
-	];
+	
 	var lua:LuaVM;
 
 	var dialogue:Array<String> = ['blah blah blah', 'coolswag'];
@@ -263,6 +222,149 @@ class PlayState extends MusicBeatState
 	var detailsText:String = "";
 	var detailsPausedText:String = "";
 	#end
+
+	function setupLuaSystem(){
+		if(luaModchartExists && currentOptions.loadModcharts){
+			lua = new LuaVM();
+			lua.setGlobalVar("curBeat",0);
+			lua.setGlobalVar("curStep",0);
+			lua.setGlobalVar("songPosition",Conductor.songPosition);
+			lua.setGlobalVar("bpm",Conductor.bpm);
+			lua.setGlobalVar("XY","XY");
+			lua.setGlobalVar("X","X");
+			lua.setGlobalVar("Y","Y");
+
+			Lua_helper.add_callback(lua.state,"setVar", function(variable:String,val:Any){
+				Reflect.setField(this,variable,val);
+			});
+
+			Lua_helper.add_callback(lua.state,"getVar", function(variable:String){
+				return Reflect.field(this,variable);
+			});
+
+			Lua_helper.add_callback(lua.state,"setOption", function(variable:String,val:Any){
+				Reflect.setField(currentOptions,variable,val);
+			});
+
+			Lua_helper.add_callback(lua.state,"getOption", function(variable:String){
+				return Reflect.field(currentOptions,variable);
+			});
+
+			/*
+			Lua_helper.add_callback(lua.state,"newShader", function(shaderType:String, ?shaderName:String){
+				var shader:Any;
+				var name = "UnnamedShader"+unnamedLuaShaders;
+
+				if(shaderName!=null)
+					name=shaderName;
+				else
+					unnamedLuaShaders++;
+
+				var lShader = new LuaShaderClass(shader,name,shaderName!=null);
+				var classIdx = Lua.gettop(lua.state)+1;
+				lShader.Register(lua.state);
+				Lua.pushvalue(lua.state,classIdx);
+			});*/
+			// put on pause for now
+
+			Lua_helper.add_callback(lua.state,"newSprite", function(?x:Int=0,?y:Int=0,?drawBehind:Bool=false,?spriteName:String){
+				var sprite = new FlxSprite(x,y);
+				var name = "UnnamedSprite"+unnamedLuaSprites;
+
+				if(spriteName!=null)
+					name=spriteName;
+				else
+					unnamedLuaSprites++;
+
+				var lSprite = new LuaSprite(sprite,name,spriteName!=null);
+				var classIdx = Lua.gettop(lua.state)+1;
+				lSprite.Register(lua.state);
+				Lua.pushvalue(lua.state,classIdx);
+				if(drawBehind){
+					var idx=0;
+					var foundGF=-1;
+					var foundBF=-1;
+					var foundDad=-1;
+					var daIndex=-1;
+					this.forEach( function(blegh:FlxBasic){ // WEIRD LAYERING SHIT BUT HEY IT WORKS
+						if(blegh==gf){
+							foundGF=idx;
+						}
+						if(blegh==boyfriend){
+							foundBF=idx;
+						}
+						if(blegh==dad){
+							foundDad=idx;
+						}
+
+						if(foundDad!=-1 && foundGF!=-1 && foundBF!=-1 && daIndex==-1){
+							var bruh = [foundDad,foundGF,foundBF];
+							var curr = foundDad;
+							for(v in bruh){
+								if(v<curr){
+									curr=v;
+								}
+							}
+							daIndex=curr;
+						}
+						idx++;
+					});
+					if(daIndex!=-1){
+						members.insert(daIndex,sprite);
+						@:bypassAccessor
+							this.length++;
+					}else{
+						add(sprite);
+					}
+				}else{
+					add(sprite);
+				};
+			});
+
+			/*var leftPlayerNote = new LuaReceptor(0,true);
+			var downPlayerNote = new LuaReceptor(1,true);
+			var upPlayerNote = new LuaReceptor(2,true);
+			var rightPlayerNote = new LuaReceptor(3,true);
+
+			var leftDadNote = new LuaReceptor(0,false);
+			var downDadNote = new LuaReceptor(1,false);
+			var upDadNote = new LuaReceptor(2,false);
+			var rightDadNote = new LuaReceptor(3,false);*/
+			var dirs = ["left","down","up","right"];
+			for(dir in 0...playerStrums.length){
+				var receptor = playerStrums.members[dir];
+				new LuaReceptor(receptor, '${dirs[dir]}PlrNote').Register(lua.state);
+				trace('${dirs[dir]}PlrNote');
+			}
+			for(dir in 0...dadStrums.length){
+				var receptor = dadStrums.members[dir];
+				new LuaReceptor(receptor, '${dirs[dir]}DadNote').Register(lua.state);
+				trace('${dirs[dir]}DadNote');
+			}
+
+			var luaModchart = new LuaModchart(modchart);
+
+			bfLua = new LuaCharacter(boyfriend,"bf",true);
+			gfLua = new LuaCharacter(gf,"gf",true);
+			dadLua = new LuaCharacter(dad,"dad",true);
+
+			var bfIcon = new LuaSprite(iconP1,"iconP1",true);
+			var dadIcon = new LuaSprite(iconP2,"iconP2",true);
+
+			var window = new LuaWindow();
+
+			var luaGameCam = new LuaCam(FlxG.camera,"gameCam");
+			var luaHUDCam = new LuaCam(camHUD,"HUDCam");
+			for(i in [luaModchart,window,bfLua,gfLua,dadLua,bfIcon,dadIcon,luaGameCam,luaHUDCam])
+				i.Register(lua.state);
+
+			try {
+				lua.runFile(Paths.modchart(SONG.song.toLowerCase()));
+			}catch (e:Exception){
+				trace("ERROR: " + e);
+			};
+		}
+	}
 
 	override public function create()
 	{
@@ -1093,144 +1195,6 @@ class PlayState extends MusicBeatState
 		}
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
-		if(luaModchartExists && currentOptions.loadModcharts){
-			lua = new LuaVM();
-			lua.setGlobalVar("curBeat",0);
-			lua.setGlobalVar("curStep",0);
-			lua.setGlobalVar("songPosition",Conductor.songPosition);
-			lua.setGlobalVar("bpm",Conductor.bpm);
-			lua.setGlobalVar("XY","XY");
-			lua.setGlobalVar("X","X");
-			lua.setGlobalVar("Y","Y");
-
-			Lua_helper.add_callback(lua.state,"setVar", function(variable:String,val:Any){
-				Reflect.setField(this,variable,val);
-			});
-
-			Lua_helper.add_callback(lua.state,"getVar", function(variable:String){
-				return Reflect.field(this,variable);
-			});
-
-			Lua_helper.add_callback(lua.state,"setOption", function(variable:String,val:Any){
-				Reflect.setField(currentOptions,variable,val);
-			});
-
-			Lua_helper.add_callback(lua.state,"getOption", function(variable:String){
-				return Reflect.field(currentOptions,variable);
-			});
-
-			/*
-			Lua_helper.add_callback(lua.state,"newShader", function(shaderType:String, ?shaderName:String){
-				var shader:Any;
-				var name = "UnnamedShader"+unnamedLuaShaders;
-
-				if(shaderName!=null)
-					name=shaderName;
-				else
-					unnamedLuaShaders++;
-
-				var lShader = new LuaShaderClass(shader,name,shaderName!=null);
-				var classIdx = Lua.gettop(lua.state)+1;
-				lShader.Register(lua.state);
-				Lua.pushvalue(lua.state,classIdx);
-			});*/
-			// put on pause for now
-
-			Lua_helper.add_callback(lua.state,"newSprite", function(?x:Int=0,?y:Int=0,?drawBehind:Bool=false,?spriteName:String){
-				var sprite = new FlxSprite(x,y);
-				var name = "UnnamedSprite"+unnamedLuaSprites;
-
-				if(spriteName!=null)
-					name=spriteName;
-				else
-					unnamedLuaSprites++;
-
-				var lSprite = new LuaSprite(sprite,name,spriteName!=null);
-				var classIdx = Lua.gettop(lua.state)+1;
-				lSprite.Register(lua.state);
-				Lua.pushvalue(lua.state,classIdx);
-				if(drawBehind){
-					var idx=0;
-					var foundGF=-1;
-					var foundBF=-1;
-					var foundDad=-1;
-					var daIndex=-1;
-					this.forEach( function(blegh:FlxBasic){ // WEIRD LAYERING SHIT BUT HEY IT WORKS
-						if(blegh==gf){
-							foundGF=idx;
-						}
-						if(blegh==boyfriend){
-							foundBF=idx;
-						}
-						if(blegh==dad){
-							foundDad=idx;
-						}
-
-						if(foundDad!=-1 && foundGF!=-1 && foundBF!=-1 && daIndex==-1){
-							var bruh = [foundDad,foundGF,foundBF];
-							var curr = foundDad;
-							for(v in bruh){
-								if(v<curr){
-									curr=v;
-								}
-							}
-							daIndex=curr;
-						}
-						idx++;
-					});
-					if(daIndex!=-1){
-						members.insert(daIndex,sprite);
-						@:bypassAccessor
-							this.length++;
-					}else{
-						add(sprite);
-					}
-				}else{
-					add(sprite);
-				};
-			});
-
-			/*var leftPlayerNote = new LuaReceptor(0,true);
-			var downPlayerNote = new LuaReceptor(1,true);
-			var upPlayerNote = new LuaReceptor(2,true);
-			var rightPlayerNote = new LuaReceptor(3,true);
-
-			var leftDadNote = new LuaReceptor(0,false);
-			var downDadNote = new LuaReceptor(1,false);
-			var upDadNote = new LuaReceptor(2,false);
-			var rightDadNote = new LuaReceptor(3,false);*/
-			var dirs = ["left","down","up","right"];
-			for(dir in 0...playerStrums.length){
-				var receptor = playerStrums.members[dir];
-				new LuaReceptor(receptor, '${dirs[dir]}PlrNote');
-			}
-			for(dir in 0...dadStrums.length){
-				var receptor = playerStrums.members[dir];
-				new LuaReceptor(receptor, '${dirs[dir]}DadNote');
-			}
-
-			var luaModchart = new LuaModchart(modchart);
-
-			bfLua = new LuaCharacter(boyfriend,"bf",true);
-			gfLua = new LuaCharacter(gf,"gf",true);
-			dadLua = new LuaCharacter(dad,"dad",true);
-
-			var bfIcon = new LuaSprite(iconP1,"iconP1",true);
-			var dadIcon = new LuaSprite(iconP2,"iconP2",true);
-
-			var window = new LuaWindow();
-
-			var luaGameCam = new LuaCam(FlxG.camera,"gameCam");
-			var luaHUDCam = new LuaCam(camHUD,"HUDCam");
-			for(i in [luaModchart,window,bfLua,gfLua,dadLua,bfIcon,dadIcon,luaGameCam,luaHUDCam])
-				i.Register(lua.state);
-
-			try {
-				lua.runFile(Paths.modchart(SONG.song.toLowerCase()));
-			}catch (e:Exception){
-				trace("ERROR: " + e);
-			};
-		}
 
 
 		if (isStoryMode)
@@ -1441,6 +1405,8 @@ class PlayState extends MusicBeatState
 		Conductor.rawSongPos = 0;
 		Conductor.rawSongPos -= Conductor.crochet * 5;
 		Conductor.songPosition=Conductor.rawSongPos;
+
+		setupLuaSystem();
 		var swagCounter:Int = 0;
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)

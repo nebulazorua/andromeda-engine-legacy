@@ -206,7 +206,7 @@ class Note extends NoteGraphic
 				prevNote.updateHitbox();
 			}
 		}
-	} 
+	}
 
 	override function update(elapsed:Float)
 	{
@@ -217,7 +217,7 @@ class Note extends NoteGraphic
 			var absDiff = Math.abs(diff);
 
 			if(isSustainNote){
-				if (absDiff <= 60)
+				if (absDiff <= Conductor.safeZoneOffset*.75)
 					canBeHit = true;
 				else
 					canBeHit = false;

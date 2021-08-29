@@ -46,6 +46,7 @@ class OptionsMenu extends MusicBeatState
 			new StateOption("Calibrate Offset",new SoundOffsetState()),
 		]),
 		new OptionCategory("Appearance",[
+			new ToggleOption("camFollowsAnims","Camera follows animations","Does the camera follow animations"),
 			new ToggleOption("downScroll","Downscroll","Do arrows come from the top coming down"),
 			new ToggleOption("middleScroll","Middlescroll","Are arrows placed in the middle of the screen"),
 			new OptionCategory("Effects",[
