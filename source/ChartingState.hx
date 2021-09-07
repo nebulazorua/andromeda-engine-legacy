@@ -1004,7 +1004,7 @@ class ChartingState extends MusicBeatState
  			var daStrumTime = i[0];
  			var daSus = i[2];
 
- 			var note:Note = new Note(daStrumTime, daNoteInfo % 4, null, false,0,true);
+ 			var note:Note = new Note(daStrumTime, daNoteInfo % 4, 'default', PlayState.noteModifier, null, false,0,true);
 			note.wasGoodHit = daStrumTime<Conductor.songPosition;
  			note.rawNoteData = daNoteInfo;
  			note.sustainLength = daSus;
@@ -1026,7 +1026,7 @@ class ChartingState extends MusicBeatState
  				var sus = [];
  				for (susNote in 0...Math.floor(daSus))
  				{
- 					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteInfo % 4, oldNote, true,0,true);
+ 					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteInfo % 4, 'default', PlayState.noteModifier, oldNote, true,0,true);
  					sustainNote.rawNoteData = daNoteInfo;
  					sustainNote.setGraphicSize(GRID_SIZE, GRID_SIZE);
  					sustainNote.updateHitbox();

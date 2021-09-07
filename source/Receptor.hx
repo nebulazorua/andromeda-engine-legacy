@@ -1,3 +1,6 @@
+// THANK YOU SRPEREZ FOR SOME MATH THAT I DONT UNDERSTAND
+// (TAKEN FROM KE)
+
 package;
 
 import flixel.FlxG;
@@ -5,6 +8,8 @@ import flixel.FlxSprite;
 import flixel.animation.FlxBaseAnimation;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
+import haxe.unit.*;
+import hscript.*;
 
 // TODO: have the receptor manage its own notes n shit
 
@@ -17,9 +22,9 @@ class Receptor extends FlxSprite {
   public var defaultX:Float = 0;
   public var defaultY:Float = 0;
   public var incomingNoteAlpha:Float = 1;
-  
 
-  public function new(x:Float,y:Float,noteData:Int,skin:String='default',daScale:Float=.7){
+
+  public function new(x:Float,y:Float,noteData:Int,skin:String='default',type:String='base',daScale:Float=.7){
     super(x,y);
 
     noteScale=daScale;
@@ -28,9 +33,9 @@ class Receptor extends FlxSprite {
     var clrs = ["purple","blue","green","red"];
     var dir = dirs[noteData];
 
-    switch(skin){
-      case 'default':
-        frames = Paths.getSparrowAtlas('NOTE_assets','shared');
+    switch(type){
+      case 'base':
+        frames = Paths.noteSkinAtlas("NOTE_assets", 'skins', skin, 'base');
 
         antialiasing = true;
         setGraphicSize(Std.int(width * daScale));
@@ -40,7 +45,7 @@ class Receptor extends FlxSprite {
         animation.addByPrefix('pressed', '${dir} press', 24, false);
         animation.addByPrefix('confirm', '${dir} confirm', 24, false);
       case 'pixel':
-        loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
+        loadGraphic(Paths.noteSkinImage("arrows", 'skins', skin, 'pixel'), true, 17, 17);
         animation.add('green', [6]);
         animation.add('red', [7]);
         animation.add('blue', [5]);
@@ -57,7 +62,7 @@ class Receptor extends FlxSprite {
     updateHitbox();
   }
 
-  public function playAnim(anim:String,?force:Bool=false){ // THANKS KE FOR SOME SHIT https://github.com/KadeDev/Kade-Engine/blob/master/source/StaticArrow.hx
+  public function playAnim(anim:String,?force:Bool=false){
     animation.play(anim,force);
     updateHitbox();
     offset.set((frameWidth/2)-(54*(.7/noteScale) ),(frameHeight/2)-(56*(.7/noteScale) ) );

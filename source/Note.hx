@@ -139,9 +139,9 @@ class Note extends NoteGraphic
 
 	public static var swagWidth:Float = 160 * 0.7;
 
-	public function new(strumTime:Float, noteData:Int, ?prevNote:Note, ?sustainNote:Bool = false, ?initialPos:Float=0, ?beingCharted=false)
+	public function new(strumTime:Float, noteData:Int, skin:String='default', modifier:String='base', ?prevNote:Note, ?sustainNote:Bool = false, ?initialPos:Float=0, ?beingCharted=false)
 	{
-		super();
+		super(modifier,skin);
 
 		this.initialPos=initialPos;
 		this.beingCharted=beingCharted;

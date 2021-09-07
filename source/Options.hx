@@ -136,6 +136,7 @@ class Options
 	public var loadModcharts:Bool = true;
 
 	// appearance
+	public var allowNoteModifiers:Bool = true;
 	public var backTrans:Float = 0;
 	public var downScroll:Bool = false;
 	public var middleScroll:Bool = false;
@@ -145,7 +146,7 @@ class Options
 	public var oldMenus:Bool = false;
 	public var oldTitle:Bool = false;
 	public var healthBarColors:Bool = true;
-	public var camFollowsAnims:Bool = false; 
+	public var camFollowsAnims:Bool = false;
 
 	// preferences
 	public var pauseHoldAnims:Bool = true;

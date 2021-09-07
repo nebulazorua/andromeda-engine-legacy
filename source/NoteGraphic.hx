@@ -12,20 +12,24 @@ using StringTools;
 
 class NoteGraphic extends FlxSprite
 {
-	public var skin = 'default';
+	public var modifier = 'base';
+	public var skin='default';
 	public static var swagWidth:Float = 160 * 0.7;
 
-	public function new() // TODO: NoteType
+	public function new(?modifier='base',?skin='default') // TODO: NoteType
 	{
 		super();
 
+		this.modifier=modifier;
+		this.skin=skin;
+		
 		var daStage:String = PlayState.curStage;
 
-		switch (daStage)
+		switch (modifier)
 		{
-			case 'school' | 'schoolEvil':
-				skin='pixel';
-				loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels',"shared"), true, 17, 17);
+			case 'pixel':
+				//loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels',"shared"), true, 17, 17);
+				loadGraphic(Paths.noteSkinImage("arrows", 'skins', 'default','pixel'),true,17,17);
 
 				animation.add('greenScroll', [6]);
 				animation.add('redScroll', [7]);
@@ -36,7 +40,7 @@ class NoteGraphic extends FlxSprite
 				updateHitbox();
 
 			default:
-				frames = Paths.getSparrowAtlas('NOTE_assets',"shared");
+				frames = Paths.noteSkinAtlas("NOTE_assets", 'skins', 'default','base');
 
 				animation.addByPrefix('greenScroll', 'green0');
 				animation.addByPrefix('redScroll', 'red0');
@@ -67,9 +71,8 @@ class NoteGraphic extends FlxSprite
 			suffix='hold';
 			if(end)suffix+='end';
 		};
-		if(sussy && skin=='pixel' && !animation.curAnim.name.contains("hold")){
-
-			loadGraphic(Paths.image('weeb/pixelUI/arrowEnds'), true, 7, 6);
+		if(sussy && modifier=='pixel' && !animation.curAnim.name.contains("hold")){
+			loadGraphic(Paths.noteSkinImage("ends", 'skins', skin, 'pixel'), true, 7, 6);
 
 			animation.add('purpleholdend', [4]);
 			animation.add('greenholdend', [6]);
@@ -84,8 +87,8 @@ class NoteGraphic extends FlxSprite
 			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
 			updateHitbox();
 
-		}else if(skin=='pixel' && !sussy){
-			loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels'), true, 17, 17);
+		}else if(modifier=='pixel' && !sussy){
+			loadGraphic(Paths.noteSkinImage("arrows", 'skins', skin, 'pixel'), true, 17, 17);
 
 			animation.add('greenScroll', [6]);
 			animation.add('redScroll', [7]);

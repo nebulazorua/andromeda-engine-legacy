@@ -68,11 +68,15 @@ import llua.State;
 import llua.LuaL;
 #end
 
+import EngineData.WeekData;
+
 using StringTools;
 
 class PlayState extends MusicBeatState
 {
 	public static var currentPState:PlayState;
+
+	public static var weekData:WeekData;
 
 	public static var curStage:String = '';
 	public static var SONG:SwagSong;
@@ -121,6 +125,7 @@ class PlayState extends MusicBeatState
 	public var gfLua:LuaCharacter;
 	public var bfLua:LuaCharacter;
 
+	public static var noteModifier:String='base';
 	var pressedKeys:Array<Bool> = [false,false,false,false];
 
 	private var camZooming:Bool = true;
@@ -519,6 +524,8 @@ class PlayState extends MusicBeatState
 			trace(e);
 		}
 
+		noteModifier='base';
+
 		switch (SONG.song.toLowerCase())
 		{
                         case 'spookeez' | 'monster' | 'south':
@@ -717,6 +724,7 @@ class PlayState extends MusicBeatState
 		          case 'senpai' | 'roses':
 		          {
 		                  curStage = 'school';
+											noteModifier='pixel';
 											if(currentOptions.senpaiShaders){
 												if(vcrDistortionHUD!=null){
 													vcrDistortionHUD.setVignetteMoving(false);
@@ -802,6 +810,7 @@ class PlayState extends MusicBeatState
 		          case 'thorns':
 		          {
 		                  curStage = 'schoolEvil';
+											noteModifier='pixel';
 											if(currentOptions.senpaiShaders){
 												if(vcrDistortionHUD!=null){
 													vcrDistortionGame.setGlitchModifier(.2);
@@ -904,6 +913,10 @@ class PlayState extends MusicBeatState
               }
 
 		var gfVersion:String = 'gf';
+
+		if(!currentOptions.allowNoteModifiers){
+			noteModifier='base';
+		}
 
 		switch (curStage)
 		{
@@ -1598,7 +1611,7 @@ class PlayState extends MusicBeatState
 				else
 					oldNote = null;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, oldNote, false, getPosFromTime(daStrumTime));
+				var swagNote:Note = new Note(daStrumTime, daNoteData, 'default', noteModifier, oldNote, false, getPosFromTime(daStrumTime));
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 				swagNote.cameras = [camNotes];
@@ -1632,7 +1645,7 @@ class PlayState extends MusicBeatState
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 					var sussy = daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet;
-					var sustainNote:Note = new Note(sussy, daNoteData, oldNote, true, getPosFromTime(sussy));
+					var sustainNote:Note = new Note(sussy, daNoteData, 'default', noteModifier, oldNote, true, getPosFromTime(sussy));
 					sustainNote.cameras = [camSus];
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
@@ -1698,15 +1711,7 @@ class PlayState extends MusicBeatState
 			var dirs = ["left","down","up","right"];
 			var clrs = ["purple","blue","green","red"];
 
-			var skin:String = 'default';
-			switch(curStage){
-				case 'school' | 'schoolEvil':
-					skin = 'pixel';
-				default:
-					skin='default';
-			}
-
-			var babyArrow:Receptor = new Receptor(0, strumLine.y, i, skin);
+			var babyArrow:Receptor = new Receptor(0, strumLine.y, i, 'default', noteModifier);
 			if(currentOptions.middleScroll && player==0)
 				babyArrow.visible=false;
 

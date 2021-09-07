@@ -17,6 +17,8 @@ import flixel.FlxObject;
 import flixel.input.mouse.FlxMouseEventManager;
 import flash.events.MouseEvent;
 import flixel.FlxState;
+import EngineData.WeekData;
+import EngineData.SongData;
 
 using StringTools;
 
@@ -72,13 +74,6 @@ class FreeplayState extends MusicBeatState
 	{
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
-		for (i in 0...initSonglist.length)
-		{
-			var data = initSonglist[i].split(" ");
-			var icon = data.splice(0,1)[0];
-			songs.push(new SongMetadata(data.join(" "), 1, icon));
-		}
-
 
 			if (FlxG.sound.music != null)
 			{
@@ -100,6 +95,13 @@ class FreeplayState extends MusicBeatState
 
 		FlxG.stage.addEventListener(MouseEvent.MOUSE_WHEEL,scroll);
 
+		/*
+		for (i in 0...initSonglist.length)
+		{
+			var data = initSonglist[i].split(" ");
+			var icon = data.splice(0,1)[0];
+			songs.push(new SongMetadata(data.join(" "), 1, icon));
+		}
 		if (StoryMenuState.weekUnlocked[2] || isDebug)
 			addWeek(['Bopeebo', 'Fresh', 'Dadbattle'], 1, ['dad']);
 
@@ -116,7 +118,15 @@ class FreeplayState extends MusicBeatState
 			addWeek(['Cocoa', 'Eggnog', 'Winter-Horrorland'], 5, ['parents-christmas', 'parents-christmas', 'monster-christmas']);
 
 		if (StoryMenuState.weekUnlocked[6] || isDebug)
-			addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit']);
+			addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit'])
+		*/
+
+		for(week in EngineData.weekData){
+			//addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit'])
+			addWeekData(week);
+		}
+
+
 
 		// LOAD MUSIC
 
@@ -130,7 +140,7 @@ class FreeplayState extends MusicBeatState
 
 		for (i in 0...songs.length)
 		{
-			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].songName.split("-").join(" "), true, false);
+			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, songs[i].displayName, true, false);
 			songText.isMenuItem = true;
 			songText.targetY = i;
 
@@ -198,9 +208,15 @@ class FreeplayState extends MusicBeatState
 		super.create();
 	}
 
-	public function addSong(songName:String, weekNum:Int, songCharacter:String)
+	public function addSong(songName:String, weekNum:Int, songCharacter:String, ?chartName:String)
 	{
-		songs.push(new SongMetadata(songName, weekNum, songCharacter));
+		songs.push(new SongMetadata(songName, weekNum, songCharacter, chartName));
+	}
+
+	public function addWeekData(weekData:WeekData){
+		for(song in weekData.songs){
+			addSong(song.chartName,song.weekNum,song.freeplayIcon,song.displayName);
+		}
 	}
 
 	public function addWeek(songs:Array<String>, weekNum:Int, ?songCharacters:Array<String>)
@@ -370,11 +386,16 @@ class SongMetadata
 	public var songName:String = "";
 	public var week:Int = 0;
 	public var songCharacter:String = "";
+	public var displayName:String = '';
 
-	public function new(song:String, week:Int, songCharacter:String)
+	public function new(song:String, week:Int, songCharacter:String, ?displayName:String)
 	{
+		if(displayName==null){
+			displayName=songName.replace("-"," ");
+		}
 		this.songName = song;
 		this.week = week;
+		this.displayName = displayName;
 		this.songCharacter = songCharacter;
 	}
 }

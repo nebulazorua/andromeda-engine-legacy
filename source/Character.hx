@@ -408,6 +408,7 @@ class Character extends FlxSprite
 				frames = FlxAtlasFrames.fromSparrow(BitmapData.fromFile("assets/shared/images/characters/"+curCharacter+".png"),File.getContent("assets/shared/images/characters/"+curCharacter+".xml"));
 				Cache.charFrames[curCharacter]=frames;
 			}
+			iconColor = 'FF0000';
 			FlxG.bitmap.dumpCache();
 			loadAnimations();
 			loadOffsets();

@@ -46,9 +46,10 @@ class OptionsMenu extends MusicBeatState
 			new StateOption("Calibrate Offset",new SoundOffsetState()),
 		]),
 		new OptionCategory("Appearance",[
-			new ToggleOption("camFollowsAnims","Camera follows animations","Does the camera follow animations"),
+			//new ToggleOption("camFollowsAnims","Directional Camera","Does the camera follow animations"),
 			new ToggleOption("downScroll","Downscroll","Do arrows come from the top coming down"),
 			new ToggleOption("middleScroll","Middlescroll","Are arrows placed in the middle of the screen"),
+			new ToggleOption("allowNoteModifiers","Week 6 pixel notes","Should week 6 use pixel notes"),
 			new OptionCategory("Effects",[
 				new ToggleOption("picoShaders","Week 3 shaders","Does the windows fading out in week 3 use shaders"),
 				new ToggleOption("picoCamshake","Week 3 cam shake","Does the train cause a camera shake in week 3"),
