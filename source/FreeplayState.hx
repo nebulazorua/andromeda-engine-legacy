@@ -122,7 +122,6 @@ class FreeplayState extends MusicBeatState
 		*/
 
 		for(week in EngineData.weekData){
-			//addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit'])
 			addWeekData(week);
 		}
 

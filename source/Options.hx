@@ -148,7 +148,15 @@ class Options
 	public var healthBarColors:Bool = true;
 	public var camFollowsAnims:Bool = false;
 
-	// preferences
+	// loading
+	public var shouldCache:Bool = false;
+	public var cacheCharacters:Bool = false;
+	public var cacheSongs:Bool = false;
+	public var cacheSounds:Bool = false;
+	public var cacheUsedImages:Bool = true;
+
+
+	// preference
 	public var pauseHoldAnims:Bool = true;
 	public var showMS:Bool = false;
 	public var showComboCounter:Bool = true;
@@ -163,7 +171,6 @@ class Options
 	public var holdsOneNote:Bool = false;
 
 	public function loadOptions(){
-
 		OptionUtils.loadOptions(this);
 	}
 

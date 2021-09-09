@@ -34,7 +34,6 @@ using StringTools;
 class TitleState extends MusicBeatState
 {
 	static var initialized:Bool = false;
-	public var currentOptions:Options;
 
 	var blackScreen:FlxSprite;
 	var credGroup:FlxGroup;
@@ -48,14 +47,6 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-		#if polymod
-		polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
-		#end
-
-		OptionUtils.bindSave();
-		OptionUtils.loadOptions(OptionUtils.options);
-		currentOptions = OptionUtils.options;
-		PlayerSettings.init();
 
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
@@ -70,24 +61,6 @@ class TitleState extends MusicBeatState
 		trace('NEWGROUNDS LOL');
 		#end*/
 
-		FlxG.save.bind('funkin', 'ninjamuffin99');
-
-		Highscore.load();
-
-		if (FlxG.save.data.weekUnlocked != null)
-		{
-			// FIX LATER!!!
-			// WEEK UNLOCK PROGRESSION!!
-			// StoryMenuState.weekUnlocked = FlxG.save.data.weekUnlocked;
-
-			if (StoryMenuState.weekUnlocked.length < 4)
-				StoryMenuState.weekUnlocked.insert(0, true);
-
-			// QUICK PATCH OOPS!
-			if (!StoryMenuState.weekUnlocked[0])
-				StoryMenuState.weekUnlocked[0] = true;
-		}
-
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());
 		#elseif CHARTING
@@ -97,14 +70,6 @@ class TitleState extends MusicBeatState
 		{
 			startIntro();
 		});
-		#end
-
-		#if desktop
-		DiscordClient.initialize();
-
-		Application.current.onExit.add (function (exitCode) {
-			DiscordClient.shutdown();
-		 });
 		#end
 	}
 
@@ -151,7 +116,7 @@ class TitleState extends MusicBeatState
 		// bg.updateHitbox();
 		add(bg);
 
-		if(currentOptions.oldTitle)
+		if(EngineData.options.oldTitle)
 		{
 			logoBl = new FlxSprite(-150, -100);
 			logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
@@ -203,20 +168,14 @@ class TitleState extends MusicBeatState
 		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 		gfDance.antialiasing = true;
-		if(currentOptions.oldTitle)
+		if(EngineData.options.oldTitle)
 		{
 			add(gfDance);
-		}
-		add(logoBl);
-
-		if(currentOptions.oldTitle)
-		{
 			titleText = new FlxSprite(100, FlxG.height * 0.8);
-		}
-		else
-		{
+		}else{
 			titleText = new FlxSprite(FlxG.width * 0.099, FlxG.height * 0.825);
 		}
+		add(logoBl);
 		titleText.frames = Paths.getSparrowAtlas('titleEnter');
 		titleText.animation.addByPrefix('idle', "Press Enter to Begin0", 24);
 		titleText.animation.addByPrefix('press', "ENTER PRESSED0", 24);
@@ -259,7 +218,7 @@ class TitleState extends MusicBeatState
 		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
 
 		FlxG.mouse.visible = false;
-		
+
 		FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
 		FlxG.sound.music.fadeIn(4, 0, 0.7);
 
@@ -336,7 +295,7 @@ class TitleState extends MusicBeatState
 			#end
 			titleText.animation.play('press',true);
 
-			if(!currentOptions.oldTitle)
+			if(!EngineData.options.oldTitle)
 			{
 				speaker.animation.play('lit',true);
 				//bg.visible = false;

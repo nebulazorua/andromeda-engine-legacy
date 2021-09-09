@@ -70,6 +70,13 @@ class OptionsMenu extends MusicBeatState
 			new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),
 			new ToggleOption("freeplayPreview","Song preview in freeplay","Do songs get played when selecting them in the freeplay menu"),
 		]),
+		new OptionCategory("Loading",[
+			new ToggleOption("shouldCache","Cache on startup","Should the engine cache anything when being loaded"),
+			new ToggleOption("cacheCharacters","Cache characters","Should the engine cache characters at startup"),
+			new ToggleOption("cacheSongs","Cache songs","Should the engine cache songs at startup"),
+			new ToggleOption("cacheSounds","Cache misc sounds","Should the engine cache misc sounds at startup"),
+			new ToggleOption("cacheUsedImages","Cache loaded images","Should images be cached when they get loaded")
+		]),
 		/*new OptionCategory("Experimental",[
 			new ToggleOption("holdsOneNote","Holds are long notes","Should holds be treated like a single, long note")
 		])*/

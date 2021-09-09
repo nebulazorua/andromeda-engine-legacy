@@ -2,6 +2,7 @@ package;
 
 using StringTools;
 
+
 class SongData {
   public var displayName:String = 'Tutorial';
   public var chartName:String = 'tutorial';
@@ -70,6 +71,7 @@ class WeekData {
 }
 
 class EngineData {
+  public static var options:Options;
   public static var weeksUnlocked:Array<Bool>=[true,true,true,true,true,true];
   public static var mustUnlockWeeks:Bool=false;
   public static var weekData:Array<WeekData> = [
