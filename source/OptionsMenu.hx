@@ -14,6 +14,8 @@ import flixel.util.FlxColor;
 import lime.utils.Assets;
 import flixel.addons.transition.FlxTransitionableState;
 import Options;
+import flixel.graphics.FlxGraphic;
+
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -74,8 +76,12 @@ class OptionsMenu extends MusicBeatState
 			new ToggleOption("shouldCache","Cache on startup","Should the engine cache anything when being loaded"),
 			new ToggleOption("cacheCharacters","Cache characters","Should the engine cache characters at startup"),
 			new ToggleOption("cacheSongs","Cache songs","Should the engine cache songs at startup"),
-			new ToggleOption("cacheSounds","Cache misc sounds","Should the engine cache misc sounds at startup"),
-			new ToggleOption("cacheUsedImages","Cache loaded images","Should images be cached when they get loaded")
+			new ToggleOption("cacheSounds","Cache sounds","Should the engine cache misc sounds at startup"),
+			new ToggleOption("cachePreload","Cache misc images","Should the engine cache misc images"),
+			new ToggleOption("cacheUsedImages","Cache loaded images","Should images be cached when they get loaded ",function(state:Bool){
+				FlxGraphic.defaultPersist = state;
+			}),
+			new ClearCacheOption()
 		]),
 		/*new OptionCategory("Experimental",[
 			new ToggleOption("holdsOneNote","Holds are long notes","Should holds be treated like a single, long note")
@@ -192,6 +198,7 @@ class OptionsMenu extends MusicBeatState
 				FlxG.switchState(new MainMenuState());
 				trace("save options");
 			  OptionUtils.saveOptions(OptionUtils.options);
+
 			}
 		}
 		if(option.type!="Category"){

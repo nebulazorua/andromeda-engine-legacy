@@ -153,7 +153,8 @@ class Options
 	public var cacheCharacters:Bool = false;
 	public var cacheSongs:Bool = false;
 	public var cacheSounds:Bool = false;
-	public var cacheUsedImages:Bool = true;
+	public var cachePreload:Bool = false;
+	public var cacheUsedImages:Bool = false;
 
 
 	// preference
@@ -288,13 +289,15 @@ class ToggleOption extends Option
 {
 	private var property = "dummy";
 	private var checkbox:Checkbox;
-	public function new(property:String,?name:String,?description:String=''){
+	private var callback:Bool->Void;
+	public function new(property:String,?name:String,?description:String='',?callback:Bool->Void){
 		super();
 		this.property = property;
 		this.name = name;
 		this.description=description;
 		checkbox = new Checkbox(Reflect.field(OptionUtils.options,property));
 		add(checkbox);
+		this.callback=callback;
 	}
 
 	public override function createOptionText(curSelected:Int,optionText:FlxTypedGroup<Option>):Dynamic{
@@ -312,7 +315,29 @@ class ToggleOption extends Option
 	public override function accept():Bool{
 		Reflect.setField(OptionUtils.options,property,!Reflect.field(OptionUtils.options,property));
 		checkbox.changeState(Reflect.field(OptionUtils.options,property));
+		if(callback!=null){
+			callback(Reflect.field(OptionUtils.options,property));
+		}
 
+		return false;
+	}
+}
+
+class ClearCacheOption extends Option
+{
+	public function new(name:String="Clear Cache",description:String="Frees up memory in the cache"){
+		super();
+		this.name = name;
+		this.description=description;
+	}
+	public override function accept():Bool{
+		for(id in CachingState.cache.keys()){
+			var graphic = CachingState.cache.get(id);
+			graphic.destroyOnNoUse=false;
+			graphic.persist=false;
+		}
+
+		FlxG.bitmap.clearUnused();
 		return false;
 	}
 }

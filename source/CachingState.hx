@@ -15,6 +15,13 @@ import flixel.ui.FlxBar;
 import openfl.display.BitmapData;
 import Sys;
 import sys.FileSystem;
+import flixel.util.FlxTimer;
+import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.transition.TransitionData;
+import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
+
 
 using StringTools;
 
@@ -26,7 +33,15 @@ class CachingState extends FlxUIState {
   var barBG:FlxSprite;
   var loaded:Float = 0;
   var toLoad:Float = 0;
+
+  public static var cache:Map<String,FlxGraphic> = new Map<String,FlxGraphic>();
+
   override function create(){
+
+    InitState.initTransition();
+    transIn = FlxTransitionableState.defaultTransIn;
+    transOut = FlxTransitionableState.defaultTransOut;
+
     bg = new FlxSprite().loadGraphic(Paths.image("loadingBG","preload"));
     bg.setGraphicSize(Std.int(bg.width*.85));
     bg.updateHitbox();
@@ -52,14 +67,18 @@ class CachingState extends FlxUIState {
     icon.screenCenter(X);
     add(icon);
 
+    FlxG.sound.playMusic(Paths.music('old/title'));
+
     var images:Array<String> = [];
     var sounds:Array<String> = [];
 
-    if(FileSystem.isDirectory("assets/images") ){
-      for (file in FileSystem.readDirectory("assets/images"))
-      {
-        if(file.endsWith(".png") && !FileSystem.isDirectory(file)){ // TODO: recursively go through all directories
-          images.push('assets/images/${file}');
+    if(EngineData.options.cachePreload){
+      if(FileSystem.isDirectory("assets/images") ){
+        for (file in FileSystem.readDirectory("assets/images"))
+        {
+          if(file.endsWith(".png") && !FileSystem.isDirectory(file)){ // TODO: recursively go through all directories
+            images.push('assets/images/${file}');
+          }
         }
       }
     }
@@ -162,24 +181,54 @@ class CachingState extends FlxUIState {
     bar.createFilledBar(0xFF808080, 0xFF4CFF00);
     add(bar);
 
+    var loadingText = new FlxText(barBG.x, barBG.y + 75, 0, "", 20);
+    loadingText.setFormat(null, 24, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		loadingText.scrollFactor.set();
+		add(loadingText);
+
+    var percentText = new FlxText(barBG.x + barBG.width/2, barBG.y, 0, "", 20);
+    percentText.setFormat(null, 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+    percentText.scrollFactor.set();
+    add(percentText);
+
 
     Thread.create(()->{
-      // TODO: show how many assets n shit
       for(file in images){
         var id = file.replace(".png","");
         var data:BitmapData = BitmapData.fromFile(file);
         var graphic = FlxG.bitmap.add(data,true,id);
         graphic.destroyOnNoUse=false;
+        cache.set(id,graphic);
         trace("loaded " + file);
         loaded++;
+        loadingText.text = 'Loading ${file} (${loaded}/${toLoad})';
+        percentText.text = '${Math.floor((loaded/toLoad)*100)}%';
+        percentText.x = barBG.x + barBG.width/2;
+        loadingText.screenCenter(X);
       }
       for(file in sounds){
         FlxG.sound.cache(file);
         trace("loaded " + file);
         loaded++;
+        loadingText.text = 'Loading ${file} (${loaded}/${toLoad})';
+        percentText.text = '${Math.floor((loaded/toLoad)*100)}%';
+        percentText.x = barBG.x + barBG.width/2;
+        loadingText.screenCenter(X);
       }
+      if (FlxG.sound.music != null)
+      {
+        FlxG.sound.music.stop();
+      }
+      FlxG.camera.flash(FlxColor.WHITE, 2, null, true);
+			FlxG.sound.play(Paths.sound('titleShoot'), 0.7);
+
       trace("Loaded!");
-      FlxG.switchState(finishState);
+
+      new FlxTimer().start(5, function(tmr:FlxTimer)
+      {
+        FlxG.switchState(finishState);
+      });
+
     });
     super.create();
   }

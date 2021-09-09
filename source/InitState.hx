@@ -10,10 +10,25 @@ import lime.app.Application;
 import Discord.DiscordClient;
 import flixel.FlxSprite;
 import Options;
+import flixel.addons.transition.FlxTransitionSprite.GraphicTransTileDiamond;
+import flixel.addons.transition.FlxTransitionableState;
+import flixel.addons.transition.TransitionData;
+import flixel.math.FlxPoint;
+import flixel.math.FlxRect;
 
 using StringTools;
 
 class InitState extends FlxUIState {
+  public static function initTransition(){ // TRANS RIGHTS
+    var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
+    diamond.persist = true;
+    diamond.destroyOnNoUse = false;
+
+    FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
+      new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+    FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
+      {asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+  }
   override function create()
   {
     #if polymod
@@ -28,6 +43,14 @@ class InitState extends FlxUIState {
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 		Highscore.load();
+
+    FlxG.sound.muteKeys=null;
+    FlxG.sound.volume = FlxG.save.data.volume;
+
+    FlxG.sound.volumeHandler = function(volume:Float){
+      trace(volume);
+      FlxG.save.data.volume=volume;
+    }
 
     FlxGraphic.defaultPersist = currentOptions.cacheUsedImages;
 
@@ -55,15 +78,26 @@ class InitState extends FlxUIState {
 		 });
 		#end
 
+
     var canCache=false;
     #if sys
       #if cpp // IDK IF YOU CAN DO "#IF SYS AND CPP" OR THIS'LL WORK I THINK
         canCache=true;
       #end
     #end
+    if(canCache){
+      if(!currentOptions.cacheCharacters && !currentOptions.cacheSongs && !currentOptions.cacheSounds  && !currentOptions.cachePreload)
+        canCache=false;
+    }
+
+
+
     if(currentOptions.shouldCache && canCache){
       FlxG.switchState(new CachingState(new TitleState()));
     }else{
+      initTransition();
+      transIn = FlxTransitionableState.defaultTransIn;
+      transOut = FlxTransitionableState.defaultTransOut;
       FlxG.switchState(new TitleState());
     }
   }

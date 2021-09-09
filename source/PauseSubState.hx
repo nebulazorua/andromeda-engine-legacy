@@ -12,15 +12,19 @@ import flixel.text.FlxText;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
+import flixel.util.FlxTimer;
+using StringTools;
 
 class PauseSubState extends MusicBeatSubstate
 {
+	var startTimer:FlxTimer;
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
 	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
+	var countingDown:Bool=false;
 
 	public function new(x:Float, y:Float)
 	{
