@@ -51,6 +51,7 @@ class WeekData {
         case TClass(SongData):
           songData.push(stuff);
         default:
+          trace('cannot handle ${Type.typeof(stuff).toString()}');
       }
     }
     this.protag=protag;

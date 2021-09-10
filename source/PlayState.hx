@@ -3491,4 +3491,26 @@ class PlayState extends MusicBeatState
 		}
 		return super.switchTo(next);
 	}
+
+	public static function setStoryWeek(data:WeekData,difficulty:Int){ // TODO: use weekData to determine the charts
+		storyPlaylist = data.getCharts();
+		weekData = data;
+
+		isStoryMode = true;
+		storyDifficulty = difficulty;
+
+		SONG = Song.loadFromJson(data.songs[0].formatDifficulty(difficulty), storyPlaylist[0].toLowerCase());
+		storyWeek = weekData.weekNum;
+		campaignScore = 0;
+	}
+
+	public static function setSong(songData:EngineData.SongData,difficulty:Int){
+		var chart:String = Highscore.formatSong(songData.chartName, difficulty);
+
+		SONG = Song.loadFromJson(chart, songData.chartName.toLowerCase());
+		isStoryMode = false;
+		storyDifficulty = difficulty;
+		storyWeek = songData.weekNum;
+
+	}
 }

@@ -24,7 +24,7 @@ using StringTools;
 
 class FreeplayState extends MusicBeatState
 {
-	var songs:Array<SongMetadata> = [];
+	var songs:Array<SongData> = [];
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
@@ -146,7 +146,7 @@ class FreeplayState extends MusicBeatState
 			FlxMouseEventManager.add(songText,onMouseDown,onMouseUp,onMouseOver,onMouseOut);
 			grpSongs.add(songText);
 
-			var icon:HealthIcon = new HealthIcon(songs[i].songCharacter);
+			var icon:HealthIcon = new HealthIcon(songs[i].freeplayIcon);
 			icon.sprTracker = songText;
 
 			// using a FlxGroup is too much fuss!
@@ -209,12 +209,12 @@ class FreeplayState extends MusicBeatState
 
 	public function addSong(songName:String, weekNum:Int, songCharacter:String, ?chartName:String)
 	{
-		songs.push(new SongMetadata(songName, weekNum, songCharacter, chartName));
+		songs.push(new SongData(songName,songCharacter,weekNum,chartName));
 	}
 
 	public function addWeekData(weekData:WeekData){
 		for(song in weekData.songs){
-			addSong(song.chartName,song.weekNum,song.freeplayIcon,song.displayName);
+			songs.push(song);
 		}
 	}
 
@@ -233,15 +233,8 @@ class FreeplayState extends MusicBeatState
 		}
 	}
 	function selectSong(){
-		var poop:String = Highscore.formatSong(songs[curSelected].songName.toLowerCase(), curDifficulty);
+		PlayState.setSong(songs[curSelected],curDifficulty);
 
-		trace(poop);
-
-		PlayState.SONG = Song.loadFromJson(poop, songs[curSelected].songName.toLowerCase());
-		PlayState.isStoryMode = false;
-		PlayState.storyDifficulty = curDifficulty;
-
-		PlayState.storyWeek = songs[curSelected].week;
 		trace('CUR WEEK' + PlayState.storyWeek);
 		LoadingState.loadAndSwitchState(new PlayState());
 	}
@@ -300,7 +293,7 @@ class FreeplayState extends MusicBeatState
 			curDifficulty = 0;
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].chartName, curDifficulty);
 		#end
 
 		switch (curDifficulty)
@@ -337,13 +330,13 @@ class FreeplayState extends MusicBeatState
 		// selector.y = (70 * curSelected) + 30;
 
 		#if !switch
-		intendedScore = Highscore.getScore(songs[curSelected].songName, curDifficulty);
+		intendedScore = Highscore.getScore(songs[curSelected].chartName, curDifficulty);
 		// lerpScore = 0;
 		#end
 
 		if(OptionUtils.options.freeplayPreview){
 			#if PRELOAD_ALL
-				FlxG.sound.playMusic(Paths.inst(songs[curSelected].songName), 0);
+				FlxG.sound.playMusic(Paths.inst(songs[curSelected].chartName), 0);
 			#end
 		}
 
@@ -377,24 +370,5 @@ class FreeplayState extends MusicBeatState
 		FlxG.stage.removeEventListener(MouseEvent.MOUSE_WHEEL,scroll);
 
 		return super.switchTo(next);
-	}
-}
-
-class SongMetadata
-{
-	public var songName:String = "";
-	public var week:Int = 0;
-	public var songCharacter:String = "";
-	public var displayName:String = '';
-
-	public function new(song:String, week:Int, songCharacter:String, ?displayName:String)
-	{
-		if(displayName==null){
-			displayName=songName.replace("-"," ");
-		}
-		this.songName = song;
-		this.week = week;
-		this.displayName = displayName;
-		this.songCharacter = songCharacter;
 	}
 }
