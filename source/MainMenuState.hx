@@ -21,6 +21,7 @@ using StringTools;
 import flixel.util.FlxTimer;
 import Options;
 import flixel.input.mouse.FlxMouseEventManager;
+import Note;
 
 class MainMenuState extends MusicBeatState
 {
@@ -182,20 +183,12 @@ class MainMenuState extends MusicBeatState
 		bg.updateHitbox();
 		bg.screenCenter();
 		bg.antialiasing = true;
-		if(currentOptions.oldMenus)
-		{
-			bg.color = 0xFFFFFDB0;
-		}
-		else
-		{
-			bg.color = 0xFFF9CB97;
-		}
 		add(bg);
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 		add(camFollow);
 
-		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuBG'));
+		magenta = new FlxSprite(-80).loadGraphic(Paths.image('menuBGMagenta'));
 		magenta.scrollFactor.x = 0;
 		magenta.scrollFactor.y = 0.13;
 		magenta.setGraphicSize(Std.int(magenta.width * 1.1));
@@ -203,14 +196,7 @@ class MainMenuState extends MusicBeatState
 		magenta.screenCenter();
 		magenta.visible = false;
 		magenta.antialiasing = true;
-		if(currentOptions.oldMenus)
-			{
-				magenta.color = 0xFFFF87DA;
-			}
-			else
-			{
-				magenta.color = 0xFFF9CB97;
-			}
+
 		add(magenta);
 		// magenta.scrollFactor.set();
 
@@ -271,9 +257,11 @@ class MainMenuState extends MusicBeatState
 				}
 		}
 
+
+
 		FlxG.camera.follow(camFollow, null, 0.06);
 
-		var versionShit:FlxText = new FlxText(5, FlxG.height - 1, 0, "v" + Application.current.meta.get('version') + " - Andromeda Engine B6", 12);
+		var versionShit:FlxText = new FlxText(5, FlxG.height - 1, 0, "v" + Application.current.meta.get('version') + " - Andromeda Engine B7", 12);
 		versionShit.scrollFactor.set();
 		versionShit.setFormat("VCR OSD Mono", 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		add(versionShit);
@@ -288,8 +276,10 @@ class MainMenuState extends MusicBeatState
 	var selectedSomethin:Bool = false;
 	override function beatHit(){
 		super.beatHit();
-		if (!gfDance.animation.curAnim.name.startsWith("sing") && gfDance.animation.curAnim.name!="cheer")
-			gfDance.dance();
+		if(gfDance!=null){
+			if (!gfDance.animation.curAnim.name.startsWith("sing") && gfDance.animation.curAnim.name!="cheer")
+				gfDance.dance();
+		}
 	}
 	override function update(elapsed:Float)
 	{

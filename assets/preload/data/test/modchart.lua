@@ -38,14 +38,14 @@ function update(elapsed)
 	counter = counter + elapsed*3;
 	for i = 1,#receptors do
 		if(i==1 or i==3)then
-			receptors[i].yOffset = math.sin(counter*4)*10
+			receptors[i].y = receptors[i].defaultY+math.sin(counter*4)*10
 		else
-			receptors[i].yOffset = -math.sin(counter*4)*10
+			receptors[i].y = receptors[i].defaultY+-math.sin(counter*4)*10
 		end
 		if(i==1)then
-			receptors[i].xOffset = math.abs(math.sin(counter*2)*32)
+			receptors[i].x = receptors[i].defaultX+ math.abs(math.sin(counter*2)*32)
 		elseif(i==4)then
-			receptors[i].xOffset = -math.abs(math.sin(counter*2)*32)
+			receptors[i].x = receptors[i].defaultX+-math.abs(math.sin(counter*2)*32)
 		end
 	end
 	if(shakeDuration > 0)then

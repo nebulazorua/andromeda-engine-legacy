@@ -140,9 +140,6 @@ class TitleState extends MusicBeatState
 			// music.loadStream(Paths.music('freakyMenu'));
 			// FlxG.sound.list.add(music);
 			// music.play();
-			FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
-
-			FlxG.sound.music.fadeIn(4, 0, 0.7);
 		}
 
 		Conductor.changeBPM(102);
@@ -262,6 +259,9 @@ class TitleState extends MusicBeatState
 		FlxTween.tween(credTextShit, {y: credTextShit.y + 20}, 2.9, {ease: FlxEase.quadInOut, type: PINGPONG});
 
 		FlxG.mouse.visible = false;
+		
+		FlxG.sound.playMusic(Paths.music('freakyMenu'), 0);
+		FlxG.sound.music.fadeIn(4, 0, 0.7);
 
 		if (initialized)
 			skipIntro();
@@ -326,7 +326,7 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
-			titleText.animation.play('press',true);
+
 			#if !switch
 			//NGio.unlockMedal(60960);
 
@@ -334,6 +334,7 @@ class TitleState extends MusicBeatState
 			if (Date.now().getDay() == 5)
 				//NGio.unlockMedal(61034);
 			#end
+			titleText.animation.play('press',true);
 
 			if(!currentOptions.oldTitle)
 			{

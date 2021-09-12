@@ -361,7 +361,7 @@ class ChartingState extends MusicBeatState
 		var tab_group_marker = new FlxUI(null,UI_box);
 		tab_group_marker.name = 'Marker';
 
-		markerScrollMult = new FlxUINumericStepper(10, 10, .1, 0, 0, 10, 1);
+		markerScrollMult = new FlxUINumericStepper(10, 10, .1, 0, -10, 10, 1);
 		markerScrollMult.value = 1;
 		markerScrollMult.name = 'marker_scrollVel';
 

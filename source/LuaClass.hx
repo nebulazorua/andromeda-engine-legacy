@@ -988,6 +988,94 @@ class LuaCam extends LuaClass {
     super.Register(l);
   }
 }
+
+class LuaReceptor extends LuaSprite {
+  private static var state:State;
+
+
+  private function SetAngle(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+        LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      Reflect.setProperty(sprite,"desiredAngle",Lua.tonumber(l,3));
+      return 0;
+  }
+  private function GetAngle(l:State,data:Any){
+      // 1 = self
+      Lua.pushnumber(l,Reflect.getProperty(sprite,"desiredAngle"));
+      return 1;
+  }
+
+  override function Register(l:State){
+    state=l;
+    super.Register(l);
+  }
+
+  public function new(receptor:Receptor,name:String,?addToGlobal:Bool=true){
+    super(receptor,name,addToGlobal);
+
+    properties.set("incomingAngle",{
+      defaultValue:receptor.incomingAngle,
+      getter:GetNumProperty,
+      setter:SetNumProperty
+    });
+
+    properties.set("incomingNoteAlpha",{
+      defaultValue:receptor.incomingNoteAlpha,
+      getter:GetNumProperty,
+      setter:SetNumProperty
+    });
+
+    properties.set("x",{
+      defaultValue:receptor.x,
+      getter:GetNumProperty,
+      setter:SetNumProperty
+    });
+
+    properties.set("y",{
+      defaultValue:receptor.y,
+      getter:GetNumProperty,
+      setter:SetNumProperty
+    });
+
+    properties.set("alpha",{
+      defaultValue:receptor.y,
+      getter:GetNumProperty,
+      setter:SetNumProperty
+    });
+
+    properties.set("angle",{
+      defaultValue:receptor.desiredAngle,
+      getter:GetAngle,
+      setter:SetAngle
+    });
+
+    properties.set("defaultX",{
+      defaultValue:receptor.defaultX,
+      getter:GetNumProperty,
+      setter:function(l:State){
+        LuaL.error(l,"defaultX is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("defaultY",{
+      defaultValue:receptor.defaultY,
+      getter:GetNumProperty,
+      setter:function(l:State){
+        LuaL.error(l,"defaultY is read-only.");
+        return 0;
+      }
+    });
+
+  }
+}
+
 class LuaCharacter extends LuaSprite {
   private static var state:State;
 
@@ -1318,7 +1406,7 @@ class LuaModchart extends LuaClass {
   }
 }
 
-class LuaNote extends LuaClass {
+/*class LuaReceptor extends LuaClass {
   private static var state:State;
   private static var internalNames = [
     "left",
@@ -1516,4 +1604,4 @@ class LuaNote extends LuaClass {
     state=l;
     super.Register(l);
   }
-}
+}*/
