@@ -69,9 +69,9 @@ class Paths
 		if(useOpenFLAssetSystem){
 			var path = 'assets/images/${library}/${skin}/${modifier}/${key}';
 			if(!OpenFlAssets.exists(path)){
-				path = 'assets/images/${library}/default/${modifier}/${key}';
+				path = 'assets/images/${library}/fallback/${modifier}/${key}';
 				if(!OpenFlAssets.exists(path)){
-					path = 'assets/images/${library}/default/base/$key';
+					path = 'assets/images/${library}/fallback/base/$key';
 					if(!OpenFlAssets.exists(path)){
 						return noteSkinPath(key,library,skin,modifier,false);
 					}
@@ -82,12 +82,12 @@ class Paths
 		}else{
 			var path = 'assets/images/${library}/${skin}/${modifier}/${key}';
 			if(!FileSystem.exists(path)){
-				path = 'assets/images/${library}/default/${modifier}/$key';
+				path = 'assets/images/${library}/fallback/${modifier}/$key';
 				if(!FileSystem.exists(path)){
-					path = 'assets/images/${library}/default/base/$key';
+					path = 'assets/images/${library}/fallback/base/$key';
 					if(!FileSystem.exists(path)){
 						Cache.pathCache.set(internalName,'assets/images/skins/fallback/base/$key');
-						return 'assets/images/skins/fallback/base/$key'; // FALLBACK TO THIS!
+						return 'assets/images/skins/fallback/base/$key';
 					}
 				}
 			}
@@ -119,6 +119,23 @@ class Paths
 			}
 		}
 		return image('skins/fallback/base/$key','preload');
+	}
+
+	public static function noteSkinText(key:String, ?library:String='skins', ?skin:String='default', modifier:String='base', ?useOpenFLAssetSystem:Bool=true):String{
+		if(useOpenFLAssetSystem){
+			var path = noteSkinPath('${key}',library,skin,modifier,useOpenFLAssetSystem);
+			if(OpenFlAssets.exists(path)){
+				return OpenFlAssets.getText(path);
+			}else{
+				return noteSkinText(key,library,skin,modifier,false);
+			}
+		}else{
+			var path = noteSkinPath('${key}',library,skin,modifier,useOpenFLAssetSystem);
+			if(FileSystem.exists(path)){
+				return File.getContent(path);
+			}
+		}
+		return OpenFlAssets.getText(file('skins/fallback/base/$key','preload'));
 	}
 
 	public static function noteSkinAtlas(key:String, ?library:String='skins', ?skin:String='default', modifier:String='base', ?useOpenFLAssetSystem:Bool=true):Null<FlxAtlasFrames>{

@@ -17,6 +17,8 @@ import Options;
 import Discord.DiscordClient;
 #end
 
+// TODO: turn this into a chart thing
+
 class SoundOffsetState extends MusicBeatState
 {
   public var playingAudio:Bool=false;
@@ -129,7 +131,7 @@ class SoundOffsetState extends MusicBeatState
     if(FlxG.keys.justPressed.ESCAPE){
       OptionUtils.options.noteOffset = currOffset;
       OptionUtils.saveOptions(OptionUtils.options);
-      FlxG.switchState(new OptionsMenu());
+      FlxG.switchState(new OptionsState());
     }
 
     if(!FlxG.keys.pressed.SHIFT){

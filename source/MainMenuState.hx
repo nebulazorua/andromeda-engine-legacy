@@ -134,7 +134,7 @@ class MainMenuState extends MusicBeatState
 									trace("Freeplay Menu Selected");
 
 								case 'options':
-									FlxG.switchState(new OptionsMenu());
+									FlxG.switchState(new OptionsState());
 							}
 						});
 					}else{
@@ -151,7 +151,7 @@ class MainMenuState extends MusicBeatState
 									trace("Freeplay Menu Selected");
 
 								case 'options':
-									FlxG.switchState(new OptionsMenu());
+									FlxG.switchState(new OptionsState());
 							}
 						});
 					}
@@ -269,7 +269,6 @@ class MainMenuState extends MusicBeatState
 		// NG.core.calls.event.logEvent('swag').send();
 
 		changeItem();
-
 		super.create();
 	}
 

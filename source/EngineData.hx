@@ -51,7 +51,7 @@ class WeekData {
         case TClass(SongData):
           songData.push(stuff);
         default:
-          trace('cannot handle ${Type.typeof(stuff).toString()}');
+          trace('cannot handle ${Type.typeof(stuff)}');
       }
     }
     this.protag=protag;
@@ -74,7 +74,7 @@ class WeekData {
 class EngineData {
   public static var options:Options;
   public static var weeksUnlocked:Array<Bool>=[true,true,true,true,true,true];
-  public static var mustUnlockWeeks:Bool=false;
+  public static var mustUnlockWeeks:Bool=false; // TODO: make this work
   public static var weekData:Array<WeekData> = [
     new WeekData("Funkin' Virgin",0,'',[
       new SongData("Tutorial","gf",0),

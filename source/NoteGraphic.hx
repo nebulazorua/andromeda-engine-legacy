@@ -7,6 +7,11 @@ import flixel.util.FlxColor;
 #if polymod
 import polymod.format.ParseRules.TargetSignatureElement;
 #end
+import haxe.Json;
+import haxe.format.JsonParser;
+import haxe.macro.Type;
+import lime.utils.Assets;
+import Note.NoteBehaviour;
 
 using StringTools;
 
@@ -14,53 +19,57 @@ class NoteGraphic extends FlxSprite
 {
 	public var modifier = 'base';
 	public var skin='default';
+	public var behaviour:NoteBehaviour;
 	public static var swagWidth:Float = 160 * 0.7;
 
-	public function new(?modifier='base',?skin='default') // TODO: NoteType
+	public function new(?modifier='base',?skin='default',behaviour:NoteBehaviour) // TODO: NoteType
 	{
 		super();
 
 		this.modifier=modifier;
 		this.skin=skin;
-		
+		this.behaviour=behaviour;
+
 		var daStage:String = PlayState.curStage;
 
-		switch (modifier)
+		switch (behaviour.actsLike)
 		{
 			case 'pixel':
 				//loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels',"shared"), true, 17, 17);
-				loadGraphic(Paths.noteSkinImage("arrows", 'skins', 'default','pixel'),true,17,17);
+				loadGraphic(Paths.noteSkinImage(behaviour.arguments.note.sheet, 'skins', skin, modifier),true,behaviour.arguments.note.gridSizeX,behaviour.arguments.note.gridSizeY);
 
-				animation.add('greenScroll', [6]);
-				animation.add('redScroll', [7]);
-				animation.add('blueScroll', [5]);
-				animation.add('purpleScroll', [4]);
+				animation.add('greenScroll', behaviour.arguments.note.up);
+				animation.add('redScroll', behaviour.arguments.note.right);
+				animation.add('blueScroll', behaviour.arguments.note.down);
+				animation.add('purpleScroll', behaviour.arguments.note.left);
 
-				setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+				setGraphicSize(Std.int(width * behaviour.scale));
 				updateHitbox();
+				antialiasing = behaviour.antialiasing;
 
 			default:
-				frames = Paths.noteSkinAtlas("NOTE_assets", 'skins', 'default','base');
+				frames = Paths.noteSkinAtlas(behaviour.arguments.spritesheet, 'skins', skin, modifier);
 
-				animation.addByPrefix('greenScroll', 'green0');
-				animation.addByPrefix('redScroll', 'red0');
-				animation.addByPrefix('blueScroll', 'blue0');
-				animation.addByPrefix('purpleScroll', 'purple0');
+				animation.addByPrefix('greenScroll', behaviour.arguments.upPrefix);
+				animation.addByPrefix('redScroll', behaviour.arguments.rightPrefix);
+				animation.addByPrefix('blueScroll', behaviour.arguments.downPrefix);
+				animation.addByPrefix('purpleScroll', behaviour.arguments.leftPrefix);
 
-				animation.addByPrefix('purpleholdend', 'pruple end hold');
-				animation.addByPrefix('greenholdend', 'green hold end');
-				animation.addByPrefix('redholdend', 'red hold end');
-				animation.addByPrefix('blueholdend', 'blue hold end');
+				animation.addByPrefix('greenhold', behaviour.arguments.upLongPrefix);
+				animation.addByPrefix('redhold', behaviour.arguments.rightLongPrefix);
+				animation.addByPrefix('bluehold', behaviour.arguments.downLongPrefix);
+				animation.addByPrefix('purplehold', behaviour.arguments.leftLongPrefix);
 
-				animation.addByPrefix('purplehold', 'purple hold piece');
-				animation.addByPrefix('greenhold', 'green hold piece');
-				animation.addByPrefix('redhold', 'red hold piece');
-				animation.addByPrefix('bluehold', 'blue hold piece');
+				animation.addByPrefix('greenholdend', behaviour.arguments.upLongEndPrefix);
+				animation.addByPrefix('redholdend', behaviour.arguments.rightLongEndPrefix);
+				animation.addByPrefix('blueholdend', behaviour.arguments.downLongEndPrefix);
+				animation.addByPrefix('purpleholdend', behaviour.arguments.leftLongEndPrefix);
 
-				setGraphicSize(Std.int(width * 0.7));
+				setGraphicSize(Std.int(width * behaviour.scale));
 				updateHitbox();
-				antialiasing = true;
+				antialiasing = behaviour.antialiasing;
 		}
+
 		animation.play("greenScroll");
 	}
 
@@ -71,31 +80,36 @@ class NoteGraphic extends FlxSprite
 			suffix='hold';
 			if(end)suffix+='end';
 		};
-		if(sussy && modifier=='pixel' && !animation.curAnim.name.contains("hold")){
-			loadGraphic(Paths.noteSkinImage("ends", 'skins', skin, 'pixel'), true, 7, 6);
+		if(sussy && behaviour.actsLike=='pixel'){
+			if(end && !animation.curAnim.name.endsWith("end")){
+				var args = behaviour.arguments.sustainEnd;
 
-			animation.add('purpleholdend', [4]);
-			animation.add('greenholdend', [6]);
-			animation.add('redholdend', [7]);
-			animation.add('blueholdend', [5]);
+				loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier),true,args.gridSizeX,args.gridSizeY);
+				animation.add('purpleholdend', args.left);
+				animation.add('greenholdend', args.up);
+				animation.add('redholdend', args.right);
+				animation.add('blueholdend', args.down);
+				setGraphicSize(Std.int(width * behaviour.scale));
+				updateHitbox();
+			}else if(!end){
+				var args = behaviour.arguments.sustain;
 
-			animation.add('purplehold', [0]);
-			animation.add('greenhold', [2]);
-			animation.add('redhold', [3]);
-			animation.add('bluehold', [1]);
+				loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier),true,args.gridSizeX,args.gridSizeY);
+				animation.add('purplehold', args.left);
+				animation.add('greenhold', args.up);
+				animation.add('redhold', args.right);
+				animation.add('bluehold', args.down);
+				setGraphicSize(Std.int(width * behaviour.scale));
+				updateHitbox();
+			}
+		}else if(behaviour.actsLike=='pixel' && !sussy){
+			loadGraphic(Paths.noteSkinImage(behaviour.arguments.note.sheet, 'skins', skin, modifier),true,behaviour.arguments.note.gridSizeX,behaviour.arguments.note.gridSizeY);
 
-			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
-			updateHitbox();
-
-		}else if(modifier=='pixel' && !sussy){
-			loadGraphic(Paths.noteSkinImage("arrows", 'skins', skin, 'pixel'), true, 17, 17);
-
-			animation.add('greenScroll', [6]);
-			animation.add('redScroll', [7]);
-			animation.add('blueScroll', [5]);
-			animation.add('purpleScroll', [4]);
-
-			setGraphicSize(Std.int(width * PlayState.daPixelZoom));
+			animation.add('greenScroll', behaviour.arguments.note.up);
+			animation.add('redScroll', behaviour.arguments.note.right);
+			animation.add('blueScroll', behaviour.arguments.note.down);
+			animation.add('purpleScroll', behaviour.arguments.note.left);
+			setGraphicSize(Std.int(width * behaviour.scale));
 			updateHitbox();
 		}
 		if(colors[dir]!=null){

@@ -16,51 +16,6 @@ class OptionUtils
 {
 	private static var saveFile:FlxSave = new FlxSave();
 
-	public static var ratingWindowNames:Array<String>=[
-		"Vanilla",
-		"ITG",
-		"Quaver",
-		"Judge Four",
-		"EMFNF2",
-	];
-	public static var healthDrainNames:Array<String>=[
-		"No Health Drain",
-		"Basic Health Drain",
-		"Average Health Drain",
-		"Heavy Health Drain",
-	];
-	public static var ratingWindowTypes:Array<Array<Float>> = [
-		[ // Vanilla
-			32, // sick
-			123, // good
-			148, // bad
-			166, // shit
-		],
-		[ // ITG
-			43, // sick
-			102, // good
-			135, // bad
-			180,
-		],
-		[ // Quaver
-			43, // sick
-			76, // good
-			127, // bad
-			164,
-		],
-		[ // Judge 4
-			45, // sick
-			90, // good
-			135, // bad
-			180, // shit
-		],
-		[ // EMFNF2
-			50, // sick
-			124, // good
-			149, // bad
-			166, // shit
-		],
-	];
 	public static var shit:Array<FlxKey> = [
 		ALT,
 		BACKSPACE,
@@ -124,13 +79,10 @@ class Options
 	public var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L,FlxKey.R];
 	public var ghosttapping:Bool = false;
 	public var failForMissing:Bool = false;
-	public var healthDrain:Int = 0;
-	public var fightsBack:Bool = false;
-	public var hpMode:Bool = false;
-
+	public var useMalewife:Bool=false;
 
 	public var pollingInput:Bool = false;
-	public var ratingWindow:Int = 0;
+	public var judgementWindow:String = 'Quaver';
 	public var noteOffset:Int = 0;
 	public var botPlay:Bool = false;
 	public var loadModcharts:Bool = true;
@@ -158,6 +110,7 @@ class Options
 
 
 	// preference
+	public var fps:Int = 120;
 	public var pauseHoldAnims:Bool = true;
 	public var showMS:Bool = false;
 	public var showComboCounter:Bool = true;
@@ -190,7 +143,6 @@ class Options
 	public function new(){
 	}
 }
-
 class StateOption extends Option
 {
 	private var state:FlxState;
@@ -290,14 +242,15 @@ class ToggleOption extends Option
 	private var property = "dummy";
 	private var checkbox:Checkbox;
 	private var callback:Bool->Void;
+
 	public function new(property:String,?name:String,?description:String='',?callback:Bool->Void){
 		super();
 		this.property = property;
 		this.name = name;
+		this.callback=callback;
 		this.description=description;
 		checkbox = new Checkbox(Reflect.field(OptionUtils.options,property));
 		add(checkbox);
-		this.callback=callback;
 	}
 
 	public override function createOptionText(curSelected:Int,optionText:FlxTypedGroup<Option>):Dynamic{
@@ -305,7 +258,7 @@ class ToggleOption extends Option
     text = new Alphabet(0, (70 * curSelected) + 30, name, true, false);
     text.movementType = "list";
     text.isMenuItem = true;
-		text.offsetX = 165;
+		text.offsetX = 145;
 		text.gotoTargetPosition();
 		checkbox.tracker = text;
     add(text);
@@ -316,28 +269,8 @@ class ToggleOption extends Option
 		Reflect.setField(OptionUtils.options,property,!Reflect.field(OptionUtils.options,property));
 		checkbox.changeState(Reflect.field(OptionUtils.options,property));
 		if(callback!=null){
-			callback(Reflect.field(OptionUtils.options,property));
+			callback(Reflect.field(OptionUtils.options,property) );
 		}
-
-		return false;
-	}
-}
-
-class ClearCacheOption extends Option
-{
-	public function new(name:String="Clear Cache",description:String="Frees up memory in the cache"){
-		super();
-		this.name = name;
-		this.description=description;
-	}
-	public override function accept():Bool{
-		for(id in CachingState.cache.keys()){
-			var graphic = CachingState.cache.get(id);
-			graphic.destroyOnNoUse=false;
-			graphic.persist=false;
-		}
-
-		FlxG.bitmap.clearUnused();
 		return false;
 	}
 }
@@ -424,7 +357,7 @@ class StepOption extends Option
     text = new Alphabet(0, (70 * curSelected) + 30, name, true, false);
     text.movementType = "list";
     text.isMenuItem = true;
-		text.offsetX = 135;
+		text.offsetX = 115;
 		text.gotoTargetPosition();
     add(text);
     return text;
@@ -459,19 +392,22 @@ class StepOption extends Option
 	};
 }
 
-
 class ScrollOption extends Option
 {
 	private var names:Array<String>;
 	private var property = "dummyInt";
 	private var max:Int = -1;
 	private var min:Int = 0;
-
+	private var label:String = '';
 	private var leftArrow:FlxSprite;
 	private var rightArrow:FlxSprite;
-	public function new(property:String,?min:Int=0,?max:Int=-1,?names:Array<String>){
+	private var labelAlphabet:Alphabet;
+
+	public function new(property:String,label:String,description:String,?min:Int=0,?max:Int=-1,?names:Array<String>){
 		super();
 		this.property=property;
+		this.label=label;
+		this.description=description;
 		this.names=names;
 		var value = Reflect.field(OptionUtils.options,property);
 		leftArrow = new FlxSprite(0,0);
@@ -502,6 +438,7 @@ class ScrollOption extends Option
 	};
 
 	override function update(elapsed:Float){
+		labelAlphabet.targetY = text.targetY;
 		super.update(elapsed);
 		//sprTracker.x + sprTracker.width + 10
 		if(PlayerSettings.player1.controls.LEFT){
@@ -531,11 +468,21 @@ class ScrollOption extends Option
 
 	public override function createOptionText(curSelected:Int,optionText:FlxTypedGroup<Option>):Dynamic{
     remove(text);
+		remove(labelAlphabet);
+		labelAlphabet = new Alphabet(0, (70 * curSelected) + 30, label, true, false);
+		labelAlphabet.movementType = "list";
+		labelAlphabet.isMenuItem = true;
+		labelAlphabet.offsetX = 60;
+
     text = new Alphabet(0, (70 * curSelected) + 30, name, true, false);
     text.movementType = "list";
     text.isMenuItem = true;
-		text.offsetX = 135;
+		text.offsetX = labelAlphabet.width + 120;
+
+		labelAlphabet.targetY = text.targetY;
+		labelAlphabet.gotoTargetPosition();
 		text.gotoTargetPosition();
+		add(labelAlphabet);
     add(text);
     return text;
   }
@@ -573,6 +520,150 @@ class ScrollOption extends Option
 		}else{
 			name = Std.string(value);
 		}
+		return true;
+	};
+}
+
+//ScrollOption("ratingWindow","Judgements","Which judgement window to use",0,OptionUtils.ratingWindowNames.length-1,OptionUtils.ratingWindowNames),
+class JudgementsOption extends Option
+{
+	private var names:Array<String>;
+	private var property = "dummyInt";
+	private var label:String = '';
+	private var leftArrow:FlxSprite;
+	private var rightArrow:FlxSprite;
+	private var labelAlphabet:Alphabet;
+	private var judgementNames:Array<String> = [];
+	private var curValue:Int = 0;
+	public function new(property:String,label:String,description:String){
+		super();
+		this.property=property;
+		this.label=label;
+		this.description=description;
+		var idx=0;
+
+		var judgementOrder = CoolUtil.coolTextFile(Paths.txt('judgementOrder'));
+
+		for (i in 0...judgementOrder.length)
+		{
+			var judge = judgementOrder[i];
+			judgementNames.push(judge);
+			if(Reflect.field(OptionUtils.options,property)==judge){
+				curValue=idx;
+			}
+			idx++;
+		}
+
+		for(judgement in Reflect.fields(JudgementManager.rawJudgements)){
+			if(!judgementNames.contains(judgement)){
+				judgementNames.push(judgement);
+				if(Reflect.field(OptionUtils.options,property)==judgement){
+					curValue=idx;
+				}
+				idx++;
+			}
+		}
+
+		leftArrow = new FlxSprite(0,0);
+		leftArrow.frames = Paths.getSparrowAtlas("arrows");
+		leftArrow.setGraphicSize(Std.int(leftArrow.width*.7));
+		leftArrow.updateHitbox();
+		leftArrow.animation.addByPrefix("pressed","arrow push left",24,false);
+		leftArrow.animation.addByPrefix("static","arrow left",24,false);
+		leftArrow.animation.play("static");
+
+		rightArrow = new FlxSprite(0,0);
+		rightArrow.frames = Paths.getSparrowAtlas("arrows");
+		rightArrow.setGraphicSize(Std.int(rightArrow.width*.7));
+		rightArrow.updateHitbox();
+		rightArrow.animation.addByPrefix("pressed","arrow push right",24,false);
+		rightArrow.animation.addByPrefix("static","arrow right",24,false);
+		rightArrow.animation.play("static");
+
+		add(rightArrow);
+		add(leftArrow);
+
+		name = judgementNames[curValue];
+	};
+
+	override function update(elapsed:Float){
+		labelAlphabet.targetY = text.targetY;
+		super.update(elapsed);
+		//sprTracker.x + sprTracker.width + 10
+		if(PlayerSettings.player1.controls.LEFT){
+			leftArrow.animation.play("pressed");
+			leftArrow.offset.x = 0;
+			leftArrow.offset.y = -3;
+		}else{
+			leftArrow.animation.play("static");
+			leftArrow.offset.x = 0;
+			leftArrow.offset.y = 0;
+		}
+
+		if(PlayerSettings.player1.controls.RIGHT){
+			rightArrow.animation.play("pressed");
+			rightArrow.offset.x = 0;
+			rightArrow.offset.y = -3;
+		}else{
+			rightArrow.animation.play("static");
+			rightArrow.offset.x = 0;
+			rightArrow.offset.y = 0;
+		}
+		rightArrow.x = text.x+text.width+10;
+		leftArrow.x = text.x-60;
+		leftArrow.y = text.y-10;
+		rightArrow.y = text.y-10;
+	}
+
+	public override function createOptionText(curSelected:Int,optionText:FlxTypedGroup<Option>):Dynamic{
+    remove(text);
+		remove(labelAlphabet);
+		labelAlphabet = new Alphabet(0, (70 * curSelected) + 30, label, true, false);
+		labelAlphabet.movementType = "list";
+		labelAlphabet.isMenuItem = true;
+		labelAlphabet.offsetX = 60;
+
+    text = new Alphabet(0, (70 * curSelected) + 30, name, true, false);
+    text.movementType = "list";
+    text.isMenuItem = true;
+		text.offsetX = labelAlphabet.width + 120;
+
+		labelAlphabet.targetY = text.targetY;
+		labelAlphabet.gotoTargetPosition();
+		text.gotoTargetPosition();
+		add(labelAlphabet);
+    add(text);
+    return text;
+  }
+
+	public override function left():Bool{
+		var value:Int = curValue-1;
+
+		if(value<0)
+			value=judgementNames.length-1;
+
+		if(value>judgementNames.length-1)
+			value=0;
+
+		Reflect.setField(OptionUtils.options,property,judgementNames[value]);
+
+		curValue=value;
+		name = judgementNames[value];
+		return true;
+	};
+	public override function right():Bool{
+		var value:Int = curValue+1;
+
+		if(value<0)
+			value=judgementNames.length-1;
+
+		if(value>judgementNames.length-1)
+			value=0;
+
+		Reflect.setField(OptionUtils.options,property,judgementNames[value]);
+
+		curValue=value;
+		name = judgementNames[value];
 		return true;
 	};
 }
@@ -665,7 +756,7 @@ class ControlOption extends Option
     remove(text);
     text = new Alphabet(0, (70 * curSelected) + 30, name, false, false);
     text.movementType = "list";
-		text.offsetX = 70;
+		text.offsetX = 50;
     text.isMenuItem = true;
 		text.gotoTargetPosition();
     add(text);

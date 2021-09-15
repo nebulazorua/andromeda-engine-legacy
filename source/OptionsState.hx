@@ -19,10 +19,10 @@ import flixel.graphics.FlxGraphic;
 #if desktop
 import Discord.DiscordClient;
 #end
-class OptionsMenu extends MusicBeatState
+class OptionsState extends MusicBeatState
 {
 
-	public static var instance:OptionsMenu;
+	public static var instance:OptionsState;
 	private var defCat:OptionCategory = new OptionCategory("Default",[
 		new OptionCategory("Gameplay",[
 			new OptionCategory("Controls",[
@@ -32,17 +32,13 @@ class OptionsMenu extends MusicBeatState
 				new ControlOption(controls,Control.RIGHT),
 				new ControlOption(controls,Control.RESET),
 			]),
-			new OptionCategory("Modifiers",[
-				new ToggleOption("failForMissing","Sudden Death"),
-				new ScrollOption("healthDrain",0,OptionUtils.healthDrainNames.length-1,OptionUtils.healthDrainNames),
-				new ToggleOption("fightsBack","Opponent Fights Back"),
-				new ToggleOption("hpMode","HP disabled"),
-			]),
+			new ToggleOption("useMalewife","Use Wife3","Should accuracy use Wife3"),
+			new JudgementsOption("judgementWindow","Judgements","Which judgement window to use"),
+			new ToggleOption("failForMissing","Sudden Death"),
 			new ToggleOption("pollingInput","Old input","Should inputs get checked every frame"),
 			#if windows
 			new ToggleOption("loadModcharts","Load Lua modcharts","Should modcharts which run on lua load"),
 			#end
-			new ScrollOption("ratingWindow",0,OptionUtils.ratingWindowNames.length-1,OptionUtils.ratingWindowNames),
 			new ToggleOption("ghosttapping","Ghost-tapping","Missing when you hit nothing"),
 			new ToggleOption("botPlay","BotPlay","Let a bot play for you"),
 			new StateOption("Calibrate Offset",new SoundOffsetState()),
@@ -50,7 +46,7 @@ class OptionsMenu extends MusicBeatState
 		new OptionCategory("Appearance",[
 			//new ToggleOption("camFollowsAnims","Directional Camera","Does the camera follow animations"),
 			new ToggleOption("downScroll","Downscroll","Do arrows come from the top coming down"),
-			new ToggleOption("middleScroll","Middlescroll","Are arrows placed in the middle of the screen"),
+			new ToggleOption("middleScroll","Centered Highway","Are arrows placed in the middle of the screen"),
 			new ToggleOption("allowNoteModifiers","Week 6 pixel notes","Should week 6 use pixel notes"),
 			new OptionCategory("Effects",[
 				new ToggleOption("picoShaders","Week 3 shaders","Does the windows fading out in week 3 use shaders"),
@@ -81,7 +77,6 @@ class OptionsMenu extends MusicBeatState
 			new ToggleOption("cacheUsedImages","Cache loaded images","Should images be cached when they get loaded ",function(state:Bool){
 				FlxGraphic.defaultPersist = state;
 			}),
-			new ClearCacheOption()
 		]),
 		/*new OptionCategory("Experimental",[
 			new ToggleOption("holdsOneNote","Holds are long notes","Should holds be treated like a single, long note")

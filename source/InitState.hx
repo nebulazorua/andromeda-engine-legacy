@@ -68,6 +68,11 @@ class InitState extends FlxUIState {
 				StoryMenuState.weekUnlocked[0] = true;
 		}
 
+    if(currentOptions.fps<30 || currentOptions.fps>360){
+      currentOptions.fps = 120;
+    }
+
+    Main.setFPSCap(currentOptions.fps);
     super.create();
 
     #if desktop

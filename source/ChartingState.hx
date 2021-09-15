@@ -162,7 +162,7 @@ class ChartingState extends MusicBeatState
 		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(FlxG.width / 2), 4);
 		add(strumLine);
 
-		dummyArrow = new NoteGraphic();
+		dummyArrow = new NoteGraphic('base','default',Note.noteBehaviour);
 		dummyArrow.setDir(0,false,false);
 		dummyArrow.setGraphicSize(GRID_SIZE,GRID_SIZE);
 		dummyArrow.updateHitbox();

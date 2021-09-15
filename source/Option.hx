@@ -55,7 +55,7 @@ class Option extends FlxTypedGroup<FlxSprite>
     text = new Alphabet(0, (70 * curSelected) + 30, name, true, false);
     text.movementType = "list";
     text.isMenuItem = true;
-    text.offsetX = 70;
+    text.offsetX = 50;
     text.gotoTargetPosition();
     add(text);
     return text;
