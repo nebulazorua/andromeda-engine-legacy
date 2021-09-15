@@ -58,7 +58,7 @@ class JudgementManager
 			"comboBreakJudgements":[],
 			"judgementHealth": {"sick":1.2,"good":1.2, "bad":1.2, "shit":1.2,"miss":-0.75 },
 			"judgements": ["sick","good","bad","shit"],
-			"judgementAccuracy": {"sick": 98.25, "good":50, "bad": -25, "shit": -50, "miss": -100},
+			"judgementAccuracy": {"sick": 100, "good":50, "bad": -25, "shit": -50, "miss": -100},
 			"judgementScores": {"sick":350,"good":100,"bad":0,"shit":-10,"miss":-50},
 			"judgementWindows": {"sick":32, "good":123, "bad":148, "shit":166}
 	}'));// vanilla

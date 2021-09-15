@@ -2695,7 +2695,6 @@ class PlayState extends MusicBeatState
 			daRating='sick';
 		}
 
-		totalNotes++;
 		// boyfriend.playAnim('hey');
 		vocals.volume = 1;
 
@@ -2722,6 +2721,7 @@ class PlayState extends MusicBeatState
 			}else{
 				totalNotes++;
 				hitNotes+=judgeMan.getJudgementAccuracy(daRating);
+				trace(totalNotes,hitNotes);
 			}
 
 		songScore += score;
