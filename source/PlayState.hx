@@ -7,6 +7,8 @@ package;
 #if desktop
 import Discord.DiscordClient;
 #end
+import objects.ui.*;
+
 import Options;
 import Section.SwagSection;
 import Song.SwagSong;
@@ -138,15 +140,11 @@ class PlayState extends MusicBeatState
 	private var previousHealth:Float = 1;
 	private var combo:Int = 0;
 	private var highestCombo:Int = 0;
-
-	private var healthBarBG:FlxSprite;
-	private var healthBar:FlxBar;
+	private var healthBar:Healthbar;
 
 	private var generatedMusic:Bool = false;
 	private var startingSong:Bool = false;
 
-	private var iconP1:HealthIcon;
-	private var iconP2:HealthIcon;
 	public var camHUD:FlxCamera;
 	public var camNotes:FlxCamera;
 	public var camSus:FlxCamera;
@@ -355,8 +353,8 @@ class PlayState extends MusicBeatState
 			gfLua = new LuaCharacter(gf,"gf",true);
 			dadLua = new LuaCharacter(dad,"dad",true);
 
-			var bfIcon = new LuaSprite(iconP1,"iconP1",true);
-			var dadIcon = new LuaSprite(iconP2,"iconP2",true);
+			var bfIcon = new LuaSprite(healthBar.iconP1,"iconP1",true);
+			var dadIcon = new LuaSprite(healthBar.iconP2,"iconP2",true);
 
 			var window = new LuaWindow();
 
@@ -1092,32 +1090,19 @@ class PlayState extends MusicBeatState
 
 		FlxG.fixedTimestep = false;
 
-		healthBarBG = new FlxSprite(0, FlxG.height * 0.9).loadGraphic(Paths.image('healthBar'));
-		healthBarBG.screenCenter(X);
-		healthBarBG.scrollFactor.set();
-		add(healthBarBG);
-		if(currentOptions.downScroll){
-			healthBarBG.y = FlxG.height*.1;
-		}
-		healthBar = new FlxBar(healthBarBG.x + 4, healthBarBG.y + 4, RIGHT_TO_LEFT, Std.int(healthBarBG.width - 8), Std.int(healthBarBG.height - 8), this,
-			'health', 0, 2);
-
+		healthBar = new Healthbar(0,FlxG.height*.9,boyfriend.curCharacter,dad.curCharacter,this,'health',0,2);
 		healthBar.scrollFactor.set();
+		healthBar.screenCenter(X);
 		if(currentOptions.healthBarColors)
-		{
-			healthBar.createFilledBar(dad.iconColor, boyfriend.iconColor);
-		}
-		else
-		{
-			healthBar.createFilledBar(0xFFFF0000, 0xFF66FF33);
-		}
-		//thanks ash, love ya
-		add(healthBar);
+			healthBar.setColors(dad.iconColor,boyfriend.iconColor);
 
-		scoreTxt = new FlxText(healthBarBG.x + healthBarBG.width / 2 - 150, healthBarBG.y + 25, 0, "", 20);
+		if(currentOptions.downScroll)
+			healthBar.y = FlxG.height*.1;
+
+
+		scoreTxt = new FlxText(healthBar.x + healthBar.width / 2 - 150, healthBar.y + 25, 0, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
-		add(scoreTxt);
 
 		presetTxt = new FlxText(0, FlxG.height/2-80, 0, "", 20);
 		presetTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
@@ -1169,20 +1154,13 @@ class PlayState extends MusicBeatState
 		add(missesTxt);
 		add(presetTxt);
 
-		iconP1 = new HealthIcon(SONG.player1, true);
-		iconP1.y = healthBar.y - (iconP1.height / 2);
-		add(iconP1);
+		add(scoreTxt);
 
-		iconP2 = new HealthIcon(SONG.player2, false);
-		iconP2.y = healthBar.y - (iconP2.height / 2);
-		add(iconP2);
+		add(healthBar);
 
 		strumLineNotes.cameras = [camHUD];
 		renderedNotes.cameras = [camNotes];
 		healthBar.cameras = [camHUD];
-		healthBarBG.cameras = [camHUD];
-		iconP1.cameras = [camHUD];
-		iconP2.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
 		doof.cameras = [camHUD];
 		missesTxt.cameras = [camHUD];
@@ -1710,7 +1688,7 @@ class PlayState extends MusicBeatState
 			var dirs = ["left","down","up","right"];
 			var clrs = ["purple","blue","green","red"];
 
-			var babyArrow:Receptor = new Receptor(0, strumLine.y, i, 'default', noteModifier);
+			var babyArrow:Receptor = new Receptor(0, strumLine.y, i, 'default', noteModifier, Note.noteBehaviour);
 			if(currentOptions.middleScroll && player==0)
 				babyArrow.visible=false;
 
@@ -1747,7 +1725,9 @@ class PlayState extends MusicBeatState
 				babyArrow.x += ((FlxG.width / 2) * player);
 			}else{
 				babyArrow.screenCenter(X);
-				babyArrow.x += Note.swagWidth*i - Note.swagWidth*2;
+				babyArrow.x -= Note.swagWidth;
+				babyArrow.x -= 54;
+				babyArrow.x += Note.swagWidth*i;
 			}
 
 			newStrumLine.x = babyArrow.x;
@@ -1989,14 +1969,6 @@ class PlayState extends MusicBeatState
 		}
 		modchart.update(elapsed);
 
-		if (FlxG.keys.justPressed.NINE)
-		{
-			if (iconP1.animation.curAnim.name == 'bf-old')
-				iconP1.animation.play(SONG.player1);
-			else
-				iconP1.animation.play('bf-old');
-		}
-
 		switch (curStage)
 		{
 			case 'philly':
@@ -2020,10 +1992,7 @@ class PlayState extends MusicBeatState
 			lua.call("update",[elapsed]);
 		}
 
-		iconP1.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
-		iconP2.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
 		healthBar.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
-		healthBarBG.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
 		sicksTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
 		badsTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
 		shitsTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
@@ -2042,7 +2011,7 @@ class PlayState extends MusicBeatState
 			health=0;
 		}
 		previousHealth=health;
-		if (FlxG.keys.justPressed.ENTER && startedCountdown && canPause)
+		if (controls.PAUSE && startedCountdown && canPause)
 		{
 			persistentUpdate = false;
 			persistentDraw = true;
@@ -2074,17 +2043,6 @@ class PlayState extends MusicBeatState
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
 
-		iconP1.setGraphicSize(Std.int(FlxMath.lerp(iconP1.width, 150, 0.09/(openfl.Lib.current.stage.frameRate/60))));
-		iconP2.setGraphicSize(Std.int(FlxMath.lerp(iconP2.width, 150, 0.09/(openfl.Lib.current.stage.frameRate/60))));
-
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
-
-		var iconOffset:Int = 26;
-
-		iconP1.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01) - iconOffset);
-		iconP2.x = healthBar.x + (healthBar.width * (FlxMath.remapToRange(healthBar.percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
-
 		if (health > 2){
 			health = 2;
 			previousHealth = health;
@@ -2092,26 +2050,15 @@ class PlayState extends MusicBeatState
 				lua.setGlobalVar("health",health);
 		}
 
-
-		if (healthBar.percent < 20)
-			iconP1.animation.curAnim.curFrame = 1;
-		else
-			iconP1.animation.curAnim.curFrame = 0;
-
-		if (healthBar.percent > 80)
-			iconP2.animation.curAnim.curFrame = 1;
-		else
-			iconP2.animation.curAnim.curFrame = 0;
-
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 
 		if (FlxG.keys.justPressed.EIGHT){
-				FlxG.switchState(new AnimationDebug(SONG.player2));
-			}
-			if (FlxG.keys.justPressed.NINE){
-				FlxG.switchState(new AnimationDebug(SONG.player1));
-			}
+			FlxG.switchState(new AnimationDebug(SONG.player2));
+		}
+		if (FlxG.keys.justPressed.NINE){
+			FlxG.switchState(new AnimationDebug(SONG.player1));
+		}
 
 		super.update(elapsed);
 		if (startingSong)
@@ -3415,11 +3362,7 @@ class PlayState extends MusicBeatState
 			camHUD.zoom += 0.03;
 		}
 
-		iconP1.setGraphicSize(Std.int(iconP1.width + 30));
-		iconP2.setGraphicSize(Std.int(iconP2.width + 30));
-
-		iconP1.updateHitbox();
-		iconP2.updateHitbox();
+		healthBar.beatHit(curBeat);
 
 		if (curBeat % gfSpeed == 0)
 		{

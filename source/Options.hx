@@ -18,7 +18,6 @@ class OptionUtils
 
 	public static var shit:Array<FlxKey> = [
 		ALT,
-		BACKSPACE,
 		SHIFT,
 		TAB,
 		CAPSLOCK,
@@ -27,7 +26,7 @@ class OptionUtils
 	];
 	public static var options:Options = new Options();
 
-	public static function bindSave(?saveName:String="nebbyEngineBeta"){
+	public static function bindSave(?saveName:String="andromedaEngineOptions"){
 		saveFile.bind(saveName);
 	};
 	public static function saveOptions(options:Options){
@@ -61,6 +60,8 @@ class OptionUtils
 				idx = 3;
 			case Control.RESET:
 				idx = 4;
+			case Control.PAUSE:
+				idx = 5;
 			default:
 		}
 		return idx;
@@ -76,7 +77,7 @@ class Options
 	public var dummyInt:Int = 0;
 
 	// gameplay
-	public var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L,FlxKey.R];
+	public var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L,FlxKey.R,FlxKey.ESCAPE];
 	public var ghosttapping:Bool = false;
 	public var failForMissing:Bool = false;
 	public var useMalewife:Bool=false;
@@ -738,7 +739,7 @@ class ControlOption extends Option
 				break;
 			};
 		};
-		if(pressed!=ESCAPE){
+		if(pressed!=BACKSPACE){
 			OptionUtils.options.controls[OptionUtils.getKIdx(controlType)]=pressed;
 			key=pressed;
 		}

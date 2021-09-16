@@ -17,6 +17,21 @@
       "upLongEndPrefix": "green hold end",
       "leftLongEndPrefix": "pruple end hold",
       "rightLongEndPrefix": "red hold end",
-      "downLongEndPrefix": "blue hold end"
+      "downLongEndPrefix": "blue hold end",
+
+      "downReceptorPrefix": "arrowDOWN",
+      "upReceptorPrefix": "arrowUP",
+      "leftReceptorPrefix": "arrowLEFT",
+      "rightReceptorPrefix": "arrowRIGHT",
+
+      "downReceptorPressPrefix": "down press",
+      "upReceptorPressPrefix": "up press",
+      "leftReceptorPressPrefix": "left press",
+      "rightReceptorPressPrefix": "right press",
+
+      "downReceptorConfirmPrefix": "down confirm",
+      "upReceptorConfirmPrefix": "up confirm",
+      "leftReceptorConfirmPrefix": "left confirm",
+      "rightReceptorConfirmPrefix": "right confirm"
   }
 }

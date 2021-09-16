@@ -3,6 +3,8 @@ package;
 #if desktop
 import Discord.DiscordClient;
 #end
+import objects.ui.*;
+
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;

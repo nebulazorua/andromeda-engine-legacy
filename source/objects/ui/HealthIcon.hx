@@ -1,4 +1,4 @@
-package;
+package objects.ui;
 
 import flixel.FlxSprite;
 

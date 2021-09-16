@@ -10,6 +10,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.group.FlxSpriteGroup;
 import haxe.unit.*;
 import hscript.*;
+import Note.NoteBehaviour;
 
 // TODO: have the receptor manage its own notes n shit
 
@@ -24,7 +25,7 @@ class Receptor extends FlxSprite {
   public var incomingNoteAlpha:Float = 1;
 
 
-  public function new(x:Float,y:Float,noteData:Int,skin:String='default',type:String='base',daScale:Float=.7){
+  public function new(x:Float,y:Float,noteData:Int,skin:String='default',modifier:String='base',behaviour:NoteBehaviour,daScale:Float=.7){
     super(x,y);
 
     noteScale=daScale;
@@ -33,31 +34,31 @@ class Receptor extends FlxSprite {
     var clrs = ["purple","blue","green","red"];
     var dir = dirs[noteData];
 
-    switch(type){
-      case 'base':
-        frames = Paths.noteSkinAtlas("NOTE_assets", 'skins', skin, 'base');
+    switch(behaviour.actsLike){
+      case 'default':
+        frames = Paths.noteSkinAtlas(behaviour.arguments.spritesheet, 'skins', skin, modifier);
 
-        antialiasing = true;
-        setGraphicSize(Std.int(width * daScale));
+        antialiasing = behaviour.antialiasing;
+        setGraphicSize(Std.int((width * behaviour.scale) * daScale/.7));
 
         var dir = dirs[noteData];
-        animation.addByPrefix('static', 'arrow${dir.toUpperCase()}');
-        animation.addByPrefix('pressed', '${dir} press', 24, false);
-        animation.addByPrefix('confirm', '${dir} confirm', 24, false);
+        animation.addByPrefix('static', Reflect.field(behaviour.arguments,'${dir}ReceptorPrefix')+"0");
+        animation.addByPrefix('pressed',  Reflect.field(behaviour.arguments,'${dir}ReceptorPressPrefix')+"0", 24, false);
+        animation.addByPrefix('confirm',  Reflect.field(behaviour.arguments,'${dir}ReceptorConfirmPrefix')+"0", 24, false);
       case 'pixel':
-        loadGraphic(Paths.noteSkinImage("arrows", 'skins', skin, 'pixel'), true, 17, 17);
+        loadGraphic(Paths.noteSkinImage(behaviour.arguments.receptor.sheet, 'skins', skin, modifier), true, behaviour.arguments.receptor.gridSizeX, behaviour.arguments.receptor.gridSizeX);
         animation.add('green', [6]);
         animation.add('red', [7]);
         animation.add('blue', [5]);
         animation.add('purplel', [4]);
 
-        setGraphicSize(Std.int((width * PlayState.daPixelZoom) * daScale/.7));
+        setGraphicSize(Std.int((width * behaviour.scale) * daScale/.7));
         updateHitbox();
-        antialiasing = false;
+        antialiasing = behaviour.antialiasing;
 
-        animation.add('static', [noteData]);
-        animation.add('pressed', [noteData+4,noteData+8], 12, false);
-        animation.add('confirm', [noteData+12,noteData+16], 24, false);
+        animation.add('static', Reflect.field(behaviour.arguments.receptor,'${dir}Idle') );
+        animation.add('pressed', Reflect.field(behaviour.arguments.receptor,'${dir}Pressed'), 12, false);
+        animation.add('confirm', Reflect.field(behaviour.arguments.receptor,'${dir}Confirm'), 24, false);
     }
     updateHitbox();
   }
