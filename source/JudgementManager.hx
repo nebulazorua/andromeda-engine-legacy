@@ -56,22 +56,30 @@ class JudgementManager
 	public static var rawJudgements:AnonType;
 	public static var defaultJudgement = new JudgementData(Json.parse('{
 			"comboBreakJudgements":[],
-			"judgementHealth": {"sick":1.2,"good":1.2, "bad":1.2, "shit":1.2,"miss":-0.75 },
+			"judgementHealth": {"sick":1.2,"good":1.2, "bad":1.2, "shit":1.2,"miss":-2.375 },
 			"judgements": ["sick","good","bad","shit"],
 			"judgementAccuracy": {"sick": 100, "good":50, "bad": -25, "shit": -50, "miss": -100},
-			"judgementScores": {"sick":350,"good":100,"bad":0,"shit":-10,"miss":-50},
+			"judgementScores": {"sick":350,"good":200,"bad":100,"shit":50,"miss":-10},
 			"judgementWindows": {"sick":32, "good":123, "bad":148, "shit":166}
 	}'));// vanilla
+	public var judgementCounter:Map<String,Int> = [];
 	public static function getDataByName(name:String){
 		rawJudgements = Json.parse(Assets.getText(Paths.json("judgements")));
-		if(Reflect.hasField(rawJudgements,name)){
-			return new JudgementData(Reflect.field(rawJudgements,name));
+		if(rawJudgements!=null){
+			if(Reflect.hasField(rawJudgements,name)){
+				return new JudgementData(Reflect.field(rawJudgements,name));
+			}
 		}
 		return defaultJudgement;
 	}
 
   public function new(data:JudgementData){
     judgeData=data;
+		judgeData.judgements.insert(judgeData.judgements.length,"miss");
+		for(judge in getJudgements()){
+			judgementCounter.set(judge,0);
+		}
+		judgementCounter.set("miss",0);
   }
 
 	public function getJudgementWindow(judge:String):Float{
@@ -82,7 +90,7 @@ class JudgementManager
 		return judgeData.judgementWindows.get('shit');
 	}
 
-  public function getJudgements(judge:String):Array<String>{
+  public function getJudgements():Array<String>{
     return judgeData.judgements;
   }
 

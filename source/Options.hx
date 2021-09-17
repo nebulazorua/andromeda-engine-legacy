@@ -77,7 +77,7 @@ class Options
 	public var dummyInt:Int = 0;
 
 	// gameplay
-	public var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L,FlxKey.R,FlxKey.ESCAPE];
+	public var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L,FlxKey.R,FlxKey.ENTER];
 	public var ghosttapping:Bool = false;
 	public var failForMissing:Bool = false;
 	public var useMalewife:Bool=false;

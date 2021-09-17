@@ -20,6 +20,7 @@ import flixel.FlxGame;
 import flixel.FlxObject;
 import flixel.FlxSprite;
 import flixel.FlxState;
+import flixel.group.FlxSpriteGroup;
 import flixel.FlxSubState;
 import flixel.addons.display.FlxGridOverlay;
 import flixel.addons.effects.FlxTrail;
@@ -185,24 +186,18 @@ class PlayState extends MusicBeatState
 	var talking:Bool = true;
 	var songScore:Int = 0;
 	var scoreTxt:FlxText;
-	var shitsTxt:FlxText;
-	var badsTxt:FlxText;
-	var goodsTxt:FlxText;
-	var sicksTxt:FlxText;
 	var highComboTxt:FlxText;
+	var ratingCountersUI:FlxSpriteGroup;
+
 	var presetTxt:FlxText;
-	var missesTxt:FlxText;
 
 	var accuracy:Float = 1;
 	var hitNotes:Float = 0;
 	var totalNotes:Float = 0;
 
+	var counters:Map<String,FlxText> = [];
+
 	var grade:String = ScoreUtils.gradeArray[0];
-	var misses:Float = 0;
-	var sicks:Float = 0;
-	var goods:Float = 0;
-	var bads:Float = 0;
-	var shits:Float = 0;
 	var luaModchartExists = false;
 
 	var noteLanes:Array<Array<Note>> = [];
@@ -397,11 +392,6 @@ class PlayState extends MusicBeatState
 		grade = ScoreUtils.gradeArray[0] + " (FC)";
 		hitNotes=0;
 		totalNotes=0;
-		misses=0;
-		bads=0;
-		goods=0;
-		sicks=0;
-		shits=0;
 		accuracy=1;
 
 		// var gameCam:FlxCamera = FlxG.camera;
@@ -421,10 +411,9 @@ class PlayState extends MusicBeatState
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camRating);
-		FlxG.cameras.add(camHUD);
-
 		FlxG.cameras.add(camSus);
 		FlxG.cameras.add(camNotes);
+		FlxG.cameras.add(camHUD);
 		FlxG.cameras.add(pauseHUD);
 
 		FlxCamera.defaultCameras = [camGame];
@@ -1100,76 +1089,45 @@ class PlayState extends MusicBeatState
 			healthBar.y = FlxG.height*.1;
 
 
-		scoreTxt = new FlxText(healthBar.x + healthBar.width / 2 - 150, healthBar.y + 25, 0, "", 20);
+		scoreTxt = new FlxText(healthBar.bg.x + healthBar.bg.width / 2 - 150, healthBar.bg.y + 25, 0, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
 
-		presetTxt = new FlxText(0, FlxG.height/2-80, 0, "", 20);
+		ratingCountersUI = new FlxSpriteGroup();
+		/*presetTxt = new FlxText(0, FlxG.height/2-80, 0, "", 20);
 		presetTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		presetTxt.scrollFactor.set();
-		presetTxt.visible=false;
+		presetTxt.visible=false;*/
 
 		highComboTxt = new FlxText(0, FlxG.height/2-60, 0, "", 20);
 		highComboTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
 		highComboTxt.scrollFactor.set();
+		var counterIdx:Int = 0;
+		ratingCountersUI.add(highComboTxt);
+		for(judge in judgeMan.getJudgements()){
+			var offset = -40+(counterIdx*20);
 
-		sicksTxt = new FlxText(0, FlxG.height/2-40, 0, "", 20);
-		sicksTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-		sicksTxt.scrollFactor.set();
+			var txt = new FlxText(0, (FlxG.height/2)+offset, 0, "", 20);
+			txt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+			txt.scrollFactor.set();
+			ratingCountersUI.add(txt);
+			counters.set(judge,txt);
+			counterIdx++;
+		}
 
-		goodsTxt = new FlxText(0, FlxG.height/2-20, 0, "", 20);
-		goodsTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-		goodsTxt.scrollFactor.set();
-
-		badsTxt = new FlxText(0, FlxG.height/2, 0, "", 20);
-		badsTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-		badsTxt.scrollFactor.set();
-
-		shitsTxt = new FlxText(0, FlxG.height/2+20, 0, "", 20);
-		shitsTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-		shitsTxt.scrollFactor.set();
-
-		missesTxt = new FlxText(0, FlxG.height/2+40, 0, "", 20);
-		missesTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
-		missesTxt.scrollFactor.set();
-
-		missesTxt.text = "Miss: " + misses;
-		sicksTxt.text = "Sick: " + sicks;
-		goodsTxt.text = "Good: " + goods;
-		badsTxt.text = "Bad: " + bads;
-		shitsTxt.text = "Shit: " + shits;
 		highComboTxt.text = "Highest Combo: " + highestCombo;
-		/*if(currentOptions.ratingWindow!=0){
-			presetTxt.text = OptionUtils.ratingWindowNames[currentOptions.ratingWindow] + " Judgement";
-			presetTxt.x = 0;
-			presetTxt.y = FlxG.height/2-80;
-			presetTxt.visible=true;
-		}*/
-
-		add(highComboTxt);
-		add(sicksTxt);
-		add(goodsTxt);
-		add(badsTxt);
-		add(shitsTxt);
-		add(missesTxt);
-		add(presetTxt);
-
-		add(scoreTxt);
 
 		add(healthBar);
+		add(scoreTxt);
+		add(ratingCountersUI);
+		updateJudgementCounters();
 
-		strumLineNotes.cameras = [camHUD];
+		strumLineNotes.cameras = [camNotes];
 		renderedNotes.cameras = [camNotes];
 		healthBar.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
+		ratingCountersUI.cameras = [camHUD];
 		doof.cameras = [camHUD];
-		missesTxt.cameras = [camHUD];
-		sicksTxt.cameras = [camHUD];
-		goodsTxt.cameras = [camHUD];
-		badsTxt.cameras = [camHUD];
-		shitsTxt.cameras = [camHUD];
-		highComboTxt.cameras = [camHUD];
-		presetTxt.cameras = [camHUD];
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
 		// UI_camera.zoom = 1;
@@ -1758,12 +1716,7 @@ class PlayState extends MusicBeatState
 		else
 			accuracy = hitNotes / totalNotes;
 
-		grade = ScoreUtils.AccuracyToGrade(accuracy) + (misses==0 ? " (FC)" : ""); // TODO: Diff types of FC?? (MFC, SFC, GFC, BFC, WTFC)
-		missesTxt.text = "Miss: " + misses;
-		sicksTxt.text = "Sick: " + sicks;
-		goodsTxt.text = "Good: " + goods;
-		badsTxt.text = "Bad: " + bads;
-		shitsTxt.text = "Shit: " + shits;
+		grade = ScoreUtils.AccuracyToGrade(accuracy) + (judgeMan.judgementCounter.get("miss")==0 ? " (FC)" : ""); // TODO: Diff types of FC?? (MFC, SFC, GFC, BFC, WTFC)
 	}
 	override function openSubState(SubState:FlxSubState)
 	{
@@ -1993,12 +1946,6 @@ class PlayState extends MusicBeatState
 		}
 
 		healthBar.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
-		sicksTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
-		badsTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
-		shitsTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
-		goodsTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
-		missesTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
-		highComboTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
 		scoreTxt.visible = modchart.hudVisible;
 		if(presetTxt!=null)
 			presetTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
@@ -2007,7 +1954,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.text = "Score:" + songScore + " | Accuracy:" + truncateFloat(accuracy*100, 2) + "% | " + grade;
 
 
-		if(misses>0 && currentOptions.failForMissing){
+		if(judgeMan.judgementCounter.get('miss')>0 && currentOptions.failForMissing){
 			health=0;
 		}
 		previousHealth=health;
@@ -2653,23 +2600,15 @@ class PlayState extends MusicBeatState
 
 		var score:Int = judgeMan.getJudgementScore(daRating);
 
-		if(daRating=='shit')
-			shits++;
-		else if(daRating=='bad')
-			bads++;
-		else if(daRating=='good')
-			goods++;
-		else
-			sicks++;
 
-			if(currentOptions.useMalewife){
-				totalNotes+=2;
-				hitNotes+=ScoreUtils.malewife(noteDiff);
-			}else{
-				totalNotes++;
-				hitNotes+=judgeMan.getJudgementAccuracy(daRating);
-				trace(totalNotes,hitNotes);
-			}
+		if(currentOptions.useMalewife){
+			totalNotes+=2;
+			hitNotes+=ScoreUtils.malewife(noteDiff);
+		}else{
+			totalNotes++;
+			hitNotes+=judgeMan.getJudgementAccuracy(daRating);
+			trace(totalNotes,hitNotes);
+		}
 
 		songScore += score;
 
@@ -3008,8 +2947,9 @@ class PlayState extends MusicBeatState
 	function noteMiss(direction:Int = 1):Void
 	{
 		boyfriend.holding=false;
-		misses++;
 		health += judgeMan.getJudgementHealth('miss');
+		judgeMan.judgementCounter.set("miss",judgeMan.judgementCounter.get("miss")+1);
+		updateJudgementCounters();
 		previousHealth=health;
 		if(luaModchartExists && lua!=null)
 		if (combo > 5 && gf.animOffsets.exists('sad'))
@@ -3111,12 +3051,20 @@ class PlayState extends MusicBeatState
 
 	}
 
+	function updateJudgementCounters(){
+		for(judge in counters.keys()){
+			var txt = counters.get(judge);
+			txt.text = '${judge.substring(0,1).toUpperCase()}${judge.substring(1,judge.length)}: ${judgeMan.judgementCounter.get(judge)}';
+			txt.x=0;
+		}
+	}
+
 	function goodNoteHit(note:Note):Void
 	{
-		var noteDiff:Float = Math.abs(Conductor.songPosition - note.strumTime);
-		//var judgement = ScoreUtils.DetermineRating(noteDiff);
-		var judgement = judgeMan.determine(noteDiff);
+		var noteDiff:Float = Conductor.songPosition - note.strumTime;
+		var judgement = note.isSustainNote?judgeMan.determine(0):judgeMan.determine(noteDiff);
 		var breaksCombo = judgeMan.shouldComboBreak(judgement);
+
 		if(judgement=='miss'){
 			note.active = false;
 			note.visible = false;
@@ -3136,14 +3084,18 @@ class PlayState extends MusicBeatState
 			trace(noteDiff);
 			return noteMiss(note.noteData);
 		}
+
+
 		if (!note.isSustainNote)
 		{
 			if(breaksCombo){
 				combo=0;
-				misses++;
+				judgeMan.judgementCounter.set('miss',judgeMan.judgementCounter.get('miss')+1);
 			}else{
 				combo++;
 			}
+			judgeMan.judgementCounter.set(judgement,judgeMan.judgementCounter.get(judgement)+1);
+			updateJudgementCounters();
 			popUpScore(noteDiff,judgement);
 			if(combo>highestCombo)
 				highestCombo=combo;
