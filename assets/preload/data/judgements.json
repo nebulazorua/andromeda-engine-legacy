@@ -39,13 +39,13 @@
     "judgementScores": {"sick":350,"epic":500,"good":100,"bad":0,"shit":-50,"miss":-100},
     "judgementWindows": {"epic":21, "sick":43, "good":102, "bad":135, "shit":180}
   },
-  "Kade Engine":{
-    "comboBreakJudgements":["shit"],
-    "judgementHealth": {"sick":2,"good":0, "bad":-3, "shit":-5,"miss":-7.5 },
+  "Standard":{
+    "comboBreakJudgements":["bad"],
+    "judgementHealth": {"sick":0.8,"good":0.4, "bad":0, "shit":-4,"miss":-8 },
     "judgements": ["sick","good","bad","shit"],
-    "judgementAccuracy": {"sick": 100, "good":75, "bad": 50, "shit": -100, "miss": 0},
-    "judgementScores": {"sick":350,"good":200,"bad":0,"shit":-300,"miss":-100},
-    "judgementWindows": {"sick":45, "good":90, "bad":135, "shit":180}
+    "judgementAccuracy": {"sick": 100, "good":50, "bad": -25, "shit": -50, "miss": -100},
+    "judgementScores": {"sick":350,"good":100,"bad":0,"shit":-50,"miss":-100},
+    "judgementWindows": {"sick":37, "good":90, "bad":135, "shit":180}
   },
   "Judge Four":{
     "comboBreakJudgements":["shit","bad"],

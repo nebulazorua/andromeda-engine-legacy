@@ -1,6 +1,6 @@
 Vanilla
 Vanilla-like
-Kade Engine
+Standard
 Quaver
 ITG
 Judge Four

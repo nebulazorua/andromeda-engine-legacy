@@ -63,6 +63,13 @@ class JudgementManager
 			"judgementWindows": {"sick":32, "good":123, "bad":148, "shit":166}
 	}'));// vanilla
 	public var judgementCounter:Map<String,Int> = [];
+	public static function dataExists(name:String){
+		rawJudgements = Json.parse(Assets.getText(Paths.json("judgements")));
+		if(rawJudgements!=null){
+			return Reflect.hasField(rawJudgements,name);
+		}
+		return false;
+	}
 	public static function getDataByName(name:String){
 		rawJudgements = Json.parse(Assets.getText(Paths.json("judgements")));
 		if(rawJudgements!=null){
@@ -77,7 +84,7 @@ class JudgementManager
 		var n:Null<Float>=null;
 		for(judgement in judgeData.judgementWindows.keys()){
 			var window = judgeData.judgementWindows.get(judgement);
-			if(lowest==null || window>n){
+			if(n==null || window>n){
 				n=window;
 			}
 		}

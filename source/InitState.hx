@@ -51,6 +51,11 @@ class InitState extends FlxUIState {
       FlxG.save.data.volume=volume;
     }
 
+    if(!JudgementManager.dataExists(currentOptions.judgementWindow)){
+      OptionUtils.options.judgementWindow = 'Vanilla';
+      OptionUtils.saveOptions(OptionUtils.options);
+    }
+
     FlxGraphic.defaultPersist = currentOptions.cacheUsedImages;
 
 		if (FlxG.save.data.weekUnlocked != null)
