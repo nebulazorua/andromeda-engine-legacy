@@ -73,6 +73,17 @@ class JudgementManager
 		return defaultJudgement;
 	}
 
+	public function getLowestWindow(){
+		var lowest:Null<Float>=null;
+		for(judgement in judgeData.judgementWindows.keys()){
+			var window = judgeData.judgementWindows.get(judgement);
+			if(lowest==null || window<lowest){
+				lowest=window;
+			}
+		}
+		return lowest==null?166:lowest;
+	}
+
   public function new(data:JudgementData){
     judgeData=data;
 		judgeData.judgements.insert(judgeData.judgements.length,"miss");

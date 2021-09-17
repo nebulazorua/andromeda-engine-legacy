@@ -7,53 +7,69 @@
 			"judgementScores": {"sick":350,"good":100,"bad":100,"shit":50,"miss":-10},
 			"judgementWindows": {"sick":32, "good":123, "bad":148, "shit":166}
 	},
+  "Baby":{
+    "comboBreakJudgements":["bad"],
+    "judgementHealth": {"good":0.02,"bad":-0.02},
+    "judgements": ["good","bad"],
+    "judgementAccuracy": {"good":100,"bad":-100},
+    "judgementScores": {"good":50,"bad":-50,"miss":-100},
+    "judgementWindows": {"good":83,"bad":166}
+  },
   "Vanilla-like":{
     "comboBreakJudgements":["shit"],
-    "judgementHealth": {"sick":1.2,"good":0.9, "bad":0.1, "shit":0, "miss":-1.6 },
-    "judgements": ["sick","good","bad","shit"],
-    "judgementAccuracy": {"sick": 100, "good":80, "bad":30, "shit": -15, "miss": -100},
-    "judgementScores": {"sick":350,"good":100,"bad":0,"shit":-10,"miss":-50},
-    "judgementWindows": {"sick":32, "good":123, "bad":148, "shit":166}
+    "judgementHealth": {"epic":1.2,"sick":1.2,"good":0.9, "bad":0.1, "shit":0, "miss":-1.6 },
+    "judgements": ["epic","sick","good","bad","shit"],
+    "judgementAccuracy": {"epic": 100, "sick": 98.25, "good":50, "bad": -25, "shit": -50, "miss": -100},
+    "judgementScores": {"sick":350,"epic":500,"good":100,"bad":0,"shit":-10,"miss":-50},
+    "judgementWindows": {"epic":21, "sick":32, "good":123, "bad":148, "shit":166}
   },
   "Quaver":{
     "comboBreakJudgements":["shit"],
-    "judgementHealth": {"sick":0.8,"good":0.4, "bad":0, "shit":0,"miss":-1 },
-    "judgements": ["sick","good","bad","shit"],
-    "judgementAccuracy": {"sick": 100, "good":80, "bad":30, "shit": -15, "miss": -100},
-    "judgementScores": {"sick":350,"good":100,"bad":0,"shit":-50,"miss":-100},
-    "judgementWindows": { "sick":43, "good":102, "bad":135, "shit":180}
+    "judgementHealth": {"epic":0.8,"sick":0.8,"good":0.4, "bad":0, "shit":0,"miss":-1 },
+    "judgements": ["epic","sick","good","bad","shit"],
+    "judgementAccuracy": {"epic": 100, "sick": 98.25, "good":50, "bad": -25, "shit": -50, "miss": -100},
+    "judgementScores": {"sick":350,"epic":500,"good":100,"bad":0,"shit":-50,"miss":-100},
+    "judgementWindows": {"epic":21, "sick":43, "good":102, "bad":135, "shit":180}
   },
   "ITG":{
     "comboBreakJudgements":["shit"],
-    "judgementHealth": {"sick":0.8,"good":0.4, "bad":0, "shit":-5,"miss":-10 },
+    "judgementHealth": {"epic":0.8,"sick":0.8,"good":0.4, "bad":0, "shit":-5,"miss":-10 },
+    "judgements": ["epic","sick","good","bad","shit"],
+    "judgementAccuracy": {"epic": 100, "sick": 98.25, "good":50, "bad": -25, "shit": -50, "miss": -100},
+    "judgementScores": {"sick":350,"epic":500,"good":100,"bad":0,"shit":-50,"miss":-100},
+    "judgementWindows": {"epic":21, "sick":43, "good":102, "bad":135, "shit":180}
+  },
+  "Kade Engine":{
+    "comboBreakJudgements":["shit"],
+    "judgementHealth": {"sick":2,"good":0, "bad":-3, "shit":-5,"miss":-7.5 },
     "judgements": ["sick","good","bad","shit"],
-    "judgementAccuracy": {"sick": 100, "good":80, "bad":30, "shit": -15, "miss": -100},
-    "judgementScores": {"sick":350,"good":100,"bad":0,"shit":-50,"miss":-100},
-    "judgementWindows": {"sick":43, "good":102, "bad":135, "shit":180}
+    "judgementAccuracy": {"sick": 100, "good":75, "bad": 50, "shit": -100, "miss": 0},
+    "judgementScores": {"sick":350,"good":200,"bad":0,"shit":-300,"miss":-100},
+    "judgementWindows": {"sick":45, "good":90, "bad":135, "shit":180}
   },
   "Judge Four":{
     "comboBreakJudgements":["shit","bad"],
-    "judgementHealth": {"sick":0.8,"good":0.4, "bad":0, "shit":-4,"miss":-8 },
-    "judgements": ["sick","good","bad","shit"],
-    "judgementAccuracy": {"sick": 100, "good":80, "bad":30, "shit": -15, "miss": -100},
-    "judgementScores": {"sick":350,"good":100,"bad":0,"shit":-50,"miss":-100},
-    "judgementWindows": {"sick":45, "good":90, "bad":135, "shit":180}
+    "judgementHealth": {"epic":0.8,"sick":0.8,"good":0.4, "bad":0, "shit":-4,"miss":-8 },
+    "judgements": ["epic","sick","good","bad","shit"],
+    "judgementAccuracy": {"epic": 100, "sick": 98.25, "good":50, "bad": -25, "shit": -50, "miss": -100},
+    "judgementScores": {"sick":350,"epic":500,"good":100,"bad":0,"shit":-50,"miss":-100},
+    "judgementWindows": {"epic":22, "sick":45, "good":90, "bad":135, "shit":180}
   },
   "Judge Six":{
     "comboBreakJudgements":["shit","bad"],
-    "judgementHealth": {"sick":0.8,"good":0.4, "bad":0, "shit":-4,"miss":-8 },
-    "judgements": ["sick","good","bad","shit"],
-    "judgementAccuracy": {"sick": 100, "good":80, "bad":30, "shit": -15, "miss": -100},
-    "judgementScores": {"sick":350,"good":100,"bad":0,"shit":-50,"miss":-100},
-    "judgementWindows": {"sick":30, "good":59, "bad":89, "shit":119}
+    "judgementHealth": {"epic":0.8,"sick":0.8,"good":0.4, "bad":0, "shit":-4,"miss":-8 },
+    "judgements": ["epic","sick","good","bad","shit"],
+    "judgementAccuracy": {"epic": 100, "sick": 98.25, "good":50, "bad": -25, "shit": -50, "miss": -100},
+    "judgementScores": {"sick":350,"epic":500,"good":100,"bad":0,"shit":-50,"miss":-100},
+    "judgementWindows": {"epic":15, "sick":30, "good":59, "bad":89, "shit":119}
   },
   "JUSTICE":{
     "comboBreakJudgements":["shit","bad"],
-    "judgementHealth": {"sick":0.8,"good":0.4, "bad":0, "shit":-4,"miss":-8 },
-    "judgements": ["sick","good","bad","shit"],
-    "judgementAccuracy": {"sick": 100, "good":80, "bad":30, "shit": -15, "miss": -100},
-    "judgementScores": {"sick":350,"good":100,"bad":0,"shit":-50,"miss":-100},
-    "judgementWindows": {"sick":9, "good":18, "bad":27, "shit":36}
+    "judgementHealth": {"epic":0.8,"sick":0.8,"good":0.4, "bad":0, "shit":-4,"miss":-8 },
+    "judgements": ["epic","sick","good","bad","shit"],
+    "judgementAccuracy": {"epic": 100, "sick": 98.25, "good":50, "bad": -25, "shit": -50, "miss": -100},
+    "judgementScores": {"sick":350,"epic":500,"good":100,"bad":0,"shit":-50,"miss":-100},
+    "judgementWindows": {"epic":4, "sick":9, "good":18, "bad":27, "shit":36}
   },
   "Forever":{
     "comboBreakJudgements":[],

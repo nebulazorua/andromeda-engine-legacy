@@ -377,7 +377,7 @@ class PlayState extends MusicBeatState
 		ScoreUtils.ghostTapping = currentOptions.ghosttapping;
 		ScoreUtils.botPlay = currentOptions.botPlay;
 		judgeMan = new JudgementManager(JudgementManager.getDataByName(currentOptions.judgementWindow));
-		Conductor.safeZoneOffset = judgeMan.getJudgementWindow("shit"); // same as shit ms
+		Conductor.safeZoneOffset = judgeMan.getLowestWindow();
 
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
