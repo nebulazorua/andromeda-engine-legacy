@@ -48,7 +48,6 @@ class InitState extends FlxUIState {
     FlxG.sound.volume = FlxG.save.data.volume;
 
     FlxG.sound.volumeHandler = function(volume:Float){
-      trace(volume);
       FlxG.save.data.volume=volume;
     }
 
