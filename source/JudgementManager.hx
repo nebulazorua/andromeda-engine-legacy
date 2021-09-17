@@ -73,15 +73,15 @@ class JudgementManager
 		return defaultJudgement;
 	}
 
-	public function getLowestWindow(){
-		var lowest:Null<Float>=null;
+	public function getHighestWindow(){
+		var n:Null<Float>=null;
 		for(judgement in judgeData.judgementWindows.keys()){
 			var window = judgeData.judgementWindows.get(judgement);
-			if(lowest==null || window<lowest){
-				lowest=window;
+			if(lowest==null || window>n){
+				n=window;
 			}
 		}
-		return lowest==null?166:lowest;
+		return n==null?166:n;
 	}
 
   public function new(data:JudgementData){
