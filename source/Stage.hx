@@ -87,14 +87,14 @@ class Stage extends FlxSpriteGroup {
 
   function lightningStrikeShit():Void
   {
-    FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
+    CoolUtil.lazyPlaySound(Paths.soundRandom('thunder_', 1, 2));
     halloweenBG.animation.play('lightning');
 
     lightningStrikeBeat = curBeat;
     lightningOffset = FlxG.random.int(8, 24);
 
-    boyfriend.playAnim('scared', true);
-    gf.playAnim('scared', true);
+    PlayState.currentPstate.boyfriend.playAnim('scared', true);
+    PlayState.currentPstate.gf.playAnim('scared', true);
   }
 
   function resetFastCar():Void
@@ -467,7 +467,7 @@ class Stage extends FlxSpriteGroup {
         if (FlxG.random.bool(10) && fastCarCanDrive)
           fastCarDrive();
       case 'spooky':
-        if (FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
+        if (FlxG.random.bool(10) && beat > lightningStrikeBeat + lightningOffset)
         {
           lightningStrikeShit();
         }
