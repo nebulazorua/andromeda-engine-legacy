@@ -93,8 +93,8 @@ class Stage extends FlxSpriteGroup {
     lightningStrikeBeat = beat;
     lightningOffset = FlxG.random.int(8, 24);
 
-    PlayState.currentPstate.boyfriend.playAnim('scared', true);
-    PlayState.currentPstate.gf.playAnim('scared', true);
+    PlayState.currentPState.boyfriend.playAnim('scared', true);
+    PlayState.currentPState.gf.playAnim('scared', true);
   }
 
   function resetFastCar():Void
