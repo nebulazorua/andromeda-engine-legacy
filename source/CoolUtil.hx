@@ -1,7 +1,7 @@
 package;
 
 import lime.utils.Assets;
-import sys.thread.Thread
+import sys.thread.Thread;
 
 using StringTools;
 
