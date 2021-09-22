@@ -12,7 +12,7 @@ class CoolUtil
 	public static function lazyPlaySound(sound,volume=1,looped=false,?group,autodestroy=true,?onComplete){
 		Thread.create(()->{
 			FlxG.sound.play(sound,volume,looped,group,autodestroy,onComplete);
-		})
+		});
 	}
 	public static function difficultyString():String
 	{
