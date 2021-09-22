@@ -40,6 +40,9 @@ class Stage extends FlxSpriteGroup {
 
   // spooky bg
   public var halloweenBG:FlxSprite;
+  var lightningStrikeBeat:Int = 0;
+	var lightningOffset:Int = 8;
+
 
   // philly bg
   public var lightFadeShader:BuildingEffect;
@@ -80,6 +83,18 @@ class Stage extends FlxSpriteGroup {
     gfPosition = FlxDestroyUtil.put(gfPosition);
 
     super.destroy();
+  }
+
+  function lightningStrikeShit():Void
+  {
+    FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
+    halloweenBG.animation.play('lightning');
+
+    lightningStrikeBeat = curBeat;
+    lightningOffset = FlxG.random.int(8, 24);
+
+    boyfriend.playAnim('scared', true);
+    gf.playAnim('scared', true);
   }
 
   function resetFastCar():Void
@@ -451,6 +466,11 @@ class Stage extends FlxSpriteGroup {
       case 'limo':
         if (FlxG.random.bool(10) && fastCarCanDrive)
           fastCarDrive();
+      case 'spooky':
+        if (FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
+        {
+          lightningStrikeShit();
+        }
       case 'philly':
         if (!trainMoving)
           trainCooldown += 1;

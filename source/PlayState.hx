@@ -2690,18 +2690,6 @@ class PlayState extends MusicBeatState
 
 	var fastCarCanDrive:Bool = true;
 
-	function lightningStrikeShit():Void
-	{
-		FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
-		halloweenBG.animation.play('lightning');
-
-		lightningStrikeBeat = curBeat;
-		lightningOffset = FlxG.random.int(8, 24);
-
-		boyfriend.playAnim('scared', true);
-		gf.playAnim('scared', true);
-	}
-
 	override function stepHit()
 	{
 		super.stepHit();
@@ -2721,9 +2709,6 @@ class PlayState extends MusicBeatState
 			// dad.dance();
 		}
 	}
-
-	var lightningStrikeBeat:Int = 0;
-	var lightningOffset:Int = 8;
 
 	override function beatHit()
 	{
@@ -2791,11 +2776,6 @@ class PlayState extends MusicBeatState
 		if(luaModchartExists && lua!=null){
 			lua.setGlobalVar("curBeat",curBeat);
 			lua.call("beatHit",[curBeat]);
-		}
-
-		if (isHalloween && FlxG.random.bool(10) && curBeat > lightningStrikeBeat + lightningOffset)
-		{
-			lightningStrikeShit();
 		}
 	}
 
