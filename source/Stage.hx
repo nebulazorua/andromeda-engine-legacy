@@ -90,7 +90,7 @@ class Stage extends FlxSpriteGroup {
     CoolUtil.lazyPlaySound(Paths.soundRandom('thunder_', 1, 2));
     halloweenBG.animation.play('lightning');
 
-    lightningStrikeBeat = curBeat;
+    lightningStrikeBeat = beat;
     lightningOffset = FlxG.random.int(8, 24);
 
     PlayState.currentPstate.boyfriend.playAnim('scared', true);

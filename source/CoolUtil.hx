@@ -2,6 +2,7 @@ package;
 
 import lime.utils.Assets;
 import sys.thread.Thread;
+import flixel.FlxG;
 
 using StringTools;
 
