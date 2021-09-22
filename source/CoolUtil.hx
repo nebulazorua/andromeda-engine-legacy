@@ -1,6 +1,7 @@
 package;
 
 import lime.utils.Assets;
+import sys.thread.Thread
 
 using StringTools;
 
@@ -9,7 +10,7 @@ class CoolUtil
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
 	public static function lazyPlaySound(sound,volume=1,looped=false,?group,autodestroy=true,?onComplete){
-		Thread.new(()=>{
+		Thread.create(()->{
 			FlxG.sound.play(sound,volume,looped,group,autodestroy,onComplete);
 		})
 	}
