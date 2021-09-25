@@ -496,7 +496,6 @@ class PlayState extends MusicBeatState
 		}
 
 		stage = new Stage(curStage);
-		stage.currentOptions=currentOptions;
 		switch(curStage){
 			case 'school' | 'schoolEvil':
 				noteModifier='pixel';

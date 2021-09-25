@@ -180,9 +180,10 @@ class Stage extends FlxTypedGroup<FlxBasic> {
     gf.setPosition(gfPosition.x,gfPosition.y);
   }
 
-  public function new(stage:String){
+  public function new(stage:String,currentOptions:Options){
     super();
     curStage=stage;
+    this.currentOptions=currentOptions;
     switch (stage){
       case 'philly':
         var bg:FlxSprite = new FlxSprite(-100).loadGraphic(Paths.image('philly/sky'));
