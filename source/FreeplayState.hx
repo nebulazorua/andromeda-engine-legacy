@@ -4,7 +4,6 @@ package;
 import Discord.DiscordClient;
 #end
 import objects.ui.*;
-
 import flash.text.TextField;
 import flixel.FlxG;
 import flixel.FlxSprite;
@@ -336,9 +335,19 @@ class FreeplayState extends MusicBeatState
 		// lerpScore = 0;
 		#end
 
+		var createThread=false;
+		#if sys
+			createThread=true;
+		#end
 		if(OptionUtils.options.freeplayPreview){
 			#if PRELOAD_ALL
-				FlxG.sound.playMusic(Paths.inst(songs[curSelected].chartName), 0);
+				if(createThread){
+					sys.thread.Thread.create(()->{
+						FlxG.sound.playMusic(Paths.inst(songs[curSelected].chartName), 0);
+					});
+				}else{
+					FlxG.sound.playMusic(Paths.inst(songs[curSelected].chartName), 0);
+				}
 			#end
 		}
 

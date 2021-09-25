@@ -386,8 +386,9 @@ class PlayState extends MusicBeatState
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camRating);
 		FlxG.cameras.add(camReceptor);
-		FlxG.cameras.add(camNotes);
 		FlxG.cameras.add(camSus);
+		FlxG.cameras.add(camNotes);
+
 		FlxG.cameras.add(camHUD);
 		FlxG.cameras.add(pauseHUD);
 
@@ -576,6 +577,9 @@ class PlayState extends MusicBeatState
 		add(boyfriend);
 		add(stage.layers.get("boyfriend"));
 		add(stage.foreground);
+
+		add(stage.overlay);
+		stage.overlay.cameras = [camHUD];
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
 		// doof.x += 70;

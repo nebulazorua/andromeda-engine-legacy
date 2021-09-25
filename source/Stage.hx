@@ -77,6 +77,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
     "gf"=>new FlxTypedGroup<FlxBasic>(), // stuff that should be layered infront of the gf but below the other characters and foreground
   ];
   public var foreground:FlxTypedGroup<FlxBasic> = new FlxTypedGroup<FlxBasic>(); // stuff layered above every other layer
+  public var overlay:FlxSpriteGroup = new FlxSpriteGroup(); // stuff that goes into the HUD camera. Layered before UI elements, still
 
   public var boppers:Array<Array<Dynamic>> = []; // should contain [sprite, bopAnimName, whichBeats]
   public var dancers:Array<Dynamic> = []; // Calls the 'dance' function on everything in this array every beat
@@ -184,6 +185,9 @@ class Stage extends FlxTypedGroup<FlxBasic> {
     super();
     curStage=stage;
     this.currentOptions=currentOptions;
+
+    overlay.scrollFactor.set(0,0); // so the "overlay" layer stays static
+
     switch (stage){
       case 'philly':
         var bg:FlxSprite = new FlxSprite(-100).loadGraphic(Paths.image('philly/sky'));
