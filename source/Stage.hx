@@ -47,7 +47,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
 
   // philly bg
   public var lightFadeShader:BuildingEffect;
-  public var phillyCityLights:FlxSpriteGroup;
+  public var phillyCityLights:FlxTypedGroup<FlxSprite>;
   public var phillyTrain:FlxSprite;
   public var trainSound:FlxSound;
   public var curLight:Int = 0;
@@ -71,12 +71,12 @@ class Stage extends FlxTypedGroup<FlxBasic> {
   public var gfPosition:FlxPoint = FlxPoint.get(400,130);
   public var camPos:FlxPoint = FlxPoint.get(100,100);
 
-  public var layers:Map<String,FlxSpriteGroup> = [
-    "boyfriend"=>new FlxSpriteGroup(), // stuff that should be layered infront of all characters, but below the foreground
-    "dad"=>new FlxSpriteGroup(), // stuff that should be layered infront of the dad and gf but below boyfriend and foreground
-    "gf"=>new FlxSpriteGroup(), // stuff that should be layered infront of the gf but below the other characters and foreground
+  public var layers:Map<String,FlxTypedGroup<FlxBasic>> = [
+    "boyfriend"=>new FlxTypedGroup<FlxBasic>(), // stuff that should be layered infront of all characters, but below the foreground
+    "dad"=>new FlxTypedGroup<FlxBasic>(), // stuff that should be layered infront of the dad and gf but below boyfriend and foreground
+    "gf"=>new FlxTypedGroup<FlxBasic>(), // stuff that should be layered infront of the gf but below the other characters and foreground
   ];
-  public var foreground:FlxSpriteGroup = new FlxSpriteGroup(); // stuff layered above every other layer
+  public var foreground:FlxTypedGroup<FlxBasic> = new FlxTypedGroup<FlxBasic>(); // stuff layered above every other layer
 
   public var boppers:Array<Array<Dynamic>> = []; // should contain [sprite, bopAnimName, whichBeats]
   public var dancers:Array<Dynamic> = []; // Calls the 'dance' function on everything in this array every beat
@@ -199,7 +199,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
 
         //modchart.addCamEffect(rainShader);
 
-        phillyCityLights = new FlxSpriteGroup();
+        phillyCityLights = new FlxTypedGroup<FlxSprite>();
         add(phillyCityLights);
 
         for (i in 0...5)
