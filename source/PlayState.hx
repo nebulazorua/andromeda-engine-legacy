@@ -149,6 +149,7 @@ class PlayState extends MusicBeatState
 
 	public var camHUD:FlxCamera;
 	public var camNotes:FlxCamera;
+	public var camReceptor:FlxCamera;
 	public var camSus:FlxCamera;
 	public var pauseHUD:FlxCamera;
 	public var camRating:FlxCamera;
@@ -234,6 +235,10 @@ class PlayState extends MusicBeatState
 			lua.setGlobalVar("XY","XY");
 			lua.setGlobalVar("X","X");
 			lua.setGlobalVar("Y","Y");
+
+			Lua_helper.add_callback(lua.state,"playSound", function(sound:String,volume:Float=1,looped:Bool=false){
+				CoolUtil.lazyPlaySound(sound,volume,looped);
+			});
 
 			Lua_helper.add_callback(lua.state,"setVar", function(variable:String,val:Any){
 				Reflect.setField(this,variable,val);
@@ -367,10 +372,12 @@ class PlayState extends MusicBeatState
 		camHUD = new FlxCamera();
 		camNotes = new FlxCamera();
 		camSus = new FlxCamera();
+		camReceptor = new FlxCamera();
 		camHUD.bgColor.alpha = 0;
 		camNotes.bgColor.alpha = 0;
 		camRating.bgColor.alpha = 0;
 		camSus.bgColor.alpha = 0;
+		camReceptor.bgColor.alpha = 0;
 		pauseHUD = new FlxCamera();
 		pauseHUD.bgColor.alpha = 0;
 
@@ -378,8 +385,9 @@ class PlayState extends MusicBeatState
 
 		FlxG.cameras.reset(camGame);
 		FlxG.cameras.add(camRating);
-		FlxG.cameras.add(camSus);
+		FlxG.cameras.add(camReceptor);
 		FlxG.cameras.add(camNotes);
+		FlxG.cameras.add(camSus);
 		FlxG.cameras.add(camHUD);
 		FlxG.cameras.add(pauseHUD);
 
@@ -488,6 +496,7 @@ class PlayState extends MusicBeatState
 		}
 
 		stage = new Stage(curStage);
+		stage.currentOptions=currentOptions;
 		switch(curStage){
 			case 'school' | 'schoolEvil':
 				noteModifier='pixel';
@@ -539,11 +548,14 @@ class PlayState extends MusicBeatState
 			gfVersion = 'lizzy';
 
 		gf = new Character(400, 130, gfVersion);
-		gf.scrollFactor.set(0.95, 0.95);
+		gf.scrollFactor.set(1,1);
+		stage.gf=gf;
 
 		dad = new Character(100, 100, SONG.player2);
-
+		stage.dad=dad;
 		boyfriend = new Boyfriend(770, 450, SONG.player1);
+		stage.boyfriend=boyfriend;
+
 		stage.setPlayerPositions(boyfriend,dad,gf);
 
 		defaultCamZoom=stage.defaultCamZoom;
@@ -559,14 +571,11 @@ class PlayState extends MusicBeatState
 			boyfriend.y -= 75;
 
 		add(gf);
-
-		// Shitty layering but whatev it works LOL
-		if (stage.curStage == 'limo')
-			add(stage.limo);
-
+		add(stage.layers.get("gf"));
 		add(dad);
+		add(stage.layers.get("dad"));
 		add(boyfriend);
-
+		add(stage.layers.get("boyfriend"));
 		add(stage.foreground);
 
 		var doof:DialogueBox = new DialogueBox(false, dialogue);
@@ -603,7 +612,7 @@ class PlayState extends MusicBeatState
 
 		camFollow = new FlxObject(0, 0, 1, 1);
 
-		camFollow.setPosition(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+		camFollow.setPosition(stage.camPos.x,stage.camPos.y);
 
 		if (prevCamFollow != null)
 		{
@@ -666,7 +675,7 @@ class PlayState extends MusicBeatState
 		add(ratingCountersUI);
 		updateJudgementCounters();
 
-		strumLineNotes.cameras = [camNotes];
+		strumLineNotes.cameras = [camReceptor];
 		renderedNotes.cameras = [camNotes];
 		healthBar.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
@@ -902,8 +911,8 @@ class PlayState extends MusicBeatState
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
-			introAssets.set('school', ['weeb/pixelUI/ready-pixel', 'weeb/pixelUI/set-pixel', 'weeb/pixelUI/date-pixel']);
-			introAssets.set('schoolEvil', ['weeb/pixelUI/ready-pixel', 'weeb/pixelUI/set-pixel', 'weeb/pixelUI/date-pixel']);
+			introAssets.set('school', ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel']);
+			introAssets.set('schoolEvil', ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel']);
 
 			var introAlts:Array<String> = introAssets.get('default');
 			var altSuffix:String = "";
@@ -1999,7 +2008,8 @@ class PlayState extends MusicBeatState
 		}
 
 		camRating.zoom = camGame.zoom;
-		camNotes.zoom = camHUD.zoom;
+		camReceptor.zoom = camHUD.zoom;
+		camNotes.zoom = camReceptor.zoom;
 		camSus.zoom = camNotes.zoom;
 
 
@@ -2142,7 +2152,7 @@ class PlayState extends MusicBeatState
 
 		if (curStage.startsWith('school'))
 		{
-			pixelShitPart1 = 'weeb/pixelUI/';
+			pixelShitPart1 = 'pixelUI/';
 			pixelShitPart2 = '-pixel';
 		}
 

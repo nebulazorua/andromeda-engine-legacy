@@ -10,6 +10,7 @@ class ModChart {
   private var hudShaders=[];
   private var noteShaders=[];
   private var sussyShaders=[];
+  private var receptorShaders=[];
 
   public var playerNotesFollowReceptors=true;
   public var opponentNotesFollowReceptors=true;
@@ -21,7 +22,7 @@ class ModChart {
 
   }
 
-  public function addNoteEffect(effect:ShaderEffect,?sussy:Bool=true){
+  public function addNoteEffect(effect:ShaderEffect,?sussy:Bool=true,?receptor:Bool=true){
     noteShaders.push(effect);
     var newCamEffects:Array<BitmapFilter>=[]; // IT SHUTS HAXE UP IDK WHY BUT WHATEVER IDK WHY I CANT JUST ARRAY<SHADERFILTER>
     for(i in noteShaders){
@@ -30,9 +31,12 @@ class ModChart {
     playState.camNotes.setFilters(newCamEffects);
     if(sussy)
       addSusEffect(effect);
+
+    if(receptor)
+      addReceptorEffect(effect);
   }
 
-  public function removeNoteEffect(effect:ShaderEffect,?sussy:Bool=true){
+  public function removeNoteEffect(effect:ShaderEffect,?sussy:Bool=true,?receptor:Bool=true){
     noteShaders.remove(effect);
     var newCamEffects:Array<BitmapFilter>=[];
     for(i in noteShaders){
@@ -41,6 +45,10 @@ class ModChart {
     playState.camNotes.setFilters(newCamEffects);
     if(sussy)
       removeSusEffect(effect);
+
+    if(receptor)
+      removeReceptorEffect(effect);
+
   }
 
   public function addSusEffect(effect:ShaderEffect){
@@ -60,6 +68,25 @@ class ModChart {
     }
     playState.camSus.setFilters(newCamEffects);
   }
+
+  public function addReceptorEffect(effect:ShaderEffect){
+    receptorShaders.push(effect);
+    var newCamEffects:Array<BitmapFilter>=[]; // IT SHUTS HAXE UP IDK WHY BUT WHATEVER IDK WHY I CANT JUST ARRAY<SHADERFILTER>
+    for(i in receptorShaders){
+      newCamEffects.push(new ShaderFilter(i.shader));
+    }
+    playState.camReceptor.setFilters(newCamEffects);
+  }
+
+  public function removeReceptorEffect(effect:ShaderEffect){
+    receptorShaders.remove(effect);
+    var newCamEffects:Array<BitmapFilter>=[];
+    for(i in receptorShaders){
+      newCamEffects.push(new ShaderFilter(i.shader));
+    }
+    playState.camReceptor.setFilters(newCamEffects);
+  }
+
 
   public function addCamEffect(effect:ShaderEffect){
     camShaders.push(effect);

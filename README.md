@@ -23,7 +23,13 @@ Get the source code: https://github.com/ninjamuffin99/Funkin
 - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programmer
 - [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
 - [Kawaisprite](https://twitter.com/kawaisprite) - Musician
-- Nebula - Andromeda Engine
+- Nebula the Zorua - Most engine stuff
+- [TKTems](https://twitter.com/TKTems) - Some menuing stuff
+- [Echolocated](https://twitter.com/CH_echolocated) - "Epic" judgement rating
+- [kevinresol](https://github.com/kevinresol) - Original hxvm-lua
+- [AndreiDudenko](https://github.com/AndreiRudenko) - Original linc_luajit
+- [Poco](https://github.com/poco0317) - Wife3
+- [Etterna](https://github.com/etternagame/etterna) - Poco did the math for Wife3 in Etterna, I think
 - [Quaver](https://github.com/Quaver/Quaver) - Scroll code
 
 Shoutouts to Newgrounds and Tom Fulp for creatin' the best website and community on the internet
@@ -60,11 +66,14 @@ You'll also need to install a couple things that involve Gits. To do this, you n
 
 Then for each of these type `haxelib git [libraryname] [library]` so `haxelib git polymod https://github.com/larsiusprime/polymod.git`
 ```
- polymod https://github.com/larsiusprime/polymod.git
+polymod https://github.com/larsiusprime/polymod.git
 discord_rpc https://github.com/Aidan63/linc_discord-rpc
 hxvm-luajit https://github.com/nebulazorua/hxvm-luajit
 linc_luajit https://github.com/nebulazorua/linc_luajit
 ```
+
+Alternatively, you can run "dependencies.bat" (on Windows) to install every dependency
+
 
 You should have everything ready for compiling the game! Follow the guide below to continue!
 
@@ -91,7 +100,15 @@ To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
 * MSVC v140 - VS 2015 C++ build tools (v14.00)
 
 This will install about 22GB of crap, but once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
-As for Mac, 'lime test mac -debug' should work, if not the internet surely has a guide on how to compile Haxe stuff for Mac.
+Right now, compiling for Mac does not work, and I have not tested on Windows.
+If you get an error about StatePointer, you'll want to run these:
+`haxelib remove linc_luajit
+haxelib remove hxvm-luajit`
+And then
+`haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit
+haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit`
+
+(Thanks KadeDev for figuring this out because I was stuck on why it happened tbh)
 
 ### Additional guides
 

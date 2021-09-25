@@ -12,10 +12,11 @@ import flixel.util.FlxTimer;
 import flixel.util.FlxDestroyUtil;
 import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
+import flixel.FlxBasic;
 
 import Shaders;
 
-class Stage extends FlxSpriteGroup {
+class Stage extends FlxTypedGroup<FlxBasic> {
   public static var songStageMap:Map<String,String> = [
     "pico"=>"philly",
     "philly-nice"=>"philly",
@@ -64,11 +65,18 @@ class Stage extends FlxSpriteGroup {
   var fastCarCanDrive:Bool=true;
 
   // misc, general bg stuff
+
   public var bfPosition:FlxPoint = FlxPoint.get(770,450);
   public var dadPosition:FlxPoint = FlxPoint.get(100,100);
   public var gfPosition:FlxPoint = FlxPoint.get(400,130);
+  public var camPos:FlxPoint = FlxPoint.get(100,100);
 
-  public var foreground:FlxSpriteGroup = new FlxSpriteGroup(); // stuff layered above the characters
+  public var layers:Map<String,FlxSpriteGroup> = [
+    "boyfriend"=>new FlxSpriteGroup(), // stuff that should be layered infront of all characters, but below the foreground
+    "dad"=>new FlxSpriteGroup(), // stuff that should be layered infront of the dad and gf but below boyfriend and foreground
+    "gf"=>new FlxSpriteGroup(), // stuff that should be layered infront of the gf but below the other characters and foreground
+  ];
+  public var foreground:FlxSpriteGroup = new FlxSpriteGroup(); // stuff layered above every other layer
 
   public var boppers:Array<Array<Dynamic>> = []; // should contain [sprite, bopAnimName, whichBeats]
   public var dancers:Array<Dynamic> = []; // Calls the 'dance' function on everything in this array every beat
@@ -76,6 +84,12 @@ class Stage extends FlxSpriteGroup {
   public var defaultCamZoom:Float = 1.05;
 
   public var curStage:String = '';
+
+  // other vars
+  public var gf:Character;
+  public var boyfriend:Character;
+  public var dad:Character;
+  public var currentOptions:Options;
 
   override public function destroy(){
     bfPosition = FlxDestroyUtil.put(bfPosition);
@@ -92,8 +106,8 @@ class Stage extends FlxSpriteGroup {
 
     lightningOffset = FlxG.random.int(8, 24);
 
-    PlayState.currentPState.boyfriend.playAnim('scared', true);
-    PlayState.currentPState.gf.playAnim('scared', true);
+    boyfriend.playAnim('scared', true);
+    gf.playAnim('scared', true);
   }
 
   function resetFastCar():Void
@@ -119,6 +133,7 @@ class Stage extends FlxSpriteGroup {
 
 
   public function setPlayerPositions(p1:Character,p2:Character,gf:Character){
+    camPos.set(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
     switch(p1.curCharacter){
 
     }
@@ -134,22 +149,28 @@ class Stage extends FlxSpriteGroup {
         dadPosition.y += 100;
       case 'monster-christmas':
         dadPosition.y += 130;
+      case 'dad':
+        camPos.x += 400;
       case 'pico':
+        camPos.x += 600;
         dadPosition.y += 300;
       case 'parents-christmas':
         dadPosition.x -= 500;
-      case 'senpai':
+      case 'senpai' | 'senpai-angry':
         dadPosition.x += 150;
         dadPosition.y += 360;
-      case 'senpai-angry':
-        dadPosition.x += 150;
-        dadPosition.y += 360;
+        p2.setPosition(dadPosition.x,dadPosition.y);
+        camPos.set(p2.getGraphicMidpoint().x + 300, p2.getGraphicMidpoint().y);
       case 'spirit':
         dadPosition.x -= 150;
         dadPosition.y += 100;
+        p2.setPosition(dadPosition.x,dadPosition.y);
+        camPos.set(p2.getGraphicMidpoint().x + 300, p2.getGraphicMidpoint().y);
       case 'bf-pixel':
         dadPosition.y += 570;
         dadPosition.x += 200;
+        p2.setPosition(dadPosition.x,dadPosition.y);
+        camPos.set(p2.getGraphicMidpoint().x, p2.getGraphicMidpoint().y);
       case 'bf' | 'bf-car' | 'bf-christmas':
         dadPosition.y += 350;
     }
@@ -188,7 +209,7 @@ class Stage extends FlxSpriteGroup {
                 light.setGraphicSize(Std.int(light.width * 0.85));
                 light.updateHitbox();
                 light.antialiasing = true;
-                if(PlayState.currentPState.currentOptions.picoShaders) light.shader=lightFadeShader.shader;
+                if(currentOptions.picoShaders) light.shader=lightFadeShader.shader;
                 phillyCityLights.add(light);
         }
 
@@ -415,6 +436,7 @@ class Stage extends FlxSpriteGroup {
         limo.animation.addByPrefix('drive', "Limo stage", 24);
         limo.animation.play('drive');
         limo.antialiasing = true;
+        layers.get("gf").add(limo);
 
         fastCar = new FlxSprite(-300, 160).loadGraphic(Paths.image('limo/fastCarLol'));
         add(fastCar);
@@ -486,7 +508,7 @@ class Stage extends FlxSpriteGroup {
 
           phillyCityLights.members[curLight].visible = true;
           phillyCityLights.members[curLight].alpha = 1;
-          if(PlayState.currentPState.currentOptions.picoShaders && lightFadeShader!=null)
+          if(currentOptions.picoShaders && lightFadeShader!=null)
             lightFadeShader.setAlpha(0);
         }
 
@@ -512,7 +534,7 @@ class Stage extends FlxSpriteGroup {
           }
         }
         //phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed * 1.5;
-        if(PlayState.currentPState.currentOptions.picoShaders && lightFadeShader!=null)
+        if(currentOptions.picoShaders && lightFadeShader!=null)
           lightFadeShader.addAlpha((Conductor.crochet / 1000) * FlxG.elapsed * 1.5);
         else
           phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed * 1.5;
@@ -535,12 +557,12 @@ class Stage extends FlxSpriteGroup {
     if (trainSound.time >= 4700)
     {
       startedMoving = true;
-      PlayState.currentPState.gf.playAnim('hairBlow');
+      gf.playAnim('hairBlow');
     }
 
     if (startedMoving)
     {
-      if(PlayState.currentPState.currentOptions.picoCamshake)
+      if(currentOptions.picoCamshake)
         PlayState.currentPState.camGame.shake(.0025,.1,null,true,X);
 
       phillyTrain.x -= 400;
@@ -561,7 +583,7 @@ class Stage extends FlxSpriteGroup {
 
   function trainReset():Void
   {
-    PlayState.currentPState.gf.playAnim('hairFall');
+    gf.playAnim('hairFall');
     phillyTrain.x = FlxG.width + 200;
     trainMoving = false;
     // trainSound.stop();

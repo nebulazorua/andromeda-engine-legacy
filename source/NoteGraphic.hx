@@ -35,7 +35,7 @@ class NoteGraphic extends FlxSprite
 		switch (behaviour.actsLike)
 		{
 			case 'pixel':
-				//loadGraphic(Paths.image('weeb/pixelUI/arrows-pixels',"shared"), true, 17, 17);
+				//loadGraphic(Paths.image('pixelUI/arrows-pixels',"shared"), true, 17, 17);
 				loadGraphic(Paths.noteSkinImage(behaviour.arguments.note.sheet, 'skins', skin, modifier),true,behaviour.arguments.note.gridSizeX,behaviour.arguments.note.gridSizeY);
 
 				animation.add('greenScroll', behaviour.arguments.note.up);
