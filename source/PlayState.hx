@@ -2009,8 +2009,11 @@ class PlayState extends MusicBeatState
 			}
 
 		}
-
-		camRating.zoom = camGame.zoom;
+		if(currentOptions.ratingInHUD){
+			camRating.zoom = camGame.zoom;
+		}else{
+			camRating.zoom = camHUD.zoom;
+		}
 		camReceptor.zoom = camHUD.zoom;
 		camNotes.zoom = camReceptor.zoom;
 		camSus.zoom = camNotes.zoom;
@@ -2188,8 +2191,6 @@ class PlayState extends MusicBeatState
 		var ratingCameras = [camRating];
 
 		if(currentOptions.ratingInHUD){
-			ratingCameras = [camHUD];
-
 			coolText.scrollFactor.set(0,0);
 			rating.scrollFactor.set(0,0);
 
@@ -2206,6 +2207,9 @@ class PlayState extends MusicBeatState
 			var daLoop:Float = 0;
 			for (i in seperatedScore)
 			{
+				if(i=='-'){
+					i='Negative';
+				}
 				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
 				numScore.screenCenter(XY);
 				numScore.x = coolText.x + (43 * daLoop) - 90;
@@ -2253,6 +2257,9 @@ class PlayState extends MusicBeatState
 					i = "point";
 					daLoop-=.5;
 				}
+				if(i=='-'){
+					i='Negative';
+				}
 
 				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
 				numScore.screenCenter();
@@ -2268,6 +2275,8 @@ class PlayState extends MusicBeatState
 				}
 
 				switch(daRating){
+					case 'epic':
+						numScore.color = 0xC182FF;
 					case 'sick':
 						numScore.color = 0x00ffff;
 					case 'good':
