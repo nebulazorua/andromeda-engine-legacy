@@ -400,6 +400,9 @@ class PlayState extends MusicBeatState
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
 
+		SONG.speed = currentOptions.cMod==0?SONG.speed:currentOptions.cMod;
+		SONG.speed *= currentOptions.xMod;
+
 		SONG.initialSpeed = SONG.speed*.45;
 
 		SONG.sliderVelocities.sort((a,b)->Std.int(a.startTime-b.startTime));
@@ -890,8 +893,8 @@ class PlayState extends MusicBeatState
 	function startCountdown():Void
 	{
 		if(!currentOptions.pollingInput){
-			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN,handleInput);
-			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP,releaseInput);
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN,keyPress);
+			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP,keyRelease);
 		}
 		inCutscene = false;
 
@@ -2009,6 +2012,9 @@ class PlayState extends MusicBeatState
 				// TODO: have to redo the long notes/held notes/sustain notes/WHATEVER YOU WANNA CALL EM
 				// to be better
 
+				if(currentOptions.botPlay)
+					botplayNewInput();
+
 				if(pressedKeys.contains(true)){
 					for(idx in 0...pressedKeys.length){
 						var isHeld = pressedKeys[idx];
@@ -2146,12 +2152,17 @@ class PlayState extends MusicBeatState
 		var score:Int = judgeMan.getJudgementScore(daRating);
 
 
-		if(currentOptions.useMalewife){
-			totalNotes+=2;
-			hitNotes+=ScoreUtils.malewife(noteDiff);
+		if(currentOptions.botPlay){
+			totalNotes+=1;
+			hitNotes+=1;
 		}else{
-			totalNotes++;
-			hitNotes+=judgeMan.getJudgementAccuracy(daRating);
+			if(currentOptions.useMalewife){
+				totalNotes+=2;
+				hitNotes+=ScoreUtils.malewife(noteDiff);
+			}else{
+				totalNotes++;
+				hitNotes+=judgeMan.getJudgementAccuracy(daRating);
+			}
 		}
 
 		songScore += score;
@@ -2357,19 +2368,10 @@ class PlayState extends MusicBeatState
 			if(!pressedKeys[spr.ID]){
 				spr.playAnim("static");
 			}
-
-			/*if (spr.animation.curAnim.name == 'confirm' && !curStage.startsWith('school'))
-			{
-				spr.centerOffsets();
-				spr.offset.x -= 13;
-				spr.offset.y -= 13;
-			}
-			else
-				spr.centerOffsets();*/
 		});
 	}
 
-	private function handleInput(event:KeyboardEvent){
+	private function keyPress(event:KeyboardEvent){
 		var bindData = [
 			OptionUtils.getKey(Control.LEFT),
 			OptionUtils.getKey(Control.DOWN),
@@ -2378,27 +2380,13 @@ class PlayState extends MusicBeatState
 		];
 		var direction = bindData.indexOf(event.keyCode);
 		if(direction!=-1 && !pressedKeys[direction]){
-			pressedKeys[direction]=true;
+			handleInput(direction,true);
 			updateReceptors();
-
-			var hitSomething=false;
-			var nextHit = noteLanes[direction][0];
-			if(nextHit!=null){
-				if(nextHit.canBeHit && !nextHit.wasGoodHit){
-					hitSomething=true;
-					boyfriend.holdTimer=0;
-					noteHit(nextHit);
-				}
-			}
-
-			if(!hitSomething && currentOptions.ghosttapping==false){
-				badNoteCheck();
-			}
 		}
 
 	}
 
-	private function releaseInput(event:KeyboardEvent){
+	private function keyRelease(event:KeyboardEvent){
 		var bindData = [
 			OptionUtils.getKey(Control.LEFT),
 			OptionUtils.getKey(Control.DOWN),
@@ -2407,9 +2395,70 @@ class PlayState extends MusicBeatState
 		];
 		var direction = bindData.indexOf(event.keyCode);
 		if(direction!=-1 && pressedKeys[direction]){
-			pressedKeys[direction]=false;
+			handleInput(direction,false);
 			updateReceptors();
 		}
+	}
+
+	private function handleInput(direction:Int,pressed:Bool){
+		if(direction!=-1){
+			pressedKeys[direction]=pressed;
+
+			if(pressed){
+				var hitSomething=false;
+				var nextHit = noteLanes[direction][0];
+				if(nextHit!=null){
+					if(nextHit.canBeHit && !nextHit.wasGoodHit){
+						hitSomething=true;
+						boyfriend.holdTimer=0;
+						noteHit(nextHit);
+					}
+				}
+
+				if(!hitSomething && currentOptions.ghosttapping==false){
+					badNoteCheck();
+				}
+			}
+		}
+	}
+
+	private function botplayNewInput(){
+		// TOO LAZY TO WRITE NEW CODE AND THIS WORKS FINE SO
+		var holdArray:Array<Bool> = [false,false,false,false];
+		var controlArray:Array<Bool> = [false,false,false,false];
+		for(note in hittableNotes){
+			if(note.mustPress && note.canBeHit && note.strumTime<=Conductor.songPosition){
+				if(note.sustainLength>0 && botplayHoldMaxTimes[note.noteData]<note.sustainLength){
+					controlArray[note.noteData]=true;
+					botplayHoldTimes[note.noteData] = (note.sustainLength/1000)+.2;
+				}else if(note.isSustainNote && botplayHoldMaxTimes[note.noteData]==0){
+					holdArray[note.noteData] = true;
+				}
+				if(!note.isSustainNote){
+					controlArray[note.noteData]=true;
+					if(botplayHoldTimes[note.noteData]<=.2){
+						botplayHoldTimes[note.noteData] = .2;
+					}
+				}
+			}
+		}
+		for(idx in 0...botplayHoldTimes.length){
+			if(botplayHoldTimes[idx]>0){
+				holdArray[idx]=true;
+				botplayHoldTimes[idx]-=FlxG.elapsed;
+			}
+		}
+
+		for(idx in 0...controlArray.length){
+			var pressed = controlArray[idx];
+			handleInput(idx,pressed);
+		}
+		updateReceptors();
+
+		for(idx in 0...holdArray.length){
+			pressedKeys[idx]=holdArray[idx];
+		}
+
 	}
 
 	private function keyShit():Void
@@ -2821,8 +2870,8 @@ class PlayState extends MusicBeatState
 		#end
 		Cache.Clear();
 		if(!currentOptions.pollingInput){
-			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN,handleInput);
-			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP,releaseInput);
+			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN,keyPress);
+			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP,keyRelease);
 		}
 		return super.switchTo(next);
 	}
@@ -2852,7 +2901,7 @@ class PlayState extends MusicBeatState
 	}
 
 	public static function setFreeplaySong(songData:SongData,difficulty:Int){
-		SONG = Song.loadFromJson(songData.formatDifficulty(storyDifficulty), songData.chartName.toLowerCase());
+		SONG = Song.loadFromJson(songData.formatDifficulty(difficulty), songData.chartName.toLowerCase());
 		isStoryMode = false;
 		storyDifficulty = difficulty;
 		storyWeek = songData.weekNum;

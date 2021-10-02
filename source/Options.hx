@@ -82,7 +82,8 @@ class Options
 	public var failForMissing:Bool = false;
 	public var useMalewife:Bool=false;
 	public var resetKey:Bool = true;
-
+	public var cMod:Float = 0;
+	public var xMod:Float = 1;
 	public var pollingInput:Bool = false;
 	public var judgementWindow:String = 'Vanilla-like';
 	public var noteOffset:Int = 0;
@@ -281,28 +282,28 @@ class ToggleOption extends Option
 //StepOption("backTrans","Background Transparency",10,0,100,"%", "", "How transparent the background is")
 class StepOption extends Option
 {
+	private var names:Array<String>;
 	private var property = "dummyInt";
-	private var defaultName = "default";
-	private var max:Float = 100;
+	private var max:Float = -1;
 	private var min:Float = 0;
-	private var step:Float = 0;
+	private var step:Float = 1;
+	private var label:String = '';
+	private var leftArrow:FlxSprite;
+	private var rightArrow:FlxSprite;
+	private var labelAlphabet:Alphabet;
+
 	private var suffix:String='';
 	private var prefix:String='';
 
 
-	private var leftArrow:FlxSprite;
-	private var rightArrow:FlxSprite;
-	public function new(property:String,name:String,?step:Float=1,?min:Float=0,?max:Float=100,?suffix:String='',?prefix:String='',?desc:String=''){
+	public function new(property:String,label:String,?step:Float=1,?min:Float=0,?max:Float=100,?suffix:String='',?prefix:String='',?desc:String=''){
 		super();
 		this.property=property;
-		this.defaultName = name;
+		this.label=label;
+		this.description=desc;
 		this.step=step;
-		this.min=min;
-		this.max=max;
 		this.suffix=suffix;
 		this.prefix=prefix;
-		this.description=desc;
-
 		var value = Reflect.field(OptionUtils.options,property);
 		leftArrow = new FlxSprite(0,0);
 		leftArrow.frames = Paths.getSparrowAtlas("arrows");
@@ -322,12 +323,18 @@ class StepOption extends Option
 
 		add(rightArrow);
 		add(leftArrow);
+		this.max=max;
+		this.min=min;
 
-		this.name = '${defaultName} ${prefix}${value}${suffix}';
-
+		name = '${prefix}${Std.string(value)}${suffix}';
 	};
 
 	override function update(elapsed:Float){
+		labelAlphabet.targetY = text.targetY;
+		labelAlphabet.alpha = text.alpha;
+		leftArrow.alpha = text.alpha;
+		rightArrow.alpha = text.alpha;
+
 		super.update(elapsed);
 		//sprTracker.x + sprTracker.width + 10
 		if(PlayerSettings.player1.controls.LEFT && isSelected){
@@ -357,17 +364,27 @@ class StepOption extends Option
 
 	public override function createOptionText(curSelected:Int,optionText:FlxTypedGroup<Option>):Dynamic{
     remove(text);
+		remove(labelAlphabet);
+		labelAlphabet = new Alphabet(0, (70 * curSelected) + 30, label, true, false);
+		labelAlphabet.movementType = "list";
+		labelAlphabet.isMenuItem = true;
+		labelAlphabet.offsetX = 60;
+
     text = new Alphabet(0, (70 * curSelected) + 30, name, true, false);
     text.movementType = "list";
     text.isMenuItem = true;
-		text.offsetX = 115;
+		text.offsetX = labelAlphabet.width + 120;
+
+		labelAlphabet.targetY = text.targetY;
+		labelAlphabet.gotoTargetPosition();
 		text.gotoTargetPosition();
+		add(labelAlphabet);
     add(text);
     return text;
   }
 
 	public override function left():Bool{
-		var value:Float = Reflect.field(OptionUtils.options,property)-this.step;
+		var value:Float = Reflect.field(OptionUtils.options,property)-step;
 
 		if(value<min)
 			value=max;
@@ -376,12 +393,13 @@ class StepOption extends Option
 			value=min;
 
 		Reflect.setField(OptionUtils.options,property,value);
-		name = '${defaultName} ${prefix}${value}${suffix}';
+
+		name = '${prefix}${Std.string(value)}${suffix}';
 
 		return true;
 	};
 	public override function right():Bool{
-		var value:Float = Reflect.field(OptionUtils.options,property)+this.step;
+		var value:Float = Reflect.field(OptionUtils.options,property)+step;
 
 		if(value<min)
 			value=max;
@@ -390,7 +408,8 @@ class StepOption extends Option
 
 		Reflect.setField(OptionUtils.options,property,value);
 
-		name = '${defaultName} ${prefix}${value}${suffix}';
+		name = '${prefix}${Std.string(value)}${suffix}';
+
 		return true;
 	};
 }
@@ -442,6 +461,9 @@ class ScrollOption extends Option
 
 	override function update(elapsed:Float){
 		labelAlphabet.targetY = text.targetY;
+		labelAlphabet.alpha = text.alpha;
+		leftArrow.alpha = text.alpha;
+		rightArrow.alpha = text.alpha;
 		super.update(elapsed);
 		//sprTracker.x + sprTracker.width + 10
 		if(PlayerSettings.player1.controls.LEFT && isSelected){
@@ -591,6 +613,9 @@ class JudgementsOption extends Option
 
 	override function update(elapsed:Float){
 		labelAlphabet.targetY = text.targetY;
+		labelAlphabet.alpha = text.alpha;
+		leftArrow.alpha = text.alpha;
+		rightArrow.alpha = text.alpha;
 		super.update(elapsed);
 		//sprTracker.x + sprTracker.width + 10
 		if(PlayerSettings.player1.controls.LEFT && isSelected){

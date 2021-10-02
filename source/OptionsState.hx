@@ -41,11 +41,11 @@ class OptionsState extends MusicBeatState
 			new ToggleOption("botPlay","BotPlay","Let a bot play for you"),
 			new ToggleOption("failForMissing","Sudden Death"),
 			new OptionCategory("Advanced",[
-			new JudgementsOption("judgementWindow","Judgements","Which judgement window to use"),
+				new JudgementsOption("judgementWindow","Judgements","Which judgement window to use"),
 				new ToggleOption("pollingInput","Old input","Should inputs get checked every frame"),
 				new ToggleOption("useMalewife","Use Wife3","Should accuracy use Wife3"),
-				// TODO: CMod and XMod
-
+				new StepOption("cMod","Speed Constant",0.1,0,10,"","","A constant speed to override every charts' scrollspeed. 0 for default speed"),
+				new StepOption("xMod","Speed Multiplier",0.1,0,2,"","x","A multiplier to a chart's scrollspeed"),
 			]),
 			//new StateOption("Calibrate Offset",new SoundOffsetState()),
 			// TODO: make a better 'calibrate offset'
