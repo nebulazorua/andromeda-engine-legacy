@@ -8,7 +8,6 @@ class SongData {
   public var chartName:String = 'tutorial';
   public var freeplayIcon:String = 'gf';
   public var weekNum:Int = 0;
-
   public function new(name:String='Tutorial',freeplayIcon:String='gf',weekNum:Int=0,?chartName:String){
     if(chartName==null){
       chartName=name.replace(" ","-").toLowerCase();
@@ -60,6 +59,15 @@ class WeekData {
     this.name=name;
     this.weekNum=weekNum;
     this.character=character;
+  }
+
+  public function getByChartName(name:String):Null<SongData>{
+    for(data in songs){
+      if(data.chartName==name){
+        return data;
+      }
+    }
+    return null;
   }
 
   public function getCharts(){

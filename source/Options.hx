@@ -81,9 +81,10 @@ class Options
 	public var ghosttapping:Bool = false;
 	public var failForMissing:Bool = false;
 	public var useMalewife:Bool=false;
+	public var resetKey:Bool = true;
 
 	public var pollingInput:Bool = false;
-	public var judgementWindow:String = 'Quaver';
+	public var judgementWindow:String = 'Vanilla-like';
 	public var noteOffset:Int = 0;
 	public var botPlay:Bool = false;
 	public var loadModcharts:Bool = true;
@@ -100,6 +101,7 @@ class Options
 	public var oldTitle:Bool = false;
 	public var healthBarColors:Bool = true;
 	public var camFollowsAnims:Bool = false;
+	public var showCounters:Bool = true;
 
 	// loading
 	public var shouldCache:Bool = false;
@@ -328,7 +330,7 @@ class StepOption extends Option
 	override function update(elapsed:Float){
 		super.update(elapsed);
 		//sprTracker.x + sprTracker.width + 10
-		if(PlayerSettings.player1.controls.LEFT){
+		if(PlayerSettings.player1.controls.LEFT && isSelected){
 			leftArrow.animation.play("pressed");
 			leftArrow.offset.x = 0;
 			leftArrow.offset.y = -3;
@@ -338,7 +340,7 @@ class StepOption extends Option
 			leftArrow.offset.y = 0;
 		}
 
-		if(PlayerSettings.player1.controls.RIGHT){
+		if(PlayerSettings.player1.controls.RIGHT && isSelected){
 			rightArrow.animation.play("pressed");
 			rightArrow.offset.x = 0;
 			rightArrow.offset.y = -3;
@@ -442,7 +444,7 @@ class ScrollOption extends Option
 		labelAlphabet.targetY = text.targetY;
 		super.update(elapsed);
 		//sprTracker.x + sprTracker.width + 10
-		if(PlayerSettings.player1.controls.LEFT){
+		if(PlayerSettings.player1.controls.LEFT && isSelected){
 			leftArrow.animation.play("pressed");
 			leftArrow.offset.x = 0;
 			leftArrow.offset.y = -3;
@@ -452,7 +454,7 @@ class ScrollOption extends Option
 			leftArrow.offset.y = 0;
 		}
 
-		if(PlayerSettings.player1.controls.RIGHT){
+		if(PlayerSettings.player1.controls.RIGHT && isSelected){
 			rightArrow.animation.play("pressed");
 			rightArrow.offset.x = 0;
 			rightArrow.offset.y = -3;
@@ -591,7 +593,7 @@ class JudgementsOption extends Option
 		labelAlphabet.targetY = text.targetY;
 		super.update(elapsed);
 		//sprTracker.x + sprTracker.width + 10
-		if(PlayerSettings.player1.controls.LEFT){
+		if(PlayerSettings.player1.controls.LEFT && isSelected){
 			leftArrow.animation.play("pressed");
 			leftArrow.offset.x = 0;
 			leftArrow.offset.y = -3;
@@ -601,7 +603,7 @@ class JudgementsOption extends Option
 			leftArrow.offset.y = 0;
 		}
 
-		if(PlayerSettings.player1.controls.RIGHT){
+		if(PlayerSettings.player1.controls.RIGHT && isSelected){
 			rightArrow.animation.play("pressed");
 			rightArrow.offset.x = 0;
 			rightArrow.offset.y = -3;

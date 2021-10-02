@@ -71,6 +71,12 @@ class Highscore
 		else if (diff == 2)
 			daSong += '-hard';
 
+		/*var judgeMan = new JudgementManager(JudgementManager.getDataByName(currentOptions.judgementWindow));
+		var judgementData = judgeMan.getJudgeId();*/
+
+		// TODO: make ^ this work so highscore shit is dependant on judge windows
+
+
 		return daSong;
 	}
 

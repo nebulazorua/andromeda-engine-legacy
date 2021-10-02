@@ -72,13 +72,14 @@ import llua.LuaL;
 #end
 
 import EngineData.WeekData;
+import EngineData.SongData;
 
 using StringTools;
 
 class PlayState extends MusicBeatState
 {
+	public static var songData:SongData;
 	public static var currentPState:PlayState;
-
 	public static var weekData:WeekData;
 
 	public static var curStage:String = '';
@@ -99,7 +100,6 @@ class PlayState extends MusicBeatState
 	public var dad:Character;
 	public var gf:Character;
 	public var boyfriend:Boyfriend;
-
 	public static var judgeMan:JudgementManager;
 
 	private var renderedNotes:FlxTypedGroup<Note>;
@@ -670,6 +670,7 @@ class PlayState extends MusicBeatState
 			counters.set(judge,txt);
 			counterIdx++;
 		}
+		ratingCountersUI.visible = currentOptions.showCounters;
 
 		highComboTxt.text = "Highest Combo: " + highestCombo;
 
@@ -1047,12 +1048,12 @@ class PlayState extends MusicBeatState
 		// DUMB FUCKING AMERICANS CANT JUST ADD A 'U' >:(
 
 		var songData = SONG;
-		Conductor.changeBPM(songData.bpm);
+		Conductor.changeBPM(SONG.bpm);
 
-		curSong = songData.song;
+		curSong = SONG.song;
 
-		if (songData.needsVoices){
-			vocals = new FlxSound().loadEmbedded(Paths.voices(songData.song));
+		if (SONG.needsVoices){
+			vocals = new FlxSound().loadEmbedded(Paths.voices(SONG.song));
 		}else
 			vocals = new FlxSound();
 
@@ -1066,7 +1067,7 @@ class PlayState extends MusicBeatState
 		var noteData:Array<SwagSection>;
 
 		// NEW SHIT
-		noteData = songData.notes;
+		noteData = SONG.notes;
 
 		var playerCounter:Int = 0;
 
@@ -1272,7 +1273,21 @@ class PlayState extends MusicBeatState
 		else
 			accuracy = hitNotes / totalNotes;
 
-		grade = ScoreUtils.AccuracyToGrade(accuracy) + (judgeMan.judgementCounter.get("miss")==0 ? " (FC)" : ""); // TODO: Diff types of FC?? (MFC, SFC, GFC, BFC, WTFC)
+		var fcType = ' ';
+		if(judgeMan.judgementCounter.get("miss")>0){
+			fcType='';
+		}else{
+			if(judgeMan.judgementCounter.get("bad")>0)
+				fcType += '(FC)';
+			else if(judgeMan.judgementCounter.get("good")>0)
+				fcType += '(GFC)';
+			else if(judgeMan.judgementCounter.get("sick")>0)
+				fcType += '(SFC)';
+			else if(judgeMan.judgementCounter.get("epic")>0)
+				fcType += '(EFC)';
+		}
+
+		grade = ScoreUtils.AccuracyToGrade(accuracy) + fcType;
 	}
 	override function openSubState(SubState:FlxSubState)
 	{
@@ -1700,7 +1715,7 @@ class PlayState extends MusicBeatState
 		// better streaming of shit
 
 		// RESET = Quick Game Over Screen
-		if (controls.RESET)
+		if (controls.RESET && currentOptions.resetKey)
 		{
 			health = 0;
 			trace("RESET = True");
@@ -2048,7 +2063,7 @@ class PlayState extends MusicBeatState
 		if (SONG.validScore)
 		{
 			#if !switch
-			Highscore.saveScore(SONG.song, songScore, storyDifficulty);
+			Highscore.saveScore(songData.chartName, songScore, storyDifficulty);
 			#end
 		}
 
@@ -2056,7 +2071,7 @@ class PlayState extends MusicBeatState
 		{
 			campaignScore += songScore;
 
-			storyPlaylist.remove(storyPlaylist[0]);
+			gotoNextStory();
 
 			if (storyPlaylist.length <= 0)
 			{
@@ -2082,16 +2097,6 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				var difficulty:String = "";
-
-				if (storyDifficulty == 0)
-					difficulty = '-easy';
-
-				if (storyDifficulty == 2)
-					difficulty = '-hard';
-
-				trace('LOADING NEXT SONG');
-				trace(PlayState.storyPlaylist[0].toLowerCase() + difficulty);
 
 				if (SONG.song.toLowerCase() == 'eggnog')
 				{
@@ -2108,7 +2113,6 @@ class PlayState extends MusicBeatState
 				FlxTransitionableState.skipNextTransOut = true;
 				prevCamFollow = camFollow;
 
-				PlayState.SONG = Song.loadFromJson(PlayState.storyPlaylist[0].toLowerCase() + difficulty, PlayState.storyPlaylist[0]);
 				FlxG.sound.music.stop();
 
 				LoadingState.loadAndSwitchState(new PlayState());
@@ -2127,7 +2131,7 @@ class PlayState extends MusicBeatState
 	private function popUpScore(noteDiff:Float,daRating:String):Void
 	{
 		if(ScoreUtils.botPlay){
-			daRating='sick';
+			daRating=judgeMan.getHighestAccJudgement(); // TODO: GetJudgementByCallback or smth???
 		}
 
 		// boyfriend.playAnim('hey');
@@ -2148,7 +2152,6 @@ class PlayState extends MusicBeatState
 		}else{
 			totalNotes++;
 			hitNotes+=judgeMan.getJudgementAccuracy(daRating);
-			trace(totalNotes,hitNotes);
 		}
 
 		songScore += score;
@@ -2167,13 +2170,12 @@ class PlayState extends MusicBeatState
 		rating.screenCenter();
 		rating.x = coolText.x - 40;
 		rating.y -= 60;
+		add(rating);
 		rating.acceleration.y = 550;
 		rating.velocity.y -= FlxG.random.int(140, 175);
 		rating.velocity.x -= FlxG.random.int(0, 10);
 		if(!currentOptions.showRatings)
 			rating.visible=false;
-
-		add(rating);
 
 
 
@@ -2196,7 +2198,9 @@ class PlayState extends MusicBeatState
 
 			rating.screenCenter();
 			coolText.screenCenter();
+			rating.y -= 25;
 		}
+
 		rating.cameras=ratingCameras;
 		coolText.cameras=ratingCameras;
 
@@ -2222,7 +2226,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom));
+					numScore.setGraphicSize(Std.int(numScore.width * daPixelZoom * .7));
 				}
 				numScore.updateHitbox();
 
@@ -2293,7 +2297,7 @@ class PlayState extends MusicBeatState
 				}
 				else
 				{
-					numScore.setGraphicSize(Std.int((numScore.width * daPixelZoom)*.75));
+					numScore.setGraphicSize(Std.int((numScore.width * daPixelZoom * .7)*.75));
 				}
 				numScore.updateHitbox();
 
@@ -2302,6 +2306,8 @@ class PlayState extends MusicBeatState
 				numScore.velocity.x = FlxG.random.float(-2.5, 2.5);
 
 				if(currentOptions.ratingInHUD){
+					numScore.y -= 60;
+					numScore.x += 50;
 					numScore.scrollFactor.set(0,0);
 				}
 				numScore.cameras=ratingCameras;
@@ -2601,14 +2607,18 @@ class PlayState extends MusicBeatState
 	function updateJudgementCounters(){
 		for(judge in counters.keys()){
 			var txt = counters.get(judge);
-			txt.text = '${judge.substring(0,1).toUpperCase()}${judge.substring(1,judge.length)}: ${judgeMan.judgementCounter.get(judge)}';
+			var name:String = JudgementManager.judgementDisplayNames.get(judge);
+			if(name==null){
+				name = '${judge.substring(0,1).toUpperCase()}${judge.substring(1,judge.length)}';
+			}
+			txt.text = '${name}: ${judgeMan.judgementCounter.get(judge)}';
 			txt.x=0;
 		}
 	}
 
 	function goodNoteHit(note:Note):Void
 	{
-		var noteDiff:Float = Conductor.songPosition - note.strumTime;
+		var noteDiff:Float = note.strumTime - Conductor.songPosition;
 		var judgement = note.isSustainNote?judgeMan.determine(0):judgeMan.determine(noteDiff);
 		var breaksCombo = judgeMan.shouldComboBreak(judgement);
 
@@ -2817,7 +2827,7 @@ class PlayState extends MusicBeatState
 		return super.switchTo(next);
 	}
 
-	public static function setStoryWeek(data:WeekData,difficulty:Int){ // TODO: use weekData to determine the charts
+	public static function setStoryWeek(data:WeekData,difficulty:Int){
 		storyPlaylist = data.getCharts();
 		weekData = data;
 
@@ -2827,15 +2837,27 @@ class PlayState extends MusicBeatState
 		SONG = Song.loadFromJson(data.songs[0].formatDifficulty(difficulty), storyPlaylist[0].toLowerCase());
 		storyWeek = weekData.weekNum;
 		campaignScore = 0;
+
+		PlayState.songData=data.songs[0];
 	}
 
-	public static function setSong(songData:EngineData.SongData,difficulty:Int){
-		var chart:String = Highscore.formatSong(songData.chartName, difficulty);
+	public function gotoNextStory(){
+		storyPlaylist.remove(storyPlaylist[0]);
+		if(storyPlaylist.length>0){
+			var songData = weekData.getByChartName(storyPlaylist[0]);
+			SONG = Song.loadFromJson(songData.formatDifficulty(storyDifficulty), songData.chartName.toLowerCase());
 
-		SONG = Song.loadFromJson(chart, songData.chartName.toLowerCase());
+			PlayState.songData=songData;
+		}
+	}
+
+	public static function setFreeplaySong(songData:SongData,difficulty:Int){
+		SONG = Song.loadFromJson(songData.formatDifficulty(storyDifficulty), songData.chartName.toLowerCase());
 		isStoryMode = false;
 		storyDifficulty = difficulty;
 		storyWeek = songData.weekNum;
+
+		PlayState.songData=songData;
 
 	}
 }

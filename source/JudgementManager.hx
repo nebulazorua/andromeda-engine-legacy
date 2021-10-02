@@ -52,6 +52,14 @@ class JudgementData {
 
 class JudgementManager
 {
+	public static var judgementDisplayNames:Map<String,String> = [
+		"epic"=>"Epic",
+		"sick"=>"Sick",
+		"good"=>"Good",
+		"bad"=>"Bad",
+		"shit"=>"Shit",
+		"miss"=>"Miss"
+	];
   var judgeData:JudgementData;
 	public static var rawJudgements:AnonType;
 	public static var defaultJudgement = new JudgementData(Json.parse('{
@@ -70,6 +78,7 @@ class JudgementManager
 		}
 		return false;
 	}
+
 	public static function getDataByName(name:String){
 		rawJudgements = Json.parse(Assets.getText(Paths.json("judgements")));
 		if(rawJudgements!=null){
@@ -90,6 +99,31 @@ class JudgementManager
 		}
 		return n==null?166:n;
 	}
+
+	public function getLowestWindow(){
+		var n:Null<Float>=null;
+		for(judgement in judgeData.judgementWindows.keys()){
+			var window = judgeData.judgementWindows.get(judgement);
+			if(n==null || window<n){
+				n=window;
+			}
+		}
+		return n==null?0:n;
+	}
+
+	public function getHighestAccJudgement(){
+		var n:Null<Float>=null;
+		var name:String='epic';
+		for(judgement in judgeData.judgementWindows.keys()){
+			var window = judgeData.judgementWindows.get(judgement);
+			if(n==null || window<n){
+				n=window;
+				name=judgement;
+			}
+		}
+		return name;
+	}
+
 
   public function new(data:JudgementData){
     judgeData=data;
