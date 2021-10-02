@@ -31,10 +31,6 @@ class InitState extends FlxUIState {
   }
   override function create()
   {
-    #if polymod
-    polymod.Polymod.init({modRoot: "mods", dirs: ['introMod']});
-    #end
-
     OptionUtils.bindSave();
     OptionUtils.loadOptions(OptionUtils.options);
     var currentOptions = OptionUtils.options;
