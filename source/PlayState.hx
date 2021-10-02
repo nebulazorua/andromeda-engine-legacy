@@ -346,10 +346,16 @@ class PlayState extends MusicBeatState
 		unnamedLuaSprites=0;
 		currentPState=this;
 		currentOptions = OptionUtils.options.clone();
+		#if !debug
+		if(isStoryMode){
+			currentOptions.botPlay=false;
+		}
+		#end
 		ScoreUtils.ghostTapping = currentOptions.ghosttapping;
 		ScoreUtils.botPlay = currentOptions.botPlay;
 		judgeMan = new JudgementManager(JudgementManager.getDataByName(currentOptions.judgementWindow));
 		Conductor.safeZoneOffset = judgeMan.getHighestWindow();
+
 
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
@@ -400,8 +406,10 @@ class PlayState extends MusicBeatState
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
 
-		SONG.speed = currentOptions.cMod==0?SONG.speed:currentOptions.cMod;
-		SONG.speed *= currentOptions.xMod;
+		if(!isStoryMode){
+			SONG.speed = currentOptions.cMod==0?SONG.speed:currentOptions.cMod;
+			SONG.speed *= currentOptions.xMod;
+		}
 
 		SONG.initialSpeed = SONG.speed*.45;
 
@@ -2380,6 +2388,7 @@ class PlayState extends MusicBeatState
 		];
 		var direction = bindData.indexOf(event.keyCode);
 		if(direction!=-1 && !pressedKeys[direction]){
+			pressedKeys[direction]=true;
 			handleInput(direction,true);
 			updateReceptors();
 		}
@@ -2395,6 +2404,7 @@ class PlayState extends MusicBeatState
 		];
 		var direction = bindData.indexOf(event.keyCode);
 		if(direction!=-1 && pressedKeys[direction]){
+			pressedKeys[direction]=false;
 			handleInput(direction,false);
 			updateReceptors();
 		}
@@ -2402,8 +2412,6 @@ class PlayState extends MusicBeatState
 
 	private function handleInput(direction:Int,pressed:Bool){
 		if(direction!=-1){
-			pressedKeys[direction]=pressed;
-
 			if(pressed){
 				var hitSomething=false;
 				var nextHit = noteLanes[direction][0];
@@ -2442,10 +2450,13 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
+
 		for(idx in 0...botplayHoldTimes.length){
 			if(botplayHoldTimes[idx]>0){
-				holdArray[idx]=true;
+				pressedKeys[idx]=true;
 				botplayHoldTimes[idx]-=FlxG.elapsed;
+			}else{
+				pressedKeys[idx]=false;
 			}
 		}
 
@@ -2453,11 +2464,11 @@ class PlayState extends MusicBeatState
 			var pressed = controlArray[idx];
 			handleInput(idx,pressed);
 		}
+
 		updateReceptors();
 
-		for(idx in 0...holdArray.length){
-			pressedKeys[idx]=holdArray[idx];
-		}
+
+
 
 	}
 
@@ -2506,6 +2517,7 @@ class PlayState extends MusicBeatState
 					botplayHoldTimes[idx]-=FlxG.elapsed;
 				}
 			}
+			pressedKeys = holdArray;
 		}
 
 		if(holdArray.contains(true)){
