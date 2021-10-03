@@ -1096,7 +1096,7 @@ class PlayState extends MusicBeatState
 		for (section in noteData)
 		{
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
-
+			section.sectionNotes.sort((a,b)->Std.int(a[0]-b[0]));
 			for (songNotes in section.sectionNotes)
 			{
 				var daStrumTime:Float = songNotes[0];
