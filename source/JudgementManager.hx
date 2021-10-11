@@ -15,6 +15,7 @@ typedef JudgementInfo =
 	var judgementScores:AnonType;
 	var judgementWindows:AnonType;
 	var judgements:Array<String>;
+	@:optional var wifeZeroPoint:Null<Float>;
 }
 
 class JudgementData {
@@ -25,6 +26,7 @@ class JudgementData {
 	public var judgementWindows:Map<String,Int>=[];
 	public var judgements:Array<String>=[];
 	public var judgementWindowsOrder:Array<String>=[];
+	public var wifeZeroPoint:Float = 65;
 	public function new(info:JudgementInfo){
 		for(judge in info.judgements){
 			judgements.push(judge);
@@ -43,10 +45,13 @@ class JudgementData {
 			}
 		}
 
+
 		for(judge in judgementWindows.keys()){
 			judgementWindowsOrder.push(judge);
 		}
 		judgementWindowsOrder.sort((a,b)->Std.int(judgementWindows.get(a)-judgementWindows.get(b)));
+
+		wifeZeroPoint=info.wifeZeroPoint==null?judgementWindows.get(judgementWindowsOrder[judgementWindowsOrder.length-1])/2:info.wifeZeroPoint;
 	}
 }
 
@@ -79,6 +84,14 @@ class JudgementManager
 		return false;
 	}
 
+	public function hasJudge(name:String){
+		return judgeData.judgementWindows.exists(name);
+	}
+
+	public function getWifeZero(){
+		return judgeData.wifeZeroPoint;
+	};
+
 	public static function getDataByName(name:String){
 		rawJudgements = Json.parse(Assets.getText(Paths.json("judgements")));
 		if(rawJudgements!=null){
@@ -90,25 +103,11 @@ class JudgementManager
 	}
 
 	public function getHighestWindow(){
-		var n:Null<Float>=null;
-		for(judgement in judgeData.judgementWindows.keys()){
-			var window = judgeData.judgementWindows.get(judgement);
-			if(n==null || window>n){
-				n=window;
-			}
-		}
-		return n==null?166:n;
+		return getJudgementWindow(judgeData.judgementWindowsOrder[judgeData.judgementWindowsOrder.length-1]);
 	}
 
 	public function getLowestWindow(){
-		var n:Null<Float>=null;
-		for(judgement in judgeData.judgementWindows.keys()){
-			var window = judgeData.judgementWindows.get(judgement);
-			if(n==null || window<n){
-				n=window;
-			}
-		}
-		return n==null?0:n;
+		return getJudgementWindow(judgeData.judgementWindowsOrder[0]);
 	}
 
 	public function getHighestAccJudgement(){
@@ -135,10 +134,10 @@ class JudgementManager
   }
 
 	public function getJudgementWindow(judge:String):Float{
-		for(judgement in judgeData.judgementWindows.keys()){
-			if(judgement==judge)
-				return judgeData.judgementWindows.get(judgement);
+		if(judgeData.judgementWindows.exists(judge)){
+			return judgeData.judgementWindows.get(judge);
 		}
+
 		return judgeData.judgementWindows.get('shit');
 	}
 
@@ -147,39 +146,33 @@ class JudgementManager
   }
 
   public function shouldComboBreak(judge:String):Bool{
-		trace(judge);
-    for(judgement in judgeData.comboBreakJudgements){
-      if(judgement==judge){
-        return true;
-      }
-    }
-    return judge=="miss"?true:false;
+		for(judgement in judgeData.comboBreakJudgements){
+			if(judgement==judge){
+				return true;
+			}
+		}
+
+    return judge=='miss'?true:false;
   }
 
   public function getJudgementHealth(judge:String):Float{
-    for(judgement in judgeData.judgementHealth.keys()){
-      if(judgement==judge){
-        return (judgeData.judgementHealth.get(judgement)/100)*2;
-      }
-    }
+		if(judgeData.judgementHealth.exists(judge)){
+			return (judgeData.judgementHealth.get(judge)/100)*2;
+		}
     return (judgeData.judgementHealth.get("miss")/100)*2;
   }
 
   public function getJudgementAccuracy(judge:String):Float{
-    for(judgement in judgeData.judgementAccuracy.keys()){
-      if(judgement==judge){
-        return judgeData.judgementAccuracy.get(judgement)/100;
-      }
-    }
+		if(judgeData.judgementAccuracy.exists(judge)){
+			return judgeData.judgementAccuracy.get(judge)/100;
+		}
     return judgeData.judgementAccuracy.get("miss")/100;
   }
 
   public function getJudgementScore(judge:String):Int{
-    for(judgement in judgeData.judgementScores.keys()){
-      if(judgement==judge){
-        return judgeData.judgementScores.get(judgement);
-      }
-    }
+		if(judgeData.judgementScores.exists(judge)){
+			return judgeData.judgementScores.get(judge);
+		}
     return judgeData.judgementScores.get("miss");
   }
 

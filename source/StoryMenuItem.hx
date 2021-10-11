@@ -8,16 +8,16 @@ import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import Options;
 
-class MenuItem extends FlxSpriteGroup
+class StoryMenuItem extends FlxSpriteGroup
 {
 	public var targetY:Float = 0;
 	public var week:FlxSprite;
 	public var flashingInt:Int = 0;
 
-	public function new(x:Float, y:Float, weekNum:Int = 0)
+	public function new(x:Float, y:Float, path:String)
 	{
 		super(x, y);
-		week = new FlxSprite().loadGraphic(Paths.image('storymenu/week' + weekNum));
+		week = new FlxSprite().loadGraphic(Paths.image('storymenu/${path}'));
 		add(week);
 	}
 

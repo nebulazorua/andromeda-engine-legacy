@@ -8,10 +8,16 @@ class SongData {
   public var chartName:String = 'tutorial';
   public var freeplayIcon:String = 'gf';
   public var weekNum:Int = 0;
-  public function new(name:String='Tutorial',freeplayIcon:String='gf',weekNum:Int=0,?chartName:String){
+  public var loadingPath:String = '';
+  public function new(name:String='Tutorial',freeplayIcon:String='gf',weekNum:Int=0,?chartName:String,?path:String){
     if(chartName==null){
       chartName=name.replace(" ","-").toLowerCase();
     }
+
+    if(path==null){
+      path = 'week${weekNum}';
+    }
+    loadingPath=path;
 
     this.displayName=name;
     this.freeplayIcon=freeplayIcon;
@@ -28,6 +34,8 @@ class SongData {
         name = '${chartName}';
       case 2:
         name = '${chartName}-hard';
+      case 3:
+        name = '${chartName}-erect';
     };
     return name;
   }
@@ -39,20 +47,26 @@ class WeekData {
   public var protag:String = 'bf';
   public var lover:String='gf';
   public var weekNum:Int = 0;
+  public var loadingPath:String = '';
   public var name:String = 'Template';
 
-  public function new(name:String='Template',weekNum:Int=0,character:String='',songs:Array<Dynamic>,?protag='bf',?lover='gf'){
+  public function new(name:String='Template',weekNum:Int=0,character:String='',songs:Array<Dynamic>,?protag:String='bf',?lover:String='gf',?path:String){
+    if(path==null){
+      path = 'week${weekNum}';
+    }
     var songData:Array<SongData>=[];
     for(stuff in songs){
       switch(Type.typeof(stuff)){
         case TClass(String):
-          songData.push(new SongData(stuff,character,weekNum));
+          songData.push(new SongData(stuff,character,weekNum,null,path));
         case TClass(SongData):
           songData.push(stuff);
         default:
           trace('cannot handle ${Type.typeof(stuff)}');
       }
     }
+    loadingPath=path;
+
     this.protag=protag;
     this.lover=lover;
     this.songs=songData;
@@ -80,6 +94,7 @@ class WeekData {
 }
 
 class EngineData {
+  public static var createThread=false;
   public static var options:Options;
   public static var weeksUnlocked:Array<Bool>=[true,true,true,true,true,true];
   public static var mustUnlockWeeks:Bool=false; // TODO: make this work

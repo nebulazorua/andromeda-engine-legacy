@@ -11,6 +11,7 @@ class ScoreUtils
 	public static var gradeArray:Array<String> = ["☆☆☆☆","☆☆☆","☆☆","☆","S+","S","S-","A+","A","A-","B+","B","B-","C+","C","C-","D"];
 	public static var ghostTapping:Bool=false;
 	public static var botPlay:Bool=false;
+	public static var wifeZeroPoint:Float = 65;
 
 	public static var malewifeMissWeight:Float = -5.5;
 	public static var malewifeMineWeight:Float = -7;
@@ -46,15 +47,13 @@ class ScoreUtils
 	// FUCK YOU HOODA
 	// JK ILY HOODA
 	// (PLATONICALLY)
-	public static function werwerwerwerf(x:Float):Float{
-
-		var sign:Int = 1;
-		if(x<0)sign=-1;
-
-		var sex = Math.abs(x);
-		var t = 1/(1+p*sex);
-		var y = 1-(((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-sex * sex);
-
+	public static function werwerwerwerf(x:Float):Float
+	{
+		var sign = 1;
+		if (x < 0)sign = -1;
+		x = Math.abs(x);
+		var t = 1 / (1+p*x);
+		var y = 1 - (((((a5*t+a4)*t)+a3)*t+a2)*t+a1)*t*Math.exp(-x*x);
 		return sign*y;
 	}
 
@@ -62,24 +61,22 @@ class ScoreUtils
 		var jPow:Float = 0.75;
 		var maxPoints:Float = 2.0;
 		var ridic:Float = 5*timeScale;
-		var shit_weight:Float = 180*timeScale;
-
+		var shit_weight:Float = Conductor.safeZoneOffset; // should I use this?? idfk man
 		var absDiff = Math.abs(noteDiff);
-		if(absDiff<=ridic){
-			return maxPoints;
-		}
-
-		var zero:Float = 65 * Math.pow(timeScale,jPow);
+		var zero:Float = wifeZeroPoint * Math.pow(timeScale,jPow);
 		var dev:Float = 22.7 * Math.pow(timeScale,jPow);
 
-		if(absDiff<=zero){
+		if(absDiff<=ridic){
+			return maxPoints;
+		} else if(absDiff<=zero){
 			return maxPoints*werwerwerwerf((zero-absDiff)/dev);
-		}
-		if(absDiff<=shit_weight){
+		}else if(absDiff<=shit_weight){
 			return (absDiff-zero)*malewifeMissWeight/(shit_weight-zero);
 		}
 		return malewifeMissWeight;
 	}
+
+
 
 	public static function AccuracyToGrade(accuracy:Float):String {
     var grade = gradeArray[gradeArray.length-1];

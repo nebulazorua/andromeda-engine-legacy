@@ -20,13 +20,13 @@ class Character extends FlxSprite
 	public var holding:Bool=false;
 	public var disabledDance:Bool = false;
 	public var iconColor:FlxColor = 0xFF50a5eb;
-
+	public var iconName:String = '';
 	public var holdTimer:Float = 0;
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
 		super(x, y);
-
+		iconName=character;
 		animOffsets = new Map<String, Array<Dynamic>>();
 		curCharacter = character;
 		this.isPlayer = isPlayer;
@@ -37,6 +37,7 @@ class Character extends FlxSprite
 		switch (curCharacter)
 		{
 			case 'bf':
+				iconName='bf';
 				iconColor = 0xFF31B0D1;
 				var tex = Paths.getSparrowAtlas('characters/BOYFRIEND','shared');
 				frames = tex;
@@ -63,6 +64,7 @@ class Character extends FlxSprite
 				flipX = true;
 
 			case 'bf-car':
+				iconName='bf';
 				iconColor = 0xFF31B0D1;
 				var tex = Paths.getSparrowAtlas('characters/bfCar','shared');
 				frames = tex;
@@ -82,6 +84,7 @@ class Character extends FlxSprite
 				flipX = true;
 
 			case 'bf-christmas':
+				iconName='bf';
 				iconColor = 0xFF31B0D1;
 				var tex = Paths.getSparrowAtlas('characters/bfChristmas','shared');
 				frames = tex;
@@ -164,6 +167,7 @@ class Character extends FlxSprite
 				playAnim('danceRight');
 
 			case 'gf-car':
+				iconName='gf';
 				iconColor = 0xFFA5004D;
 				tex = Paths.getSparrowAtlas('characters/gfCar','shared');
 				frames = tex;
@@ -176,6 +180,7 @@ class Character extends FlxSprite
 				playAnim('danceRight');
 
 			case 'gf-christmas':
+				iconName='gf';
 				iconColor = 0xFFA5004D;
 				tex = Paths.getSparrowAtlas('characters/gfChristmas','shared');
 				frames = tex;
@@ -195,6 +200,7 @@ class Character extends FlxSprite
 				playAnim('danceRight');
 
 			case 'gf-pixel':
+				iconName='gf';
 				iconColor = 0xFFA5004D;
 				tex = Paths.getSparrowAtlas('characters/gfPixel','shared');
 				frames = tex;
@@ -302,6 +308,7 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 			case 'mom-car':
+				iconName='mom';
 				iconColor = 0xFFD8558E;
 				tex = Paths.getSparrowAtlas('characters/momCar','shared');
 				frames = tex;

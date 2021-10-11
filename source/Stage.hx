@@ -36,7 +36,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
     "bopeebo"=>"stage",
     "fresh"=>"stage",
     "dadbattle"=>"stage",
-    "tutorial"=>"stage"
+    "tutorial"=>"stage",
   ];
 
   // spooky bg
@@ -70,6 +70,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
   public var dadPosition:FlxPoint = FlxPoint.get(100,100);
   public var gfPosition:FlxPoint = FlxPoint.get(400,130);
   public var camPos:FlxPoint = FlxPoint.get(100,100);
+  public var camOffset:FlxPoint = FlxPoint.get(100,100);
 
   public var layers:Map<String,FlxTypedGroup<FlxBasic>> = [
     "boyfriend"=>new FlxTypedGroup<FlxBasic>(), // stuff that should be layered infront of all characters, but below the foreground
@@ -87,6 +88,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
   public var curStage:String = '';
 
   // other vars
+  public var gfVersion:String = 'gf';
   public var gf:Character;
   public var boyfriend:Character;
   public var dad:Character;
@@ -96,6 +98,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
     bfPosition = FlxDestroyUtil.put(bfPosition);
     dadPosition = FlxDestroyUtil.put(dadPosition);
     gfPosition = FlxDestroyUtil.put(gfPosition);
+    camOffset =  FlxDestroyUtil.put(camOffset);
 
     super.destroy();
   }
@@ -134,51 +137,57 @@ class Stage extends FlxTypedGroup<FlxBasic> {
 
 
   public function setPlayerPositions(p1:Character,p2:Character,gf:Character){
-    camPos.set(dad.getGraphicMidpoint().x, dad.getGraphicMidpoint().y);
+
+    p1.setPosition(bfPosition.x,bfPosition.y);
+    p2.setPosition(dadPosition.x,dadPosition.y);
+    gf.setPosition(gfPosition.x,gfPosition.y);
+    camPos.set(p2.getGraphicMidpoint().x, p2.getGraphicMidpoint().y);
     switch(p1.curCharacter){
 
     }
 
     switch(p2.curCharacter){
       case 'gf':
-        dadPosition.set(gf.x, gf.y);
+        p2.setPosition(gf.x, gf.y);
         gf.visible = false;
 
       case "spooky":
-        dadPosition.y += 200;
+        p2.y += 200;
       case "monster":
-        dadPosition.y += 100;
+        p2.y += 100;
       case 'monster-christmas':
-        dadPosition.y += 130;
+        p2.y += 130;
       case 'dad':
         camPos.x += 400;
       case 'pico':
         camPos.x += 600;
-        dadPosition.y += 300;
+        p2.y += 300;
       case 'parents-christmas':
-        dadPosition.x -= 500;
+        p2.x -= 500;
       case 'senpai' | 'senpai-angry':
-        dadPosition.x += 150;
-        dadPosition.y += 360;
-        p2.setPosition(dadPosition.x,dadPosition.y);
+        p2.x += 150;
+        p2.y += 360;
         camPos.set(p2.getGraphicMidpoint().x + 300, p2.getGraphicMidpoint().y);
       case 'spirit':
-        dadPosition.x -= 150;
-        dadPosition.y += 100;
-        p2.setPosition(dadPosition.x,dadPosition.y);
+        p2.x -= 150;
+        p2.y += 100;
         camPos.set(p2.getGraphicMidpoint().x + 300, p2.getGraphicMidpoint().y);
+      case "flexy":
+				p2.x += 75;
+				p2.y += 325;
+				camPos.x += 175;
+			case "dmp":
+				p2.x += 75;
+				p2.y += 250;
+				camPos.x += 175;
       case 'bf-pixel':
-        dadPosition.y += 570;
-        dadPosition.x += 200;
-        p2.setPosition(dadPosition.x,dadPosition.y);
+        p2.y += 570;
+        p2.x += 200;
         camPos.set(p2.getGraphicMidpoint().x, p2.getGraphicMidpoint().y);
       case 'bf' | 'bf-car' | 'bf-christmas':
-        dadPosition.y += 350;
+        p2.y += 350;
     }
 
-    p1.setPosition(bfPosition.x,bfPosition.y);
-    p2.setPosition(dadPosition.x,dadPosition.y);
-    gf.setPosition(gfPosition.x,gfPosition.y);
   }
 
   public function new(stage:String,currentOptions:Options){
@@ -243,6 +252,10 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         add(halloweenBG);
 
       case 'school':
+          gfVersion = 'gf-pixel';
+          camOffset.x = 200;
+          camOffset.y = 200;
+
           bfPosition.x += 200;
           bfPosition.y += 220;
           gfPosition.x += 180;
@@ -308,6 +321,10 @@ class Stage extends FlxTypedGroup<FlxBasic> {
           add(bgGirls);
           dancers.push(bgGirls);
       case 'schoolEvil':
+        gfVersion = 'gf-pixel';
+        camOffset.x = 200;
+        camOffset.y = 200;
+
         bfPosition.x += 200;
         bfPosition.y += 220;
         gfPosition.x += 180;
@@ -324,6 +341,8 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         bg.scale.set(6, 6);
         add(bg);
       case 'mall':
+        gfVersion = 'gf-christmas';
+        camOffset.x = 200;
         defaultCamZoom = 0.80;
         bfPosition.x += 200;
 
@@ -380,6 +399,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         add(santa);
         boppers.push([santa,"idle",1]);
       case 'mallEvil':
+        gfVersion = 'gf-christmas';
 
         bfPosition.x += 320;
         dadPosition.y -= 80;
@@ -400,6 +420,8 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         evilSnow.antialiasing = true;
         add(evilSnow);
       case 'limo':
+        gfVersion = 'gf-car';
+        camOffset.x = 300;
 
         bfPosition.y -= 220;
         bfPosition.x += 260;
@@ -477,11 +499,10 @@ class Stage extends FlxTypedGroup<FlxBasic> {
   }
 
 
-
   public function beatHit(beat){
     for(b in boppers){
       if(beat%b[2]==0){
-        b[0].animation.play(b[1]);
+        b[0].animation.play(b[1],true);
       }
     }
     for(d in dancers){
