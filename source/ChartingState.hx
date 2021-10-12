@@ -135,6 +135,7 @@ class ChartingState extends MusicBeatState
 				needsVoices: true,
 				player1: 'bf',
 				player2: 'dad',
+				stage: "stage",
 				speed: 1,
 				validScore: false
 			};
@@ -264,6 +265,13 @@ class ChartingState extends MusicBeatState
 
 		player2DropDown.selectedLabel = _song.player2;
 
+		var stageDropdown = new FlxUIDropDownMenu(10, 240, FlxUIDropDownMenu.makeStrIdLabelArray(Stage.stageNames, true), function(stageName:String)
+		{
+			_song.stage = Stage.stageNames[Std.parseInt(stageName)];
+		});
+
+		stageDropdown.selectedLabel = _song.stage;
+
 		var check_use_hit = new FlxUICheckBox(135, 200, null, null, "Use hit sounds (in editor)", 100);
 		check_use_hit.checked = false;
 		check_use_hit.callback = function()
@@ -280,6 +288,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(check_use_hit);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
+		tab_group_song.add(stageDropdown);
 		tab_group_song.add(reloadSongJson);
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);

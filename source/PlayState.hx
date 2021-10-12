@@ -510,11 +510,15 @@ class PlayState extends MusicBeatState
 		}
 
 		noteModifier='base';
-		curStage=Stage.songStageMap.get(songData.chartName.toLowerCase());
+		curStage=SONG.stage==null?Stage.songStageMap.get(songData.chartName.toLowerCase()):SONG.stage;
 
 		if(curStage==null){
 			curStage='stage';
 		}
+
+
+		if(SONG.stage==null)
+			SONG.stage = curStage;
 
 		stage = new Stage(curStage,currentOptions);
 		switch(curStage){

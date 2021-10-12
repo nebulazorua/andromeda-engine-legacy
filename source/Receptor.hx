@@ -70,7 +70,7 @@ class Receptor extends FlxSprite {
   }
 
   override function update(elapsed:Float){
-    angle = baseAngle+desiredAngle;
+    angle = desiredAngle;
     super.update(elapsed);
   }
 }
