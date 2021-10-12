@@ -526,7 +526,7 @@ class PlayState extends MusicBeatState
 			noteModifier='pixel';
 			if(currentOptions.senpaiShaderStrength>0){
 				if(vcrDistortionHUD!=null){
-					if(currentOptions.enpaiShaderStrength>=2){
+					if(currentOptions.senpaiShaderStrength>=2){
 						switch(songData.chartName.toLowerCase()){
 							case 'roses':
 								vcrDistortionGame.setGlitchModifier(.025);
@@ -538,6 +538,9 @@ class PlayState extends MusicBeatState
 								vcrDistortionHUD.setDistortion(false);
 								vcrDistortionGame.setDistortion(false);
 						}
+					}else{
+						vcrDistortionHUD.setDistortion(false);
+						vcrDistortionGame.setDistortion(false);
 					}
 					modchart.addCamEffect(vcrDistortionGame);
 					modchart.addHudEffect(vcrDistortionHUD);
