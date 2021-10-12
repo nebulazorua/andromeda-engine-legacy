@@ -555,6 +555,8 @@ class PlayState extends MusicBeatState
 
 		add(stage);
 
+		FlxG.mouse.visible = false;
+
 
 		var gfVersion:String = stage.gfVersion;
 

@@ -64,7 +64,7 @@ class OptionsState extends MusicBeatState
 			new OptionCategory("Effects",[
 				new ToggleOption("picoCamshake","Week 3 cam shake","Does the train cause a camera shake in week 3"),
 				//new ToggleOption("senpaiShaders","Week 6 shaders","Is the CRT effect active in week 6"),
-				new ScrollOption("senpaiShaderStrength","Week 6 shaders","How strong are the week 6 shaders",0,-1,["Off","CRT","All"])
+				new ScrollOption("senpaiShaderStrength","Week 6 shaders","How strong are the week 6 shaders",0,2,["Off","CRT","All"])
 			]),
 		]),
 		new OptionCategory("Preferences",[

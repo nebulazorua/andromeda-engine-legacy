@@ -50,6 +50,7 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
+		FlxG.mouse.visible = true;
 		weekData = EngineData.weekData;
 
 		weekUnlocked = EngineData.weeksUnlocked;

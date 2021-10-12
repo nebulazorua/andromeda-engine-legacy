@@ -95,7 +95,7 @@ class InitState extends FlxUIState {
         canCache=false;
     }
 
-
+    FlxG.fixedTimestep = false;
 
     if(currentOptions.shouldCache && canCache){
       FlxG.switchState(new CachingState(new TitleState()));
