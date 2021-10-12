@@ -526,7 +526,7 @@ class PlayState extends MusicBeatState
 			noteModifier='pixel';
 			if(currentOptions.senpaiShaderStrength>0){
 				if(vcrDistortionHUD!=null){
-					if(senpaiShaderStrength>=2){
+					if(currentOptions.enpaiShaderStrength>=2){
 						switch(songData.chartName.toLowerCase()){
 							case 'roses':
 								vcrDistortionGame.setGlitchModifier(.025);
