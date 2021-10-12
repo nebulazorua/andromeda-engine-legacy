@@ -24,14 +24,18 @@ Get the source code: https://github.com/ninjamuffin99/Funkin
 - [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
 - [Kawaisprite](https://twitter.com/kawaisprite) - Musician
 - Nebula the Zorua - Most engine stuff
-- [TKTems](https://twitter.com/TKTems) - Some menuing stuff
-- [Echolocated](https://twitter.com/CH_echolocated) - "Epic" judgement rating
+- [TKTems](https://twitter.com/TKTems) - Menu stuff
+- [Echolocated](https://twitter.com/CH_echolocated) - "Epic" judgement rating and spreading the word about the engine
 - [kevinresol](https://github.com/kevinresol) - Original hxvm-lua
 - [AndreiDudenko](https://github.com/AndreiRudenko) - Original linc_luajit
 - [Poco](https://github.com/poco0317) - Wife3
 - [Etterna](https://github.com/etternagame/etterna) - Poco did the math for Wife3 in Etterna, I think
 - [Quaver](https://github.com/Quaver/Quaver) - Scroll code
-
+- [SrPerez](https://twitter.com/NewSrPerez) - Some math to do with receptors in KE
+- [Kade Engine](https://github.com/KadeDev/Kade-Engine) - SrPerez's math for receptors
+- [bbpanzu](https://twitter.com/bbsub3) - Bringing issues to my attention & letting more people know about AE
+- [Redsty Phoenix](https://twitter.com/RedstyP) - REALLY getting the word out
+- [Yoshubs](https://twitter.com/yoshubs) - Inspiration
 Shoutouts to Newgrounds and Tom Fulp for creatin' the best website and community on the internet
 
 ## Build instructions

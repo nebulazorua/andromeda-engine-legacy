@@ -524,9 +524,9 @@ class PlayState extends MusicBeatState
 		switch(curStage){
 			case 'school' | 'schoolEvil':
 			noteModifier='pixel';
-			if(currentOptions.senpaiShaderStrength>0){
+			if(currentOptions.senpaiShaderStrength>0){ // they're on
 				if(vcrDistortionHUD!=null){
-					if(currentOptions.senpaiShaderStrength>=2){
+					if(currentOptions.senpaiShaderStrength>=2){ // sempai shader strength
 						switch(songData.chartName.toLowerCase()){
 							case 'roses':
 								vcrDistortionGame.setGlitchModifier(.025);

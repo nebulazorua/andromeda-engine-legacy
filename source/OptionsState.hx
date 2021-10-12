@@ -79,7 +79,9 @@ class OptionsState extends MusicBeatState
 			new ToggleOption("freeplayPreview","Song preview in freeplay","Do songs get played when selecting them in the freeplay menu"),
 		]),
 		new OptionCategory("Performance",[
-			new StepOption("fps","FPS",30,30,360,"","","The FPS the game tries to run at"),
+			new StepOption("fps","FPS",30,30,360,"","","The FPS the game tries to run at",function(value:Float,step:Float){
+				Main.setFPSCap(value);
+			}),
 			new OptionCategory("Loading",[
 				new ToggleOption("shouldCache","Cache on startup","Should the engine cache anything when being loaded"),
 				new ToggleOption("cacheCharacters","Cache characters","Should the engine cache characters at startup"),

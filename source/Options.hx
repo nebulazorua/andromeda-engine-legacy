@@ -291,12 +291,12 @@ class StepOption extends Option
 	private var leftArrow:FlxSprite;
 	private var rightArrow:FlxSprite;
 	private var labelAlphabet:Alphabet;
-
+	private var callback:Float->Float->Void;
 	private var suffix:String='';
 	private var prefix:String='';
 
 
-	public function new(property:String,label:String,?step:Float=1,?min:Float=0,?max:Float=100,?suffix:String='',?prefix:String='',?desc:String=''){
+	public function new(property:String,label:String,?step:Float=1,?min:Float=0,?max:Float=100,?suffix:String='',?prefix:String='',?desc:String='',?callback:Float->Float->Void){
 		super();
 		this.property=property;
 		this.label=label;
@@ -304,6 +304,7 @@ class StepOption extends Option
 		this.step=step;
 		this.suffix=suffix;
 		this.prefix=prefix;
+		this.callback=callback;
 		var value = Reflect.field(OptionUtils.options,property);
 		leftArrow = new FlxSprite(0,0);
 		leftArrow.frames = Paths.getSparrowAtlas("arrows");
@@ -395,6 +396,8 @@ class StepOption extends Option
 		Reflect.setField(OptionUtils.options,property,value);
 
 		name = '${prefix}${Std.string(value)}${suffix}';
+		if(callback!=null)
+			callback(value,-step);
 
 		return true;
 	};
@@ -409,6 +412,8 @@ class StepOption extends Option
 		Reflect.setField(OptionUtils.options,property,value);
 
 		name = '${prefix}${Std.string(value)}${suffix}';
+		if(callback!=null)
+			callback(value,step);
 
 		return true;
 	};
@@ -424,13 +429,17 @@ class ScrollOption extends Option
 	private var leftArrow:FlxSprite;
 	private var rightArrow:FlxSprite;
 	private var labelAlphabet:Alphabet;
+	private var callback:Int->String->Int->Void;
+	// i wish there was a better way to do this ^
+	// if there is and you're reading this and know a better way, PR please!
 
-	public function new(property:String,label:String,description:String,?min:Int=0,?max:Int=-1,?names:Array<String>){
+	public function new(property:String,label:String,description:String,?min:Int=0,?max:Int=-1,?names:Array<String>,?callback:Int->String->Int->Void){
 		super();
 		this.property=property;
 		this.label=label;
 		this.description=description;
 		this.names=names;
+		this.callback=callback;
 		var value = Reflect.field(OptionUtils.options,property);
 		leftArrow = new FlxSprite(0,0);
 		leftArrow.frames = Paths.getSparrowAtlas("arrows");
@@ -528,6 +537,10 @@ class ScrollOption extends Option
 		}else{
 			name = Std.string(value);
 		}
+
+		if(callback!=null){
+			callback(value,name,-1);
+		}
 		return true;
 	};
 	public override function right():Bool{
@@ -544,6 +557,10 @@ class ScrollOption extends Option
 			name = names[value];
 		}else{
 			name = Std.string(value);
+		}
+
+		if(callback!=null){
+			callback(value,name,1);
 		}
 		return true;
 	};
