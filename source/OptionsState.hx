@@ -25,7 +25,7 @@ class OptionsState extends MusicBeatState
 	public static var instance:OptionsState;
 	private var defCat:OptionCategory = new OptionCategory("Default",[
 		new OptionCategory("Gameplay",[
-			new OptionCategory("Controls",[
+			new OptionCategory("Controls",[ // TODO: rewrite
 				new ControlOption(controls,Control.LEFT),
 				new ControlOption(controls,Control.DOWN),
 				new ControlOption(controls,Control.UP),
@@ -38,7 +38,7 @@ class OptionsState extends MusicBeatState
 			new ToggleOption("loadModcharts","Load Lua modcharts","Should modcharts which run using lua load"),
 			#end
 			new ToggleOption("ghosttapping","Ghost-tapping","Missing when you hit nothing"),
-			new ToggleOption("failForMissing","Sudden Death"),
+			new ToggleOption("failForMissing","Sudden Death","FC or die"),
 			new OptionCategory("Freeplay Modifiers",[
 				new StepOption("cMod","Speed Constant",0.1,0,10,"","","A constant speed to override the scrollspeed. 0 for default speed"),
 				new StepOption("xMod","Speed Mult",0.1,0,2,"","x","A multiplier to a chart's scrollspeed"),
@@ -49,7 +49,7 @@ class OptionsState extends MusicBeatState
 				new ToggleOption("pollingInput","Old input","Should inputs get checked every frame"),
 				new ToggleOption("useMalewife","Use Wife3","Should accuracy use Wife3")
 			]),
-			//new StateOption("Calibrate Offset",new SoundOffsetState()),
+			new StateOption("Calibrate Offset",new SoundOffsetState()),
 			// TODO: make a better 'calibrate offset'
 		]),
 		new OptionCategory("Appearance",[
@@ -62,9 +62,9 @@ class OptionsState extends MusicBeatState
 			new ToggleOption("oldTitle","Old Title Screen","Use the vanilla titlescreen"),
 			new ToggleOption("healthBarColors","Healthbar Colours","Should the healthbar colours change with the character"),
 			new OptionCategory("Effects",[
-				new ToggleOption("picoShaders","Week 3 shaders","Does the windows fading out in week 3 use shaders"),
 				new ToggleOption("picoCamshake","Week 3 cam shake","Does the train cause a camera shake in week 3"),
-				new ToggleOption("senpaiShaders","Week 6 shaders","Is the CRT effect active in week 6"),
+				//new ToggleOption("senpaiShaders","Week 6 shaders","Is the CRT effect active in week 6"),
+				new ScrollOption("senpaiShaderStrength","Week 6 shaders","How strong are the week 6 shaders",0,-1,["Off","CRT","All"])
 			]),
 		]),
 		new OptionCategory("Preferences",[
@@ -78,15 +78,18 @@ class OptionsState extends MusicBeatState
 			new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),
 			new ToggleOption("freeplayPreview","Song preview in freeplay","Do songs get played when selecting them in the freeplay menu"),
 		]),
-		new OptionCategory("Loading",[
-			new ToggleOption("shouldCache","Cache on startup","Should the engine cache anything when being loaded"),
-			new ToggleOption("cacheCharacters","Cache characters","Should the engine cache characters at startup"),
-			new ToggleOption("cacheSongs","Cache songs","Should the engine cache songs at startup"),
-			new ToggleOption("cacheSounds","Cache sounds","Should the engine cache misc sounds at startup"),
-			new ToggleOption("cachePreload","Cache misc images","Should the engine cache misc images"),
-			new ToggleOption("cacheUsedImages","Cache loaded images","Should images be cached when they get loaded ",function(state:Bool){
-				FlxGraphic.defaultPersist = state;
-			}),
+		new OptionCategory("Performance",[
+			new StepOption("fps","FPS",30,30,360,"","","The FPS the game tries to run at"),
+			new OptionCategory("Loading",[
+				new ToggleOption("shouldCache","Cache on startup","Should the engine cache anything when being loaded"),
+				new ToggleOption("cacheCharacters","Cache characters","Should the engine cache characters at startup"),
+				new ToggleOption("cacheSongs","Cache songs","Should the engine cache songs at startup"),
+				new ToggleOption("cacheSounds","Cache sounds","Should the engine cache misc sounds at startup"),
+				new ToggleOption("cachePreload","Cache misc images","Should the engine cache misc images"),
+				new ToggleOption("cacheUsedImages","Cache loaded images","Should images be cached when they get loaded ",function(state:Bool){
+					FlxGraphic.defaultPersist = state;
+				}),
+			]),
 		]),
 		/*new OptionCategory("Experimental",[
 			new ToggleOption("holdsOneNote","Holds are long notes","Should holds be treated like a single, long note")

@@ -97,7 +97,7 @@ class Options
 	public var middleScroll:Bool = false;
 	public var picoShaders:Bool = true;
 	public var picoCamshake:Bool = true;
-	public var senpaiShaders:Bool = true;
+	public var senpaiShaderStrength:Int = 2;
 	public var oldMenus:Bool = false;
 	public var oldTitle:Bool = false;
 	public var healthBarColors:Bool = true;

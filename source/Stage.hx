@@ -236,7 +236,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
                 light.setGraphicSize(Std.int(light.width * 0.85));
                 light.updateHitbox();
                 light.antialiasing = true;
-                if(currentOptions.picoShaders) light.shader=lightFadeShader.shader;
+                light.shader=lightFadeShader.shader;
                 phillyCityLights.add(light);
         }
 
@@ -547,8 +547,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
 
           phillyCityLights.members[curLight].visible = true;
           phillyCityLights.members[curLight].alpha = 1;
-          if(currentOptions.picoShaders && lightFadeShader!=null)
-            lightFadeShader.setAlpha(0);
+          lightFadeShader.setAlpha(0);
         }
 
         if (beat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
@@ -572,11 +571,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
             trainFrameTiming = 0;
           }
         }
-        //phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed * 1.5;
-        if(currentOptions.picoShaders && lightFadeShader!=null)
-          lightFadeShader.addAlpha((Conductor.crochet / 1000) * FlxG.elapsed * 1.5);
-        else
-          phillyCityLights.members[curLight].alpha -= (Conductor.crochet / 1000) * FlxG.elapsed * 1.5;
+        lightFadeShader.addAlpha((Conductor.crochet / 1000) * FlxG.elapsed * 1.5);
     }
 
 

@@ -523,19 +523,21 @@ class PlayState extends MusicBeatState
 		stage = new Stage(curStage,currentOptions);
 		switch(curStage){
 			case 'school' | 'schoolEvil':
-				noteModifier='pixel';
-				if(currentOptions.senpaiShaders){
-					if(vcrDistortionHUD!=null){
-					switch(songData.chartName.toLowerCase()){
-						case 'roses':
-							vcrDistortionGame.setGlitchModifier(.025);
-							vcrDistortionHUD.setGlitchModifier(.025);
-						case 'thorns':
-							vcrDistortionGame.setGlitchModifier(.2);
-							vcrDistortionHUD.setGlitchModifier(.2);
-						case _: // default
-							vcrDistortionHUD.setDistortion(false);
-							vcrDistortionGame.setDistortion(false);
+			noteModifier='pixel';
+			if(currentOptions.senpaiShaderStrength>0){
+				if(vcrDistortionHUD!=null){
+					if(senpaiShaderStrength>=2){
+						switch(songData.chartName.toLowerCase()){
+							case 'roses':
+								vcrDistortionGame.setGlitchModifier(.025);
+								vcrDistortionHUD.setGlitchModifier(.025);
+							case 'thorns':
+								vcrDistortionGame.setGlitchModifier(.2);
+								vcrDistortionHUD.setGlitchModifier(.2);
+							case _: // default
+								vcrDistortionHUD.setDistortion(false);
+								vcrDistortionGame.setDistortion(false);
+						}
 					}
 					modchart.addCamEffect(vcrDistortionGame);
 					modchart.addHudEffect(vcrDistortionHUD);
