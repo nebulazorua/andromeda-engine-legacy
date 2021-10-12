@@ -204,6 +204,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
 
   public function new(stage:String,currentOptions:Options){
     super();
+    if(stage=='halloween')stage='spooky'; // for kade engine shenanigans
     curStage=stage;
     this.currentOptions=currentOptions;
 
