@@ -2022,9 +2022,9 @@ class PlayState extends MusicBeatState
 
 		}
 		if(currentOptions.ratingInHUD){
-			camRating.zoom = camGame.zoom;
-		}else{
 			camRating.zoom = camHUD.zoom;
+		}else{
+			camRating.zoom = camGame.zoom;
 		}
 		camReceptor.zoom = camHUD.zoom;
 		camNotes.zoom = camReceptor.zoom;
