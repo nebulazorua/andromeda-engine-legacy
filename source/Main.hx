@@ -81,9 +81,27 @@ class Main extends Sprite
 		#end
 	}
 
-	public static function setFPSCap(cap:Float)
+	public static function setFPSCap(cap:Int)
 	{
+		Main.framerate=cap;
 		openfl.Lib.current.stage.frameRate = cap;
+		updateFramerate();
+	}
+
+	// thank u forever engine
+	// https://github.com/Yoshubs/Forever-Engine/blob/master/source/Main.hx
+
+	public static function updateFramerate(){
+		if (Main.framerate > FlxG.updateFramerate)
+		{
+			FlxG.updateFramerate = Main.framerate;
+			FlxG.drawFramerate = Main.framerate;
+		}
+		else
+		{
+			FlxG.drawFramerate = Main.framerate;
+			FlxG.updateFramerate = Main.framerate;
+		}
 	}
 
 	public static function getFPSCap():Float

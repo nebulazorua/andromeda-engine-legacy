@@ -80,7 +80,7 @@ class OptionsState extends MusicBeatState
 		]),
 		new OptionCategory("Performance",[
 			new StepOption("fps","FPS",30,30,360,"","","The FPS the game tries to run at",function(value:Float,step:Float){
-				Main.setFPSCap(value);
+				Main.setFPSCap(Std.int(value));
 			}),
 			new OptionCategory("Loading",[
 				new ToggleOption("shouldCache","Cache on startup","Should the engine cache anything when being loaded"),
