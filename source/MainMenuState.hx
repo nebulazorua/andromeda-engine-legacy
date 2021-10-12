@@ -259,7 +259,7 @@ class MainMenuState extends MusicBeatState
 
 
 
-		FlxG.camera.follow(camFollow, null, 0.06);
+		FlxG.camera.follow(camFollow, null, Main.adjustFPS(0.06));
 
 		var versionShit:FlxText = new FlxText(5, FlxG.height - 1, 0, "v" + Application.current.meta.get('version') + " - Andromeda Engine B7", 12);
 		versionShit.scrollFactor.set();

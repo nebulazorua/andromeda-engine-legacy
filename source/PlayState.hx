@@ -261,6 +261,10 @@ class PlayState extends MusicBeatState
 				return Reflect.field(currentOptions,variable);
 			});
 
+			Lua_helper.add_callback(lua.state,"compensateFPS", function(num:Float){ // prob need new name? idk
+				return Main.adjustFPS(num);
+			});
+
 			/*
 			Lua_helper.add_callback(lua.state,"newShader", function(shaderType:String, ?shaderName:String){
 				var shader:Any;
@@ -638,14 +642,14 @@ class PlayState extends MusicBeatState
 
 		add(camFollow);
 
-		FlxG.camera.follow(camFollow, LOCKON, 0.01);
-		camRating.follow(camFollow,LOCKON,.01);
+		FlxG.camera.follow(camFollow, LOCKON, Main.adjustFPS(0.01));
+		camRating.follow(camFollow,LOCKON,Main.adjustFPS(.01));
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
 		FlxG.camera.zoom = defaultCamZoom;
 		FlxG.camera.focusOn(camFollow.getPosition());
 
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
-		
+
 		healthBar = new Healthbar(0,FlxG.height*.9,boyfriend.iconName,dad.iconName,this,'health',0,2);
 		healthBar.scrollFactor.set();
 		healthBar.screenCenter(X);
@@ -1665,8 +1669,8 @@ class PlayState extends MusicBeatState
 
 		if (camZooming)
 		{
-			FlxG.camera.zoom = FlxMath.lerp(FlxG.camera.zoom,defaultCamZoom, 0.05);
-			camHUD.zoom = FlxMath.lerp(camHUD.zoom,1, 0.05);
+			FlxG.camera.zoom = FlxMath.lerp(FlxG.camera.zoom,defaultCamZoom, Main.adjustFPS(0.05));
+			camHUD.zoom = FlxMath.lerp(camHUD.zoom,1, Main.adjustFPS(0.05));
 		}
 
 		FlxG.watch.addQuick("beatShit", curBeat);

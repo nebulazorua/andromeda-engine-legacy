@@ -269,8 +269,8 @@ class Alphabet extends FlxSpriteGroup
 		if (isMenuItem)
 		{
 			calculateWantedXY();
-			x = FlxMath.lerp(x, wantedX, 0.16);
-			y = FlxMath.lerp(y, wantedY, 0.16);
+			x = FlxMath.lerp(x, wantedX, Main.adjustFPS(0.16));
+			y = FlxMath.lerp(y, wantedY, Main.adjustFPS(0.16));
 
 		}
 

@@ -104,8 +104,12 @@ class Main extends Sprite
 		}
 	}
 
+	public static function adjustFPS(num:Float):Float{
+		return num/(FlxG.drawFramerate/60);
+	}
+
 	public static function getFPSCap():Float
 	{
-		return openfl.Lib.current.stage.frameRate;
+		return FlxG.drawFramerate;
 	}
 }

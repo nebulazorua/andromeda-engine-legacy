@@ -58,7 +58,7 @@ class Healthbar extends FlxSpriteGroup {
   override function update(elapsed:Float){
 
     var percent = bar.percent;
-    setIconSize(Std.int(FlxMath.lerp(iconP1.width, 150, 0.09/(openfl.Lib.current.stage.frameRate/60))),Std.int(FlxMath.lerp(iconP2.width, 150, 0.09/(openfl.Lib.current.stage.frameRate/60))));
+    setIconSize(Std.int(FlxMath.lerp(iconP1.width, 150, Main.adjustFPS(0.09))),Std.int(FlxMath.lerp(iconP2.width, 150, Main.adjustFPS(0.09))));
     var iconOffset:Int = 26;
     iconP1.x = bar.x + (bar.width * (FlxMath.remapToRange(percent, 0, 100, 100, 0) * 0.01) - iconOffset);
     iconP2.x = bar.x + (bar.width * (FlxMath.remapToRange(percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
