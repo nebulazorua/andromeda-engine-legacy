@@ -79,7 +79,7 @@ class OptionsState extends MusicBeatState
 			new ToggleOption("freeplayPreview","Song preview in freeplay","Do songs get played when selecting them in the freeplay menu"),
 		]),
 		new OptionCategory("Performance",[
-			new StepOption("fps","FPS",30,30,360,"","","The FPS the game tries to run at",function(value:Float,step:Float){
+			new StepOption("fps","FPS Cap",30,30,360,"","","The FPS the game tries to run at",function(value:Float,step:Float){
 				Main.setFPSCap(Std.int(value));
 			}),
 			new OptionCategory("Loading",[

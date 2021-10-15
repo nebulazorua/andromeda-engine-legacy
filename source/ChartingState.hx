@@ -673,7 +673,7 @@ class ChartingState extends MusicBeatState
 		{
 			lastSection = curSection;
 
-			PlayState.SONG = _song;
+			PlayState.setSong(_song);
 			PlayState.SONG.sliderVelocities = velChanges;
 			FlxG.sound.music.stop();
 			vocals.stop();

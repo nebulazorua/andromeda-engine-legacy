@@ -34,8 +34,6 @@ class SongData {
         name = '${chartName}';
       case 2:
         name = '${chartName}-hard';
-      case 3:
-        name = '${chartName}-erect';
     };
     return name;
   }

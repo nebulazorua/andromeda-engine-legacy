@@ -123,6 +123,10 @@ class FreeplayState extends MusicBeatState
 			addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit'])
 		*/
 
+		#if debug
+			addWeek(['Test'],0,['gf'])
+		#end
+
 		for(week in EngineData.weekData){
 			addWeekData(week);
 		}
@@ -236,8 +240,6 @@ class FreeplayState extends MusicBeatState
 	}
 	function selectSong(){
 		PlayState.setFreeplaySong(songs[curSelected],curDifficulty);
-
-		trace('CUR WEEK' + PlayState.storyWeek);
 		LoadingState.loadAndSwitchState(new PlayState());
 	}
 	override function update(elapsed:Float)
@@ -341,15 +343,7 @@ class FreeplayState extends MusicBeatState
 			createThread=true;
 		#end
 		if(OptionUtils.options.freeplayPreview){
-			#if PRELOAD_ALL
-				if(createThread){
-					sys.thread.Thread.create(()->{
-						FlxG.sound.playMusic(Paths.inst(songs[curSelected].chartName), 0);
-					});
-				}else{
-					FlxG.sound.playMusic(Paths.inst(songs[curSelected].chartName), 0);
-				}
-			#end
+			FlxG.sound.playMusic(Paths.inst(songs[curSelected].chartName), 0);
 		}
 
 		var bullShit:Int = 0;

@@ -333,10 +333,16 @@ class PlayState extends MusicBeatState
 			for(i in [luaModchart,window,bfLua,gfLua,dadLua,bfIcon,dadIcon,luaGameCam,luaHUDCam,luaNotesCam,luaSustainCam,luaReceptorCam])
 				i.Register(lua.state);
 
+
+			lua.errorHandler = function(error:String){
+				FlxG.log.error("LUA RUNTIME ERROR: " + error);
+			}
+
+			// this catches compile errors
 			try {
 				lua.runFile(Paths.modchart(songData.chartName.toLowerCase()));
 			}catch (e:Exception){
-				trace("ERROR: " + e);
+				FlxG.log.error("LUA COMPILE ERROR: " + e);
 			};
 		}
 	}
