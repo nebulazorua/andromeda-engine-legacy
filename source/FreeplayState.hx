@@ -20,6 +20,11 @@ import flash.events.MouseEvent;
 import flixel.FlxState;
 import EngineData.WeekData;
 import EngineData.SongData;
+#if windows
+import Sys;
+import sys.FileSystem;
+#end
+
 
 using StringTools;
 
@@ -29,11 +34,14 @@ class FreeplayState extends MusicBeatState
 
 	var selector:FlxText;
 	var curSelected:Int = 0;
+	var selectableDiffs:Array<Int>=[0,1,2];
+	var difficulties:Array<Array<Int>> = [];
 	var curDifficulty:Int = 1;
 
 	var scoreText:FlxText;
 	var diffText:FlxText;
 	var lerpScore:Int = 0;
+	var curDifficultyIdx:Int = 0;
 	var intendedScore:Int = 0;
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
@@ -213,14 +221,42 @@ class FreeplayState extends MusicBeatState
 		super.create();
 	}
 
+	public function addSongData(songData:EngineData.SongData){
+		songs.push(songData);
+		var songDiffs:Array<Int> = [];
+		if(FileSystem.isDirectory('assets/data/${songData.chartName.toLowerCase()}') ){
+			for (file in FileSystem.readDirectory('assets/data/${songData.chartName.toLowerCase()}'))
+			{
+				if(file.endsWith(".json") && !FileSystem.isDirectory(file)){
+					var difficultyName = file.replace(".json","").replace(songData.chartName.toLowerCase(),"");
+					trace(difficultyName,file);
+					switch(difficultyName.toLowerCase()){
+						case '-easy':
+							songDiffs.push(0);
+						case '':
+							songDiffs.push(1);
+						case '-hard':
+							songDiffs.push(2);
+					}
+				}
+			}
+
+			songDiffs.sort((a,b)->Std.int(a-b));
+
+			difficulties.push(songDiffs);
+		}else{
+			difficulties.push([1,0,2]);
+		}
+	}
+
 	public function addSong(songName:String, weekNum:Int, songCharacter:String, ?chartName:String)
 	{
-		songs.push(new SongData(songName,songCharacter,weekNum,chartName));
+		addSongData(new SongData(songName,songCharacter,weekNum,chartName));
 	}
 
 	public function addWeekData(weekData:WeekData){
 		for(song in weekData.songs){
-			songs.push(song);
+			addSongData(song);
 		}
 	}
 
@@ -289,17 +325,17 @@ class FreeplayState extends MusicBeatState
 
 	function changeDiff(change:Int = 0)
 	{
-		curDifficulty += change;
-
-		if (curDifficulty < 0)
-			curDifficulty = 2;
-		if (curDifficulty > 2)
-			curDifficulty = 0;
+		curDifficultyIdx += change;
+		if(curDifficultyIdx>selectableDiffs.length-1){
+			curDifficultyIdx=0;
+		}else if(curDifficultyIdx<0){
+			curDifficultyIdx=selectableDiffs.length-1;
+		}
+		curDifficulty = selectableDiffs[curDifficultyIdx];
 
 		#if !switch
 		intendedScore = Highscore.getScore(songs[curSelected].chartName, curDifficulty);
 		#end
-
 		switch (curDifficulty)
 		{
 			case 0:
@@ -330,6 +366,24 @@ class FreeplayState extends MusicBeatState
 		}else{
 			curSelected=change;
 		}
+
+		selectableDiffs=difficulties[curSelected];
+		if(selectableDiffs.contains(curDifficulty)){
+			curDifficultyIdx = selectableDiffs.indexOf(curDifficulty);
+		}else{
+			if(curDifficultyIdx>selectableDiffs.length){
+				curDifficultyIdx=0;
+			}else if(curDifficultyIdx<0){
+				curDifficultyIdx=selectableDiffs.length;
+			}
+			curDifficulty=selectableDiffs[curDifficultyIdx];
+			if(!selectableDiffs.contains(curDifficulty)){
+				curDifficultyIdx=selectableDiffs.contains(1)?selectableDiffs.indexOf(1):selectableDiffs[Std.int(selectableDiffs.length/2)];
+				curDifficulty=selectableDiffs[curDifficultyIdx];
+			}
+		}
+
+		changeDiff();
 
 		// selector.y = (70 * curSelected) + 30;
 
