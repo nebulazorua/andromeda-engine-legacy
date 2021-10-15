@@ -124,7 +124,7 @@ class FreeplayState extends MusicBeatState
 		*/
 
 		#if debug
-			addWeek(['Test'],0,['gf'])
+			addWeek(['Test'],0,['gf']);
 		#end
 
 		for(week in EngineData.weekData){

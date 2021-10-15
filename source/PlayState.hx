@@ -59,6 +59,7 @@ import ModChart;
 import flash.events.KeyboardEvent;
 import Controls;
 import Controls.Control;
+import flixel.system.debug.log.LogStyle;
 
 #if windows
 import vm.lua.LuaVM;
@@ -335,14 +336,14 @@ class PlayState extends MusicBeatState
 
 
 			lua.errorHandler = function(error:String){
-				FlxG.log.error("LUA RUNTIME ERROR: " + error);
+				FlxG.log.advanced("MODCHART: " + error, LogStyle.ERROR, false);
 			}
 
 			// this catches compile errors
 			try {
 				lua.runFile(Paths.modchart(songData.chartName.toLowerCase()));
 			}catch (e:Exception){
-				FlxG.log.error("LUA COMPILE ERROR: " + e);
+				FlxG.log.advanced("MODCHART: " + e, LogStyle.ERROR, false);
 			};
 		}
 	}
