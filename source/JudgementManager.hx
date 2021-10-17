@@ -69,6 +69,7 @@ class JudgementManager
 		"miss"=>"Miss"
 	];
   var judgeData:JudgementData;
+	var highestAcc:Float = 0;
 	public static var rawJudgements:AnonType;
 	public static var defaultJudgement = new JudgementData(Json.parse('{
 			"comboBreakJudgements":[],
@@ -116,10 +117,10 @@ class JudgementManager
 	public function getHighestAccJudgement(){
 		var n:Null<Float>=null;
 		var name:String='epic';
-		for(judgement in judgeData.judgementWindows.keys()){
-			var window = judgeData.judgementWindows.get(judgement);
-			if(n==null || window<n){
-				n=window;
+		for(judgement in judgeData.judgementAccuracy.keys()){
+			var acc = judgeData.judgementAccuracy.get(judgement);
+			if(n==null || acc>n){
+				n=acc;
 				name=judgement;
 			}
 		}
@@ -134,6 +135,8 @@ class JudgementManager
 			judgementCounter.set(judge,0);
 		}
 		judgementCounter.set("miss",0);
+
+		highestAcc=judgeData.judgementAccuracy.get(getHighestAccJudgement());
   }
 
 	public function getJudgementWindow(judge:String):Float{
@@ -167,9 +170,9 @@ class JudgementManager
 
   public function getJudgementAccuracy(judge:String):Float{
 		if(judgeData.judgementAccuracy.exists(judge)){
-			return judgeData.judgementAccuracy.get(judge)/100;
+			return judgeData.judgementAccuracy.get(judge)/highestAcc;
 		}
-    return judgeData.judgementAccuracy.get("miss")/100;
+    return judgeData.judgementAccuracy.get("miss")/highestAcc;
   }
 
   public function getJudgementScore(judge:String):Int{

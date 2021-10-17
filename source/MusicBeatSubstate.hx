@@ -42,7 +42,7 @@ class MusicBeatSubstate extends FlxSubState
 		var lastChange:BPMChangeEvent = {
 			stepTime: 0,
 			songTime: 0,
-			bpm: 0
+			bpm: 0,
 		}
 		for (i in 0...Conductor.bpmChangeMap.length)
 		{

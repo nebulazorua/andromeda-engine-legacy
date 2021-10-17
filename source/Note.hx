@@ -71,7 +71,7 @@ class Note extends NoteGraphic
 	// TODO: determine based on noteskin
 
 	public static function getQuant(beat:Float){
-		var row = Conductor.beatToNoteRow(beat);
+		var row = Conductor.beatToNoteRow(CoolUtil.truncateFloat(beat,2));
 		for(data in quants){
 			if(row%(Conductor.ROWS_PER_MEASURE/data) == 0){
 				return data;
@@ -84,7 +84,7 @@ class Note extends NoteGraphic
 	{
 		super(strumTime,modifier,skin,Note.noteBehaviour);
 
-		this.beat = Conductor.getBeat(strumTime);
+		this.beat = CoolUtil.truncateFloat(Conductor.getBeat(strumTime),2);
 
 		this.initialPos=initialPos;
 		this.beingCharted=beingCharted;

@@ -12,11 +12,12 @@ typedef BPMChangeEvent =
 	var stepTime:Int;
 	var songTime:Float;
 	var bpm:Int;
+	@:optional var stepCrochet:Float;
 }
 
 class Conductor
 {
-	public static var ROWS_PER_BEAT:Int = 48;
+	public static var ROWS_PER_BEAT:Int = 96;
 	// its 48 in ITG but idk because FNF doesnt work w/ note rows
 	public static var ROWS_PER_MEASURE:Int = ROWS_PER_BEAT*4;
 
@@ -48,11 +49,17 @@ class Conductor
 		Conductor.ROWS_PER_MEASURE = ROWS_PER_BEAT*4; // TODO: time signatures n all that shit
 	}
 
+	public static function calculateCrochet(bpm:Float){
+		return ((60 / bpm) * 1000);
+	}
+
 	public static function getStep(time:Float){
+
 		var lastChange:BPMChangeEvent = {
 			stepTime: 0,
 			songTime: 0,
-			bpm: 0
+			bpm: bpm,
+			stepCrochet: stepCrochet
 		}
 		for (i in 0...Conductor.bpmChangeMap.length)
 		{
@@ -60,11 +67,11 @@ class Conductor
 				lastChange = Conductor.bpmChangeMap[i];
 		}
 
-		return lastChange.stepTime + (time - lastChange.songTime) / Conductor.stepCrochet;
+		return lastChange.stepTime + (time - lastChange.songTime) / lastChange.stepCrochet;
 	}
 
 	public static function getBeat(time:Float){
-		return CoolUtil.truncateFloat(getStep(time)/4,2);
+		return getStep(time)/4;
 	}
 
 	public function new()
@@ -86,7 +93,8 @@ class Conductor
 				var event:BPMChangeEvent = {
 					stepTime: totalSteps,
 					songTime: totalPos,
-					bpm: curBPM
+					bpm: curBPM,
+					stepCrochet: calculateCrochet(curBPM)/4
 				};
 				bpmChangeMap.push(event);
 			}
@@ -102,7 +110,7 @@ class Conductor
 	{
 		bpm = newBpm;
 
-		crochet = ((60 / bpm) * 1000);
+		crochet = calculateCrochet(bpm);
 		stepCrochet = crochet / 4;
 	}
 }
