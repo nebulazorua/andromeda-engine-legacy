@@ -608,11 +608,11 @@ class PlayState extends MusicBeatState
 		stage.setPlayerPositions(boyfriend,dad,gf);
 
 		defaultCamZoom=stage.defaultCamZoom;
-		if(boyfriend.curCharacter=='spirit'){
+		if(boyfriend.curCharacter=='spirit' && !currentOptions.noChars){
 			var evilTrail = new FlxTrail(boyfriend, null, 4, 24, 0.3, 0.069);
 			add(evilTrail);
 		}
-		if(dad.curCharacter=='spirit'){
+		if(dad.curCharacter=='spirit' && !currentOptions.noChars){
 			var evilTrail = new FlxTrail(dad, null, 4, 24, 0.3, 0.069);
 			add(evilTrail);
 		}

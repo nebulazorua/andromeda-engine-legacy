@@ -47,12 +47,17 @@ class CoolUtil
 		return daList;
 	}
 
-	public static function numberArray(max:Int, ?min = 0):Array<Int>
+	public static function numberArray(max:Int, ?min = 0, ?reverse=false):Array<Int>
 	{
 		var dumbArray:Array<Int> = [];
 		for (i in min...max)
 		{
-			dumbArray.push(i);
+			if(reverse){
+				dumbArray.push(max-i);
+			}else{
+				dumbArray.push(i);
+			}
+
 		}
 		return dumbArray;
 	}
