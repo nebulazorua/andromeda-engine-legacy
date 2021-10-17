@@ -8,7 +8,6 @@ import haxe.macro.Type;
 
 class ScoreUtils
 {
-	public static var gradeArray:Array<String> = ["☆☆☆☆","☆☆☆","☆☆","☆","S+","S","S-","A+","A","A-","B+","B","B-","C+","C","C-","D"];
 	public static var ghostTapping:Bool=false;
 	public static var botPlay:Bool=false;
 	public static var wifeZeroPoint:Float = 65;
@@ -22,23 +21,25 @@ class ScoreUtils
 	public static var a5 = 1.061405429;
 	public static var p = 0.3275911;
 
-	public static var accuracyConditions:Array<Float>=[
-		1.0, // Quad star
-		.99, // Trip star
-		.98, // Doub star
-		.96, // Single star
-		.94, // S+
-		.92, // S
-		.89, // S-
-		.86, // A+
-		.83, // A
-		.8, // A-
-		.76, // B+
-		.72, // B
-		.68, // B-
-		.64, // C+
-		.6, // C
-		.55, // C-
+	public static var gradeConditions:Map<Int,String> = [
+		100 => "☆☆☆☆",
+		99 => "☆☆☆",
+		98 => "☆☆",
+		96 => "☆",
+		94 => "S+",
+		92 => "S",
+		89 => "S-",
+		86 => "A+",
+		83 => "A",
+		80 => "A-",
+		76=>  "B+",
+		72=> "B",
+		68=>  "B-",
+		64=> "C+",
+		60=> "C",
+		55=> "C-",
+		50=> "D+",
+		45 => "D",
 	];
 
 	// https://github.com/etternagame/etterna/blob/0a7bd768cffd6f39a3d84d76964097e43011ce33/src/RageUtil/Utils/RageUtil.h
@@ -76,16 +77,26 @@ class ScoreUtils
 		return malewifeMissWeight;
 	}
 
+	public static function GetMaxAccuracy(noteCounters:Map<String,Int>):Float{ // ITG-like system
+		var points:Float = 0;
+		var topJudge = PlayState.judgeMan.getHighestAccJudgement();
+		for(i in 0...noteCounters.get("taps")){
+			points += PlayState.judgeMan.getJudgementAccuracy(topJudge);
+		}
+		return points;
+	}
 
 
 	public static function AccuracyToGrade(accuracy:Float):String {
-    var grade = gradeArray[gradeArray.length-1];
-    for(i in 0...accuracyConditions.length){
-      if(accuracy >= accuracyConditions[i]){
-        grade = gradeArray[i];
-        break;
-      }
-    }
+		var accuracy = accuracy*100;
+    var grade = "D";
+		var highest:Float=0;
+		for(gradeAcc in gradeConditions.keys()){
+			if(accuracy>=gradeAcc && gradeAcc>=highest){
+				highest=gradeAcc;
+				grade=gradeConditions.get(gradeAcc);
+			}
+		}
 
     return grade;
   }

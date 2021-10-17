@@ -12,6 +12,7 @@ import flixel.util.FlxTimer;
 import flixel.util.FlxDestroyUtil;
 import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
+import flixel.FlxObject;
 import flixel.FlxBasic;
 
 import Shaders;
@@ -48,7 +49,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
     "mallEvil",
     "school",
     "schoolEvil",
-    "custom"
+    "blank"
   ];
 
   // spooky bg
@@ -105,6 +106,8 @@ class Stage extends FlxTypedGroup<FlxBasic> {
   public var boyfriend:Character;
   public var dad:Character;
   public var currentOptions:Options;
+  public var centerX:Float = -1;
+  public var centerY:Float = -1;
 
   override public function destroy(){
     bfPosition = FlxDestroyUtil.put(bfPosition);
@@ -273,6 +276,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
           bfPosition.y += 220;
           gfPosition.x += 180;
           gfPosition.y += 300;
+
           var bgSky = new FlxSprite().loadGraphic(Paths.image('weeb/weebSky','week6'));
           bgSky.scrollFactor.set(0.1, 0.1);
           add(bgSky);
@@ -321,6 +325,12 @@ class Stage extends FlxTypedGroup<FlxBasic> {
           bgStreet.updateHitbox();
           bgTrees.updateHitbox();
           treeLeaves.updateHitbox();
+
+          centerX = bgSchool.getMidpoint().x;
+          centerY = bgSchool.getMidpoint().y;
+
+          //centerX = 580;
+          //centerY = 380;
 
           var bgGirls = new BackgroundGirls(-100, 190);
           bgGirls.scrollFactor.set(0.9, 0.9);
@@ -481,8 +491,8 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         fastCar = new FlxSprite(-300, 160).loadGraphic(Paths.image('limo/fastCarLol','week4'));
         add(fastCar);
         resetFastCar();
-      case 'custom':
-        trace("custom bg");
+      case 'blank':
+
       default:
         defaultCamZoom = 1;
         curStage = 'stage';

@@ -1,3 +1,8 @@
+// some code for quants derived from https://github.com/openitg/openitg
+
+// I'd derive from NotITG but its closed source
+// sad.
+
 package;
 
 import flixel.FlxSprite;
@@ -43,15 +48,43 @@ class Note extends NoteGraphic
 	public var sustainLength:Float = 0;
 	public var rawNoteData:Int = 0;
 	public var holdParent:Bool=false;
-	public var noteType:Int = 0;
+	public var noteType:String = 'tap';
 	public var beingCharted:Bool=false;
 	public var initialPos:Float = 0;
+	public var beat:Float = 0;
 	public static var noteBehaviour:NoteBehaviour;
+
 	public static var swagWidth:Float = 160 * 0.7;
+
+	public static var quants:Array<Int> = [
+		4, // quarter note
+		8, // eight
+		12, // etc
+		16,
+		24,
+		32,
+		48,
+		64,
+		192
+	];
+
+	// TODO: determine based on noteskin
+
+	public static function getQuant(beat:Float){
+		var row = Conductor.beatToNoteRow(beat);
+		for(data in quants){
+			if(row%(Conductor.ROWS_PER_MEASURE/data) == 0){
+				return data;
+			}
+		}
+		return quants[quants.length-1]; // invalid
+	}
 
 	public function new(strumTime:Float, noteData:Int, skin:String='default', modifier:String='base', ?prevNote:Note, ?sustainNote:Bool = false, ?initialPos:Float=0, ?beingCharted=false)
 	{
-		super(modifier,skin,Note.noteBehaviour);
+		super(strumTime,modifier,skin,Note.noteBehaviour);
+
+		this.beat = Conductor.getBeat(strumTime);
 
 		this.initialPos=initialPos;
 		this.beingCharted=beingCharted;
@@ -79,6 +112,7 @@ class Note extends NoteGraphic
 
 		if (isSustainNote && prevNote != null)
 		{
+			quantTexture = prevNote.quantTexture;
 			prevNote.holdParent=true;
 			alpha = 0.6;
 

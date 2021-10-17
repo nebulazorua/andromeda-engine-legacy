@@ -16,11 +16,16 @@ typedef BPMChangeEvent =
 
 class Conductor
 {
+	public static var ROWS_PER_BEAT:Int = 48;
+	// its 48 in ITG but idk because FNF doesnt work w/ note rows
+	public static var ROWS_PER_MEASURE:Int = ROWS_PER_BEAT*4;
+
 	public static var bpm:Int = 100;
 	public static var crochet:Float = ((60 / bpm) * 1000); // beats in milliseconds
 	public static var stepCrochet:Float = crochet / 4; // steps in milliseconds
 	public static var rawSongPos:Float;
 	public static var songPosition:Float;
+	public static var songLength:Float;
 	public static var lastSongPos:Float;
 	public static var offset:Float = 0;
 	public static var currentVisPos:Float =0;
@@ -30,6 +35,37 @@ class Conductor
 	public static var safeZoneOffset:Float = 166;
 
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
+
+	inline public static function beatToNoteRow(beat:Float):Int{
+    return Std.int(beat*Conductor.ROWS_PER_BEAT);
+  }
+
+  inline public static function noteRowToBeat(row:Float):Float{
+    return row/Conductor.ROWS_PER_BEAT;
+  }
+
+	public static function calculate(){
+		Conductor.ROWS_PER_MEASURE = ROWS_PER_BEAT*4; // TODO: time signatures n all thatshit
+	}
+
+	public static function getStep(time:Float){
+		var lastChange:BPMChangeEvent = {
+			stepTime: 0,
+			songTime: 0,
+			bpm: 0
+		}
+		for (i in 0...Conductor.bpmChangeMap.length)
+		{
+			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime)
+				lastChange = Conductor.bpmChangeMap[i];
+		}
+
+		return lastChange.stepTime + (time - lastChange.songTime) / Conductor.stepCrochet;
+	}
+
+	public static function getBeat(time:Float){
+		return getStep(time)/4;
+	}
 
 	public function new()
 	{

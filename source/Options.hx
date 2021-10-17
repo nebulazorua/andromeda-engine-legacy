@@ -15,6 +15,13 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 class OptionUtils
 {
 	private static var saveFile:FlxSave = new FlxSave();
+	public static var camFocuses:Array<String> = [
+		"Default",
+		"BF",
+		"Dad",
+		"GF",
+		"Center",
+	];
 
 	public static var shit:Array<FlxKey> = [
 		ALT,
@@ -80,22 +87,23 @@ class Options
 	public var controls:Array<FlxKey> = [FlxKey.A,FlxKey.S,FlxKey.K,FlxKey.L,FlxKey.R,FlxKey.ENTER];
 	public var ghosttapping:Bool = false;
 	public var failForMissing:Bool = false;
-	public var useMalewife:Bool=false;
+	public var accuracySystem:Int = 0;
 	public var resetKey:Bool = true;
 	public var cMod:Float = 0;
 	public var xMod:Float = 1;
 	public var pollingInput:Bool = false;
-	public var judgementWindow:String = 'Vanilla-like';
+	public var judgementWindow:String = 'ITG';
 	public var noteOffset:Int = 0;
 	public var botPlay:Bool = false;
 	public var loadModcharts:Bool = true;
+	public var noFail:Bool = false;
+
 
 	// appearance
 	public var allowNoteModifiers:Bool = true;
 	public var backTrans:Float = 0;
 	public var downScroll:Bool = false;
 	public var middleScroll:Bool = false;
-	public var picoShaders:Bool = true;
 	public var picoCamshake:Bool = true;
 	public var senpaiShaderStrength:Int = 2;
 	public var oldMenus:Bool = false;
@@ -103,8 +111,14 @@ class Options
 	public var healthBarColors:Bool = true;
 	public var camFollowsAnims:Bool = false;
 	public var showCounters:Bool = true;
-
-	// loading
+	public var staticCam:Int = 0;
+	public var noteSkin:String = 'default';
+	public var persistentCombo:Bool = false;
+	
+	// performance
+	public var fps:Int = 120;
+	public var noChars:Bool = false;
+	public var noStage:Bool = false;
 	public var shouldCache:Bool = false;
 	public var cacheCharacters:Bool = false;
 	public var cacheSongs:Bool = false;
@@ -114,7 +128,6 @@ class Options
 
 
 	// preference
-	public var fps:Int = 120;
 	public var pauseHoldAnims:Bool = true;
 	public var showMS:Bool = false;
 	public var showComboCounter:Bool = true;
@@ -124,9 +137,6 @@ class Options
 	public var menuFlash:Bool = true;
 	public var freeplayPreview:Bool = true;
 	public var hitSound:Bool = false;
-
-	// experimental
-	public var holdsOneNote:Bool = false;
 
 	public function loadOptions(){
 		OptionUtils.loadOptions(this);

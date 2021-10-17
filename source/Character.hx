@@ -7,6 +7,8 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import flash.display.BitmapData;
 import sys.io.File;
 import flixel.util.FlxColor;
+import flixel.util.FlxDestroyUtil;
+import flixel.math.FlxPoint;
 
 using StringTools;
 
@@ -22,6 +24,13 @@ class Character extends FlxSprite
 	public var iconColor:FlxColor = 0xFF50a5eb;
 	public var iconName:String = '';
 	public var holdTimer:Float = 0;
+	public var camOffset = FlxPoint.get(150,-100);
+
+	override public function destroy(){
+    camOffset =  FlxDestroyUtil.put(camOffset);
+
+    super.destroy();
+  }
 
 	public function new(x:Float, y:Float, ?character:String = "bf", ?isPlayer:Bool = false)
 	{
@@ -201,6 +210,8 @@ class Character extends FlxSprite
 
 			case 'gf-pixel':
 				iconName='gf';
+				camOffset.x = -100;
+				camOffset.y = -410;
 				iconColor = 0xFFA5004D;
 				tex = Paths.getSparrowAtlas('characters/gfPixel','shared');
 				frames = tex;
@@ -291,6 +302,7 @@ class Character extends FlxSprite
 
 
 			case 'mom':
+				camOffset.y = 0;
 				iconColor = 0xFFD8558E;
 				tex = Paths.getSparrowAtlas('characters/Mom_Assets','shared');
 				frames = tex;
@@ -308,6 +320,7 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 			case 'mom-car':
+				camOffset.y = 0;
 				iconName='mom';
 				iconColor = 0xFFD8558E;
 				tex = Paths.getSparrowAtlas('characters/momCar','shared');
@@ -358,6 +371,8 @@ class Character extends FlxSprite
 				playAnim('idle');
 
 			case 'senpai':
+				camOffset.x = -100;
+				camOffset.y = -430;
 				iconColor = 0xFFFFAA6F;
 				frames = Paths.getSparrowAtlas('characters/senpai','shared');
 				animation.addByPrefix('idle', 'Senpai Idle', 24, false);
@@ -375,6 +390,8 @@ class Character extends FlxSprite
 				antialiasing = false;
 
 			case 'senpai-angry':
+				camOffset.x = -100;
+				camOffset.y = -430;
 				iconColor = 0xFFFFAA6F;
 				frames = Paths.getSparrowAtlas('characters/senpai','shared');
 				animation.addByPrefix('idle', 'Angry Senpai Idle', 24, false);

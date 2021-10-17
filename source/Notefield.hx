@@ -17,6 +17,7 @@ import flixel.FlxBasic;
 
 class Notefield extends FlxTypedGroup<FlxBasic> {
   public function new(){
+    super();
     // TODO: create receptors n shit here
   }
 }

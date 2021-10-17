@@ -24,7 +24,7 @@ typedef SwagSong =
 	var player2:String;
 	var stage:String;
 	var validScore:Bool;
-	var noBG:Bool;
+	var noteModifier:String;
 	@:optional var sliderVelocities:Array<VelocityChange>;
 	@:optional var initialSpeed:Float;
 }
@@ -35,7 +35,8 @@ class Song
 	public var notes:Array<SwagSection>;
 	public var bpm:Int;
 	public var needsVoices:Bool = true;
-	public var noBG:Bool = false;
+	public var stage:String;
+	public var noteModifier:String;
 	public var speed:Float = 1;
 	public var initialSpeed:Float = 1;
 	public var sliderVelocities:Array<VelocityChange>=[];

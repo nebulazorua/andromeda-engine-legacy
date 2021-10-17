@@ -43,11 +43,12 @@ class OptionsState extends MusicBeatState
 				new StepOption("cMod","Speed Constant",0.1,0,10,"","","A constant speed to override the scrollspeed. 0 for default speed"),
 				new StepOption("xMod","Speed Mult",0.1,0,2,"","x","A multiplier to a chart's scrollspeed"),
 				new ToggleOption("botPlay","BotPlay","Let a bot play for you"),
+				new ToggleOption("noFail","No Fail","With this on, you can't die"),
 			]),
 			new OptionCategory("Advanced",[
 				new JudgementsOption("judgementWindow","Judgements","Which judgement window to use"),
 				new ToggleOption("pollingInput","Old input","Should inputs get checked every frame"),
-				new ToggleOption("useMalewife","Use Wife3","Should accuracy use Wife3")
+				new ScrollOption("accuracySystem","Accuracy System","How is accuracy determined",0,2,["Basic","ITG","Wife3"])
 			]),
 			new StateOption("Calibrate Offset",new SoundOffsetState()),
 			// TODO: make a better 'calibrate offset'
@@ -55,9 +56,10 @@ class OptionsState extends MusicBeatState
 		new OptionCategory("Appearance",[
 			//new ToggleOption("camFollowsAnims","Directional Camera","Does the camera follow animations"),
 			new ToggleOption("downScroll","Downscroll","Do arrows come from the top coming down"),
-			new ToggleOption("middleScroll","Centered Notefield","Are arrows placed in the middle of the screen"),
+			new ToggleOption("middleScroll","Centered Notes","Are arrows placed in the middle of the screen"),
 			new ToggleOption("allowNoteModifiers","Allow note modifiers","Should note modifiers be loaded? (Eg. pixel notes)"),
-			new StepOption("backTrans","BG Transparency",10,0,100,"%","","How transparent the background is"),
+			new StepOption("backTrans","BG Darkness",10,0,100,"%","","How dark the background is"),
+			new ScrollOption("staticCam","Camera Focus","Who the camera should focus on",0,OptionUtils.camFocuses.length-1,OptionUtils.camFocuses),
 			new ToggleOption("oldMenus","Old Menus","Use the vanilla menus"),
 			new ToggleOption("oldTitle","Old Title Screen","Use the vanilla titlescreen"),
 			new ToggleOption("healthBarColors","Healthbar Colours","Should the healthbar colours change with the character"),
@@ -70,13 +72,16 @@ class OptionsState extends MusicBeatState
 		new OptionCategory("Preferences",[
 			new ToggleOption("showComboCounter","Show combo","Ratings show your combo when you hit a note"),
 			new ToggleOption("showRatings","Show ratings","Ratings show up when you hit a note"),
-			new ToggleOption("showMS","Hit MS","Display the milliseconds for when you hit a note"),
+			new ToggleOption("showMS","Show Hit MS","Display the milliseconds for when you hit a note"),
 			new ToggleOption("showCounters","Show judgement counters","Should there be judgement counters on the left"),
-			new ToggleOption("ratingInHUD","Ratings in HUD","Are ratings part of the UI"),
+			new ToggleOption("ratingInHUD","Judgements in HUD","Are ratings part of the UI"),
 			new ToggleOption("pauseHoldAnims","Holds pause anims", "Do animations get paused on the first frame on holds"),
 			new ToggleOption("menuFlash","Flashing in menus","Do the background and buttons flash when selecting them in menus"),
 			new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),
 			new ToggleOption("freeplayPreview","Song preview in freeplay","Do songs get played when selecting them in the freeplay menu"),
+			new ToggleOption("noChars","Hide characters","Hides characters ingame"),
+			new ToggleOption("noStage","Hide background","Hides stage ingame"),
+			new ToggleOption("persistentCombo","Combo doesnt fade","Does the combo stay")
 		]),
 		new OptionCategory("Performance",[
 			new StepOption("fps","FPS Cap",30,30,360,"","","The FPS the game tries to run at",function(value:Float,step:Float){

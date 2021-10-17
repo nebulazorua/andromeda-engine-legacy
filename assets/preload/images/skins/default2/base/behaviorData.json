@@ -1,0 +1,37 @@
+{
+  "actsLike": "default",
+  "scale": 0.7,
+  "antialiasing": true,
+  "arguments": {
+      "spritesheet": "NOTE_assets",
+      "upPrefix": "green0",
+      "leftPrefix": "purple0",
+      "rightPrefix": "red0",
+      "downPrefix": "blue0",
+
+      "upLongPrefix": "green hold piece",
+      "leftLongPrefix": "purple hold piece",
+      "rightLongPrefix": "red hold piece",
+      "downLongPrefix": "blue hold piece",
+
+      "upLongEndPrefix": "green hold end",
+      "leftLongEndPrefix": "pruple end hold",
+      "rightLongEndPrefix": "red hold end",
+      "downLongEndPrefix": "blue hold end",
+
+      "downReceptorPrefix": "arrowDOWN",
+      "upReceptorPrefix": "arrowUP",
+      "leftReceptorPrefix": "arrowLEFT",
+      "rightReceptorPrefix": "arrowRIGHT",
+
+      "downReceptorPressPrefix": "down press",
+      "upReceptorPressPrefix": "up press",
+      "leftReceptorPressPrefix": "left press",
+      "rightReceptorPressPrefix": "right press",
+
+      "downReceptorConfirmPrefix": "down confirm",
+      "upReceptorConfirmPrefix": "up confirm",
+      "leftReceptorConfirmPrefix": "left confirm",
+      "rightReceptorConfirmPrefix": "right confirm"
+  }
+}

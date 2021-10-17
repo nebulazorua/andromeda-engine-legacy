@@ -35,7 +35,7 @@
     "comboBreakJudgements":["shit"],
     "judgementHealth": {"epic":0.8,"sick":0.8,"good":0.4, "bad":0, "shit":-5,"miss":-10 },
     "judgements": ["epic","sick","good","bad","shit"],
-    "judgementAccuracy": {"epic": 100, "sick": 98.25, "good":50, "bad": -25, "shit": -50, "miss": -100},
+    "judgementAccuracy": {"epic": 100, "sick": 80, "good":40, "bad": 0, "shit": -120, "miss": -240},
     "judgementScores": {"sick":350,"epic":500,"good":100,"bad":0,"shit":-50,"miss":-100},
     "judgementWindows": {"epic":21, "sick":43, "good":102, "bad":135, "shit":180}
   },

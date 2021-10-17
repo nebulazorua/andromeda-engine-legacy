@@ -70,12 +70,14 @@ class ChartingState extends MusicBeatState
 
 	var gridBG:FlxSprite;
 	var quantization:Int = 16;
-	var quantIdx = 0;
+	var quantIdx = 3;
 	var quantizations:Array<Int> = [
-		16,
-		8,
-		6, // because echo needs 1/6 lmao
 		4,
+		8,
+		12,
+		16,
+		24,
+		32,
 	];
 
 	var _song:SwagSong;
@@ -128,7 +130,6 @@ class ChartingState extends MusicBeatState
 		}else
 		{
 			_song = {
-				noBG: false,
 				song: 'Test',
 				notes: [],
 				bpm: 150,
@@ -136,6 +137,7 @@ class ChartingState extends MusicBeatState
 				player1: 'bf',
 				player2: 'dad',
 				stage: "stage",
+				noteModifier: "base",
 				speed: 1,
 				validScore: false
 			};
@@ -164,7 +166,7 @@ class ChartingState extends MusicBeatState
 		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(FlxG.width / 2), 4);
 		add(strumLine);
 
-		dummyArrow = new NoteGraphic('base','default',Note.noteBehaviour);
+		dummyArrow = new NoteGraphic(0,PlayState.noteModifier,EngineData.options.noteSkin,Note.noteBehaviour);
 		dummyArrow.setDir(0,false,false);
 		dummyArrow.setGraphicSize(GRID_SIZE,GRID_SIZE);
 		dummyArrow.updateHitbox();
@@ -272,6 +274,15 @@ class ChartingState extends MusicBeatState
 
 		stageDropdown.selectedLabel = _song.stage;
 
+		// TODO: noteskin.noteModifiers or some shit
+		var modifiers:Array<String> = CoolUtil.coolTextFile(Paths.txt('noteModifiers'));
+		var modifierDropdown = new FlxUIDropDownMenu(140, 240, FlxUIDropDownMenu.makeStrIdLabelArray(modifiers, true), function(mod:String)
+		{
+			_song.noteModifier = modifiers[Std.parseInt(mod)];
+		});
+
+		modifierDropdown.selectedLabel = _song.noteModifier;
+
 		var check_use_hit = new FlxUICheckBox(135, 200, null, null, "Use hit sounds (in editor)", 100);
 		check_use_hit.checked = false;
 		check_use_hit.callback = function()
@@ -289,6 +300,7 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
 		tab_group_song.add(stageDropdown);
+		tab_group_song.add(modifierDropdown);
 		tab_group_song.add(reloadSongJson);
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
@@ -553,8 +565,16 @@ class ChartingState extends MusicBeatState
 	{
 		curStep = recalculateSteps();
 
-		if(FlxG.keys.justPressed.ALT){
+		if(FlxG.keys.justPressed.RIGHT){
 			quantIdx+=1;
+			if(quantIdx>quantizations.length-1)
+				quantIdx = 0;
+
+			quantization = quantizations[quantIdx];
+		}
+
+		if(FlxG.keys.justPressed.LEFT){
+			quantIdx-=1;
 			if(quantIdx>quantizations.length-1)
 				quantIdx = 0;
 
@@ -635,7 +655,7 @@ class ChartingState extends MusicBeatState
 		}
 
 		curRenderedNotes.forEach(function(note:Note){
-			if(note.strumTime<=Conductor.songPosition && note.noteType==0){
+			if(note.strumTime<=Conductor.songPosition && note.noteType=='tap'){
 				if(note.color!=0xAAAAAA){
 					if(!note.wasGoodHit){
 						note.wasGoodHit=true;
@@ -660,13 +680,17 @@ class ChartingState extends MusicBeatState
 			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
 		{
 			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
+			var y = Math.floor(FlxG.mouse.y / (GRID_SIZE*quantization/16)) * (GRID_SIZE*quantization/16);
+			if (FlxG.keys.pressed.SHIFT)
+				y = FlxG.mouse.y;
+
+			var beat = Conductor.getBeat(getStrumTime(y) + sectionStartTime());
+			dummyArrow.quantTexture = Note.getQuant(beat);
+
 			dummyArrow.setDir(Math.floor(FlxG.mouse.x / GRID_SIZE)%4,false,false);
 			dummyArrow.setGraphicSize(GRID_SIZE,GRID_SIZE);
 			dummyArrow.updateHitbox();
-			if (FlxG.keys.pressed.SHIFT)
-				dummyArrow.y = FlxG.mouse.y;
-			else
-				dummyArrow.y = Math.floor(FlxG.mouse.y / (GRID_SIZE*quantization/16)) * (GRID_SIZE*quantization/16);
+			dummyArrow.y = y;
 		}
 
 		if (FlxG.keys.justPressed.ENTER)
@@ -794,9 +818,9 @@ class ChartingState extends MusicBeatState
 		var shiftThing:Int = 1;
 		if (FlxG.keys.pressed.SHIFT)
 			shiftThing = 4;
-		if (FlxG.keys.justPressed.RIGHT || FlxG.keys.justPressed.D)
+		if (FlxG.keys.justPressed.D)
 			changeSection(curSection + shiftThing);
-		if (FlxG.keys.justPressed.LEFT || FlxG.keys.justPressed.A)
+		if (FlxG.keys.justPressed.A)
 			changeSection(curSection - shiftThing);
 
 		bpmTxt.text = bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
@@ -809,7 +833,7 @@ class ChartingState extends MusicBeatState
 			+ "\nBeat: "
 			+ curBeat
 			+ "\nSnap: 1/"
-			+ quantization + "\n(Press ALT to switch)";
+			+ quantization + "\n(Press left/right to switch)";
 		super.update(elapsed);
 	}
 
@@ -1014,7 +1038,8 @@ class ChartingState extends MusicBeatState
  			var daStrumTime = i[0];
  			var daSus = i[2];
 
- 			var note:Note = new Note(daStrumTime, daNoteInfo % 4, 'default', PlayState.noteModifier, null, false,0,true);
+ 			var note:Note = new Note(daStrumTime, daNoteInfo % 4, EngineData.options.noteSkin, PlayState.noteModifier, null, false,0,true);
+			trace(Note.getQuant(note.beat),note.beat,Conductor.beatToNoteRow(note.beat) );
 			note.wasGoodHit = daStrumTime<Conductor.songPosition;
  			note.rawNoteData = daNoteInfo;
  			note.sustainLength = daSus;
@@ -1036,7 +1061,7 @@ class ChartingState extends MusicBeatState
  				var sus = [];
  				for (susNote in 0...Math.floor(daSus))
  				{
- 					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteInfo % 4, 'default', PlayState.noteModifier, oldNote, true,0,true);
+ 					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteInfo % 4, EngineData.options.noteSkin, PlayState.noteModifier, oldNote, true,0,true);
  					sustainNote.rawNoteData = daNoteInfo;
  					sustainNote.setGraphicSize(GRID_SIZE, GRID_SIZE);
  					sustainNote.updateHitbox();
