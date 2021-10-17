@@ -99,6 +99,7 @@ class ChartingState extends MusicBeatState
 
 	override function create()
 	{
+		super.create();
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
 
@@ -198,7 +199,7 @@ class ChartingState extends MusicBeatState
 		curSection = 0;
 		updateSectionUI();
 
-		super.create();
+
 	}
 
 	function addSongUI():Void
@@ -679,18 +680,25 @@ class ChartingState extends MusicBeatState
 			&& FlxG.mouse.y > gridBG.y
 			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
 		{
-			dummyArrow.x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
+			var x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
 			var y = Math.floor(FlxG.mouse.y / (GRID_SIZE*quantization/16)) * (GRID_SIZE*quantization/16);
 			if (FlxG.keys.pressed.SHIFT)
 				y = FlxG.mouse.y;
 
-			var beat = Conductor.getBeat(getStrumTime(y) + sectionStartTime());
-			dummyArrow.quantTexture = Note.getQuant(beat);
+			if(dummyArrow.y!=y || dummyArrow.x!=x){
+				var beat = Conductor.getBeat(getStrumTime(y) + sectionStartTime());
+				var quant = Note.getQuant(beat);
+				if(dummyArrow.quantTexture!=quant){
+					dummyArrow.quantTexture = quant;
 
-			dummyArrow.setDir(Math.floor(FlxG.mouse.x / GRID_SIZE)%4,false,false);
-			dummyArrow.setGraphicSize(GRID_SIZE,GRID_SIZE);
-			dummyArrow.updateHitbox();
-			dummyArrow.y = y;
+					dummyArrow.setTextures();
+				}
+				dummyArrow.setDir(Math.floor(FlxG.mouse.x / GRID_SIZE)%4,false,false);
+				dummyArrow.setGraphicSize(GRID_SIZE,GRID_SIZE);
+				dummyArrow.updateHitbox();
+				dummyArrow.x = x;
+				dummyArrow.y = y;
+			}
 		}
 
 		if (FlxG.keys.justPressed.ENTER)
@@ -1039,7 +1047,6 @@ class ChartingState extends MusicBeatState
  			var daSus = i[2];
 
  			var note:Note = new Note(daStrumTime, daNoteInfo % 4, EngineData.options.noteSkin, PlayState.noteModifier, null, false,0,true);
-			trace(Note.getQuant(note.beat),note.beat,Conductor.beatToNoteRow(note.beat) );
 			note.wasGoodHit = daStrumTime<Conductor.songPosition;
  			note.rawNoteData = daNoteInfo;
  			note.sustainLength = daSus;
@@ -1222,6 +1229,8 @@ class ChartingState extends MusicBeatState
 		var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime();
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
 		var noteSus = 0;
+
+		trace(Conductor.getBeat(noteStrum));
 		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus]);
 
 		curSelectedNote = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];

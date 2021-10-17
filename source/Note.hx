@@ -113,6 +113,9 @@ class Note extends NoteGraphic
 		if (isSustainNote && prevNote != null)
 		{
 			quantTexture = prevNote.quantTexture;
+			if(Note.noteBehaviour.actsLike!='pixel')
+				setTextures();
+
 			prevNote.holdParent=true;
 			alpha = 0.6;
 

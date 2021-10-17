@@ -45,7 +45,7 @@ class Conductor
   }
 
 	public static function calculate(){
-		Conductor.ROWS_PER_MEASURE = ROWS_PER_BEAT*4; // TODO: time signatures n all thatshit
+		Conductor.ROWS_PER_MEASURE = ROWS_PER_BEAT*4; // TODO: time signatures n all that shit
 	}
 
 	public static function getStep(time:Float){
@@ -56,7 +56,7 @@ class Conductor
 		}
 		for (i in 0...Conductor.bpmChangeMap.length)
 		{
-			if (Conductor.songPosition >= Conductor.bpmChangeMap[i].songTime)
+			if (time >= Conductor.bpmChangeMap[i].songTime)
 				lastChange = Conductor.bpmChangeMap[i];
 		}
 
@@ -64,7 +64,7 @@ class Conductor
 	}
 
 	public static function getBeat(time:Float){
-		return getStep(time)/4;
+		return CoolUtil.truncateFloat(getStep(time)/4,2);
 	}
 
 	public function new()

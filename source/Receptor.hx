@@ -24,7 +24,6 @@ class Receptor extends FlxSprite {
   public var defaultY:Float = 0;
   public var incomingNoteAlpha:Float = 1;
 
-
   public function new(x:Float,y:Float,noteData:Int,skin:String='default',modifier:String='base',behaviour:NoteBehaviour,daScale:Float=.7){
     super(x,y);
 
@@ -36,15 +35,22 @@ class Receptor extends FlxSprite {
 
     switch(behaviour.actsLike){
       case 'default':
-        frames = Paths.noteSkinAtlas(behaviour.arguments.spritesheet, 'skins', skin, modifier);
+        frames = Paths.noteSkinAtlas(behaviour.arguments.receptors.sheet, 'skins', skin, modifier);
 
         antialiasing = behaviour.antialiasing;
         setGraphicSize(Std.int((width * behaviour.scale) * daScale/.7));
 
         var dir = dirs[noteData];
-        animation.addByPrefix('static', Reflect.field(behaviour.arguments,'${dir}ReceptorPrefix')+"0");
-        animation.addByPrefix('pressed',  Reflect.field(behaviour.arguments,'${dir}ReceptorPressPrefix')+"0", 24, false);
-        animation.addByPrefix('confirm',  Reflect.field(behaviour.arguments,'${dir}ReceptorConfirmPrefix')+"0", 24, false);
+        var recepData = Reflect.field(behaviour.arguments.receptors,dir);
+        animation.addByPrefix('static', recepData.prefix);
+        animation.addByPrefix('pressed',recepData.press, 24, false);
+        animation.addByPrefix('confirm',recepData.confirm, 24, false);
+        var ang:Null<Float> = recepData.angle;
+        if(ang==null)
+          baseAngle = 0;
+        else
+          baseAngle = ang;
+
       case 'pixel':
         loadGraphic(Paths.noteSkinImage(behaviour.arguments.receptor.sheet, 'skins', skin, modifier), true, behaviour.arguments.receptor.gridSizeX, behaviour.arguments.receptor.gridSizeX);
         animation.add('green', [6]);
@@ -59,6 +65,12 @@ class Receptor extends FlxSprite {
         animation.add('static', Reflect.field(behaviour.arguments.receptor,'${dir}Idle') );
         animation.add('pressed', Reflect.field(behaviour.arguments.receptor,'${dir}Pressed'), 12, false);
         animation.add('confirm', Reflect.field(behaviour.arguments.receptor,'${dir}Confirm'), 24, false);
+        var ang:Null<Float> = Reflect.field(behaviour.arguments.receptor,'${dir}Angle');
+
+        if(ang==null)
+          baseAngle = 0;
+        else
+          baseAngle = ang;
     }
     updateHitbox();
   }
@@ -70,7 +82,7 @@ class Receptor extends FlxSprite {
   }
 
   override function update(elapsed:Float){
-    angle = desiredAngle;
+    angle = baseAngle+desiredAngle;
     super.update(elapsed);
   }
 }

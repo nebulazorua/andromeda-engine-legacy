@@ -97,6 +97,7 @@ class Options
 	public var botPlay:Bool = false;
 	public var loadModcharts:Bool = true;
 	public var noFail:Bool = false;
+	public var useEpic:Bool = true;
 
 
 	// appearance
@@ -114,7 +115,7 @@ class Options
 	public var staticCam:Int = 0;
 	public var noteSkin:String = 'default';
 	public var persistentCombo:Bool = false;
-	
+
 	// performance
 	public var fps:Int = 120;
 	public var noChars:Bool = false;

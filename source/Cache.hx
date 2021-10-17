@@ -9,6 +9,7 @@ import sys.io.File;
 import flash.display.BitmapData;
 import Sys;
 import sys.FileSystem;
+import flixel.util.FlxDestroyUtil;
 
 class Cache {
   public static var offsetData = new Map<String,String>();
@@ -32,6 +33,7 @@ class Cache {
     charXmlData.clear();
     LuaStorage.objectProperties.clear();
     LuaStorage.objects.clear();
+    NoteGraphic.noteFrames=null;
     trace("CLEARED CACHE!");
   }
 

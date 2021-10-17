@@ -29,7 +29,10 @@ class JudgementData {
 	public var wifeZeroPoint:Float = 65;
 	public function new(info:JudgementInfo){
 		for(judge in info.judgements){
-			judgements.push(judge);
+			if(EngineData.validJudgements.contains(judge))
+				if(judge!='epic' || judge=='epic' && EngineData.options.useEpic)
+					judgements.push(judge);
+
 		}
 		for(judge in info.comboBreakJudgements){
 			comboBreakJudgements.push(judge);

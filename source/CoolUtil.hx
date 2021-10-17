@@ -15,6 +15,14 @@ class CoolUtil
 			FlxG.sound.play(sound,volume,looped,group,autodestroy,onComplete);
 		});
 	}
+
+	public static function truncateFloat( number : Float, precision : Int): Float {
+		var num = number;
+		num = num * Math.pow(10, precision);
+		num = Math.round( num ) / Math.pow(10, precision);
+		return num;
+	}
+	
 	public static function difficultyString(?difficulty:Int):String
 	{
 		if(difficulty==null)

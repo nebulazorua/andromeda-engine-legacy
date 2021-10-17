@@ -22,6 +22,7 @@ class MusicBeatState extends FlxUIState
 
 	override function create()
 	{
+		Cache.Clear();
 		if (transIn != null)
 			trace('reg ' + transIn.region);
 

@@ -7,6 +7,7 @@ import flixel.util.FlxColor;
 #if polymod
 import polymod.format.ParseRules.TargetSignatureElement;
 #end
+import flixel.graphics.frames.FlxFramesCollection;
 import haxe.Json;
 import haxe.format.JsonParser;
 import haxe.macro.Type;
@@ -20,8 +21,10 @@ class NoteGraphic extends FlxSprite
 	public var modifier = 'base';
 	public var skin='default';
 	public var behaviour:NoteBehaviour;
+	public static var noteFrames:FlxFramesCollection;
 	public static var swagWidth:Float = 160 * 0.7;
 	public var quantTexture:Int = 4;
+	public var noteAngles:Array<Float>=[0,0,0,0];
 
 	public var quantToGrid:Map<Int,Int>=[
 		4=>0,
@@ -35,6 +38,20 @@ class NoteGraphic extends FlxSprite
 		192=>8,
 	];
 
+	public var quantToIndex:Map<Int,String>=[
+		4=>"4th",
+		8=>"8th",
+		12=>"12th",
+		16=>"16th",
+		24=>"24th",
+		32=>"32nd",
+		48=>"48th",
+		64=>"64th",
+		192=>"192nd",
+	];
+
+	// TODO: redo alot of this to have shit determined when you select the noteskin
+
 	public function new(strumTime:Float=0,?modifier='base',?skin='default', behaviour:NoteBehaviour) // TODO: NoteType
 	{
 		super();
@@ -47,7 +64,6 @@ class NoteGraphic extends FlxSprite
 		this.behaviour=behaviour;
 
 		var daStage:String = PlayState.curStage;
-
 		setTextures();
 
 		animation.play("greenScroll");
@@ -61,42 +77,104 @@ class NoteGraphic extends FlxSprite
 				loadGraphic(Paths.noteSkinImage(behaviour.arguments.note.sheet, 'skins', skin, modifier),true,behaviour.arguments.note.gridSizeX,behaviour.arguments.note.gridSizeY);
 
 				if(behaviour.arguments.note.quant){
-					animation.add('greenScroll', [behaviour.arguments.note.up+4*quantToGrid.get(quantTexture)]);
-					animation.add('redScroll', [behaviour.arguments.note.right+4*quantToGrid.get(quantTexture)]);
-					animation.add('blueScroll', [behaviour.arguments.note.down+4*quantToGrid.get(quantTexture)]);
-					animation.add('purpleScroll', [behaviour.arguments.note.left+4*quantToGrid.get(quantTexture)]);
+					var index = Reflect.field(behaviour.arguments.note,quantToIndex.get(quantTexture) );
+					if(index==null){
+						animation.add('greenScroll', [behaviour.arguments.note.up+4*quantToGrid.get(quantTexture)]);
+						animation.add('redScroll', [behaviour.arguments.note.right+4*quantToGrid.get(quantTexture)]);
+						animation.add('blueScroll', [behaviour.arguments.note.down+4*quantToGrid.get(quantTexture)]);
+						animation.add('purpleScroll', [behaviour.arguments.note.left+4*quantToGrid.get(quantTexture)]);
+					}else{
+						animation.add('greenScroll', index.up);
+						animation.add('redScroll', index.right);
+						animation.add('blueScroll', index.down);
+						animation.add('purpleScroll', index.left);
+					}
 				}else{
 					animation.add('greenScroll', behaviour.arguments.note.up );
 					animation.add('redScroll', behaviour.arguments.note.right);
 					animation.add('blueScroll', behaviour.arguments.note.down);
 					animation.add('purpleScroll', behaviour.arguments.note.left);
 				}
+				var dirs = ["left","down","up","right"];
 
+				for(i in 0...dirs.length){
+					var dir = dirs[i];
+				 	var angle:Null<Float>= Reflect.field(behaviour.arguments.note,'${dir}Angle');
+					if(angle!=null){
+						noteAngles[i]=angle;
+					}else{
+						noteAngles[i]=0;
+					}
+				}
 
 				setGraphicSize(Std.int(width * behaviour.scale));
 				updateHitbox();
 				antialiasing = behaviour.antialiasing;
 
 			default:
-				frames = Paths.noteSkinAtlas(behaviour.arguments.spritesheet, 'skins', skin, modifier);
+				var setSize:Bool=false;
+				var args = behaviour.arguments.notes;
+				if(frames!=noteFrames || noteFrames==null){
+					frames = noteFrames==null?Paths.noteSkinAtlas(args.sheet, 'skins', skin, modifier):noteFrames;
+					noteFrames=frames;
+					setSize=true;
+				}
+				var quantIdx = quantToIndex.get(quantTexture);
+				var field = Reflect.field(args.quants,quantIdx);
+				if(args.quants!=null && field!=null ){
+					var colors = [
+						"purple",
+						"blue",
+						"green",
+						"red"
+					];
+					var dirs = ["left","down","up","right"];
 
-				animation.addByPrefix('greenScroll', behaviour.arguments.upPrefix);
-				animation.addByPrefix('redScroll', behaviour.arguments.rightPrefix);
-				animation.addByPrefix('blueScroll', behaviour.arguments.downPrefix);
-				animation.addByPrefix('purpleScroll', behaviour.arguments.leftPrefix);
+					for(i in 0...dirs.length){
+						var dirData = Reflect.field(field,dirs[i]);
+						var prefix = Reflect.field(dirData,"prefix");
+						var longPrefix = Reflect.field(dirData,"longPrefix");
+						var longEndPrefix = Reflect.field(dirData,"longEndPrefix");
+						if(prefix==null)prefix=field.prefix;
+						if(longPrefix==null)longPrefix=field.longPrefix;
+						if(longEndPrefix==null)longEndPrefix=field.longEndPrefix;
 
-				animation.addByPrefix('greenhold', behaviour.arguments.upLongPrefix);
-				animation.addByPrefix('redhold', behaviour.arguments.rightLongPrefix);
-				animation.addByPrefix('bluehold', behaviour.arguments.downLongPrefix);
-				animation.addByPrefix('purplehold', behaviour.arguments.leftLongPrefix);
+						if(prefix==null)prefix=Reflect.field(args,dirs[i]).prefix;
+						if(longPrefix==null)longPrefix=Reflect.field(args,dirs[i]).longPrefix;
+						if(longEndPrefix==null)longEndPrefix=Reflect.field(args,dirs[i]).longEndPrefix;
 
-				animation.addByPrefix('greenholdend', behaviour.arguments.upLongEndPrefix);
-				animation.addByPrefix('redholdend', behaviour.arguments.rightLongEndPrefix);
-				animation.addByPrefix('blueholdend', behaviour.arguments.downLongEndPrefix);
-				animation.addByPrefix('purpleholdend', behaviour.arguments.leftLongEndPrefix);
+						animation.addByPrefix('${colors[i]}Scroll', prefix);
+						animation.addByPrefix('${colors[i]}hold', longPrefix);
+						animation.addByPrefix('${colors[i]}holdend', longEndPrefix);
 
-				setGraphicSize(Std.int(width * behaviour.scale));
-				updateHitbox();
+						noteAngles[i] = dirData.angle;
+					}
+				}else{
+					animation.addByPrefix('greenScroll', args.up.prefix);
+					animation.addByPrefix('redScroll', args.right.prefix);
+					animation.addByPrefix('blueScroll', args.down.prefix);
+					animation.addByPrefix('purpleScroll', args.left.prefix);
+
+					animation.addByPrefix('greenhold', args.up.longPrefix);
+					animation.addByPrefix('redhold', args.right.longPrefix);
+					animation.addByPrefix('bluehold', args.down.longPrefix);
+					animation.addByPrefix('purplehold', args.left.longPrefix);
+
+					animation.addByPrefix('greenholdend', args.up.longEndPrefix);
+					animation.addByPrefix('redholdend', args.right.longEndPrefix);
+					animation.addByPrefix('blueholdend', args.down.longEndPrefix);
+					animation.addByPrefix('purpleholdend', args.left.longEndPrefix);
+
+					noteAngles[0] = args.left.angle;
+					noteAngles[1] = args.down.angle;
+					noteAngles[2] = args.up.angle;
+					noteAngles[3] = args.right.angle;
+				}
+
+				if(setSize){
+					setGraphicSize(Std.int(width * behaviour.scale));
+					updateHitbox();
+				}
 				antialiasing = behaviour.antialiasing;
 		}
 	}
@@ -116,10 +194,20 @@ class NoteGraphic extends FlxSprite
 				loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier),true,args.gridSizeX,args.gridSizeY);
 				// TODO: quantsz
 				if(args.quant){
-					animation.add('purpleholdend', [quantToGrid.get(quantTexture)+9 ]);
-					animation.add('greenholdend', [quantToGrid.get(quantTexture)+9 ]);
-					animation.add('redholdend', [quantToGrid.get(quantTexture)+9 ]);
-					animation.add('blueholdend', [quantToGrid.get(quantTexture)+9 ]);
+					var index = Reflect.field(args,quantToIndex.get(quantTexture) );
+					var gridIndex=quantToGrid.get(quantTexture);
+					if(index!=null){
+						animation.add('purpleholdend', index);
+						animation.add('greenholdend', index);
+						animation.add('redholdend', index);
+						animation.add('blueholdend', index);
+					}else{
+						gridIndex+=9;
+						animation.add('purpleholdend', [gridIndex]);
+						animation.add('greenholdend', [gridIndex]);
+						animation.add('redholdend', [gridIndex]);
+						animation.add('blueholdend', [gridIndex]);
+					}
 				}else{
 					animation.add('purpleholdend', args.left);
 					animation.add('greenholdend', args.up);
@@ -135,10 +223,19 @@ class NoteGraphic extends FlxSprite
 				loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier),true,args.gridSizeX,args.gridSizeY);
 				// TODO: quants
 				if(args.quant){
-					animation.add('purplehold', [quantToGrid.get(quantTexture) ]);
-					animation.add('greenhold', [quantToGrid.get(quantTexture) ]);
-					animation.add('redhold', [quantToGrid.get(quantTexture) ]);
-					animation.add('bluehold', [quantToGrid.get(quantTexture) ]);
+					var index = Reflect.field(args,quantToIndex.get(quantTexture) );
+					var gridIndex=quantToGrid.get(quantTexture);
+					if(index!=null){
+						animation.add('purplehold', index);
+						animation.add('greenhold', index);
+						animation.add('redhold', index);
+						animation.add('bluehold', index);
+					}else{
+						animation.add('purplehold', [gridIndex]);
+						animation.add('greenhold', [gridIndex]);
+						animation.add('redhold', [gridIndex]);
+						animation.add('bluehold', [gridIndex]);
+					}
 				}else{
 					animation.add('purplehold', args.left);
 					animation.add('greenhold', args.up);
@@ -152,10 +249,12 @@ class NoteGraphic extends FlxSprite
 			loadGraphic(Paths.noteSkinImage(behaviour.arguments.note.sheet, 'skins', skin, modifier),true,behaviour.arguments.note.gridSizeX,behaviour.arguments.note.gridSizeY);
 
 			if(behaviour.arguments.note.quant){
-				animation.add('greenScroll', [behaviour.arguments.note.up + 4*quantToGrid.get(quantTexture) ]);
-				animation.add('redScroll', [behaviour.arguments.note.right + 4*quantToGrid.get(quantTexture) ]);
-				animation.add('blueScroll', [behaviour.arguments.note.down + 4*quantToGrid.get(quantTexture) ]);
-				animation.add('purpleScroll', [behaviour.arguments.note.left + 4*quantToGrid.get(quantTexture) ]);
+				var addition = 4*quantToGrid.get(quantTexture);
+				// TODO: quantToIndex stuff too
+				animation.add('greenScroll', [behaviour.arguments.note.up + addition ]);
+				animation.add('redScroll', [behaviour.arguments.note.right + addition ]);
+				animation.add('blueScroll', [behaviour.arguments.note.down + addition ]);
+				animation.add('purpleScroll', [behaviour.arguments.note.left + addition ]);
 			}else{
 				animation.add('greenScroll', behaviour.arguments.note.up);
 				animation.add('redScroll', behaviour.arguments.note.right);
@@ -168,6 +267,10 @@ class NoteGraphic extends FlxSprite
 		}
 		if(colors[dir]!=null){
 			animation.play('${colors[dir]}${suffix}',true);
+			if(!sussy)
+				angle = noteAngles[dir];
+			else
+				angle = 0;
 		}
 	}
 }

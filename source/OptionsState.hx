@@ -47,6 +47,7 @@ class OptionsState extends MusicBeatState
 			]),
 			new OptionCategory("Advanced",[
 				new JudgementsOption("judgementWindow","Judgements","Which judgement window to use"),
+				new ToggleOption("useEpic","Use Epics","Should epics be used"),
 				new ToggleOption("pollingInput","Old input","Should inputs get checked every frame"),
 				new ScrollOption("accuracySystem","Accuracy System","How is accuracy determined",0,2,["Basic","ITG","Wife3"])
 			]),
@@ -79,14 +80,14 @@ class OptionsState extends MusicBeatState
 			new ToggleOption("menuFlash","Flashing in menus","Do the background and buttons flash when selecting them in menus"),
 			new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),
 			new ToggleOption("freeplayPreview","Song preview in freeplay","Do songs get played when selecting them in the freeplay menu"),
-			new ToggleOption("noChars","Hide characters","Hides characters ingame"),
-			new ToggleOption("noStage","Hide background","Hides stage ingame"),
 			new ToggleOption("persistentCombo","Combo doesnt fade","Does the combo stay")
 		]),
 		new OptionCategory("Performance",[
 			new StepOption("fps","FPS Cap",30,30,360,"","","The FPS the game tries to run at",function(value:Float,step:Float){
 				Main.setFPSCap(Std.int(value));
 			}),
+			new ToggleOption("noChars","Hide characters","Hides characters ingame"),
+			new ToggleOption("noStage","Hide background","Hides stage ingame"),
 			new OptionCategory("Loading",[
 				new ToggleOption("shouldCache","Cache on startup","Should the engine cache anything when being loaded"),
 				new ToggleOption("cacheCharacters","Cache characters","Should the engine cache characters at startup"),

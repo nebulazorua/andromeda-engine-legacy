@@ -256,6 +256,9 @@ class Stage extends FlxTypedGroup<FlxBasic> {
 
         var street:FlxSprite = new FlxSprite(-40, streetBehind.y).loadGraphic(Paths.image('philly/street','week3'));
         add(street);
+
+        centerX = city.getMidpoint().x;
+        centerY = city.getMidpoint().y;
       case 'spooky':
         var hallowTex = Paths.getSparrowAtlas('halloween_bg','week2');
 
@@ -266,6 +269,9 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         halloweenBG.animation.play('idle');
         halloweenBG.antialiasing = true;
         add(halloweenBG);
+
+        centerX = halloweenBG.getMidpoint().x;
+        centerY = halloweenBG.getMidpoint().y;
 
       case 'school':
           gfVersion = 'gf-pixel';
@@ -363,6 +369,9 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         bg.scrollFactor.set(0.8, 0.9);
         bg.scale.set(6, 6);
         add(bg);
+
+        centerX = bg.getMidpoint().x;
+        centerY = bg.getMidpoint().y;
       case 'mall':
         gfVersion = 'gf-christmas';
         camOffset.x = 200;
@@ -421,6 +430,9 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         santa.antialiasing = true;
         add(santa);
         boppers.push([santa,"idle",1]);
+
+        centerX = bg.getMidpoint().x;
+        centerY = bg.getMidpoint().y;
       case 'mallEvil':
         gfVersion = 'gf-christmas';
 
@@ -442,6 +454,9 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         var evilSnow:FlxSprite = new FlxSprite(-200, 700).loadGraphic(Paths.image("christmas/evilSnow",'week5'));
         evilSnow.antialiasing = true;
         add(evilSnow);
+
+        centerX = bg.getMidpoint().x;
+        centerY = bg.getMidpoint().y+200;
       case 'limo':
         gfVersion = 'gf-car';
         camOffset.x = 300;
@@ -491,8 +506,12 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         fastCar = new FlxSprite(-300, 160).loadGraphic(Paths.image('limo/fastCarLol','week4'));
         add(fastCar);
         resetFastCar();
-      case 'blank':
 
+        centerX = skyBG.getMidpoint().x+100;
+        centerY = skyBG.getMidpoint().y-100;
+      case 'blank':
+        centerX = 0;
+        centerY = 0;
       default:
         defaultCamZoom = 1;
         curStage = 'stage';
@@ -516,6 +535,9 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         stageCurtains.antialiasing = true;
         stageCurtains.scrollFactor.set(1.3, 1.3);
         stageCurtains.active = false;
+
+        centerX = bg.getMidpoint().x;
+        centerY = bg.getMidpoint().y;
 
         add(stageCurtains);
       }
