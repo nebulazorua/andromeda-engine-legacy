@@ -8,8 +8,9 @@ import sys.io.File;
 import flash.display.BitmapData;
 import Sys;
 import sys.FileSystem;
+import haxe.Json;
 import flixel.system.FlxAssets.FlxGraphicAsset;
-
+using StringTools;
 class Paths
 {
 	inline public static var SOUND_EXT = #if web "mp3" #else "ogg" #end;
@@ -55,10 +56,32 @@ class Paths
 		return 'assets/$file';
 	}
 
-	// SLIGHTLY BASED ON https://github.com/SuperMakerPlayer/FunkinForever/blob/master/source/ForeverTools.hx
+	public static function getDirs(library:String,?base='assets/images'){
+		var folders:Array<String>=[];
+		// TODO: openflassets shit maybe?
+		for(folder in FileSystem.readDirectory('${base}/${library}') ){
+			trace(folder);
+			if(!folder.contains(".") && FileSystem.isDirectory('${base}/${library}/${folder}')){
+				folders.push(folder);
+			}
+		}
+		return folders;
+	}
+
+	// SLIGHTLY BASED ON https://github.com/Yoshubs/Forever-Engine/blob/master/source/ForeverTools.hx
 	// THANKS YOU GUYS ARE THE FUNKIN BEST
 	// IF YOU'RE READING THIS AND YOU HAVENT HEARD OF IT:
 	// TRY FOREVER ENGINE, SERIOUSLY!
+
+	public static function noteskinManifest(skin:String,?library:String='skins'):Note.SkinManifest{
+		var path = 'assets/images/${library}/${skin}/metadata.json';
+		if(OpenFlAssets.exists(path)){
+			return Json.parse(OpenFlAssets.getText(path));
+		}else if(FileSystem.exists(path)){
+			return Json.parse(File.getContent(path));
+		}
+		return Json.parse(File.getContent('assets/images/${library}/fallback/metadata.json'));
+	}
 
 	public static function noteSkinPath(key:String, ?library:String='skins', ?skin:String='default', modifier:String='base', ?useOpenFLAssetSystem:Bool=true):String
 	{

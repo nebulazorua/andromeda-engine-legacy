@@ -15,6 +15,7 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
+import haxe.Json;
 
 using StringTools;
 
@@ -34,6 +35,17 @@ class InitState extends FlxUIState {
     OptionUtils.bindSave();
     OptionUtils.loadOptions(OptionUtils.options);
     var currentOptions = OptionUtils.options;
+
+    OptionUtils.noteSkins = Paths.getDirs("skins");
+    trace(OptionUtils.noteSkins);
+
+    if(!OptionUtils.noteSkins.contains(currentOptions.noteSkin))
+      currentOptions.noteSkin='default';
+
+    for(skin in OptionUtils.noteSkins){
+      Note.skinManifest.set(skin,Paths.noteskinManifest(skin));
+    }
+
     EngineData.options = currentOptions;
     PlayerSettings.init();
 

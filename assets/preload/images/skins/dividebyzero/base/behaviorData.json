@@ -1,0 +1,124 @@
+{
+  "actsLike": "pixel",
+  "scale": 0.8,
+  "antialiasing": true,
+  "sustainAlpha": 1,
+  "receptorAlpha": 1,
+  "arguments": {
+    "note":{
+      "sheet": "arrows",
+      "quant":true,
+      "gridSizeX": 128,
+      "gridSizeY": 128,
+
+      "4th":{
+        "up":[0],
+        "down":[0],
+        "right":[0],
+        "left":[0]
+      },
+      "8th":{
+        "up":[1],
+        "down":[1],
+        "right":[1],
+        "left":[1]
+      },
+      "12th":{
+        "up":[2],
+        "down":[2],
+        "right":[2],
+        "left":[2]
+      },
+      "16th":{
+        "up":[3],
+        "down":[3],
+        "right":[3],
+        "left":[3]
+      },
+      "24th":{
+        "up":[4],
+        "down":[4],
+        "right":[4],
+        "left":[4]
+      },
+      "32nd":{
+        "up":[5],
+        "down":[5],
+        "right":[5],
+        "left":[5]
+      },
+      "48th":{
+        "up":[6],
+        "down":[6],
+        "right":[6],
+        "left":[6]
+      },
+      "64th":{
+        "up":[7],
+        "down":[7],
+        "right":[7],
+        "left":[7]
+      },
+      "192nd":{
+        "up":[7],
+        "down":[7],
+        "right":[7],
+        "left":[7]
+      },
+
+      "leftAngle":90,
+      "rightAngle":-90,
+      "downAngle":0,
+      "upAngle":180
+    },
+    "sustain":{
+      "sheet": "hold",
+      "gridSizeX": 50,
+      "gridSizeY": 100,
+
+      "left":[0],
+      "down":[0],
+      "up":[0],
+      "right":[0]
+    },
+    "sustainEnd":{
+      "sheet": "holdend",
+      "gridSizeX": 50,
+      "gridSizeY": 50,
+
+      "left":[0],
+      "down":[0],
+      "up":[0],
+      "right":[0]
+
+    },
+    "receptor":{
+      "sheet": "receptor",
+      "gridSizeX": 128,
+      "gridSizeY": 128,
+
+      "leftIdle": [0],
+      "downIdle": [0],
+      "upIdle": [0],
+      "rightIdle": [0],
+
+      "leftPressed": [3,4,0],
+      "downPressed": [3,4,0],
+      "upPressed": [3,4,0],
+      "rightPressed": [3,4,0],
+
+      "leftConfirm": [2,2,1],
+      "downConfirm": [2,2,1],
+      "upConfirm": [2,2,1],
+      "rightConfirm": [2,2,1],
+
+      "leftAngle":90,
+      "rightAngle":-90,
+      "downAngle":0,
+      "upAngle":180
+    }
+
+
+
+  }
+}

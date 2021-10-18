@@ -1082,7 +1082,7 @@ class ChartingState extends MusicBeatState
  				for(i in curRenderedSustains){
 					switch(i.noteType){
 						default:
-		 					if(i.animation.curAnim.name.endsWith("end") ){
+		 					if(i.animation.curAnim!=null && i.animation.curAnim.name.endsWith("end") ){
 		 						if(PlayState.curStage.startsWith("school")){
 		 							i.setGraphicSize(Std.int(GRID_SIZE*.35), Std.int(GRID_SIZE*.35));
 		 							i.updateHitbox();

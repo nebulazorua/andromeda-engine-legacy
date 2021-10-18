@@ -15,6 +15,8 @@ import flixel.group.FlxGroup.FlxTypedGroup;
 class OptionUtils
 {
 	private static var saveFile:FlxSave = new FlxSave();
+	public static var noteSkins:Array<String>=[];
+
 	public static var camFocuses:Array<String> = [
 		"Default",
 		"BF",
@@ -577,7 +579,6 @@ class ScrollOption extends Option
 	};
 }
 
-//ScrollOption("ratingWindow","Judgements","Which judgement window to use",0,OptionUtils.ratingWindowNames.length-1,OptionUtils.ratingWindowNames),
 class JudgementsOption extends Option
 {
 	private var names:Array<String>;
@@ -720,6 +721,149 @@ class JudgementsOption extends Option
 
 		curValue=value;
 		name = judgementNames[value];
+		return true;
+	};
+}
+
+class NoteskinOption extends Option
+{
+	private var names:Array<String>;
+	private var property = "dummyInt";
+	private var label:String = '';
+	private var leftArrow:FlxSprite;
+	private var rightArrow:FlxSprite;
+	private var labelAlphabet:Alphabet;
+	private var skinNames:Array<String> = [];
+	private var curValue:Int = 0;
+	public function new(property:String,label:String,description:String){
+		super();
+		this.property=property;
+		this.label=label;
+		this.description=description;
+		var idx=0;
+
+		var noteskinOrder = CoolUtil.coolTextFile(Paths.txtImages('skins/noteskinOrder'));
+
+		for (i in 0...noteskinOrder.length)
+		{
+			var skin = noteskinOrder[i];
+			if(OptionUtils.noteSkins.contains(skin) && skin!='fallback')
+				skinNames.push(skin);
+		}
+
+		for(skin in OptionUtils.noteSkins){
+			if(!skinNames.contains(skin) && skin!='fallback'){
+				skinNames.push(skin);
+			}
+		}
+
+		var idx = skinNames.indexOf(Reflect.field(OptionUtils.options,property));
+		curValue = idx==-1?0:idx;
+		trace(curValue);
+
+		leftArrow = new FlxSprite(0,0);
+		leftArrow.frames = Paths.getSparrowAtlas("arrows");
+		leftArrow.setGraphicSize(Std.int(leftArrow.width*.7));
+		leftArrow.updateHitbox();
+		leftArrow.animation.addByPrefix("pressed","arrow push left",24,false);
+		leftArrow.animation.addByPrefix("static","arrow left",24,false);
+		leftArrow.animation.play("static");
+
+		rightArrow = new FlxSprite(0,0);
+		rightArrow.frames = Paths.getSparrowAtlas("arrows");
+		rightArrow.setGraphicSize(Std.int(rightArrow.width*.7));
+		rightArrow.updateHitbox();
+		rightArrow.animation.addByPrefix("pressed","arrow push right",24,false);
+		rightArrow.animation.addByPrefix("static","arrow right",24,false);
+		rightArrow.animation.play("static");
+
+		add(rightArrow);
+		add(leftArrow);
+
+		name = Note.skinManifest.get(skinNames[curValue]).name;
+	};
+
+	override function update(elapsed:Float){
+		labelAlphabet.targetY = text.targetY;
+		labelAlphabet.alpha = text.alpha;
+		leftArrow.alpha = text.alpha;
+		rightArrow.alpha = text.alpha;
+		super.update(elapsed);
+		//sprTracker.x + sprTracker.width + 10
+		if(PlayerSettings.player1.controls.LEFT && isSelected){
+			leftArrow.animation.play("pressed");
+			leftArrow.offset.x = 0;
+			leftArrow.offset.y = -3;
+		}else{
+			leftArrow.animation.play("static");
+			leftArrow.offset.x = 0;
+			leftArrow.offset.y = 0;
+		}
+
+		if(PlayerSettings.player1.controls.RIGHT && isSelected){
+			rightArrow.animation.play("pressed");
+			rightArrow.offset.x = 0;
+			rightArrow.offset.y = -3;
+		}else{
+			rightArrow.animation.play("static");
+			rightArrow.offset.x = 0;
+			rightArrow.offset.y = 0;
+		}
+		rightArrow.x = text.x+text.width+10;
+		leftArrow.x = text.x-60;
+		leftArrow.y = text.y-10;
+		rightArrow.y = text.y-10;
+	}
+
+	public override function createOptionText(curSelected:Int,optionText:FlxTypedGroup<Option>):Dynamic{
+    remove(text);
+		remove(labelAlphabet);
+		labelAlphabet = new Alphabet(0, (70 * curSelected) + 30, label, true, false);
+		labelAlphabet.movementType = "list";
+		labelAlphabet.isMenuItem = true;
+		labelAlphabet.offsetX = 60;
+
+    text = new Alphabet(0, (70 * curSelected) + 30, name, true, false);
+    text.movementType = "list";
+    text.isMenuItem = true;
+		text.offsetX = labelAlphabet.width + 120;
+
+		labelAlphabet.targetY = text.targetY;
+		labelAlphabet.gotoTargetPosition();
+		text.gotoTargetPosition();
+		add(labelAlphabet);
+    add(text);
+    return text;
+  }
+
+	public override function left():Bool{
+		var value:Int = curValue-1;
+
+		if(value<0)
+			value=skinNames.length-1;
+
+		if(value>skinNames.length-1)
+			value=0;
+
+		Reflect.setField(OptionUtils.options,property,skinNames[value]);
+
+		curValue=value;
+		name = Note.skinManifest.get(skinNames[value]).name;
+		return true;
+	};
+	public override function right():Bool{
+		var value:Int = curValue+1;
+
+		if(value<0)
+			value=skinNames.length-1;
+
+		if(value>skinNames.length-1)
+			value=0;
+
+		Reflect.setField(OptionUtils.options,property,skinNames[value]);
+
+		curValue=value;
+		name = Note.skinManifest.get(skinNames[value]).name;
 		return true;
 	};
 }

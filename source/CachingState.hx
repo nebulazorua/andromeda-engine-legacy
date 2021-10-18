@@ -37,11 +37,6 @@ class CachingState extends FlxUIState {
   public static var cache:Map<String,FlxGraphic> = new Map<String,FlxGraphic>();
 
   override function create(){
-
-    InitState.initTransition();
-    transIn = FlxTransitionableState.defaultTransIn;
-    transOut = FlxTransitionableState.defaultTransOut;
-
     bg = new FlxSprite().loadGraphic(Paths.image("loadingBG","preload"));
     bg.setGraphicSize(Std.int(bg.width*.85));
     bg.updateHitbox();
@@ -93,20 +88,6 @@ class CachingState extends FlxUIState {
         }
       }
     }
-    /*
-    if(EngineData.options.cacheWeekImages){
-      for (dir in FileSystem.readDirectory("assets"))
-      {
-        if (FileSystem.isDirectory(dir) && dir.startsWith("week")){
-          if(FileSystem.exists('${dir}/images') && FileSystem.isDirectory('${dir}/images') ){
-            for (file in FileSystem.readDirectory('${dir}/images'))
-            {
-
-            }
-          }
-        }
-      }
-    }*/
     if(EngineData.options.cacheSongs){
       if(FileSystem.isDirectory("assets/songs") ){
         for (dir in FileSystem.readDirectory("assets/songs"))
@@ -173,6 +154,9 @@ class CachingState extends FlxUIState {
 
     toLoad = images.length+sounds.length;
     if(toLoad<=0){
+      InitState.initTransition();
+      transIn = FlxTransitionableState.defaultTransIn;
+      transOut = FlxTransitionableState.defaultTransOut;
       FlxG.switchState(finishState);
       return;
     }
@@ -226,6 +210,9 @@ class CachingState extends FlxUIState {
 
       new FlxTimer().start(5, function(tmr:FlxTimer)
       {
+        InitState.initTransition();
+        transIn = FlxTransitionableState.defaultTransIn;
+        transOut = FlxTransitionableState.defaultTransOut;
         FlxG.switchState(finishState);
       });
 

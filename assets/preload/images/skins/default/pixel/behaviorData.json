@@ -2,34 +2,41 @@
   "actsLike": "pixel",
   "scale": 6,
   "antialiasing": false,
+  "sustainAlpha": 0.6,
+  "receptorAlpha": 1,
   "arguments": {
     "note":{
       "sheet": "arrows",
-      "quant":true,
       "gridSizeX": 17,
       "gridSizeY": 17,
 
-      "left": 0,
-      "down": 1,
-      "up": 2,
-      "right": 3
+      "left": [4],
+      "down": [5],
+      "up": [6],
+      "right": [7]
     },
     "sustain":{
       "sheet": "sustains",
       "gridSizeX": 7,
       "gridSizeY": 6,
 
-      "quant":true
+      "left": [0],
+      "down": [1],
+      "up": [2],
+      "right": [3]
     },
     "sustainEnd":{
       "sheet": "sustains",
       "gridSizeX": 7,
       "gridSizeY": 6,
 
-      "quant":true
+      "left": [4],
+      "down": [5],
+      "up": [6],
+      "right": [7]
     },
     "receptor":{
-      "sheet": "receptors",
+      "sheet": "arrows",
       "gridSizeX": 17,
       "gridSizeY": 17,
 

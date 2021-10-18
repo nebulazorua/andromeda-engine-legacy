@@ -139,6 +139,7 @@ class PlayState extends MusicBeatState
 	public var bfLua:LuaCharacter;
 
 	public static var noteModifier:String='base';
+	public static var uiModifier:String='base';
 	var pressedKeys:Array<Bool> = [false,false,false,false];
 
 	private var camZooming:Bool = true;
@@ -252,8 +253,12 @@ class PlayState extends MusicBeatState
 			lua.setGlobalVar("X","X");
 			lua.setGlobalVar("Y","Y");
 
-			Lua_helper.add_callback(lua.state,"playSound", function(sound:String,volume:Float=1,looped:Bool=false){
+			Lua_helper.add_callback(lua.state,"lazyPlaySound", function(sound:String,volume:Float=1,looped:Bool=false){
 				CoolUtil.lazyPlaySound(sound,volume,looped);
+			});
+
+			Lua_helper.add_callback(lua.state,"playSound", function(sound:String,volume:Float=1,looped:Bool=false){
+				FlxG.sound.play(sound,volume,looped);
 			});
 
 			Lua_helper.add_callback(lua.state,"setVar", function(variable:String,val:Any){
@@ -538,6 +543,7 @@ class PlayState extends MusicBeatState
 		}
 
 		noteModifier='base';
+		uiModifier='base';
 		curStage=SONG.stage==null?Stage.songStageMap.get(songData.chartName.toLowerCase()):SONG.stage;
 
 		if(curStage==null){
@@ -555,6 +561,7 @@ class PlayState extends MusicBeatState
 		switch(curStage){
 			case 'school' | 'schoolEvil':
 			noteModifier='pixel';
+			uiModifier='pixel';
 			if(currentOptions.senpaiShaderStrength>0){ // they're on
 				if(vcrDistortionHUD!=null){
 					if(currentOptions.senpaiShaderStrength>=2){ // sempai shader strength
@@ -990,7 +997,7 @@ class PlayState extends MusicBeatState
 
 			for (value in introAssets.keys())
 			{
-				if (value == noteModifier)
+				if (value == uiModifier)
 				{
 					introAlts = introAssets.get(value);
 					if(value=='pixel')altSuffix = '-pixel';
@@ -1110,7 +1117,6 @@ class PlayState extends MusicBeatState
 		noteCounter.clear();
 		noteCounter.set("holdTails",0);
 		noteCounter.set("taps",0);
-
 
 		Note.noteBehaviour = Json.parse(Paths.noteSkinText("behaviorData.json",'skins',currentOptions.noteSkin,noteModifier));
 

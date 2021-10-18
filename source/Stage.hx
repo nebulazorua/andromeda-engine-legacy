@@ -120,7 +120,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
 
   function lightningStrikeShit():Void
   {
-    CoolUtil.lazyPlaySound(Paths.soundRandom('thunder_', 1, 2));
+    FlxG.sound.play(Paths.soundRandom('thunder_', 1, 2));
     halloweenBG.animation.play('lightning');
 
     lightningOffset = FlxG.random.int(8, 24);

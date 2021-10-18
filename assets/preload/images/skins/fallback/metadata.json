@@ -1,0 +1,6 @@
+{
+  "name": "Fallback",
+  "desc": "Used as a last resort if it cant find something in the current noteskin",
+  "author": "PhantomArcade",
+  "format": "andromeda1"
+}

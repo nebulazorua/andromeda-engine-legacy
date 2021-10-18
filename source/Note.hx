@@ -22,16 +22,29 @@ import polymod.format.ParseRules.TargetSignatureElement;
 
 using StringTools;
 
+typedef SkinManifest = {
+	var name:String;
+	var desc:String;
+	var author:String;
+	var format:String;
+}
+
 typedef NoteBehaviour = {
 	var actsLike:String;
 	var antialiasing:Bool;
 	var scale:Float;
 	var arguments:Dynamic;
 	@:optional var receptorAutoColor:Bool;
+	@:optional var receptorAlpha:Float;
+	@:optional var sustainAlpha:Float;
+	@:optional var defaultAlpha:Float;
 }
 
 class Note extends NoteGraphic
 {
+	public static var skinManifest:Map<String,SkinManifest>=[];
+
+
 	public var strumTime:Float = 0;
 	public var manualXOffset:Float = 0;
 	public var manualYOffset:Float = 0;
@@ -111,6 +124,8 @@ class Note extends NoteGraphic
 
 		// trace(prevNote);
 
+		alpha = noteBehaviour.defaultAlpha!=null?noteBehaviour.defaultAlpha:0;
+
 		if (isSustainNote && prevNote != null)
 		{
 			quantTexture = prevNote.quantTexture;
@@ -118,7 +133,7 @@ class Note extends NoteGraphic
 				setTextures();
 
 			prevNote.holdParent=true;
-			alpha = 0.6;
+			alpha = noteBehaviour.sustainAlpha!=null?noteBehaviour.sustainAlpha:0.6;
 
 			//var off = -width;
 			//x+=width/2;
@@ -188,10 +203,5 @@ class Note extends NoteGraphic
 				canBeHit = true;
 		}
 
-		if (tooLate)
-		{
-			if (alpha > 0.3)
-				alpha = 0.3;
-		}
 	}
 }

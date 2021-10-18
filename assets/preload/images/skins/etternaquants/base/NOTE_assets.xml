@@ -1,0 +1,29 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<TextureAtlas imagePath="NOTE_assets.png">
+	<!-- Created with Adobe Animate version 21.0.5.40714 -->
+	<!-- http://www.adobe.com/products/animate.html -->
+	<SubTexture name="blue0000" x="2" y="2" width="157" height="154" pivotX="0" pivotY="0"/>
+	<SubTexture name="blue hold end0000" x="956" y="2" width="50" height="64" pivotX="0" pivotY="0"/>
+	<SubTexture name="blue hold piece0000" x="580" y="158" width="50" height="44" pivotX="0" pivotY="0"/>
+	<SubTexture name="cyan0000" x="161" y="2" width="157" height="154" pivotX="0" pivotY="0"/>
+	<SubTexture name="cyan hold end0000" x="956" y="68" width="50" height="64" pivotX="0" pivotY="0"/>
+	<SubTexture name="cyan hold piece0000" x="632" y="158" width="50" height="44" pivotX="0" pivotY="0"/>
+	<SubTexture name="gray0000" x="320" y="2" width="157" height="154" pivotX="0" pivotY="0"/>
+	<SubTexture name="gray hold end0000" x="956" y="134" width="50" height="64" pivotX="0" pivotY="0"/>
+	<SubTexture name="gray hold piece0000" x="684" y="158" width="50" height="44" pivotX="0" pivotY="0"/>
+	<SubTexture name="green0000" x="479" y="2" width="157" height="154" pivotX="0" pivotY="0"/>
+	<SubTexture name="green hold end0000" x="320" y="158" width="50" height="64" pivotX="0" pivotY="0"/>
+	<SubTexture name="green hold piece0000" x="736" y="158" width="50" height="44" pivotX="0" pivotY="0"/>
+	<SubTexture name="pink0000" x="638" y="2" width="157" height="154" pivotX="0" pivotY="0"/>
+	<SubTexture name="pink hold end0000" x="372" y="158" width="50" height="64" pivotX="0" pivotY="0"/>
+	<SubTexture name="pink hold piece0000" x="788" y="158" width="50" height="44" pivotX="0" pivotY="0"/>
+	<SubTexture name="purple0000" x="797" y="2" width="157" height="154" pivotX="0" pivotY="0"/>
+	<SubTexture name="purple hold end0000" x="424" y="158" width="50" height="64" pivotX="0" pivotY="0"/>
+	<SubTexture name="purple hold piece0000" x="840" y="158" width="50" height="44" pivotX="0" pivotY="0"/>
+	<SubTexture name="red0000" x="2" y="158" width="157" height="154" pivotX="0" pivotY="0"/>
+	<SubTexture name="red hold end0000" x="476" y="158" width="50" height="64" pivotX="0" pivotY="0"/>
+	<SubTexture name="red hold piece0000" x="892" y="158" width="50" height="44" pivotX="0" pivotY="0"/>
+	<SubTexture name="yellow0000" x="161" y="158" width="157" height="154" pivotX="0" pivotY="0"/>
+	<SubTexture name="yellow hold end0000" x="528" y="158" width="50" height="64" pivotX="0" pivotY="0"/>
+	<SubTexture name="yellow hold piece0000" x="944" y="200" width="50" height="44" pivotX="0" pivotY="0"/>
+</TextureAtlas>

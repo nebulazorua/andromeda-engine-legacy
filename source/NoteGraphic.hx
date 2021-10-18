@@ -189,83 +189,104 @@ class NoteGraphic extends FlxSprite
 		};
 		var quant = quantToGrid.get(quantTexture);
 		if(sussy && behaviour.actsLike=='pixel'){
-			if(end && !animation.curAnim.name.endsWith("end")){
-				var args = behaviour.arguments.sustainEnd;
+			if(animation.curAnim!=null){
+				if(end && !animation.curAnim.name.endsWith("end")){
+					var args = behaviour.arguments.sustainEnd;
 
-				loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier),true,args.gridSizeX,args.gridSizeY);
-				// TODO: quantsz
-				if(args.quant){
-					var index = Reflect.field(args,quantToIndex.get(quantTexture) );
-					var gridIndex=quantToGrid.get(quantTexture);
-					if(index!=null){
-						animation.add('purpleholdend', index);
-						animation.add('greenholdend', index);
-						animation.add('redholdend', index);
-						animation.add('blueholdend', index);
+					loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier),true,args.gridSizeX,args.gridSizeY);
+					// TODO: quantsz
+					if(args.quant){
+						var index = Reflect.field(args,quantToIndex.get(quantTexture) );
+						var gridIndex=quantToGrid.get(quantTexture);
+						if(index!=null){
+							animation.add('purpleholdend', index);
+							animation.add('greenholdend', index);
+							animation.add('redholdend', index);
+							animation.add('blueholdend', index);
+						}else{
+							gridIndex+=9;
+							animation.add('purpleholdend', [gridIndex]);
+							animation.add('greenholdend', [gridIndex]);
+							animation.add('redholdend', [gridIndex]);
+							animation.add('blueholdend', [gridIndex]);
+						}
 					}else{
-						gridIndex+=9;
-						animation.add('purpleholdend', [gridIndex]);
-						animation.add('greenholdend', [gridIndex]);
-						animation.add('redholdend', [gridIndex]);
-						animation.add('blueholdend', [gridIndex]);
+						animation.add('purpleholdend', args.left);
+						animation.add('greenholdend', args.up);
+						animation.add('redholdend', args.right);
+						animation.add('blueholdend', args.down);
 					}
-				}else{
-					animation.add('purpleholdend', args.left);
-					animation.add('greenholdend', args.up);
-					animation.add('redholdend', args.right);
-					animation.add('blueholdend', args.down);
-				}
 
-				setGraphicSize(Std.int(width * behaviour.scale));
-				updateHitbox();
-			}else if(!end){
-				var args = behaviour.arguments.sustain;
+					setGraphicSize(Std.int(width * behaviour.scale));
+					updateHitbox();
+				}else if(!end){
+					var args = behaviour.arguments.sustain;
 
-				loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier),true,args.gridSizeX,args.gridSizeY);
-				// TODO: quants
-				if(args.quant){
-					var index = Reflect.field(args,quantToIndex.get(quantTexture) );
-					var gridIndex=quantToGrid.get(quantTexture);
-					if(index!=null){
-						animation.add('purplehold', index);
-						animation.add('greenhold', index);
-						animation.add('redhold', index);
-						animation.add('bluehold', index);
+					loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier),true,args.gridSizeX,args.gridSizeY);
+					// TODO: quants
+					if(args.quant){
+						var index = Reflect.field(args,quantToIndex.get(quantTexture) );
+						var gridIndex=quantToGrid.get(quantTexture);
+						if(index!=null){
+							animation.add('purplehold', index);
+							animation.add('greenhold', index);
+							animation.add('redhold', index);
+							animation.add('bluehold', index);
+						}else{
+							animation.add('purplehold', [gridIndex]);
+							animation.add('greenhold', [gridIndex]);
+							animation.add('redhold', [gridIndex]);
+							animation.add('bluehold', [gridIndex]);
+						}
 					}else{
-						animation.add('purplehold', [gridIndex]);
-						animation.add('greenhold', [gridIndex]);
-						animation.add('redhold', [gridIndex]);
-						animation.add('bluehold', [gridIndex]);
+						animation.add('purplehold', args.left);
+						animation.add('greenhold', args.up);
+						animation.add('redhold', args.right);
+						animation.add('bluehold', args.down);
 					}
-				}else{
-					animation.add('purplehold', args.left);
-					animation.add('greenhold', args.up);
-					animation.add('redhold', args.right);
-					animation.add('bluehold', args.down);
+					setGraphicSize(Std.int(width * behaviour.scale));
+					updateHitbox();
 				}
-				setGraphicSize(Std.int(width * behaviour.scale));
-				updateHitbox();
 			}
 		}else if(behaviour.actsLike=='pixel' && !sussy){
 			loadGraphic(Paths.noteSkinImage(behaviour.arguments.note.sheet, 'skins', skin, modifier),true,behaviour.arguments.note.gridSizeX,behaviour.arguments.note.gridSizeY);
 
 			if(behaviour.arguments.note.quant){
-				var addition = 4*quantToGrid.get(quantTexture);
-				// TODO: quantToIndex stuff too
-				animation.add('greenScroll', [behaviour.arguments.note.up + addition ]);
-				animation.add('redScroll', [behaviour.arguments.note.right + addition ]);
-				animation.add('blueScroll', [behaviour.arguments.note.down + addition ]);
-				animation.add('purpleScroll', [behaviour.arguments.note.left + addition ]);
+				var addition  = 4*quantToGrid.get(quantTexture);
+				var index = Reflect.field(behaviour.arguments.note,quantToIndex.get(quantTexture) );
+				if(index==null){
+					animation.add('greenScroll', [behaviour.arguments.note.up+addition]);
+					animation.add('redScroll', [behaviour.arguments.note.right+addition]);
+					animation.add('blueScroll', [behaviour.arguments.note.down+addition]);
+					animation.add('purpleScroll', [behaviour.arguments.note.left+addition]);
+				}else{
+					animation.add('greenScroll', index.up);
+					animation.add('redScroll', index.right);
+					animation.add('blueScroll', index.down);
+					animation.add('purpleScroll', index.left);
+				}
 			}else{
-				animation.add('greenScroll', behaviour.arguments.note.up);
+				animation.add('greenScroll', behaviour.arguments.note.up );
 				animation.add('redScroll', behaviour.arguments.note.right);
 				animation.add('blueScroll', behaviour.arguments.note.down);
 				animation.add('purpleScroll', behaviour.arguments.note.left);
+			}
+			var dirs = ["left","down","up","right"];
+
+			for(i in 0...dirs.length){
+				var dir = dirs[i];
+				var angle:Null<Float>= Reflect.field(behaviour.arguments.note,'${dir}Angle');
+				if(angle!=null){
+					noteAngles[i]=angle;
+				}else{
+					noteAngles[i]=0;
+				}
 			}
 
 			setGraphicSize(Std.int(width * behaviour.scale));
 			updateHitbox();
 		}
+
 		if(colors[dir]!=null){
 			animation.play('${colors[dir]}${suffix}',true);
 			if(!sussy)

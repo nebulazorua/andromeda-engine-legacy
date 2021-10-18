@@ -58,12 +58,13 @@ class OptionsState extends MusicBeatState
 			//new ToggleOption("camFollowsAnims","Directional Camera","Does the camera follow animations"),
 			new ToggleOption("downScroll","Downscroll","Do arrows come from the top coming down"),
 			new ToggleOption("middleScroll","Centered Notes","Are arrows placed in the middle of the screen"),
+			new NoteskinOption("noteSkin","NoteSkin","Which noteskin to use"),
 			new ToggleOption("allowNoteModifiers","Allow note modifiers","Should note modifiers be loaded? (Eg. pixel notes)"),
 			new StepOption("backTrans","BG Darkness",10,0,100,"%","","How dark the background is"),
 			new ScrollOption("staticCam","Camera Focus","Who the camera should focus on",0,OptionUtils.camFocuses.length-1,OptionUtils.camFocuses),
 			new ToggleOption("oldMenus","Old Menus","Use the vanilla menus"),
 			new ToggleOption("oldTitle","Old Title Screen","Use the vanilla titlescreen"),
-			new ToggleOption("healthBarColors","Healthbar Colours","Should the healthbar colours change with the character"),
+			new ToggleOption("healthBarColors","Healthbar Colours","Should the healthbar colours change with the icon"),
 			new OptionCategory("Effects",[
 				new ToggleOption("picoCamshake","Week 3 cam shake","Does the train cause a camera shake in week 3"),
 				//new ToggleOption("senpaiShaders","Week 6 shaders","Is the CRT effect active in week 6"),
@@ -80,7 +81,7 @@ class OptionsState extends MusicBeatState
 			new ToggleOption("menuFlash","Flashing in menus","Do the background and buttons flash when selecting them in menus"),
 			new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),
 			new ToggleOption("freeplayPreview","Song preview in freeplay","Do songs get played when selecting them in the freeplay menu"),
-			new ToggleOption("persistentCombo","Combo doesnt fade","Does the combo stay")
+			new ToggleOption("persistentCombo","Combo doesnt fade","Does the combo stay"),
 		]),
 		new OptionCategory("Performance",[
 			new StepOption("fps","FPS Cap",30,30,360,"","","The FPS the game tries to run at",function(value:Float,step:Float){
