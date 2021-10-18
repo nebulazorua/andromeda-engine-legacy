@@ -11,10 +11,15 @@ import flixel.group.FlxSpriteGroup;
 import haxe.unit.*;
 import hscript.*;
 import Note.NoteBehaviour;
+import Shaders;
+import flixel.util.FlxColor;
 
 // TODO: have the receptor manage its own notes n shit
 
 class Receptor extends FlxSprite {
+  public static var dynamicColouring:Bool=false;
+
+
   public var baseAngle:Float = 0;
   public var desiredAngle:Float = 0;
   public var noteScale:Float = .7;
@@ -24,8 +29,15 @@ class Receptor extends FlxSprite {
   public var defaultY:Float = 0;
   public var incomingNoteAlpha:Float = 1;
 
+
+  var colorSwap:ColorSwap;
+  // if this is true, then it'll tint when it hits a note
+
   public function new(x:Float,y:Float,noteData:Int,skin:String='default',modifier:String='base',behaviour:NoteBehaviour,daScale:Float=.7){
     super(x,y);
+
+    colorSwap = new ColorSwap();
+    shader=colorSwap.shader;
 
     noteScale=daScale;
     this.skin=skin;
@@ -75,7 +87,24 @@ class Receptor extends FlxSprite {
     updateHitbox();
   }
 
+  public function playNote(note:Note){
+    playAnim("confirm",true);
+    if(dynamicColouring){
+      // TODO: finish this
+      // its just not working lol
+
+      //var colour:FlxColor = CoolUtil.getDominantColour(note);
+      //colorSwap.hue=((colour.hue+1)%360)/360;
+      //colorSwap.sat=colour.saturation;
+      //colorSwap.val=colour.brightness;
+    }
+  }
+
   public function playAnim(anim:String,?force:Bool=false){
+    colorSwap.hue=0;
+    colorSwap.sat=0;
+    colorSwap.val=0;
+
     animation.play(anim,force);
     updateHitbox();
     offset.set((frameWidth/2)-(54*(.7/noteScale) ),(frameHeight/2)-(56*(.7/noteScale) ) );

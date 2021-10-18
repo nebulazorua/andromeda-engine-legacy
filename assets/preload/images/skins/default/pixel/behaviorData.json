@@ -1,111 +1,52 @@
 {
   "actsLike": "pixel",
-  "scale": 1,
+  "scale": 6,
   "antialiasing": false,
   "arguments": {
     "note":{
       "sheet": "arrows",
       "quant":true,
-      "gridSizeX": 128,
-      "gridSizeY": 128,
+      "gridSizeX": 17,
+      "gridSizeY": 17,
 
-      "4th":{
-        "left": [0],
-        "down": [0],
-        "up": [0],
-        "right": [0]
-      },
-      "8th":{
-        "left": [1],
-        "down": [1],
-        "up": [1],
-        "right": [1]
-      },
-      "12th":{
-        "left": [2],
-        "down": [2],
-        "up": [2],
-        "right": [2]
-      },
-      "16th":{
-        "left": [3],
-        "down": [3],
-        "up": [3],
-        "right": [3]
-      },
-      "24th":{
-        "left": [4],
-        "down": [4],
-        "up": [4],
-        "right": [4]
-      },
-      "32nd":{
-        "left": [5],
-        "down": [5],
-        "up": [5],
-        "right": [5]
-      },
-      "48th":{
-        "left": [6],
-        "down": [6],
-        "up": [6],
-        "right": [6]
-      },
-      "64th":{
-        "left": [7],
-        "down": [7],
-        "up": [7],
-        "right": [7]
-      },
-      "192nd":{
-        "left": [8],
-        "down": [8],
-        "up": [8],
-        "right": [8]
-      },
-      "leftAngle":90,
-      "rightAngle":-90,
-      "upAngle":180,
-      "downAngle":0
+      "left": 0,
+      "down": 1,
+      "up": 2,
+      "right": 3
     },
     "sustain":{
       "sheet": "sustains",
-      "gridSizeX": 53,
-      "gridSizeY": 45,
+      "gridSizeX": 7,
+      "gridSizeY": 6,
 
       "quant":true
     },
     "sustainEnd":{
       "sheet": "sustains",
-      "gridSizeX": 53,
-      "gridSizeY": 45,
+      "gridSizeX": 7,
+      "gridSizeY": 6,
 
       "quant":true
     },
     "receptor":{
       "sheet": "receptors",
-      "gridSizeX": 128,
-      "gridSizeY": 128,
+      "gridSizeX": 17,
+      "gridSizeY": 17,
 
       "leftIdle": [0],
-      "downIdle": [0],
-      "upIdle": [0],
-      "rightIdle": [0],
+      "downIdle": [1],
+      "upIdle": [2],
+      "rightIdle": [3],
 
-      "leftPressed": [1,2],
-      "downPressed": [1,2],
-      "upPressed": [1,2],
-      "rightPressed": [1,2],
+      "leftPressed": [4,8],
+      "downPressed": [5,9],
+      "upPressed": [6,10],
+      "rightPressed": [7,11],
 
-      "leftConfirm": [3,4],
-      "downConfirm": [3,4],
-      "upConfirm": [3,4],
-      "rightConfirm": [3,4],
-
-      "leftAngle":90,
-      "rightAngle":-90,
-      "upAngle":180,
-      "downAngle":0
+      "leftConfirm": [12,16],
+      "downConfirm": [13,17],
+      "upConfirm": [14,18],
+      "rightConfirm": [15,19]
     }
 
 

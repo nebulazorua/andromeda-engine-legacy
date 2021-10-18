@@ -2,6 +2,7 @@
   "actsLike": "default",
   "scale": 0.7,
   "antialiasing": true,
+  "receptorAutoColor":true,
   "arguments": {
       "notes":{
         "sheet": "NOTE_assets",

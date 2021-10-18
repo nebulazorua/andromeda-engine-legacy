@@ -438,12 +438,13 @@ class PlayState extends MusicBeatState
 		if (SONG == null)
 			SONG = Song.loadFromJson('tutorial');
 
+		var speed = SONG.speed;
 		if(!isStoryMode){
-			SONG.speed = currentOptions.cMod==0?SONG.speed:currentOptions.cMod;
-			SONG.speed *= currentOptions.xMod;
+			speed = currentOptions.cMod==0?speed:currentOptions.cMod;
+			speed *= currentOptions.xMod;
 		}
 
-		SONG.initialSpeed = SONG.speed*.45;
+		SONG.initialSpeed = speed*.45;
 
 		SONG.sliderVelocities.sort((a,b)->Std.int(a.startTime-b.startTime));
 		mapVelocityChanges();
@@ -982,18 +983,17 @@ class PlayState extends MusicBeatState
 
 			var introAssets:Map<String, Array<String>> = new Map<String, Array<String>>();
 			introAssets.set('default', ['ready', "set", "go"]);
-			introAssets.set('school', ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel']);
-			introAssets.set('schoolEvil', ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel']);
+			introAssets.set('pixel', ['pixelUI/ready-pixel', 'pixelUI/set-pixel', 'pixelUI/date-pixel']);
 
 			var introAlts:Array<String> = introAssets.get('default');
 			var altSuffix:String = "";
 
 			for (value in introAssets.keys())
 			{
-				if (value == curStage)
+				if (value == noteModifier)
 				{
 					introAlts = introAssets.get(value);
-					altSuffix = '-pixel';
+					if(value=='pixel')altSuffix = '-pixel';
 				}
 			}
 
@@ -1001,14 +1001,14 @@ class PlayState extends MusicBeatState
 
 			{
 				case 0:
-					FlxG.sound.play(Paths.sound('intro3'), 0.6);
+					FlxG.sound.play(Paths.sound('intro3${altSuffix}'), 0.6);
 				case 1:
 					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
 					ready.cameras=[camHUD];
 					ready.scrollFactor.set();
 					ready.updateHitbox();
 
-					if (noteModifier=='pixel')
+					if (altSuffix=='-pixel')
 						ready.setGraphicSize(Std.int(ready.width * daPixelZoom));
 
 					ready.screenCenter();
@@ -1020,12 +1020,12 @@ class PlayState extends MusicBeatState
 							ready.destroy();
 						}
 					});
-					FlxG.sound.play(Paths.sound('intro2'), 0.6);
+					FlxG.sound.play(Paths.sound('intro2${altSuffix}'), 0.6);
 				case 2:
 					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
 					set.scrollFactor.set();
 
-					if (noteModifier=='pixel')
+					if (altSuffix=='-pixel')
 						set.setGraphicSize(Std.int(set.width * daPixelZoom));
 
 					set.cameras=[camHUD];
@@ -1038,12 +1038,12 @@ class PlayState extends MusicBeatState
 							set.destroy();
 						}
 					});
-					FlxG.sound.play(Paths.sound('intro1'), 0.6);
+					FlxG.sound.play(Paths.sound('intro1${altSuffix}'), 0.6);
 				case 3:
 					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
 					go.scrollFactor.set();
 
-					if (noteModifier=='pixel')
+					if (altSuffix=='-pixel')
 						go.setGraphicSize(Std.int(go.width * daPixelZoom));
 
 					go.cameras=[camHUD];
@@ -1059,7 +1059,7 @@ class PlayState extends MusicBeatState
 							go.destroy();
 						}
 					});
-					FlxG.sound.play(Paths.sound('introGo'), 0.6);
+					FlxG.sound.play(Paths.sound('introGo${altSuffix}'), 0.6);
 				case 4:
 			}
 
@@ -1113,6 +1113,11 @@ class PlayState extends MusicBeatState
 
 
 		Note.noteBehaviour = Json.parse(Paths.noteSkinText("behaviorData.json",'skins',currentOptions.noteSkin,noteModifier));
+
+		var dynamicColouring:Null<Bool> = Note.noteBehaviour.receptorAutoColor;
+		if(dynamicColouring==null)dynamicColouring=false;
+		Receptor.dynamicColouring=dynamicColouring;
+
 		// STUPID AMERICANS I WANNA NAME THE FILE BEHAVIOUR BUT I CANT
 		// DUMB FUCKING AMERICANS CANT JUST ADD A 'U' >:(
 
@@ -1301,6 +1306,7 @@ class PlayState extends MusicBeatState
 			var clrs = ["purple","blue","green","red"];
 
 			var babyArrow:Receptor = new Receptor(0, strumLine.y, i, currentOptions.noteSkin, noteModifier, Note.noteBehaviour);
+
 			if(currentOptions.middleScroll && player==0)
 				babyArrow.visible=false;
 
@@ -1996,7 +2002,8 @@ class PlayState extends MusicBeatState
 						{
 							if (Math.abs(daNote.noteData) == spr.ID)
 							{
-								spr.playAnim('confirm', true);
+								//spr.playAnim('confirm', true);
+								spr.playNote(daNote);
 							}
 						});
 
@@ -2760,7 +2767,7 @@ class PlayState extends MusicBeatState
 			{
 				if (Math.abs(note.noteData) == spr.ID)
 				{
-					spr.playAnim('confirm', true);
+					spr.playNote(note);
 				}
 			});
 			updateReceptors();

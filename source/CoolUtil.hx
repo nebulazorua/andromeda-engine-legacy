@@ -3,6 +3,8 @@ package;
 import lime.utils.Assets;
 import sys.thread.Thread;
 import flixel.FlxG;
+import flixel.FlxSprite;
+import flixel.util.FlxColor;
 
 using StringTools;
 
@@ -16,13 +18,42 @@ class CoolUtil
 		});
 	}
 
+	public static function getDominantColour(sprite:FlxSprite):FlxColor{
+		var counter:Map<Int,Int>=[];
+		for(x in 0...sprite.frameWidth){
+			for(y in 0...sprite.frameHeight){
+				var colour = sprite.pixels.getPixel32(x,y);
+				if(colour!=0){
+					if(counter.exists(colour)){
+						counter.set(colour,counter.get(colour)+1);
+					}else{
+						counter.set(colour,1);
+					}
+				}
+			}
+		}
+
+		counter.set(FlxColor.BLACK,0);
+		var highest:Int = 0;
+		var domColour:Int=0;
+		for(colour in counter.keys()){
+			var amount = counter.get(colour);
+			if(amount>=highest){
+				highest=amount;
+				domColour=colour;
+			}
+		}
+
+		return domColour;
+	}
+
 	public static function truncateFloat( number : Float, precision : Int): Float {
 		var num = number;
 		num = num * Math.pow(10, precision);
 		num = Math.round( num ) / Math.pow(10, precision);
 		return num;
 	}
-	
+
 	public static function difficultyString(?difficulty:Int):String
 	{
 		if(difficulty==null)

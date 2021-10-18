@@ -27,6 +27,7 @@ typedef NoteBehaviour = {
 	var antialiasing:Bool;
 	var scale:Float;
 	var arguments:Dynamic;
+	@:optional var receptorAutoColor:Bool;
 }
 
 class Note extends NoteGraphic

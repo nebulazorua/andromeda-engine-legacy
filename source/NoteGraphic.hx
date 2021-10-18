@@ -4,6 +4,8 @@ import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.math.FlxMath;
 import flixel.util.FlxColor;
+import flixel.graphics.frames.FlxFrame;
+import flash.display.BitmapData;
 #if polymod
 import polymod.format.ParseRules.TargetSignatureElement;
 #end
@@ -25,7 +27,6 @@ class NoteGraphic extends FlxSprite
 	public static var swagWidth:Float = 160 * 0.7;
 	public var quantTexture:Int = 4;
 	public var noteAngles:Array<Float>=[0,0,0,0];
-
 	public var quantToGrid:Map<Int,Int>=[
 		4=>0,
 		8=>1,
