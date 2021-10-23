@@ -307,9 +307,9 @@ class StepOption extends Option
 	private var callback:Float->Float->Void;
 	private var suffix:String='';
 	private var prefix:String='';
+	private var truncFloat:Bool = false;
 
-
-	public function new(property:String,label:String,?step:Float=1,?min:Float=0,?max:Float=100,?suffix:String='',?prefix:String='',?desc:String='',?callback:Float->Float->Void){
+	public function new(property:String,label:String,?step:Float=1,?min:Float=0,?max:Float=100,?suffix:String='',?prefix:String='',?desc:String='',?truncateFloat=false, ?callback:Float->Float->Void){
 		super();
 		this.property=property;
 		this.label=label;
@@ -339,6 +339,10 @@ class StepOption extends Option
 		add(leftArrow);
 		this.max=max;
 		this.min=min;
+
+		truncFloat=truncateFloat;
+		if(truncFloat)
+			value=CoolUtil.truncateFloat(value,2);
 
 		name = '${prefix}${Std.string(value)}${suffix}';
 	};
@@ -408,6 +412,8 @@ class StepOption extends Option
 
 		Reflect.setField(OptionUtils.options,property,value);
 
+		if(truncFloat)
+			value=CoolUtil.truncateFloat(value,2);
 		name = '${prefix}${Std.string(value)}${suffix}';
 		if(callback!=null)
 			callback(value,-step);
@@ -424,6 +430,8 @@ class StepOption extends Option
 
 		Reflect.setField(OptionUtils.options,property,value);
 
+		if(truncFloat)
+			value=CoolUtil.truncateFloat(value,2);
 		name = '${prefix}${Std.string(value)}${suffix}';
 		if(callback!=null)
 			callback(value,step);

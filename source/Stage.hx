@@ -151,7 +151,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
 
 
 
-  public function setPlayerPositions(p1:Character,p2:Character,gf:Character){
+  public function setPlayerPositions(?p1:Character,?p2:Character,?gf:Character){
 
     p1.setPosition(bfPosition.x,bfPosition.y);
     p2.setPosition(dadPosition.x,dadPosition.y);
@@ -539,7 +539,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         centerX = bg.getMidpoint().x;
         centerY = bg.getMidpoint().y;
 
-        add(stageCurtains);
+        foreground.add(stageCurtains);
       }
   }
 

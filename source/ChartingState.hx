@@ -34,6 +34,7 @@ import openfl.media.Sound;
 import openfl.net.FileReference;
 import openfl.utils.ByteArray;
 import objects.ui.*;
+import openfl.media.Sound;
 
 using StringTools;
 
@@ -425,10 +426,10 @@ class ChartingState extends MusicBeatState
 			// vocals.stop();
 		}
 
-		FlxG.sound.playMusic(Paths.inst(daSong), 0.6);
+		FlxG.sound.playMusic(Sound.fromFile('./${Paths.inst(daSong)}'), 0.6);
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new FlxSound().loadEmbedded(Paths.voices(daSong));
+		vocals = new FlxSound().loadEmbedded(Sound.fromFile('./${Paths.voices(daSong)}'));
 		FlxG.sound.list.add(vocals);
 
 		FlxG.sound.music.pause();
@@ -1046,7 +1047,7 @@ class ChartingState extends MusicBeatState
  			var daStrumTime = i[0];
  			var daSus = i[2];
 
- 			var note:Note = new Note(daStrumTime, daNoteInfo % 4, EngineData.options.noteSkin, PlayState.noteModifier, null, false,0,true);
+ 			var note:Note = new Note(daStrumTime, daNoteInfo%4, EngineData.options.noteSkin, PlayState.noteModifier, null, false, 0, true);
 			note.wasGoodHit = daStrumTime<Conductor.songPosition;
  			note.rawNoteData = daNoteInfo;
  			note.sustainLength = daSus;

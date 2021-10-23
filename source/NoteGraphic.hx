@@ -15,6 +15,7 @@ import haxe.format.JsonParser;
 import haxe.macro.Type;
 import lime.utils.Assets;
 import Note.NoteBehaviour;
+import flixel.math.FlxPoint;
 
 using StringTools;
 
@@ -27,6 +28,10 @@ class NoteGraphic extends FlxSprite
 	public static var swagWidth:Float = 160 * 0.7;
 	public var quantTexture:Int = 4;
 	public var noteAngles:Array<Float>=[0,0,0,0];
+	public var scaleDefault:FlxPoint;
+	public var baseAngle:Float = 0;
+	public var modAngle:Float = 0;
+
 	public var quantToGrid:Map<Int,Int>=[
 		4=>0,
 		8=>1,
@@ -56,6 +61,7 @@ class NoteGraphic extends FlxSprite
 	public function new(strumTime:Float=0,?modifier='base',?skin='default', behaviour:NoteBehaviour) // TODO: NoteType
 	{
 		super();
+		scaleDefault = FlxPoint.get();
 
 		var beat = Conductor.getBeat(strumTime);
 		this.quantTexture = Note.getQuant(beat);
@@ -111,7 +117,7 @@ class NoteGraphic extends FlxSprite
 				setGraphicSize(Std.int(width * behaviour.scale));
 				updateHitbox();
 				antialiasing = behaviour.antialiasing;
-
+				scaleDefault.set(scale.x,scale.y);
 			default:
 				var setSize:Bool=false;
 				var args = behaviour.arguments.notes;
@@ -175,9 +181,15 @@ class NoteGraphic extends FlxSprite
 				if(setSize){
 					setGraphicSize(Std.int(width * behaviour.scale));
 					updateHitbox();
+					scaleDefault.set(scale.x,scale.y);
 				}
 				antialiasing = behaviour.antialiasing;
 		}
+	}
+
+	override function update(elapsed){
+		angle = baseAngle + modAngle;
+		super.update(elapsed);
 	}
 
 	public function setDir(dir:Int=0,?sussy:Bool=false,?end:Bool=false){
@@ -219,6 +231,7 @@ class NoteGraphic extends FlxSprite
 
 					setGraphicSize(Std.int(width * behaviour.scale));
 					updateHitbox();
+					scaleDefault.set(scale.x,scale.y);
 				}else if(!end){
 					var args = behaviour.arguments.sustain;
 
@@ -246,6 +259,7 @@ class NoteGraphic extends FlxSprite
 					}
 					setGraphicSize(Std.int(width * behaviour.scale));
 					updateHitbox();
+					scaleDefault.set(scale.x,scale.y);
 				}
 			}
 		}else if(behaviour.actsLike=='pixel' && !sussy){
@@ -285,14 +299,15 @@ class NoteGraphic extends FlxSprite
 
 			setGraphicSize(Std.int(width * behaviour.scale));
 			updateHitbox();
+			scaleDefault.set(scale.x,scale.y);
 		}
 
 		if(colors[dir]!=null){
 			animation.play('${colors[dir]}${suffix}',true);
 			if(!sussy)
-				angle = noteAngles[dir];
+				baseAngle = noteAngles[dir];
 			else
-				angle = 0;
+				baseAngle = 0;
 		}
 	}
 }

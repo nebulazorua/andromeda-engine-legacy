@@ -454,35 +454,40 @@ class Character extends FlxSprite
 
 				// Doesn't flip for BF, since his are already in the right place???
 				if (!curCharacter.startsWith('bf'))
-				{
-					// var animArray
-					var oldRight = animation.getByName('singRIGHT').frames;
-					animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
-					animation.getByName('singLEFT').frames = oldRight;
+					leftToRight();
 
-					// IF THEY HAVE MISS ANIMATIONS??
-					if (animation.getByName('singRIGHTmiss') != null)
-					{
-						var oldMiss = animation.getByName('singRIGHTmiss').frames;
-						animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
-						animation.getByName('singLEFTmiss').frames = oldMiss;
-					}
-				}
 			}else if (curCharacter.startsWith('bf')){
-				var oldRight = animation.getByName('singRIGHT').frames;
-				animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
-				animation.getByName('singLEFT').frames = oldRight;
-
-				// IF THEY HAVE MISS ANIMATIONS??
-				if (animation.getByName('singRIGHTmiss') != null)
-				{
-					var oldMiss = animation.getByName('singRIGHTmiss').frames;
-					animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
-					animation.getByName('singLEFTmiss').frames = oldMiss;
-				}
+				leftToRight();
 			}
 		}
 	}
+
+	public function leftToRight(){
+		var oldRight = animation.getByName('singRIGHT').frames;
+		animation.getByName('singRIGHT').frames = animation.getByName('singLEFT').frames;
+		animation.getByName('singLEFT').frames = oldRight;
+
+		if (animation.getByName('singRIGHTmiss') != null)
+		{
+			var oldMiss = animation.getByName('singRIGHTmiss').frames;
+			animation.getByName('singRIGHTmiss').frames = animation.getByName('singLEFTmiss').frames;
+			animation.getByName('singLEFTmiss').frames = oldMiss;
+		}
+	}
+
+	public function rightToLeft(){
+		var old = animation.getByName('singRIGHT').frames;
+		animation.getByName('singLEFT').frames = animation.getByName('singRIGHT').frames;
+		animation.getByName('singRIGHT').frames = old;
+
+		if (animation.getByName('singRIGHTmiss') != null)
+		{
+			var oldMiss = animation.getByName('singLEFTmiss').frames;
+			animation.getByName('singLEFTmiss').frames = animation.getByName('singRIGHTmiss').frames;
+			animation.getByName('singRIGHTmiss').frames = oldMiss;
+		}
+	}
+
 
 	public function loadOffsets(){
 		//var offsets = CoolUtil.coolTextFile(Paths.txtImages('characters/'+curCharacter+"Offsets"));

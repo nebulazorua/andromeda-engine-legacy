@@ -18,6 +18,9 @@ class CoolUtil
 		});
 	}
 
+	inline public static function scale(x:Float,l1:Float,h1:Float,l2:Float,h2:Float):Float
+		return ((x - l1) * (h2 - l2) / (h1 - l1) + l2);
+
 	public static function getDominantColour(sprite:FlxSprite):FlxColor{
 		var counter:Map<Int,Int>=[];
 		for(x in 0...sprite.frameWidth){

@@ -33,6 +33,9 @@ class Cache {
     charXmlData.clear();
     LuaStorage.objectProperties.clear();
     LuaStorage.objects.clear();
+    LuaStorage.notes=[];
+    LuaStorage.noteIDs.clear();
+    LuaStorage.noteMap.clear();
     NoteGraphic.noteFrames=null;
     trace("CLEARED CACHE!");
   }

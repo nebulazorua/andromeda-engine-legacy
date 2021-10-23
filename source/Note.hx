@@ -65,6 +65,7 @@ class Note extends NoteGraphic
 	public var noteType:String = 'tap';
 	public var beingCharted:Bool=false;
 	public var initialPos:Float = 0;
+
 	public var beat:Float = 0;
 	public static var noteBehaviour:NoteBehaviour;
 
@@ -92,6 +93,13 @@ class Note extends NoteGraphic
 			}
 		}
 		return quants[quants.length-1]; // invalid
+	}
+
+	public function isSustainEnd():Bool{
+		if(isSustainNote && animation!=null && animation.curAnim!=null && animation.curAnim.name!=null && animation.curAnim.name.endsWith("end"))
+			return true;
+
+		return false;
 	}
 
 	public function new(strumTime:Float, noteData:Int, skin:String='default', modifier:String='base', ?prevNote:Note, ?sustainNote:Bool = false, ?initialPos:Float=0, ?beingCharted=false)
@@ -124,7 +132,9 @@ class Note extends NoteGraphic
 
 		// trace(prevNote);
 
-		alpha = noteBehaviour.defaultAlpha!=null?noteBehaviour.defaultAlpha:0;
+		alpha = Note.noteBehaviour.defaultAlpha!=null?Note.noteBehaviour.defaultAlpha:1;
+
+		y =  ((initialPos-Conductor.currentTrackPos) * PlayState.currentPState.scrollSpeed) - manualYOffset;
 
 		if (isSustainNote && prevNote != null)
 		{
@@ -133,7 +143,7 @@ class Note extends NoteGraphic
 				setTextures();
 
 			prevNote.holdParent=true;
-			alpha = noteBehaviour.sustainAlpha!=null?noteBehaviour.sustainAlpha:0.6;
+			alpha = Note.noteBehaviour.sustainAlpha!=null?Note.noteBehaviour.sustainAlpha:0.6;
 
 			//var off = -width;
 			//x+=width/2;
@@ -143,10 +153,9 @@ class Note extends NoteGraphic
 			setDir(noteData,true,true);
 			updateHitbox();
 
+
+
 			if(!beingCharted){
-				if(PlayState.currentPState.currentOptions.downScroll ){
-					flipY=true;
-				}
 				if(PlayState.getSVFromTime(strumTime)<0){
 					flipY=!flipY;
 				}
@@ -165,9 +174,15 @@ class Note extends NoteGraphic
 				//prevNote.noteGraphic.animation.play('${colors[noteData]}hold');
 				prevNote.setDir(noteData,true,false);
 				if(!beingCharted)
-					prevNote.scale.y *= Conductor.stepCrochet/100*1.5*PlayState.getFNFSpeed(strumTime);
+					prevNote.scale.y *= Conductor.stepCrochet/100*1.5*PlayState.getFNFSpeed(strumTime);//prevNote.scale.y *= Math.abs(prevNote.y-y)/(prevNote.frameHeight);
+
+
+				prevNote.scaleDefault.set(prevNote.scale.x,prevNote.scale.y);
 				prevNote.updateHitbox();
+
+
 			}
+			scaleDefault.set(scale.x,scale.y);
 		}
 	}
 
@@ -180,7 +195,7 @@ class Note extends NoteGraphic
 			var absDiff = Math.abs(diff);
 
 			if(isSustainNote){
-				if (absDiff <= Conductor.safeZoneOffset*.75)
+				if (absDiff <= Conductor.safeZoneOffset*.5)
 					canBeHit = true;
 				else
 					canBeHit = false;

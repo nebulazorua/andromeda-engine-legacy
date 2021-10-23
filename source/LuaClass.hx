@@ -30,6 +30,9 @@ typedef LuaProperty = {
 class LuaStorage {
   public static var objectProperties:Map<String,Map<String,LuaProperty>> = [];
   public static var objects:Map<String,LuaClass> = [];
+  public static var notes:Array<Note> = [];
+  public static var noteIDs:Map<Note,String>=[];
+  public static var noteMap:Map<String,Note>=[];
 }
 
 class LuaClass {
@@ -52,6 +55,10 @@ class LuaClass {
       Lua.pushcfunction(l,methods[k]);
       Lua.setfield(l,classIdx,k);
     }
+
+    Lua.pushstring(l,"InternalClassName");
+    Lua.pushstring(l,className);
+    Lua.settable(l,classIdx);
 
     LuaL.newmetatable(l,className + "Metatable");
     var mtIdx = Lua.gettop(l);
@@ -299,6 +306,32 @@ class LuaSprite extends LuaClass {
 
   private static var setScaleC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setScale);
 
+  private static function setScaleX(l:StatePointer):Int{
+    // 1 = self
+    // 2 = scale
+    var scale = LuaL.checknumber(state,2);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.scale.x = scale;
+    return 0;
+  }
+
+  private static var setScaleXC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setScaleX);
+
+  private static function setScaleY(l:StatePointer):Int{
+    // 1 = self
+    // 2 = scale
+    var scale = LuaL.checknumber(state,2);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.scale.y = scale;
+    return 0;
+  }
+
+  private static var setScaleYC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setScaleY);
+
   private static function getProperty(l:StatePointer):Int{
     // 1 = self
     // 2 = property
@@ -428,7 +461,7 @@ class LuaSprite extends LuaClass {
 
     var spriteName = Lua.tostring(state,-1);
     var sprite = PlayState.currentPState.luaSprites[spriteName];
-    var fullPath = "assets/data/" + PlayState.SONG.song.toLowerCase()+"/"+path+".png";
+    var fullPath = "assets/songs/" + PlayState.SONG.song.toLowerCase()+"/"+path+".png";
     var data:BitmapData;
     if(FileSystem.exists(fullPath) && !FileSystem.isDirectory(fullPath)){
       try{
@@ -451,7 +484,7 @@ class LuaSprite extends LuaClass {
     var spriteName = Lua.tostring(state,-1);
     var sprite = PlayState.currentPState.luaSprites[spriteName];
 
-    var fullPath = "assets/data/" + PlayState.SONG.song.toLowerCase()+"/"+path;
+    var fullPath = "assets/songs/" + PlayState.SONG.song.toLowerCase()+"/"+path;
     var fullPathXML = fullPath + ".xml";
     var fullPathPNG = fullPath + ".png";
     var bitmapData:BitmapData;
@@ -803,6 +836,40 @@ class LuaSprite extends LuaClass {
           return 0;
         }
       },
+
+      "scaleX"=>{ // TODO: sprite.scale.x
+        defaultValue:sprite.scale.x,
+        getter:function(l:State,data:Any){
+          Lua.pushnumber(l,sprite.scale.x);
+          return 1;
+        },
+        setter:function(l:State){
+          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+            return 0;
+          }
+          sprite.scale.set(Lua.tonumber(l,3),sprite.scale.y);
+          LuaClass.DefaultSetter(l);
+          return 0;
+        }
+      },
+      "scaleY"=>{ // TODO: sprite.scale.y
+        defaultValue:sprite.scale.x,
+        getter:function(l:State,data:Any){
+          Lua.pushnumber(l,sprite.scale.y);
+          return 1;
+        },
+        setter:function(l:State){
+          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+            return 0;
+          }
+          sprite.scale.set(sprite.scale.x,Lua.tonumber(l,3));
+          LuaClass.DefaultSetter(l);
+          return 0;
+        }
+      },
+
     ];
   }
   override function Register(l:State){
@@ -989,9 +1056,162 @@ class LuaCam extends LuaClass {
   }
 }
 
+class LuaNote extends LuaSprite {
+  private static var state:State;
+  public var id:String='0';
+
+  override function Register(l:State){
+    state=l;
+    super.Register(l);
+  }
+
+  public function new(note:Note){
+    super(note,'note${LuaStorage.notes.length}',true);
+    id = Std.string(LuaStorage.notes.length);
+    LuaStorage.notes.push(note);
+    LuaStorage.noteIDs.set(note,id);
+    LuaStorage.noteMap.set(id,note);
+
+    properties.set("id",{
+      defaultValue:id,
+      getter:function(l:State,data:Any){
+        Lua.pushstring(l,id);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"id is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("noteData",{
+      defaultValue:note.noteData,
+      getter:function(l:State,data:Any){
+        Lua.pushnumber(l,note.noteData);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"noteData is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("strumTime",{
+      defaultValue:note.strumTime,
+      getter:function(l:State,data:Any){
+        Lua.pushnumber(l,note.strumTime);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"strumTime is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("manualXOffset",{
+      defaultValue:note.manualXOffset,
+      getter:function(l:State,data:Any){
+        Lua.pushnumber(l,note.manualXOffset);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"manualXOffset is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("wasGoodHit",{
+      defaultValue:note.wasGoodHit,
+      getter:function(l:State,data:Any){
+        Lua.pushboolean(l,note.wasGoodHit);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"wasGoodHit is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("tooLate",{
+      defaultValue:note.tooLate,
+      getter:function(l:State,data:Any){
+        Lua.pushboolean(l,note.tooLate);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"tooLate is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("sustainLength",{
+      defaultValue:note.sustainLength,
+      getter:function(l:State,data:Any){
+        Lua.pushnumber(l,note.sustainLength);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"sustainLength is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("isSustainNote",{
+      defaultValue:note.isSustainNote,
+      getter:function(l:State,data:Any){
+        Lua.pushboolean(l,note.isSustainNote);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"isSustainNote is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("mustPress",{
+      defaultValue:note.mustPress,
+      getter:function(l:State,data:Any){
+        Lua.pushboolean(l,note.mustPress);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"mustPress is read-only.");
+        return 0;
+      }
+    });
+
+
+  }
+}
+
 class LuaReceptor extends LuaSprite {
   private static var state:State;
 
+  override function SetNumProperty(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+        LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      var key = Lua.tostring(l,2);
+      if(key=='x')key='desiredX';
+      if(key=='y')key='desiredY';
+      Reflect.setProperty(sprite,key,Lua.tonumber(l,3));
+      return 0;
+  }
+  override function GetNumProperty(l:State,data:Any){
+      // 1 = self
+      // 2 = key
+      // 3 = metatable
+      var key = Lua.tostring(l,2);
+      if(key=='x')key='desiredX';
+      if(key=='y')key='desiredY';
+      Lua.pushnumber(l,Reflect.getProperty(sprite,key));
+      return 1;
+  }
 
   private function SetAngle(l:State){
       // 1 = self
@@ -1032,13 +1252,13 @@ class LuaReceptor extends LuaSprite {
     });
 
     properties.set("x",{
-      defaultValue:receptor.x,
+      defaultValue:receptor.desiredX,
       getter:GetNumProperty,
       setter:SetNumProperty
     });
 
     properties.set("y",{
-      defaultValue:receptor.y,
+      defaultValue:receptor.desiredY,
       getter:GetNumProperty,
       setter:SetNumProperty
     });
@@ -1133,8 +1353,28 @@ class LuaCharacter extends LuaSprite {
     return 0;
   }
 
+  private static function leftToRight(l:StatePointer){
+    // 1 = self
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.leftToRight();
+    return 0;
+  }
+
+  private static function rightToLeft(l:StatePointer){
+    // 1 = self
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.rightToLeft();
+    return 0;
+  }
+
   private static var playAnimC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(playAnim);
   private static var addOffsetC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addOffset);
+  private static var leftToRightC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(leftToRight);
+  private static var rightToLeftC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(rightToLeft);
 
   public function new(character:Character,name:String,?addToGlobal:Bool=true){
     super(character,name,addToGlobal);
@@ -1181,6 +1421,28 @@ class LuaCharacter extends LuaSprite {
       },
       setter:function(l:State){
         LuaL.error(l,"addOffset is read-only.");
+        return 0;
+      }
+    });
+    properties.set("leftToRight",{
+      defaultValue:0,
+      getter:function(l:State,data:Any){
+        Lua.pushcfunction(l,leftToRightC);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"leftToRight is read-only.");
+        return 0;
+      }
+    });
+    properties.set("rightToLeft",{
+      defaultValue:0,
+      getter:function(l:State,data:Any){
+        Lua.pushcfunction(l,rightToLeftC);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"rightToLeft is read-only.");
         return 0;
       }
     });

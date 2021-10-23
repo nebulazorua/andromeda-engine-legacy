@@ -13,11 +13,13 @@ import hscript.*;
 import Note.NoteBehaviour;
 import Shaders;
 import flixel.util.FlxColor;
+import flixel.math.FlxPoint;
 
 // TODO: have the receptor manage its own notes n shit
 
 class Receptor extends FlxSprite {
-  public static var dynamicColouring:Bool=false;
+  public static var dynamicColouring:Bool=false;  // if this is true, then it'll tint to the hit note's dominant colour when it hits a note
+  // (DOESNT WORK RN!)
 
 
   public var baseAngle:Float = 0;
@@ -28,17 +30,25 @@ class Receptor extends FlxSprite {
   public var defaultX:Float = 0;
   public var defaultY:Float = 0;
   public var incomingNoteAlpha:Float = 1;
+  public var direction:Int= 0 ;
+  public var point:Null<FlxPoint>;
+  public var scaleDefault:Null<FlxPoint>;
 
+  public var desiredX:Float = 0;
+  public var desiredY:Float = 0;
 
-  var colorSwap:ColorSwap;
-  // if this is true, then it'll tint when it hits a note
 
   public function new(x:Float,y:Float,noteData:Int,skin:String='default',modifier:String='base',behaviour:NoteBehaviour,daScale:Float=.7){
     super(x,y);
+    desiredX=x;
+    desiredY=y;
 
-    colorSwap = new ColorSwap();
-    shader=colorSwap.shader;
+    scaleDefault = FlxPoint.get();
 
+    //colorSwap = new ColorSwap();
+    //shader=colorSwap.shader;
+
+    direction=noteData;
     noteScale=daScale;
     this.skin=skin;
     var dirs = ["left","down","up","right"];
@@ -85,6 +95,8 @@ class Receptor extends FlxSprite {
           baseAngle = ang;
     }
     updateHitbox();
+
+    scaleDefault.set(scale.x,scale.y);
   }
 
   public function playNote(note:Note){
@@ -100,10 +112,16 @@ class Receptor extends FlxSprite {
     }
   }
 
+  override function destroy(){
+    if(point!=null)
+      point.put();
+    super.destroy();
+  }
+
   public function playAnim(anim:String,?force:Bool=false){
-    colorSwap.hue=0;
-    colorSwap.sat=0;
-    colorSwap.val=0;
+    //colorSwap.hue=0;
+    //colorSwap.sat=0;
+    //colorSwap.val=0;
 
     animation.play(anim,force);
     updateHitbox();
@@ -112,6 +130,10 @@ class Receptor extends FlxSprite {
 
   override function update(elapsed:Float){
     angle = baseAngle+desiredAngle;
+
+    x = desiredX + point.x;
+    y = desiredY + point.y;
+
     super.update(elapsed);
   }
 }

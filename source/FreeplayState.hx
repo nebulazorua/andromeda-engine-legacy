@@ -20,6 +20,9 @@ import flash.events.MouseEvent;
 import flixel.FlxState;
 import EngineData.WeekData;
 import EngineData.SongData;
+import haxe.Json;
+import sys.io.File;
+
 #if windows
 import Sys;
 import sys.FileSystem;
@@ -27,6 +30,13 @@ import sys.FileSystem;
 
 
 using StringTools;
+
+typedef ExternalSongMetadata = {
+	@:optional var displayName:String;
+	@:optional var freeplayIcon:String;
+	@:optional var inFreeplay:Bool;
+
+}
 
 class FreeplayState extends MusicBeatState
 {
@@ -43,6 +53,8 @@ class FreeplayState extends MusicBeatState
 	var lerpScore:Int = 0;
 	var curDifficultyIdx:Int = 0;
 	var intendedScore:Int = 0;
+
+	var songNames:Array<String>=[];
 
 	private var grpSongs:FlxTypedGroup<Alphabet>;
 	private var curPlaying:Bool = false;
@@ -139,6 +151,39 @@ class FreeplayState extends MusicBeatState
 			addWeekData(week);
 		}
 
+		var otherSongs = Paths.getDirs("songs","assets");
+
+		for(song in otherSongs){
+			//addSong(songName:String, weekNum:Int, songCharacter:String, ?chartName:String)
+			if(!songNames.contains(song.toLowerCase())){
+				var icon:String = 'dad';
+				var add:Bool = true;
+				var display:Null<String>=null;
+				var songFolder = 'assets/songs/${song.toLowerCase()}';
+				if(FileSystem.exists(songFolder)) {
+					var hasMetadata= FileSystem.exists('$songFolder/metadata.json');
+					var metadata:Null<ExternalSongMetadata> = null;
+					if(hasMetadata){
+						trace('GOT METADATA FOR ${song}');
+						metadata = Json.parse(File.getContent('$songFolder/metadata.json'));
+
+						add = metadata.inFreeplay==null?true:metadata.inFreeplay;
+						icon = metadata.freeplayIcon==null?'dad':metadata.freeplayIcon;
+						display = metadata.displayName;
+					}else{
+						if(FileSystem.exists(Paths.chart(song,song))){
+							var song = Song.loadFromJson(song,song);
+							icon = song==null?'dad':song.player2;
+							if(icon==null)icon='dad';
+						}
+					}
+					if(add)
+						addSong(display==null?song.replace("-"," "):display,0,icon,song);
+
+				}
+
+			}
+		}
 
 
 		// LOAD MUSIC
@@ -222,10 +267,11 @@ class FreeplayState extends MusicBeatState
 	}
 
 	public function addSongData(songData:EngineData.SongData){
+		songNames.push(songData.chartName.toLowerCase());
 		songs.push(songData);
 		var songDiffs:Array<Int> = [];
-		if(FileSystem.isDirectory('assets/data/${songData.chartName.toLowerCase()}') ){
-			for (file in FileSystem.readDirectory('assets/data/${songData.chartName.toLowerCase()}'))
+		if(FileSystem.isDirectory('assets/songs/${songData.chartName.toLowerCase()}') ){
+			for (file in FileSystem.readDirectory('assets/songs/${songData.chartName.toLowerCase()}'))
 			{
 				if(file.endsWith(".json") && !FileSystem.isDirectory(file)){
 					var difficultyName = file.replace(".json","").replace(songData.chartName.toLowerCase(),"");

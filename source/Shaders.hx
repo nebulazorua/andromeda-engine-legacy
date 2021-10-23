@@ -7,6 +7,8 @@ import openfl.display.ShaderInput;
 import openfl.utils.Assets;
 import flixel.FlxG;
 import openfl.Lib;
+import flixel.math.FlxPoint;
+
 using StringTools;
 typedef ShaderEffect = {
   var shader:Dynamic;
@@ -165,13 +167,53 @@ class ColorSwapShader extends FlxShader
   }
 }
 
+
+// https://www.shadertoy.com/view/stSXRG
+// but modified to allow me to scale on the axises seperately
+
+class ScaleEffect {
+  public var shader:ScaleShader = new ScaleShader();
+  public function new(){
+    shader.scaleX.value = [1];
+    shader.scaleY.value = [1];
+  }
+  public function setScale(x:Float=1,y:Float=1){
+    shader.scaleX.value = [x];
+    shader.scaleY.value = [y];
+  }
+  public function getScale(){
+    return FlxPoint.get(shader.scaleX.value[0],shader.scaleY.value[0]);
+  }
+}
+
+class ScaleShader extends FlxShader {
+  @:glFragmentSource('
+    #pragma header;
+    uniform float scaleX;
+    uniform float scaleY;
+    void main()
+    {
+
+      vec2 uv = openfl_TextureCoordv;
+      //uv -= vec2(0.5,0.5);
+      //uv.x/=scaleX;
+      //uv.y/=scaleY;
+      //uv += vec2(0.5,0.5);
+      gl_FragColor = vec4(uv.x, uv.y, 0.0, 1.0);
+    }
+  ')
+  public function new()
+  {
+    super();
+  }
+}
+
 class BuildingEffect {
   public var shader:BuildingShader = new BuildingShader();
   public function new(){
     shader.alphaShit.value = [0];
   }
   public function addAlpha(alpha:Float){
-    trace(shader.alphaShit.value[0]);
     shader.alphaShit.value[0]+=alpha;
   }
   public function setAlpha(alpha:Float){
@@ -407,12 +449,13 @@ class VCRDistortionShader extends FlxShader // https://www.shadertoy.com/view/ld
       if(vignetteOn)
     	 video *= vignette;
 
-
-      gl_FragColor = mix(video,vec4(noise(uv * 75.)),.05);
-
       if(curUV.x<0 || curUV.x>1 || curUV.y<0 || curUV.y>1){
         gl_FragColor = vec4(0,0,0,0);
+      }else{
+        gl_FragColor = mix(video,vec4(noise(uv * 75.)),.05);
       }
+
+
 
     }
   ')

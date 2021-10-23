@@ -40,8 +40,8 @@ class OptionsState extends MusicBeatState
 			new ToggleOption("ghosttapping","Ghost-tapping","Missing when you hit nothing"),
 			new ToggleOption("failForMissing","Sudden Death","FC or die"),
 			new OptionCategory("Freeplay Modifiers",[
-				new StepOption("cMod","Speed Constant",0.1,0,10,"","","A constant speed to override the scrollspeed. 0 for default speed"),
-				new StepOption("xMod","Speed Mult",0.1,0,2,"","x","A multiplier to a chart's scrollspeed"),
+				new StepOption("cMod","Speed Constant",0.1,0,10,"","","A constant speed to override the scrollspeed. 0 for default speed",true),
+				new StepOption("xMod","Speed Mult",0.1,0,2,"","x","A multiplier to a chart's scrollspeed",true),
 				new ToggleOption("botPlay","BotPlay","Let a bot play for you"),
 				new ToggleOption("noFail","No Fail","With this on, you can't die"),
 			]),
@@ -55,12 +55,12 @@ class OptionsState extends MusicBeatState
 			// TODO: make a better 'calibrate offset'
 		]),
 		new OptionCategory("Appearance",[
-			//new ToggleOption("camFollowsAnims","Directional Camera","Does the camera follow animations"),
+			new ToggleOption("camFollowsAnims","Directional Camera","Does the camera follow animations"),
 			new ToggleOption("downScroll","Downscroll","Do arrows come from the top coming down"),
 			new ToggleOption("middleScroll","Centered Notes","Are arrows placed in the middle of the screen"),
 			new NoteskinOption("noteSkin","NoteSkin","Which noteskin to use"),
 			new ToggleOption("allowNoteModifiers","Allow note modifiers","Should note modifiers be loaded? (Eg. pixel notes)"),
-			new StepOption("backTrans","BG Darkness",10,0,100,"%","","How dark the background is"),
+			new StepOption("backTrans","BG Darkness",10,0,100,"%","","How dark the background is",true),
 			new ScrollOption("staticCam","Camera Focus","Who the camera should focus on",0,OptionUtils.camFocuses.length-1,OptionUtils.camFocuses),
 			new ToggleOption("oldMenus","Old Menus","Use the vanilla menus"),
 			new ToggleOption("oldTitle","Old Title Screen","Use the vanilla titlescreen"),
@@ -84,7 +84,7 @@ class OptionsState extends MusicBeatState
 			new ToggleOption("persistentCombo","Combo doesnt fade","Does the combo stay"),
 		]),
 		new OptionCategory("Performance",[
-			new StepOption("fps","FPS Cap",30,30,360,"","","The FPS the game tries to run at",function(value:Float,step:Float){
+			new StepOption("fps","FPS Cap",30,30,360,"","","The FPS the game tries to run at",true,function(value:Float,step:Float){
 				Main.setFPSCap(Std.int(value));
 			}),
 			new ToggleOption("noChars","Hide characters","Hides characters ingame"),

@@ -30,14 +30,11 @@ class InitState extends FlxUIState {
     FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
       {asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
   }
-  override function create()
-  {
-    OptionUtils.bindSave();
-    OptionUtils.loadOptions(OptionUtils.options);
-    var currentOptions = OptionUtils.options;
 
+  public static function getNoteskins(){
+    var currentOptions = OptionUtils.options;
+    Note.skinManifest.clear();
     OptionUtils.noteSkins = Paths.getDirs("skins");
-    trace(OptionUtils.noteSkins);
 
     if(!OptionUtils.noteSkins.contains(currentOptions.noteSkin))
       currentOptions.noteSkin='default';
@@ -45,6 +42,15 @@ class InitState extends FlxUIState {
     for(skin in OptionUtils.noteSkins){
       Note.skinManifest.set(skin,Paths.noteskinManifest(skin));
     }
+  }
+
+  override function create()
+  {
+    OptionUtils.bindSave();
+    OptionUtils.loadOptions(OptionUtils.options);
+    var currentOptions = OptionUtils.options;
+
+    getNoteskins();
 
     EngineData.options = currentOptions;
     PlayerSettings.init();

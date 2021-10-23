@@ -219,6 +219,12 @@ class Paths
 		return getPath('data/$key.json', TEXT, library);
 	}
 
+	inline static public function chart(key:String,?container:String, ?library:String)
+	{
+		if(container==null)container=key;
+		return getPath('songs/$container/$key.json', TEXT, library);
+	}
+
 	static public function sound(key:String, ?library:String)
 	{
 		return getPath('sounds/$key.$SOUND_EXT', SOUND, library);
@@ -236,12 +242,12 @@ class Paths
 
 	inline static public function voices(song:String)
 	{
-		return 'songs:assets/songs/${song.toLowerCase()}/Voices.$SOUND_EXT';
+		return getPath('songs/${song.toLowerCase()}/Voices.$SOUND_EXT', MUSIC, null);
 	}
 
 	inline static public function inst(song:String)
 	{
-		return 'songs:assets/songs/${song.toLowerCase()}/Inst.$SOUND_EXT';
+		return getPath('songs/${song.toLowerCase()}/Inst.$SOUND_EXT', MUSIC, null);
 	}
 
 	inline static public function lua(script:String,?library:String){
@@ -249,7 +255,7 @@ class Paths
 	}
 
 	inline static public function modchart(song:String,?library:String){
-		return getPath('data/$song/modchart.lua',TEXT,library);
+		return getPath('songs/$song/modchart.lua',TEXT,library);
 	}
 
 	inline static public function image(key:String, ?library:String)
