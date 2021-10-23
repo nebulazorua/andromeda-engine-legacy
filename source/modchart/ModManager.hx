@@ -37,8 +37,8 @@ class ModManager {
     defineMod("reverse",new ReverseModifier(this)); // also cross, split, alternate, centered
     defineMod("mini",new ScaleModifier(this)); // also squish and stretch
     defineMod("flip",new FlipModifier(this));
-    /*defineMod("invert",new InvertModifier(this));
-    defineMod("transform",new TransformModifier(this));*/
+    defineMod("invert",new InvertModifier(this));
+    defineMod("transform",new TransformModifier(this));
   }
 
   public function getList(modName:String,player:Int):Array<ModEvent>{

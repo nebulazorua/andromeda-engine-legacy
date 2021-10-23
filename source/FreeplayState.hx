@@ -22,6 +22,7 @@ import EngineData.WeekData;
 import EngineData.SongData;
 import haxe.Json;
 import sys.io.File;
+import openfl.media.Sound;
 
 #if windows
 import Sys;
@@ -443,7 +444,7 @@ class FreeplayState extends MusicBeatState
 			createThread=true;
 		#end
 		if(OptionUtils.options.freeplayPreview){
-			FlxG.sound.playMusic(Paths.inst(songs[curSelected].chartName), 0);
+			FlxG.sound.playMusic(Sound.fromFile('./${Paths.inst(songs[curSelected].chartName)}'), 0);
 		}
 
 		var bullShit:Int = 0;

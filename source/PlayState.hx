@@ -365,7 +365,7 @@ class PlayState extends MusicBeatState
 			// put on pause for now
 
 			Lua_helper.add_callback(lua.state,"newOpponent", function(x:Float, y:Float, ?character:String = "bf", ?spriteName:String){
-				var char = new Character(x,y,character);
+				var char = new Character(x,y,character,false,!currentOptions.noChars);
 				var name = "UnnamedOpponent"+unnamedLuaSprites;
 
 				if(spriteName!=null)
@@ -2250,7 +2250,7 @@ class PlayState extends MusicBeatState
 								opponent.playAnim(anim,true);
 							}else if(currentOptions.pauseHoldAnims && !canHold){
 								opponent.playAnim(anim,true);
-								if(daNote.holdParent && !daNote.isSustainEnd() )
+								if(daNote.holdParent || daNote.isSustainEnd() )
 									opponent.holding=true;
 								else{
 									opponent.holding=false;
