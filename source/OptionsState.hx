@@ -34,9 +34,7 @@ class OptionsState extends MusicBeatState
 				new ControlOption(controls,Control.RESET),
 			]),
 			new ToggleOption("resetKey","Reset key","Should pressing the bound reset key instantly kill you"),
-			#if windows
-			new ToggleOption("loadModcharts","Load Lua modcharts","Should modcharts which run using lua load"),
-			#end
+			new ToggleOption("loadModcharts","Load Lua modcharts","Should the engine load lua-based modcharts"),
 			new ToggleOption("ghosttapping","Ghost-tapping","Missing when you hit nothing"),
 			new ToggleOption("failForMissing","Sudden Death","FC or die"),
 			new OptionCategory("Freeplay Modifiers",[

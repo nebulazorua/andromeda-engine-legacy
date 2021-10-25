@@ -138,7 +138,7 @@ class Options
 
 	public var ratingInHUD:Bool = false;
 	public var menuFlash:Bool = true;
-	public var freeplayPreview:Bool = true;
+	public var freeplayPreview:Bool = false;
 	public var hitSound:Bool = false;
 
 	public function loadOptions(){

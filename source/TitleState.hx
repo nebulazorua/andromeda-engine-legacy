@@ -150,7 +150,6 @@ class TitleState extends MusicBeatState
 			speaker.animation.play('normal',true);
 		}
 
-		trace(CoolUtil.getDominantColour(speaker).toHexString(),CoolUtil.getDominantColour(logoBl).toHexString());
 		//i know its wasteful but im a lazy ass
 
 		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);

@@ -444,7 +444,7 @@ class FreeplayState extends MusicBeatState
 			createThread=true;
 		#end
 		if(OptionUtils.options.freeplayPreview){
-			FlxG.sound.playMusic(Sound.fromFile('./${Paths.inst(songs[curSelected].chartName)}'), 0);
+			FlxG.sound.playMusic(CoolUtil.getSound('${Paths.inst(songs[curSelected].chartName)}'), 0);
 		}
 
 		var bullShit:Int = 0;

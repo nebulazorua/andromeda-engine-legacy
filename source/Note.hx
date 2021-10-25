@@ -66,6 +66,7 @@ class Note extends NoteGraphic
 	public var beingCharted:Bool=false;
 	public var initialPos:Float = 0;
 
+	public var z:Float = 0;
 	public var beat:Float = 0;
 	public static var noteBehaviour:NoteBehaviour;
 

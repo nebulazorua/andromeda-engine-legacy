@@ -37,6 +37,7 @@ class Receptor extends FlxSprite {
   public var desiredX:Float = 0;
   public var desiredY:Float = 0;
 
+  public var z:Float = 0;
 
   public function new(x:Float,y:Float,noteData:Int,skin:String='default',modifier:String='base',behaviour:NoteBehaviour,daScale:Float=.7){
     super(x,y);

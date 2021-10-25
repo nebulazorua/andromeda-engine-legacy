@@ -10,6 +10,7 @@ import flash.display.BitmapData;
 import Sys;
 import sys.FileSystem;
 import flixel.util.FlxDestroyUtil;
+import openfl.media.Sound;
 
 class Cache {
   public static var offsetData = new Map<String,String>();
@@ -18,11 +19,14 @@ class Cache {
   public static var charXmlData = new Map<String,String>();
   public static var xmlData = new Map<String,String>();
   public static var pathCache = new Map<String,String>();
+  public static var soundCache = new Map<String,Sound>();
 
   public static function wipe(){ // a COMPLETE cache clear
     pathCache.clear();
     xmlData.clear();
+    soundCache.clear();
     Clear();
+    // TODO: wipe graphics too
     trace("WIPED CACHE!");
   }
 

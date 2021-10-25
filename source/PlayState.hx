@@ -429,6 +429,8 @@ class PlayState extends MusicBeatState
 			var luaReceptorCam = new LuaCam(camReceptor,"receptorCam");
 			// TODO: a flat 'camera' object which'll affect the properties of every camera
 
+			new LuaModMgr(modManager).Register(lua.state);
+
 			for(i in [luaModchart,window,bfLua,gfLua,dadLua,bfIcon,dadIcon,luaGameCam,luaHUDCam,luaNotesCam,luaSustainCam,luaReceptorCam])
 				i.Register(lua.state);
 
@@ -866,6 +868,7 @@ class PlayState extends MusicBeatState
 			var overlay = new FlxSprite(0,0).makeGraphic(Std.int(FlxG.width*2),Std.int(FlxG.width*2),FlxColor.BLACK);
 			overlay.screenCenter(XY);
 			overlay.alpha = currentOptions.backTrans/100;
+			overlay.scrollFactor.set();
 			add(overlay);
 		}
 		if (isStoryMode)
@@ -1278,12 +1281,12 @@ class PlayState extends MusicBeatState
 		curSong = SONG.song;
 
 		if (SONG.needsVoices){
-			vocals = new FlxSound().loadEmbedded(Sound.fromFile('./${Paths.voices(SONG.song)}'));
+			vocals = new FlxSound().loadEmbedded(CoolUtil.getSound('${Paths.voices(SONG.song)}'));
 			//vocals = new FlxSound().loadEmbedded(Paths.voices(SONG.song));
 		}else
 			vocals = new FlxSound();
 
-		inst = new FlxSound().loadEmbedded(Sound.fromFile('./${Paths.inst(SONG.song)}'));
+		inst = new FlxSound().loadEmbedded(CoolUtil.getSound('${Paths.inst(SONG.song)}'));
 		//inst = new FlxSound().loadEmbedded(Paths.inst(SONG.song));
 		inst.looped=false;
 		if(currentOptions.noteOffset==0)
@@ -1992,6 +1995,35 @@ class PlayState extends MusicBeatState
 		}
 		// better streaming of shit
 
+		playerStrums.forEach(function(spr:Receptor)
+		{
+			var pos = modManager.getReceptorPos(spr,0);
+			var scale = modManager.getReceptorScale(spr,0);
+			modManager.updateReceptor(spr, scale, pos);
+
+			spr.point.x = pos.x;
+			spr.point.y = pos.y;
+			spr.scale.set(scale.x,scale.y);
+
+			scale.put();
+			pos.put();
+		});
+
+		dadStrums.forEach(function(spr:Receptor)
+		{
+			var pos = modManager.getReceptorPos(spr,1);
+			var scale = modManager.getReceptorScale(spr,1);
+			modManager.updateReceptor(spr, scale, pos);
+
+			spr.point.x = pos.x;
+			spr.point.y = pos.y;
+			spr.scale.set(scale.x,scale.y);
+
+			scale.put();
+			pos.put();
+
+		});
+
 		// RESET = Quick Game Over Screen
 		if (controls.RESET && currentOptions.resetKey)
 		{
@@ -2250,7 +2282,8 @@ class PlayState extends MusicBeatState
 								opponent.playAnim(anim,true);
 							}else if(currentOptions.pauseHoldAnims && !canHold){
 								opponent.playAnim(anim,true);
-								if(daNote.holdParent || daNote.isSustainEnd() )
+
+								if(daNote.holdParent && !daNote.isSustainEnd())
 									opponent.holding=true;
 								else{
 									opponent.holding=false;

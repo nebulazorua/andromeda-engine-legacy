@@ -245,11 +245,11 @@ class Character extends FlxSprite
 					// DAD ANIMATION LOADING CODE
 					tex = Paths.getSparrowAtlas('characters/DADDY_DEAREST','shared');
 					frames = tex;
-					animation.addByPrefix('idle', 'Dad idle dance', 24);
-					animation.addByPrefix('singUP', 'Dad Sing note UP', 24);
-					animation.addByPrefix('singLEFT', 'dad sing note right', 24);
-					animation.addByPrefix('singDOWN', 'Dad Sing Note DOWN', 24);
-					animation.addByPrefix('singRIGHT', 'Dad Sing Note LEFT', 24);
+					animation.addByPrefix('idle', 'Dad idle dance', 24, false);
+					animation.addByPrefix('singUP', 'Dad Sing note UP', 24, false);
+					animation.addByPrefix('singLEFT', 'dad sing note right', 24, false);
+					animation.addByPrefix('singDOWN', 'Dad Sing Note DOWN', 24, false);
+					animation.addByPrefix('singRIGHT', 'Dad Sing Note LEFT', 24, false);
 
 					loadOffsets();
 

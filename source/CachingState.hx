@@ -21,7 +21,9 @@ import flixel.addons.transition.FlxTransitionableState;
 import flixel.addons.transition.TransitionData;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
-
+import openfl.Assets;
+import openfl.utils.AssetType;
+import openfl.media.Sound;
 
 using StringTools;
 
@@ -191,7 +193,13 @@ class CachingState extends FlxUIState {
         loadingText.screenCenter(X);
       }
       for(file in sounds){
-        FlxG.sound.cache(file);
+        if(Assets.exists(file, AssetType.SOUND) || Assets.exists(file, AssetType.MUSIC)){ // https://github.com/HaxeFlixel/flixel/blob/master/flixel/system/frontEnds/SoundFrontEnd.hx
+          var sound = FlxG.sound.cache(file);
+          CoolUtil.cacheSound(file,sound);
+        }else{
+          CoolUtil.cacheSound(file,Sound.fromFile('./$file'));
+        }
+
         trace("loaded " + file);
         loaded++;
         loadingText.text = 'Loading ${file} (${loaded}/${toLoad})';

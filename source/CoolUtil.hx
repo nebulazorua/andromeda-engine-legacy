@@ -5,7 +5,9 @@ import sys.thread.Thread;
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.util.FlxColor;
-
+import openfl.media.Sound;
+import openfl.Assets;
+import openfl.utils.AssetType;
 using StringTools;
 
 class CoolUtil
@@ -16,6 +18,23 @@ class CoolUtil
 		Thread.create(()->{
 			FlxG.sound.play(sound,volume,looped,group,autodestroy,onComplete);
 		});
+	}
+
+	public static function cacheSound(key:String,sound:Sound){
+		if(!Cache.soundCache.exists(key))
+			Cache.soundCache.set(key,sound);
+	}
+
+	public static function getSound(path:String):Sound{
+		if(Cache.soundCache.get(path)!=null)
+			return Cache.soundCache.get(path);
+
+		if(Assets.exists(path, AssetType.SOUND) || Assets.exists(path, AssetType.MUSIC))
+			return Assets.getSound(path);
+
+		var sound = Sound.fromFile(path);
+		cacheSound(path,sound);
+		return sound;
 	}
 
 	inline public static function scale(x:Float,l1:Float,h1:Float,l2:Float,h2:Float):Float

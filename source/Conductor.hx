@@ -17,7 +17,7 @@ typedef BPMChangeEvent =
 
 class Conductor
 {
-	public static var ROWS_PER_BEAT:Int = 96;
+	public static var ROWS_PER_BEAT:Int = 56;
 	// its 48 in ITG but idk because FNF doesnt work w/ note rows
 	public static var ROWS_PER_MEASURE:Int = ROWS_PER_BEAT*4;
 

@@ -426,10 +426,10 @@ class ChartingState extends MusicBeatState
 			// vocals.stop();
 		}
 
-		FlxG.sound.playMusic(Sound.fromFile('./${Paths.inst(daSong)}'), 0.6);
+		FlxG.sound.playMusic(CoolUtil.getSound('${Paths.inst(daSong)}'), 0.6);
 
 		// WONT WORK FOR TUTORIAL OR TEST SONG!!! REDO LATER
-		vocals = new FlxSound().loadEmbedded(Sound.fromFile('./${Paths.voices(daSong)}'));
+		vocals = new FlxSound().loadEmbedded(CoolUtil.getSound('${Paths.voices(daSong)}'));
 		FlxG.sound.list.add(vocals);
 
 		FlxG.sound.music.pause();

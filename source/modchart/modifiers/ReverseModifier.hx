@@ -28,7 +28,7 @@ class ReverseModifier extends Modifier {
     var first = kNum/4;
     var last = kNum-1-first;
 
-    if(dir>=first || dir<=last){
+    if(dir>=first && dir<=last){
       percent += getSubmodPercent("cross" + suffix,player);
     }
 

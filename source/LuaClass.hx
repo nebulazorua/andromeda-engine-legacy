@@ -1,7 +1,7 @@
 package;
 
 // TODO: Clean up
-
+import modchart.*;
 import llua.Convert;
 import llua.Lua;
 import llua.State;
@@ -1668,202 +1668,125 @@ class LuaModchart extends LuaClass {
   }
 }
 
-/*class LuaReceptor extends LuaClass {
+class LuaModMgr extends LuaClass {
   private static var state:State;
-  private static var internalNames = [
-    "left",
-    "down",
-    "up",
-    "right"
-  ];
-  public function new(noteData:Int,plr:Bool){ // god i've gotta make this better
+  private var manager:ModManager;
+
+  /*
+  private static function setScaleY(l:StatePointer):Int{
+    // 1 = self
+    // 2 = scale
+    var scale = LuaL.checknumber(state,2);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.scale.y = scale;
+    return 0;
+  }
+
+  private static var setScaleYC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setScaleY);
+  */
+
+  private static function queueEase(l:StatePointer):Int{
+    // 1 = self
+    // 2 = step
+    // 3 = endStep
+    // 4 = modName
+    // 5 = percent
+    // 6 = easing style
+    // 7 = player
+    var step = LuaL.checknumber(state,2);
+    var eStep = LuaL.checknumber(state,3);
+    var modN = LuaL.checkstring(state,4);
+    var perc = LuaL.checknumber(state,5);
+    var ease = LuaL.checkstring(state,6);
+    var player:Int = -1;
+
+    if(Lua.isnumber(state,7))
+      player = Std.int(Lua.tonumber(state,7));
+
+    Lua.getfield(state,1,"className");
+    var className = Lua.tostring(state,-1);
+    var mgr = PlayState.currentPState.luaObjects[className];
+    try{
+      mgr.queueEase(step,eStep,modN,perc,ease,player);
+    }catch(e){
+      trace(e);
+    }
+    return 0;
+  }
+
+  private static var queueEaseC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(queueEase);
+
+  private static function queueSet(l:StatePointer):Int{
+    // 1 = self
+    // 2 = step
+    // 3 = modName
+    // 4 = percent
+    // 5 = player
+    var step = LuaL.checknumber(state,2);
+    var modN = LuaL.checkstring(state,3);
+    var perc = LuaL.checknumber(state,4);
+    var player:Int = -1;
+
+    if(Lua.isnumber(state,5))
+      player = Std.int(Lua.tonumber(state,5));
+
+    Lua.getfield(state,1,"className");
+    var className = Lua.tostring(state,-1);
+    var mgr = PlayState.currentPState.luaObjects[className];
+    mgr.queueSet(step,modN,perc,player);
+    return 0;
+  }
+  private static var queueSetC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(queueSet);
+
+
+
+  public function new(mgr:ModManager,?name="modMgr",?addToGlobal=true){
     super();
-    className= internalNames[noteData] + (plr?"Plr":"Dad") + "Note";
-    properties=[
-      "alpha"=>{
-        defaultValue: 1 ,
-        getter: function(l:State,data:Any):Int{
-          if(plr){
-            Lua.pushnumber(l,PlayState.currentPState.refNotes.members[noteData].alpha);
-            Lua.pushnumber(l,PlayState.currentPState.refReceptors.members[noteData].alpha);
-          }else{
-            Lua.pushnumber(l,PlayState.currentPState.opponentRefNotes.members[noteData].alpha);
-            Lua.pushnumber(l,PlayState.currentPState.opponentRefReceptors.members[noteData].alpha);
-          }
+    className=name;
+    this.addToGlobal=addToGlobal;
+    this.manager=mgr;
+    PlayState.currentPState.luaObjects[name]=mgr;
+    properties = [
+      "className"=>{
+        defaultValue:className,
+        getter:function(l:State,data:Any){
+          Lua.pushstring(l,className);
           return 1;
         },
-        setter: function(l:State):Int{
-          // 1 = self
-          // 2 = key
-          // 3 = value
-          // 4 = metatable
-          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
-            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
-            return 0;
-          }
-
-          var alpha = Lua.tonumber(l,3);
-          if(plr){
-            PlayState.currentPState.refNotes.members[noteData].alpha=alpha;
-            PlayState.currentPState.refReceptors.members[noteData].alpha=alpha;
-          }else{
-            PlayState.currentPState.opponentRefNotes.members[noteData].alpha=alpha;
-            PlayState.currentPState.opponentRefReceptors.members[noteData].alpha=alpha;
-          }
-          LuaClass.DefaultSetter(l);
+        setter:function(l:State){
+          LuaL.error(l,"className is read-only.");
           return 0;
         }
       },
-      "receptorAlpha"=>{
-        defaultValue: 1 ,
-        getter: function(l:State,data:Any):Int{
-          if(plr)
-            Lua.pushnumber(l,PlayState.currentPState.refReceptors.members[noteData].alpha);
-          else
-            Lua.pushnumber(l,PlayState.currentPState.opponentRefReceptors.members[noteData].alpha);
+      "queueSet"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,queueSetC);
           return 1;
         },
-        setter: function(l:State):Int{
-          // 1 = self
-          // 2 = key
-          // 3 = value
-          // 4 = metatable
-          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
-            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
-            return 0;
-          }
-
-          var alpha = Lua.tonumber(l,3);
-          if(plr)
-            PlayState.currentPState.refReceptors.members[noteData].alpha=alpha;
-          else
-            PlayState.currentPState.opponentRefReceptors.members[noteData].alpha=alpha;
-
-          LuaClass.DefaultSetter(l);
+        setter:function(l:State){
+          LuaL.error(l,"queueSet is read-only.");
           return 0;
         }
       },
-      "noteAlpha"=>{
-        defaultValue: 1 ,
-        getter: function(l:State,data:Any):Int{
-          if(plr)
-            Lua.pushnumber(l,PlayState.currentPState.refNotes.members[noteData].alpha);
-          else
-            Lua.pushnumber(l,PlayState.currentPState.opponentRefNotes.members[noteData].alpha);
+      "queueEase"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,queueEaseC);
           return 1;
         },
-        setter: function(l:State):Int{
-          // 1 = self
-          // 2 = key
-          // 3 = value
-          // 4 = metatable
-          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
-            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
-            return 0;
-          }
-
-          var alpha = Lua.tonumber(l,3);
-          if(plr)
-            PlayState.currentPState.refNotes.members[noteData].alpha=alpha;
-          else
-            PlayState.currentPState.opponentRefNotes.members[noteData].alpha=alpha;
-
-          LuaClass.DefaultSetter(l);
-          return 0;
-        }
-      },
-      "angle"=>{
-        defaultValue: 1 ,
-        getter: function(l:State,data:Any):Int{
-          if(plr)
-            Lua.pushnumber(l,PlayState.currentPState.refNotes.members[noteData].angle);
-          else
-            Lua.pushnumber(l,PlayState.currentPState.opponentRefNotes.members[noteData].angle);
-          return 1;
-        },
-        setter: function(l:State):Int{
-          // 1 = self
-          // 2 = key
-          // 3 = value
-          // 4 = metatable
-          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
-            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
-            return 0;
-          }
-
-          var angle = Lua.tonumber(l,3);
-          if(plr)
-            PlayState.currentPState.refNotes.members[noteData].angle=angle;
-          else
-            PlayState.currentPState.opponentRefNotes.members[noteData].angle=angle;
-
-          LuaClass.DefaultSetter(l);
-          return 0;
-        }
-      },
-
-      "xOffset"=>{
-        defaultValue: 0,
-        getter: function(l:State,data:Any):Int{
-          if(plr)
-            Lua.pushnumber(l,PlayState.currentPState.playerNoteOffsets[noteData][0]);
-          else
-            Lua.pushnumber(l,PlayState.currentPState.opponentNoteOffsets[noteData][0]);
-          return 1;
-        },
-        setter: function(l:State):Int{
-          // 1 = self
-          // 2 = key
-          // 3 = value
-          // 4 = metatable
-          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
-            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
-            return 0;
-          }
-
-          var offset = Lua.tonumber(l,3);
-          if(plr)
-            PlayState.currentPState.playerNoteOffsets[noteData][0]=offset;
-          else
-            PlayState.currentPState.opponentNoteOffsets[noteData][0]=offset;
-
-          LuaClass.DefaultSetter(l);
-          return 0;
-        }
-      },
-      "yOffset"=>{
-        defaultValue: 0,
-        getter: function(l:State,data:Any):Int{
-          if(plr)
-            Lua.pushnumber(l,PlayState.currentPState.playerNoteOffsets[noteData][1]);
-          else
-            Lua.pushnumber(l,PlayState.currentPState.opponentNoteOffsets[noteData][1]);
-          return 1;
-        },
-        setter: function(l:State):Int{
-          // 1 = self
-          // 2 = key
-          // 3 = value
-          // 4 = metatable
-          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
-            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
-            return 0;
-          }
-
-          var offset = Lua.tonumber(l,3);
-          if(plr)
-            PlayState.currentPState.playerNoteOffsets[noteData][1]=offset;
-          else
-            PlayState.currentPState.opponentNoteOffsets[noteData][1]=offset;
-
-          LuaClass.DefaultSetter(l);
+        setter:function(l:State){
+          LuaL.error(l,"queueEase is read-only.");
           return 0;
         }
       },
     ];
   }
+
   override function Register(l:State){
     state=l;
     super.Register(l);
   }
-}*/
+}

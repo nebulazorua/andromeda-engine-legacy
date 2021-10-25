@@ -1,0 +1,78 @@
+package modchart.modifiers;
+
+import modchart.*;
+import flixel.math.FlxPoint;
+import lime.math.Vector4;
+import flixel.math.FlxMath;
+import flixel.FlxG;
+using StringTools;
+
+// NOTE: THIS SHOULDNT HAVE ITS PERCENTAGE MODIFIED
+// THIS IS JUST HERE TO ALLOW OTHER MODIFIERS TO HAVE PERSPECTIVE
+
+// did my research
+// i now know what a frustrum is lmao
+// stuff ill forget after tonight
+
+// its the next day and yea i forgot already LOL
+// something somethng clipping idk
+
+// either way
+// perspective projection woo
+
+class PerspectiveModifier extends Modifier {
+  public var fov = Math.PI/2;
+  public var near = 0;
+  public var far = 2;
+
+  public function getVector(curZ:Float,pos:FlxPoint):Vector4{
+    var oX = pos.x;
+    var oY = pos.y;
+    var oZ = curZ-1;
+
+    // should I be using a matrix?
+    // .. nah fuck that lmao
+
+    //var aspect = FlxG.width/FlxG.height;
+    var aspect = 1;
+    
+    var ta = Math.tan(fov/2);
+    var x = oX * aspect/ta;
+    var y = oY/ta;
+    var a = (near+far)/(near-far);
+    var b = 2*near*far/(near-far);
+    var z = a*oZ+b;
+    var returnedVector = new Vector4(x/z,y/z,z,1);
+
+    return returnedVector;
+  }
+
+  override function getReceptorPos(receptor:Receptor, pos:FlxPoint, data:Int, player:Int){ // maybe replace FlxPoint with a Vector4?
+    var vec = getVector(receptor.z,pos);
+    pos.x=vec.x;
+    pos.y=vec.y;
+
+    return pos;
+  }
+
+  override function getNotePos(note:Note, pos:FlxPoint, data:Int, player:Int){ // maybe replace FlxPoint with a Vector4?
+    var vec = getVector(note.z,pos);
+    pos.x=vec.x;
+    pos.y=vec.y;
+
+    return pos;
+  }
+
+  override function updateReceptor(pos:FlxPoint, scale:FlxPoint, receptor:Receptor){
+    var vec = getVector(receptor.z,pos);
+
+    scale.scale(1/vec.z);
+  }
+
+  override function updateNote(pos:FlxPoint, scale:FlxPoint, note:Note){
+    var vec = getVector(note.z,pos);
+
+    scale.scale(1/vec.z);
+  }
+
+}

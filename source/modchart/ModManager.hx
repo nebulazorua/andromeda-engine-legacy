@@ -12,6 +12,10 @@ import flixel.math.FlxPoint;
 // TODO: modifier priority system
 class ModManager {
   private var definedMods:Map<String,Modifier>=[]; // ModList class for defining mods? idk
+  private var coreMods:Array<Modifier>=[]; // These shouldnt have percentages modified or anything
+  // these exist PURELY for other modifiers to have more functionality (eg: PerspectiveModifier allows you to give a 'z' axis to notes and receptors)
+  // TODO: a more robust priority system than this shit ^
+
   private var schedule:Map<String,Array<ModEvent>>=[];
   private var funcs:Array<FuncEvent>=[];
   private var mods:Array<Modifier> = [];
@@ -34,11 +38,16 @@ class ModManager {
   }
 
   public function registerDefaultModifiers(){
+    // NOTE: the order matters!
+    // it goes from first defined to last defined
+
     defineMod("reverse",new ReverseModifier(this)); // also cross, split, alternate, centered
     defineMod("mini",new ScaleModifier(this)); // also squish and stretch
     defineMod("flip",new FlipModifier(this));
     defineMod("invert",new InvertModifier(this));
     defineMod("transform",new TransformModifier(this));
+
+    defineMod("_PERSPECTIVEDONOTTOUCH",new PerspectiveModifier(this)); // DO NOT TOUCH
   }
 
   public function getList(modName:String,player:Int):Array<ModEvent>{
@@ -97,6 +106,12 @@ class ModManager {
     }
   }
 
+  public function defineCoreMod(modifier:Modifier){
+    if(!coreMods.contains(modifier)){
+      coreMods.push(modifier);
+    }
+  }
+
   public function removeMod(modName:String){
     if(definedMods.exists(modName)){
       definedMods.remove(modName);
@@ -139,28 +154,21 @@ class ModManager {
     }
   }
 
+  public function getMods():Array<Modifier>{
+    var modArr:Array<Modifier>=[];
+    for(cM in coreMods){
+      modArr.push(cM);
+    }
+    for(m in mods){
+      modArr.push(m);
+    }
+    return modArr;
+  }
+
   public function update(elapsed:Float){
     run();
     for(mod in mods){
       mod.update(elapsed);
-    }
-
-    updateReceptorOffsets();
-    updateReceptorScales();
-  }
-
-  public function updateReceptorOffsets(){
-    for(player in 0...receptors.length){
-      var columns = receptors[player];
-      for(dir in 0...columns.length){
-        var receptor = columns[dir];
-        var pos = receptor.point;
-        pos.set(0,0);
-        for(mod in mods){
-          pos = mod.getReceptorPos(receptor, pos, receptor.direction, player);
-        }
-        receptor.point.set(pos.x,pos.y);
-      }
     }
   }
 
@@ -171,7 +179,6 @@ class ModManager {
     }
 
     return pos;
-
   }
 
   public function getNoteScale(note:Note){
@@ -189,19 +196,27 @@ class ModManager {
     }
   }
 
-  public function updateReceptorScales(){
-    for(player in 0...receptors.length){
-      var columns = receptors[player];
-      for(dir in 0...columns.length){
-        var receptor = columns[dir];
-        var def = receptor.scaleDefault;
-        var scale = FlxPoint.get(def.x,def.y);
-        for(mod in mods){
-          scale = mod.getReceptorScale(receptor, scale, receptor.direction, player);
-        }
-        receptor.scale.set(scale.x,scale.y);
-        scale.put();
-      }
+  public function getReceptorPos(rec:Receptor, player:Int=0){
+    var pos = FlxPoint.get();
+    for(mod in mods){
+      pos = mod.getReceptorPos(rec, pos, rec.direction, player);
+    }
+
+    return pos;
+  }
+
+  public function getReceptorScale(rec:Receptor, player:Int=0){
+    var def = rec.scaleDefault;
+    var scale = FlxPoint.get(def.x,def.y);
+    for(mod in mods){
+      scale = mod.getReceptorScale(rec, scale, rec.direction, player);
+    }
+    return scale;
+  }
+
+  public function updateReceptor(rec:Receptor, scale:FlxPoint, pos:FlxPoint){
+    for(mod in mods){
+      mod.updateReceptor(pos, scale, rec);
     }
   }
 
