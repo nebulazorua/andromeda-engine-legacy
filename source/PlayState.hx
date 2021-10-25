@@ -223,9 +223,11 @@ class PlayState extends MusicBeatState
 
 	var talking:Bool = true;
 	var songScore:Int = 0;
+	var botplayScore:Int = 0;
 	var scoreTxt:FlxText;
 	var highComboTxt:FlxText;
 	var ratingCountersUI:FlxSpriteGroup;
+	var botplayTxt:FlxText;
 
 	var presetTxt:FlxText;
 
@@ -461,7 +463,6 @@ class PlayState extends MusicBeatState
 		currentOptions = OptionUtils.options.clone();
 		#if !debug
 		if(isStoryMode){
-			currentOptions.botPlay=false;
 			currentOptions.noFail=false;
 		}
 		#end
@@ -820,6 +821,19 @@ class PlayState extends MusicBeatState
 		scoreTxt = new FlxText(healthBar.bg.x + healthBar.bg.width / 2 - 150, healthBar.bg.y + 25, 0, "", 20);
 		scoreTxt.setFormat(Paths.font("vcr.ttf"), 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		scoreTxt.scrollFactor.set();
+
+		botplayTxt = new FlxText(0, 80, 0, "[BOTPLAY]", 30);
+		botplayTxt.visible = ScoreUtils.botPlay;
+		botplayTxt.cameras = [camHUD];
+		botplayTxt.screenCenter(X);
+		botplayTxt.setFormat(Paths.font("vcr.ttf"), 30, FlxColor.WHITE, RIGHT, FlxTextBorderStyle.OUTLINE,FlxColor.BLACK);
+		botplayTxt.scrollFactor.set();
+
+		add(botplayTxt);
+
+		if(currentOptions.downScroll){
+			botplayTxt.y = FlxG.height-80;
+		}
 
 		ratingCountersUI = new FlxSpriteGroup();
 		/*presetTxt = new FlxText(0, FlxG.height/2-80, 0, "", 20);
@@ -1438,11 +1452,14 @@ class PlayState extends MusicBeatState
 		// playerCounter += 1;
 
 		unspawnNotes.sort(sortByShit);
-
+		shownAccuracy = 100;
 		if(currentOptions.accuracySystem==1){ // ITG
 			totalNotes = ScoreUtils.GetMaxAccuracy(noteCounter);
 			accuracyName = 'Grade Points';
+			shownAccuracy = 0;
 		}
+
+
 
 		generatedMusic = true;
 
@@ -1791,11 +1808,22 @@ class PlayState extends MusicBeatState
 
 		shownAccuracy = truncateFloat(FlxMath.lerp(shownAccuracy,accuracy*100, Main.adjustFPS(0.2)),2);
 
-		if(Math.abs(shownAccuracy-accuracy*100) <= 0.05)
+		if(Math.abs((accuracy*100)-shownAccuracy) <= 0.15)
 			shownAccuracy=truncateFloat(accuracy*100,2);
 
-		scoreTxt.text = "Score:" + songScore + ' / ${accuracyName}:' + shownAccuracy + "% / " + grade;
+		//scoreTxt.text = "Score:" + (songScore + botplayScore) + ' / ${accuracyName}:' + shownAccuracy + "% / " + grade;
+		if(botplayScore!=0){
+			if(songScore==0)
+				scoreTxt.text = 'Bot Score: ${botplayScore} / ${accuracyName}: ${shownAccuracy}% / ${grade}';
+			else
+				scoreTxt.text = 'Score: ${songScore} / Bot Score: ${botplayScore} / ${accuracyName}: ${shownAccuracy}% / ${grade}';
+		}else{
+			scoreTxt.text = 'Score: ${songScore} / ${accuracyName}: ${shownAccuracy}% / ${grade}';
+		}
+
 		scoreTxt.screenCenter(X);
+
+		botplayTxt.visible = ScoreUtils.botPlay;
 
 		if(judgeMan.judgementCounter.get('miss')>0 && currentOptions.failForMissing){
 			health=0;
@@ -2367,7 +2395,7 @@ class PlayState extends MusicBeatState
 				// TODO: have to redo the long notes/held notes/sustain notes/WHATEVER YOU WANNA CALL EM
 				// to be better
 
-				if(currentOptions.botPlay)
+				if(ScoreUtils.botPlay)
 					botplayNewInput();
 
 				if(pressedKeys.contains(true)){
@@ -2758,6 +2786,9 @@ class PlayState extends MusicBeatState
 	}
 
 	private function keyPress(event:KeyboardEvent){
+		if(event.keyCode == FlxKey.F6){
+			ScoreUtils.botPlay = !ScoreUtils.botPlay;
+		}
 		if(ScoreUtils.botPlay)return;
 		var direction = bindData.indexOf(event.keyCode);
 		if(direction!=-1 && !pressedKeys[direction]){
@@ -3072,8 +3103,11 @@ class PlayState extends MusicBeatState
 					totalNotes++;
 				hitNotes+=judgeMan.getJudgementAccuracy(judgement);
 			}
-
-			songScore += score;
+			if(ScoreUtils.botPlay){
+				botplayScore+=score;
+			}else{
+				songScore += score;
+			}
 			judgeMan.judgementCounter.set(judgement,judgeMan.judgementCounter.get(judgement)+1);
 			updateJudgementCounters();
 			popUpScore(judgement,-noteDiff);

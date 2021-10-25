@@ -37,10 +37,10 @@ class OptionsState extends MusicBeatState
 			new ToggleOption("loadModcharts","Load Lua modcharts","Should the engine load lua-based modcharts"),
 			new ToggleOption("ghosttapping","Ghost-tapping","Missing when you hit nothing"),
 			new ToggleOption("failForMissing","Sudden Death","FC or die"),
+			new ToggleOption("botPlay","BotPlay","Let a bot play for you"),
 			new OptionCategory("Freeplay Modifiers",[
 				new StepOption("cMod","Speed Constant",0.1,0,10,"","","A constant speed to override the scrollspeed. 0 for default speed",true),
 				new StepOption("xMod","Speed Mult",0.1,0,2,"","x","A multiplier to a chart's scrollspeed",true),
-				new ToggleOption("botPlay","BotPlay","Let a bot play for you"),
 				new ToggleOption("noFail","No Fail","With this on, you can't die"),
 			]),
 			new OptionCategory("Advanced",[
