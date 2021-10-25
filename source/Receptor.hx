@@ -102,15 +102,6 @@ class Receptor extends FlxSprite {
 
   public function playNote(note:Note){
     playAnim("confirm",true);
-    if(dynamicColouring){
-      // TODO: finish this
-      // its just not working lol
-
-      //var colour:FlxColor = CoolUtil.getDominantColour(note);
-      //colorSwap.hue=((colour.hue+1)%360)/360;
-      //colorSwap.sat=colour.saturation;
-      //colorSwap.val=colour.brightness;
-    }
   }
 
   override function destroy(){
@@ -120,10 +111,6 @@ class Receptor extends FlxSprite {
   }
 
   public function playAnim(anim:String,?force:Bool=false){
-    //colorSwap.hue=0;
-    //colorSwap.sat=0;
-    //colorSwap.val=0;
-
     animation.play(anim,force);
     updateHitbox();
     offset.set((frameWidth/2)-(54*(.7/noteScale) ),(frameHeight/2)-(56*(.7/noteScale) ) );

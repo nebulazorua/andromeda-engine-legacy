@@ -95,7 +95,10 @@ class ModChart {
       newCamEffects.push(new ShaderFilter(i.shader));
     }
     playState.camGame.setFilters(newCamEffects);
-    playState.camRating.setFilters(newCamEffects);
+    if(!playState.currentOptions.ratingInHUD){
+      playState.camRating.setFilters(newCamEffects);
+    }
+
   }
 
   public function removeCamEffect(effect:ShaderEffect){
@@ -105,25 +108,33 @@ class ModChart {
       newCamEffects.push(new ShaderFilter(i.shader));
     }
     playState.camGame.setFilters(newCamEffects);
-    playState.camRating.setFilters(newCamEffects);
+    if(!playState.currentOptions.ratingInHUD){
+      playState.camRating.setFilters(newCamEffects);
+    }
   }
 
   public function addHudEffect(effect:ShaderEffect){
     hudShaders.push(effect);
     var newCamEffects:Array<BitmapFilter>=[];
-    for(i in camShaders){
+    for(i in hudShaders){
       newCamEffects.push(new ShaderFilter(i.shader));
     }
     playState.camHUD.setFilters(newCamEffects);
+    if(playState.currentOptions.ratingInHUD){
+      playState.camRating.setFilters(newCamEffects);
+    }
   }
 
   public function removeHudEffect(effect:ShaderEffect){
     hudShaders.remove(effect);
     var newCamEffects:Array<BitmapFilter>=[];
-    for(i in camShaders){
+    for(i in hudShaders){
       newCamEffects.push(new ShaderFilter(i.shader));
     }
     playState.camHUD.setFilters(newCamEffects);
+    if(playState.currentOptions.ratingInHUD){
+      playState.camRating.setFilters(newCamEffects);
+    }
   }
 
 

@@ -146,6 +146,9 @@ class PlayState extends MusicBeatState
 	public var dadLua:LuaCharacter;
 	public var gfLua:LuaCharacter;
 	public var bfLua:LuaCharacter;
+	public var gameCam3D:RaymarchEffect;
+	public var hudCam3D:RaymarchEffect;
+	public var noteCam3D:RaymarchEffect;
 
 	public static var noteModifier:String='base';
 	public static var uiModifier:String='base';
@@ -497,18 +500,18 @@ class PlayState extends MusicBeatState
 		accuracy=1;
 
 		// var gameCam:FlxCamera = FlxG.camera;
-		camGame = new FlxCamera();
-		camRating = new FlxCamera();
-		camHUD = new FlxCamera();
-		camNotes = new FlxCamera();
-		camSus = new FlxCamera();
-		camReceptor = new FlxCamera();
+		camGame = new FNFCamera();
+		camRating = new FNFCamera();
+		camHUD = new FNFCamera();
+		camNotes = new FNFCamera();
+		camSus = new FNFCamera();
+		camReceptor = new FNFCamera();
 		camHUD.bgColor.alpha = 0;
 		camNotes.bgColor.alpha = 0;
 		camRating.bgColor.alpha = 0;
 		camSus.bgColor.alpha = 0;
 		camReceptor.bgColor.alpha = 0;
-		pauseHUD = new FlxCamera();
+		pauseHUD = new FNFCamera();
 		pauseHUD.bgColor.alpha = 0;
 
 		FlxG.cameras.reset(camGame);
@@ -674,6 +677,14 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
+
+		/*ameCam3D = new RaymarchEffect();
+		hudCam3D = new RaymarchEffect();
+		noteCam3D = new RaymarchEffect();
+
+		modchart.addCamEffect(gameCam3D);
+		modchart.addHudEffect(hudCam3D);
+		modchart.addNoteEffect(noteCam3D);*/
 
 		if(SONG.noteModifier!=null)
 			noteModifier=SONG.noteModifier;
@@ -1074,7 +1085,7 @@ class PlayState extends MusicBeatState
 		generateStaticArrows(1);
 
 		modManager = new ModManager(this);
-		modManager.registerDefaultModifiers();
+		modManager.registerModifiers();
 
 
 		if(!modManager.exists("reverse")){

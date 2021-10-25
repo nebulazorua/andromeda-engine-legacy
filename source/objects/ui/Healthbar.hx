@@ -44,7 +44,6 @@ class Healthbar extends FlxSpriteGroup {
     bar.createFilledBar(baseColor,secondaryColor);
   }
   public function setIconSize(iconP1Size:Int,iconP2Size:Int){
-    var percent = bar.percent;
     iconP1.setGraphicSize(Std.int(iconP1Size));
     iconP2.setGraphicSize(Std.int(iconP2Size));
 
@@ -58,7 +57,7 @@ class Healthbar extends FlxSpriteGroup {
   override function update(elapsed:Float){
 
     var percent = bar.percent;
-    setIconSize(Std.int(FlxMath.lerp(iconP1.width, 150, Main.adjustFPS(0.04))),Std.int(FlxMath.lerp(iconP2.width, 150, Main.adjustFPS(0.07))));
+    setIconSize(Std.int(FlxMath.lerp(iconP1.width, 150, Main.adjustFPS(0.1))),Std.int(FlxMath.lerp(iconP2.width, 150, Main.adjustFPS(0.1))));
     var iconOffset:Int = 26;
     iconP1.x = bar.x + (bar.width * (FlxMath.remapToRange(percent, 0, 100, 100, 0) * 0.01) - iconOffset);
     iconP2.x = bar.x + (bar.width * (FlxMath.remapToRange(percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);

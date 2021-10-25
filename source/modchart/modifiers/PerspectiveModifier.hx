@@ -31,11 +31,12 @@ class PerspectiveModifier extends Modifier {
     var oZ = curZ-1;
 
     // should I be using a matrix?
-    // .. nah fuck that lmao
+    // .. nah im sure itll be fine just doing this manually
+    // instead of doing a proper perspective projection matrix
 
     //var aspect = FlxG.width/FlxG.height;
     var aspect = 1;
-    
+
     var ta = Math.tan(fov/2);
     var x = oX * aspect/ta;
     var y = oY/ta;
@@ -54,15 +55,7 @@ class PerspectiveModifier extends Modifier {
 
     return pos;
   }
-
-  override function getNotePos(note:Note, pos:FlxPoint, data:Int, player:Int){ // maybe replace FlxPoint with a Vector4?
-    var vec = getVector(note.z,pos);
-    pos.x=vec.x;
-    pos.y=vec.y;
-
-    return pos;
-  }
-
+  
   override function updateReceptor(pos:FlxPoint, scale:FlxPoint, receptor:Receptor){
     var vec = getVector(receptor.z,pos);
 

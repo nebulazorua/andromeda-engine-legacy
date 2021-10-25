@@ -8,6 +8,7 @@ import modchart.Event.SetEvent;
 import modchart.Event.EaseEvent;
 import flixel.tweens.FlxEase;
 import flixel.math.FlxPoint;
+import flixel.FlxCamera;
 
 // TODO: modifier priority system
 class ModManager {
@@ -37,7 +38,7 @@ class ModManager {
     }
   }
 
-  public function registerDefaultModifiers(){
+  public function registerModifiers(){
     // NOTE: the order matters!
     // it goes from first defined to last defined
 
@@ -46,8 +47,19 @@ class ModManager {
     defineMod("flip",new FlipModifier(this));
     defineMod("invert",new InvertModifier(this));
     defineMod("transform",new TransformModifier(this));
+    defineMod("allCams",new CamModifier(this,"cam",[state.camGame,state.camRating,state.camHUD,state.camNotes,state.camSus,state.camReceptor] ));
+    var gameCams:Array<FlxCamera> = [state.camGame];
+    var hudCams:Array<FlxCamera> = [state.camHUD];
+    if(state.currentOptions.ratingInHUD){
+      hudCams.push(state.camHUD);
+    }else{
+      gameCams.push(state.camHUD);
+    }
+    defineMod("gameCam",new CamModifier(this,"gameCam",gameCams ));
+    defineMod("hudCam",new CamModifier(this,"hudCam",hudCams ));
+    defineMod("noteCam",new CamModifier(this,"noteCam",[state.camNotes,state.camSus,state.camReceptor] ));
 
-    defineMod("_PERSPECTIVEDONOTTOUCH",new PerspectiveModifier(this)); // DO NOT TOUCH
+    defineMod("perspective",new PerspectiveModifier(this));
   }
 
   public function getList(modName:String,player:Int):Array<ModEvent>{
@@ -92,7 +104,7 @@ class ModManager {
   }
 
   public function defineMod(modName:String, modifier:Modifier, defineSubmods=true){
-    if(!mods.contains(modifier)){
+    if(schedule.get(modName)==null){
       mods.push(modifier);
       schedule.set(modName,[]);
       definedMods.set(modName,modifier);

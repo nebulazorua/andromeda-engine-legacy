@@ -1711,7 +1711,7 @@ class LuaModMgr extends LuaClass {
     try{
       mgr.queueEase(step,eStep,modN,perc,ease,player);
     }catch(e){
-      trace(e);
+      trace(e.stack,e.message);
     }
     return 0;
   }
