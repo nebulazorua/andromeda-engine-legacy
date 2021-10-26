@@ -204,6 +204,11 @@ class Paths
 		return getPath('data/$key.txt', TEXT, library);
 	}
 
+	inline static public function dialogue(key:String, ?library:String)
+	{
+		return getPath('songs/$key.txt', TEXT, library);
+	}
+
 	inline static public function txtImages(key:String, ?library:String)
 	{
 		return getPath('images/$key.txt', TEXT, library);
