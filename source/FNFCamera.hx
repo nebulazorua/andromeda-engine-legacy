@@ -16,7 +16,7 @@ class FNFCamera extends FlxCamera {
   public var _scroll:FlxPoint = FlxPoint.get();
   public var yaw(default, set):Float = 0;
   public var pitch(default, set):Float = 0;
-
+  public var filters( get, null ):Array<BitmapFilter> = [];
   public var useRaymarcher(default, set):Bool = true;
 
   var raymarcher:RaymarchEffect = new RaymarchEffect();
@@ -160,6 +160,10 @@ class FNFCamera extends FlxCamera {
   public function set_pitch(val:Float){
     raymarcher.setPitch(val);
     return pitch = val;
+  }
+
+  public function get_filters(){
+    return _filters;
   }
 
   override function setFilters(filters:Array<BitmapFilter>){

@@ -62,7 +62,8 @@ import flash.events.KeyboardEvent;
 import Controls;
 import Controls.Control;
 import openfl.media.Sound;
-
+import openfl.display.GraphicsShader;
+import sys.io.File;
 #if windows
 import vm.lua.LuaVM;
 import vm.lua.Exception;
@@ -323,7 +324,7 @@ class PlayState extends MusicBeatState
 				return Main.adjustFPS(num);
 			});
 
-			/*Lua_helper.add_callback(lua.state,"getXPos", function(note:Dynamic){
+			Lua_helper.add_callback(lua.state,"getXPos", function(note:Dynamic){
 				try{
 					if(note.InternalClassName.sub(0,3)=='note' ){
 						var id = note.InternalClassName;
@@ -339,7 +340,7 @@ class PlayState extends MusicBeatState
 				return 0;
 			});
 
-			Lua_helper.add_callback(lua.state,"getYPos", function(note:Dynamic){
+			/*Lua_helper.add_callback(lua.state,"getYPos", function(note:Dynamic){
 				if(note.InternalClassName.sub(0,3)=='note' ){
 					var id = note.InternalClassName.sub(4);
 					if(LuaStorage.notes[id]!=null)
@@ -352,9 +353,22 @@ class PlayState extends MusicBeatState
 
 			// ^^ do not work currently
 
-			/*
-			Lua_helper.add_callback(lua.state,"newShader", function(shaderType:String, ?shaderName:String){
-				var shader:Any;
+
+			/*Lua_helper.add_callback(lua.state,"newShader", function(?fragShaderPath:String='', ?vertShaderPath:String='', ?shaderName:String){
+				var vert:String = '';
+				var frag:String = '';
+
+				var fullPath = 'assets/songs/{$SONG.song.toLowerCase()}/';
+
+				if(fragShaderPath!='' && FileSystem.exists(fullPath + fragShaderPath)){
+					frag = File.getContent("./" + fullPath + fragShaderPath);
+				}
+
+				if(vertShaderPath != '' && FileSystem.exists(fullPath + vertShaderPath)){
+					vert = File.getContent("./" + fullPath + vertShaderPath);
+				}
+
+				var shader:GraphicsShader = new GraphicsShader(vert,frag);
 				var name = "UnnamedShader"+unnamedLuaShaders;
 
 				if(shaderName!=null)

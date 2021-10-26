@@ -20,6 +20,7 @@ import Options;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import haxe.DynamicAccess;
+import openfl.display.GraphicsShader;
 
 typedef LuaProperty = {
     var defaultValue:Any;
@@ -952,16 +953,24 @@ class LuaCam extends LuaClass {
     return 0;
   }
 
-  private static function setShaders(l:StatePointer):Int{
+  private static function addShaders(l:StatePointer):Int{
     // 1 = self
     // 2 = table of shaders
     var stuff = Convert.fromLua(state,2);
-    trace(stuff);
+
+    return 0;
+  }
+
+  private static function delShaders(l:StatePointer):Int{
+    // 1 = self
+    // 2 = table of shaders
+    var stuff = Convert.fromLua(state,2);
+
     return 0;
   }
 
   private static var shakeC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(shake);
-  private static var setShadersC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setShaders);
+  private static var addShadersC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addShaders);
 
   public function new(cam:FlxCamera,name:String,?addToGlobal:Bool=true){
     super();
@@ -1037,14 +1046,14 @@ class LuaCam extends LuaClass {
           return 0;
         }
       },
-      "setShaders"=>{
+      "addShaders"=>{
         defaultValue:0,
         getter:function(l:State,data:Any){
-          Lua.pushcfunction(l,setShadersC);
+          Lua.pushcfunction(l,addShadersC);
           return 1;
         },
         setter:function(l:State){
-          LuaL.error(l,"setShaders is read-only.");
+          LuaL.error(l,"addShaders is read-only.");
           return 0;
         }
       },
@@ -1455,7 +1464,7 @@ class LuaCharacter extends LuaSprite {
 
 class LuaShaderClass extends LuaClass {
   private static var state:State;
-  private static var effect:Any;
+  private var shader:GraphicsShader;
   private function SetNumProperty(l:State){
       // 1 = self
       // 2 = key
@@ -1465,7 +1474,7 @@ class LuaShaderClass extends LuaClass {
         LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
         return 0;
       }
-      Reflect.setProperty(effect,Lua.tostring(l,2),Lua.tonumber(l,3));
+      //Reflect.setProperty(effect,Lua.tostring(l,2),Lua.tonumber(l,3));
       return 0;
   }
 
@@ -1476,7 +1485,7 @@ class LuaShaderClass extends LuaClass {
     Lua.getfield(state,1,"className");
     var name = Lua.tostring(state,-1);
     var shader = PlayState.currentPState.luaObjects[name];
-    Convert.toLua(state,Reflect.getProperty(shader,property));
+    //Convert.toLua(state,Reflect.getProperty(shader,property));
     return 1;
   }
 
@@ -1489,7 +1498,7 @@ class LuaShaderClass extends LuaClass {
     Lua.getfield(state,1,"className");
     var name = Lua.tostring(state,-1);
     var shader = PlayState.currentPState.luaObjects[name];
-    Reflect.setProperty(shader,property,value);
+    //Reflect.setProperty(shader,property,value);
 
     return 1;
   }
@@ -1497,7 +1506,7 @@ class LuaShaderClass extends LuaClass {
   private static var setvarC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setProperty);
   private static var getvarC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(getProperty);
 
-  public function new(shader:Any,shaderName:String,?addToGlobal=false){
+  public function new(shader:GraphicsShader,shaderName:String,?addToGlobal=false){
     super();
     if(PlayState.currentPState.luaObjects.get(shaderName)!=null){
       var counter:Int = 0;
@@ -1508,6 +1517,7 @@ class LuaShaderClass extends LuaClass {
     }
     className = shaderName;
     this.addToGlobal=addToGlobal;
+    this.shader=shader;
     PlayState.currentPState.luaObjects[shaderName]=shader;
     properties = [
       "className"=>{
