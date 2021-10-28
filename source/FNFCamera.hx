@@ -27,7 +27,7 @@ class FNFCamera extends FlxCamera {
 
     raymarcherShader = new ShaderFilter(raymarcher.shader);
 
-    if(useRaymarcher){
+    if(useRaymarcher && (yaw!=0 || pitch!=0)){
       _filters = [raymarcherShader];
     }
   }
@@ -144,20 +144,46 @@ class FNFCamera extends FlxCamera {
   }
 
   public function set_useRaymarcher(val:Bool){
-    if(!val && _filters.contains(raymarcherShader)){
-      _filters.remove(raymarcherShader);
-    }else if(val && !_filters.contains(raymarcherShader)){
-      _filters.push(raymarcherShader);
+    if(_filters is Array){
+      if(!val && _filters.contains(raymarcherShader) || yaw==0 && pitch==0){
+        _filters.remove(raymarcherShader);
+      }else if(val && !_filters.contains(raymarcherShader) && (yaw!=0 || pitch!=0)){
+        _filters.push(raymarcherShader);
+      }
+    }else if(val && (yaw!=0 || pitch!=0)){
+      _filters = [raymarcherShader];
     }
     return useRaymarcher = val;
   }
 
   public function set_yaw(val:Float){
+    if(val!=0){
+      if(_filters is Array){
+        _filters.push(raymarcherShader);
+      }else{
+        _filters = [raymarcherShader];
+      }
+    }else if(val==0 && pitch==0){
+      if(_filters is Array && _filters.contains(raymarcherShader)){
+        _filters.remove(raymarcherShader);
+      }
+    }
     raymarcher.setYaw(val);
     return yaw = val;
   }
 
   public function set_pitch(val:Float){
+    if(val!=0){
+      if(_filters is Array){
+        _filters.push(raymarcherShader);
+      }else{
+        _filters = [raymarcherShader];
+      }
+    }else if(val==0 && yaw==0){
+      if(_filters is Array && _filters.contains(raymarcherShader)){
+        _filters.remove(raymarcherShader);
+      }
+    }
     raymarcher.setPitch(val);
     return pitch = val;
   }
@@ -168,8 +194,13 @@ class FNFCamera extends FlxCamera {
 
   override function setFilters(filters:Array<BitmapFilter>){
     super.setFilters(filters);
-    if(useRaymarcher){
-      _filters.push(raymarcherShader);
+    if(useRaymarcher && (yaw!=0 || pitch!=0)){
+      if(_filters != null){
+        _filters.push(raymarcherShader);
+      }else{
+        _filters =[raymarcherShader];
+      }
+
       trace("added raymarcher");
     }
   }

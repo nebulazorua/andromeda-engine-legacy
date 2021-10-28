@@ -5,7 +5,7 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
 import flixel.FlxCamera;
 
-class CamModifier extends Modifier { // will be pitch in the manager
+class CamModifier extends Modifier {
   var prefix:String = "game";
   var cams:Array<Dynamic> = [];
 

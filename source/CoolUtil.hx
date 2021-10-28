@@ -86,14 +86,7 @@ class CoolUtil
 
 	public static function coolTextFile(path:String):Array<String>
 	{
-		var daList:Array<String> = Assets.getText(path).trim().split('\n');
-
-		for (i in 0...daList.length)
-		{
-			daList[i] = daList[i].trim();
-		}
-
-		return daList;
+		return coolTextFile2(Assets.getText(path));
 	}
 
 	public static function coolTextFile2(data:String):Array<String>

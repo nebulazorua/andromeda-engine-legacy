@@ -34,7 +34,7 @@ class AndroHScript {
     interp.variables.set("FlxAxes",FlxAxes);
     interp.variables.set("X",FlxAxes.X);
     interp.variables.set("Y",FlxAxes.Y);
-    interp.variables.set("XY",FlxAxes);
+    interp.variables.set("XY",FlxAxes.XY);
     interp.variables.set("CoolUtil",CoolUtil);
     interp.variables.set("cameras",FlxG.cameras);
     interp.variables.set("Paths",Paths);

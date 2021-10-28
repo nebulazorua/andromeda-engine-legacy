@@ -61,14 +61,10 @@ class ReverseModifier extends Modifier {
   override function getNotePos(note:Note, pos:FlxPoint, data:Int, player:Int){
     var perc = getScrollReversePerc(data,player);
     var state = modMgr.state;
-
-    var downscrollX = state.getXPosition(note, -1);
+    
     var downscrollY = state.getYPosition(note, -1);
-
-    var upscrollX = state.getXPosition(note, 1);
     var upscrollY = state.getYPosition(note, 1);
 
-    pos.x = CoolUtil.scale(perc,0,1,upscrollX,downscrollX);
     pos.y = CoolUtil.scale(perc,0,1,upscrollY,downscrollY);
 
     return pos;

@@ -355,6 +355,7 @@ class VCRDistortionEffect
     shader.distortionOn.value = [true];
     shader.scanlinesOn.value = [true];
     shader.vignetteMoving.value = [true];
+    shader.noiseOn.value = [true];
     shader.glitchModifier.value = [1];
     shader.iResolution.value = [Lib.current.stage.stageWidth,Lib.current.stage.stageHeight];
     var noise = Assets.getBitmapData(Paths.image("noise2"));
@@ -368,6 +369,10 @@ class VCRDistortionEffect
 
   public function setVignette(state:Bool){
     shader.vignetteOn.value[0] = state;
+  }
+
+  public function setNoise(state:Bool){
+    shader.noiseOn.value[0] = state;
   }
 
   public function setPerspective(state:Bool){
@@ -437,7 +442,8 @@ class VCRDistortionShader extends FlxShader // https://www.shadertoy.com/view/ld
     uniform sampler2D noiseTex;
     uniform float glitchModifier;
     uniform vec3 iResolution;
-
+    uniform bool noiseOn;
+    
     float onOff(float a, float b, float c)
     {
     	return step(c, sin(iTime + a*cos(iTime*b)));
@@ -539,7 +545,12 @@ class VCRDistortionShader extends FlxShader // https://www.shadertoy.com/view/ld
       if(curUV.x<0 || curUV.x>1 || curUV.y<0 || curUV.y>1){
         gl_FragColor = vec4(0,0,0,0);
       }else{
-        gl_FragColor = mix(video,vec4(noise(uv * 75.)),.05);
+        if(noiseOn){
+          gl_FragColor = mix(video,vec4(noise(uv * 75.)),.05);
+        }else{
+          gl_FragColor = video;
+        }
+
       }
 
 

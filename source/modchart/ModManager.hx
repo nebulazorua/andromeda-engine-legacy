@@ -9,13 +9,12 @@ import modchart.Event.EaseEvent;
 import flixel.tweens.FlxEase;
 import flixel.math.FlxPoint;
 import flixel.FlxCamera;
+import haxe.Exception;
 
 // TODO: modifier priority system
 class ModManager {
   private var definedMods:Map<String,Modifier>=[]; // ModList class for defining mods? idk
-  private var coreMods:Array<Modifier>=[]; // These shouldnt have percentages modified or anything
-  // these exist PURELY for other modifiers to have more functionality (eg: PerspectiveModifier allows you to give a 'z' axis to notes and receptors)
-  // TODO: a more robust priority system than this shit ^
+
 
   private var schedule:Map<String,Array<ModEvent>>=[];
   private var funcs:Array<FuncEvent>=[];
@@ -42,6 +41,7 @@ class ModManager {
     // NOTE: the order matters!
     // it goes from first defined to last defined
 
+    defineMod("drunk",new DrunkModifier(this));
     defineMod("reverse",new ReverseModifier(this)); // also cross, split, alternate, centered
     defineMod("mini",new ScaleModifier(this)); // also squish and stretch
     defineMod("flip",new FlipModifier(this));
@@ -118,12 +118,6 @@ class ModManager {
     }
   }
 
-  public function defineCoreMod(modifier:Modifier){
-    if(!coreMods.contains(modifier)){
-      coreMods.push(modifier);
-    }
-  }
-
   public function removeMod(modName:String){
     if(definedMods.exists(modName)){
       definedMods.remove(modName);
@@ -168,9 +162,6 @@ class ModManager {
 
   public function getMods():Array<Modifier>{
     var modArr:Array<Modifier>=[];
-    for(cM in coreMods){
-      modArr.push(cM);
-    }
     for(m in mods){
       modArr.push(m);
     }
@@ -233,50 +224,62 @@ class ModManager {
   }
 
   public function queueEase(step:Float, endStep:Float, modName:String, percent:Float, style:String, player:Int=-1){
-    var easeFunc = Reflect.getProperty(FlxEase, style);
-    if(easeFunc==null)easeFunc=FlxEase.linear;
+    if(state.curDecStep<=0){
+      var easeFunc = Reflect.getProperty(FlxEase, style);
+      if(easeFunc==null)easeFunc=FlxEase.linear;
 
-    schedule[modName].push(
-      new EaseEvent(
-        step,
-        endStep,
-        modName,
-        percent,
-        easeFunc,
-        player,
-        this
-      )
-    );
+      schedule[modName].push(
+        new EaseEvent(
+          step,
+          endStep,
+          modName,
+          percent,
+          easeFunc,
+          player,
+          this
+        )
+      );
+    }else{
+      throw new Exception("You cannot queue modifiers after step '0'!");
+    }
   }
 
   public function queueEaseL(step:Float, length:Float, modName:String, percent:Float, style:String, player:Int=-1){
-    var easeFunc = Reflect.getProperty(FlxEase, style);
-    if(easeFunc==null)easeFunc=FlxEase.linear;
-    var stepSex = Conductor.stepToSeconds(step);
+    if(state.curDecStep<=0){
+      var easeFunc = Reflect.getProperty(FlxEase, style);
+      if(easeFunc==null)easeFunc=FlxEase.linear;
+      var stepSex = Conductor.stepToSeconds(step);
 
-    schedule[modName].push(
-      new EaseEvent(
-        step,
-        Conductor.getStep(stepSex+(length*1000)),
-        modName,
-        percent,
-        easeFunc,
-        player,
-        this
-      )
-    );
+      schedule[modName].push(
+        new EaseEvent(
+          step,
+          Conductor.getStep(stepSex+(length*1000)),
+          modName,
+          percent,
+          easeFunc,
+          player,
+          this
+        )
+      );
+    }else{
+      throw new Exception("You cannot queue modifiers after step '0'!");
+    }
   }
 
   public function queueSet(step:Float, modName:String, percent:Float, player:Int=-1){
-    schedule[modName].push(
-      new SetEvent(
-        step,
-        modName,
-        percent,
-        player,
-        this
-      )
-    );
+    if(state.curDecStep<=0){
+      schedule[modName].push(
+        new SetEvent(
+          step,
+          modName,
+          percent,
+          player,
+          this
+        )
+      );
+    }else{
+      throw new Exception("You cannot queue modifiers after step '0'!");
+    }
   }
 
   public function queueFunc(step:Float, callback:Void->Void){

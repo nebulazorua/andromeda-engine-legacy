@@ -1,9 +1,5 @@
 package;
 
-// https://github.com/TheLostGhostS/Ghost-engine-source-code/tree/main/Ghost%20engine
-// CREDIT TO THEM FOR INCOMING ANGLE MATH
-// IM BAD AT MATH LOL!!
-
 #if desktop
 import Discord.DiscordClient;
 #end
@@ -188,7 +184,6 @@ class PlayState extends MusicBeatState
 	public var opponents:Array<Character> = [];
 	public var opponentIdx:Int = 0;
 
-	public var iFuckingHateClipping:FlxSprite;
 
 	var accuracyName:String = 'Accuracy';
 
@@ -495,8 +490,6 @@ class PlayState extends MusicBeatState
 			OptionUtils.getKey(Control.RIGHT),
 		];
 
-		iFuckingHateClipping = new FlxSprite().makeGraphic(1,1,FlxColor.WHITE);
-
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
@@ -551,7 +544,7 @@ class PlayState extends MusicBeatState
 
 		var speed = SONG.speed;
 		if(!isStoryMode){
-			speed = currentOptions.cMod==0?speed:currentOptions.cMod;
+			speed = currentOptions.cMod<.1?speed:currentOptions.cMod;
 			speed *= currentOptions.xMod;
 		}
 
@@ -584,15 +577,9 @@ class PlayState extends MusicBeatState
 					"If you can beat me here...",
 					"Only then I will even CONSIDER letting you\ndate my daughter!"
 				];
-			case 'senpai':
-				dialogue = CoolUtil.coolTextFile(Paths.dialogue('senpai/senpaiDialogue'));
-			case 'roses':
-				dialogue = CoolUtil.coolTextFile(Paths.dialogue('roses/rosesDialogue'));
-			case 'thorns':
-				dialogue = CoolUtil.coolTextFile(Paths.dialogue('thorns/thornsDialogue'));
 			default:
 				try {
-					dialogue = CoolUtil.coolTextFile(Paths.dialogue(songData.chartName.toLowerCase() + "/dialogue"));
+					dialogue = CoolUtil.coolTextFile2(File.getContent(Paths.dialogue(songData.chartName.toLowerCase() + "/dialogue")));
 				} catch(e){
 					trace("epic style " + e.message);
 				}
@@ -673,12 +660,18 @@ class PlayState extends MusicBeatState
 					if(currentOptions.senpaiShaderStrength>=2){ // sempai shader strength
 						switch(songData.chartName.toLowerCase()){
 							case 'roses':
+								vcrDistortionHUD.setVignetteMoving(false);
+								vcrDistortionGame.setVignette(false);
 								vcrDistortionGame.setGlitchModifier(.025);
 								vcrDistortionHUD.setGlitchModifier(.025);
 							case 'thorns':
+								vcrDistortionHUD.setVignetteMoving(false);
+								vcrDistortionGame.setVignette(false);
 								vcrDistortionGame.setGlitchModifier(.2);
 								vcrDistortionHUD.setGlitchModifier(.2);
 							case _: // default
+								vcrDistortionHUD.setVignetteMoving(false);
+								vcrDistortionGame.setVignette(false);
 								vcrDistortionHUD.setDistortion(false);
 								vcrDistortionGame.setDistortion(false);
 						}
@@ -686,9 +679,12 @@ class PlayState extends MusicBeatState
 						vcrDistortionHUD.setDistortion(false);
 						vcrDistortionGame.setDistortion(false);
 					}
+					vcrDistortionGame.setNoise(true);
+					vcrDistortionHUD.setNoise(false);
+
 					modchart.addCamEffect(vcrDistortionGame);
 					modchart.addHudEffect(vcrDistortionHUD);
-					modchart.addNoteEffect(vcrDistortionGame);
+					modchart.addNoteEffect(vcrDistortionHUD);
 				}
 			}
 		}
@@ -885,9 +881,7 @@ class PlayState extends MusicBeatState
 		scoreTxt.cameras = [camHUD];
 		ratingCountersUI.cameras = [camHUD];
 		doof.cameras = [camHUD];
-		iFuckingHateClipping.cameras = [camNotes];
-		iFuckingHateClipping.scrollFactor.set();
-		add(iFuckingHateClipping);
+
 
 		var centerP = new FlxSprite(0,0);
 		centerP.screenCenter(XY);
@@ -1267,6 +1261,10 @@ class PlayState extends MusicBeatState
 		inst.play();
 		vocals.play();
 
+		if(FlxG.sound.music!=null){
+			FlxG.sound.music.stop();
+		}
+
 		#if desktop
 		// Song duration in a float, useful for the time left feature
 		songLength = inst.length;
@@ -1328,6 +1326,7 @@ class PlayState extends MusicBeatState
 		inst = new FlxSound().loadEmbedded(CoolUtil.getSound('${Paths.inst(SONG.song)}'));
 		//inst = new FlxSound().loadEmbedded(Paths.inst(SONG.song));
 		inst.looped=false;
+
 		if(currentOptions.noteOffset==0)
 			inst.onComplete = endSong;
 		else
@@ -1757,22 +1756,20 @@ class PlayState extends MusicBeatState
 		Conductor.currentTrackPos = getPosFromTime(Conductor.currentVisPos);
 	}
 
-	public function getXPosition(note:Note, ?mult):Float{
+	public function getXPosition(note:Note, ?followReceptor=true):Float{
 		var hitPos = playerStrums.members[note.noteData];
-		if(mult==null)mult=scrollSpeed;
-
+		
 		if(!note.mustPress){
 			hitPos = dadStrums.members[note.noteData];
-		}
-		var angle = hitPos.incomingAngle;
-		if(currentOptions.downScroll){
-			angle=-angle;
 		}
 		var offset = note.manualXOffset;
-		return hitPos.x + offset + (Math.sin(angle*Math.PI/180)*(note.initialPos-Conductor.currentTrackPos) * mult);
+		var desiredX = hitPos.desiredX;
+		if(followReceptor)desiredX+=hitPos.point.x;
+
+		return desiredX + offset;
 	}
 
-	public function getYPosition(note:Note, ?mult):Float{
+	public function getYPosition(note:Note, ?mult, ?followReceptor=true):Float{
 		var hitPos = playerStrums.members[note.noteData];
 		if(mult==null)mult=scrollSpeed;
 
@@ -1780,12 +1777,10 @@ class PlayState extends MusicBeatState
 			hitPos = dadStrums.members[note.noteData];
 		}
 
-		var angle = hitPos.incomingAngle;
-		if(currentOptions.downScroll){
-			angle=-angle;
-		}
+		var desiredY = hitPos.desiredY;
+		if(followReceptor)desiredY+=hitPos.point.y;
 
-		return hitPos.y + (Math.cos(angle*Math.PI/180)*(note.initialPos-Conductor.currentTrackPos) * mult) - note.manualYOffset;
+		return desiredY + ((note.initialPos-Conductor.currentTrackPos) * mult) - note.manualYOffset;
 	}
 
 	// ADAPTED FROM QUAVER!!!
@@ -2048,7 +2043,7 @@ class PlayState extends MusicBeatState
 		}
 		// better streaming of shit
 
-		playerStrums.forEach(function(spr:Receptor)
+		playerStrums.forEach( function(spr:Receptor)
 		{
 			var pos = modManager.getReceptorPos(spr,0);
 			var scale = modManager.getReceptorScale(spr,0);
@@ -2062,7 +2057,7 @@ class PlayState extends MusicBeatState
 			pos.put();
 		});
 
-		dadStrums.forEach(function(spr:Receptor)
+		dadStrums.forEach( function(spr:Receptor)
 		{
 			var pos = modManager.getReceptorPos(spr,1);
 			var scale = modManager.getReceptorScale(spr,1);
@@ -2214,8 +2209,6 @@ class PlayState extends MusicBeatState
 					notePos.put();
 
 					var alpha = strumLine.incomingNoteAlpha;
-					var incomingAngle = strumLine.incomingAngle;
-
 					var shitGotHit = (daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit);
 					if(daNote.isSustainNote){
 						if(shitGotHit){
@@ -2274,8 +2267,6 @@ class PlayState extends MusicBeatState
 					}
 
 					if(daNote.isSustainNote ){
-						daNote.modAngle = -incomingAngle;
-
 						if(daNote.tooLate)
 							daNote.alpha = .3;
 						else
