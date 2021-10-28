@@ -41,8 +41,8 @@ class ModManager {
     // NOTE: the order matters!
     // it goes from first defined to last defined
 
-    defineMod("drunk",new DrunkModifier(this));
     defineMod("reverse",new ReverseModifier(this)); // also cross, split, alternate, centered
+    defineMod("drunk",new DrunkModifier(this));
     defineMod("mini",new ScaleModifier(this)); // also squish and stretch
     defineMod("flip",new FlipModifier(this));
     defineMod("invert",new InvertModifier(this));

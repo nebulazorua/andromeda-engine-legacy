@@ -665,8 +665,6 @@ class PlayState extends MusicBeatState
 								vcrDistortionGame.setGlitchModifier(.025);
 								vcrDistortionHUD.setGlitchModifier(.025);
 							case 'thorns':
-								vcrDistortionHUD.setVignetteMoving(false);
-								vcrDistortionGame.setVignette(false);
 								vcrDistortionGame.setGlitchModifier(.2);
 								vcrDistortionHUD.setGlitchModifier(.2);
 							case _: // default
@@ -676,11 +674,13 @@ class PlayState extends MusicBeatState
 								vcrDistortionGame.setDistortion(false);
 						}
 					}else{
+						vcrDistortionHUD.setVignetteMoving(false);
+						vcrDistortionGame.setVignette(false);
 						vcrDistortionHUD.setDistortion(false);
 						vcrDistortionGame.setDistortion(false);
 					}
-					vcrDistortionGame.setNoise(true);
-					vcrDistortionHUD.setNoise(false);
+					vcrDistortionGame.setNoise(false);
+					vcrDistortionHUD.setNoise(true);
 
 					modchart.addCamEffect(vcrDistortionGame);
 					modchart.addHudEffect(vcrDistortionHUD);
@@ -1758,7 +1758,7 @@ class PlayState extends MusicBeatState
 
 	public function getXPosition(note:Note, ?followReceptor=true):Float{
 		var hitPos = playerStrums.members[note.noteData];
-		
+
 		if(!note.mustPress){
 			hitPos = dadStrums.members[note.noteData];
 		}

@@ -32,8 +32,22 @@ class DrunkModifier extends Modifier {
 
     var receptors = modMgr.receptors[player];
     var time = Conductor.songPosition/1000;
-    if(drunkPerc!=0 && !note.isSustainNote){ // no sustains until i can make them b e n d
-      pos.x = modMgr.state.getXPosition(note,false)+(drunkPerc*(FlxMath.fastCos((time + data*.2 + pos.y*10/FlxG.height)*drunkSpeed) * Note.swagWidth*.5));
+    if(drunkPerc!=0){
+      if(note.isSustainNote){
+        if(note.prevNote!=null && !note.prevNote.wasGoodHit){
+          if(note.prevNote.isSustainNote){
+            pos.x = note.prevNote.x;
+          }else{
+            pos.x = note.prevNote.x + note.manualXOffset;
+          }
+        }else{
+          pos.x = modMgr.state.getXPosition(note);
+        }
+
+      }else{
+        pos.x = modMgr.state.getXPosition(note,false)+(drunkPerc*(FlxMath.fastCos((time + data*.2 + pos.y*10/FlxG.height)*drunkSpeed) * Note.swagWidth*.5));
+      }
+
     }
 
     return pos;

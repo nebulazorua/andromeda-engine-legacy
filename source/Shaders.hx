@@ -443,7 +443,7 @@ class VCRDistortionShader extends FlxShader // https://www.shadertoy.com/view/ld
     uniform float glitchModifier;
     uniform vec3 iResolution;
     uniform bool noiseOn;
-    
+
     float onOff(float a, float b, float c)
     {
     	return step(c, sin(iTime + a*cos(iTime*b)));
