@@ -43,10 +43,11 @@ class ModManager {
 
     defineMod("reverse",new ReverseModifier(this)); // also cross, split, alternate, centered
     defineMod("drunk",new DrunkModifier(this));
+    defineMod("transform",new TransformModifier(this));
     defineMod("mini",new ScaleModifier(this)); // also squish and stretch
     defineMod("flip",new FlipModifier(this));
     defineMod("invert",new InvertModifier(this));
-    defineMod("transform",new TransformModifier(this));
+    defineMod("tornado",new TornadoModifier(this));
     defineMod("allCams",new CamModifier(this,"cam",[state.camGame,state.camRating,state.camHUD,state.camNotes,state.camSus,state.camReceptor] ));
     var gameCams:Array<FlxCamera> = [state.camGame];
     var hudCams:Array<FlxCamera> = [state.camHUD];
@@ -178,6 +179,9 @@ class ModManager {
   public function getNotePos(note:Note){
     var pos = FlxPoint.get(state.getXPosition(note),state.getYPosition(note));
     for(mod in mods){
+      pos = mod.getPos(pos, note.noteData, note.mustPress==true?0:1);
+    }
+    for(mod in mods){
       pos = mod.getNotePos(note, pos, note.noteData, note.mustPress==true?0:1);
     }
 
@@ -201,6 +205,10 @@ class ModManager {
 
   public function getReceptorPos(rec:Receptor, player:Int=0){
     var pos = FlxPoint.get();
+    for(mod in mods){
+      pos = mod.getPos(pos, rec.direction, player);
+    }
+
     for(mod in mods){
       pos = mod.getReceptorPos(rec, pos, rec.direction, player);
     }

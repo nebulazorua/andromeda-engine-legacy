@@ -63,4 +63,6 @@ class Modifier {
 
   public function getReceptorPos(receptor:Receptor, pos:FlxPoint, data:Int, player:Int)return pos;
   public function getNotePos(note:Note,pos:FlxPoint, data:Int, player:Int)return pos;
+
+  public function getPos(pos:FlxPoint, data:Int, player:Int)return pos;
 }

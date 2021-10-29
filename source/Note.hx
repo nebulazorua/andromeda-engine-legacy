@@ -66,6 +66,9 @@ class Note extends NoteGraphic
 	public var beingCharted:Bool=false;
 	public var initialPos:Float = 0;
 
+	public var desiredZIndex:Float = 0;
+	public var zIndex:Float = 0;
+
 	public var z:Float = 0;
 	public var beat:Float = 0;
 	public static var noteBehaviour:NoteBehaviour;
@@ -190,6 +193,19 @@ class Note extends NoteGraphic
 	override function update(elapsed:Float)
 	{
 		super.update(elapsed);
+
+		if(isSustainNote){
+			if(prevNote!=null && prevNote.isSustainNote){
+				zIndex=z + prevNote.zIndex;
+			}else if(prevNote!=null && !prevNote.isSustainNote){
+				zIndex=z + prevNote.zIndex-1;
+			}
+		}else{
+			zIndex=z;
+		}
+
+		zIndex+=desiredZIndex;
+
 		if (mustPress)
 		{
 			var diff = strumTime-Conductor.songPosition;

@@ -1481,6 +1481,12 @@ class PlayState extends MusicBeatState
 	{
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime, Obj2.strumTime);
 	}
+
+	function sortByOrder(wat:Int, Obj1:Note, Obj2:Note):Int
+	{
+		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.zIndex, Obj2.zIndex);
+	}
+
 	// ADAPTED FROM QUAVER!!!
 	// https://github.com/Quaver/Quaver
 	// https://github.com/Quaver/Quaver
@@ -2175,6 +2181,7 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 		{
 			if(startedCountdown){
+				renderedNotes.sort(sortByOrder);
 				renderedNotes.forEachAlive(function(daNote:Note)
 				{
 					var revPerc:Float = (modManager.exists("reverse")?modManager.get("reverse").getScrollReversePerc(daNote.noteData,daNote.mustPress==true?0:1):(scrollSpeed<0?0.0:1.0) );

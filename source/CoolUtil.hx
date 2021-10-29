@@ -37,6 +37,13 @@ class CoolUtil
 		return sound;
 	}
 
+	inline public static function clamp(n:Int, l:Int, h:Int){
+		if(n>h)n=h;
+		if(n<l)n=l;
+
+		return n;
+	}
+
 	inline public static function scale(x:Float,l1:Float,h1:Float,l2:Float,h2:Float):Float
 		return ((x - l1) * (h2 - l2) / (h1 - l1) + l2);
 
