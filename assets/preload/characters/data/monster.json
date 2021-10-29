@@ -1,0 +1,64 @@
+{
+	"iconName": "monster",
+	"beatDancer": false,
+	"charOffset": [
+		0,
+		100
+	],
+	"anims": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "monster idle",
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-30,
+				94
+			],
+			"fps": 24,
+			"prefix": "monster up note",
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-51,
+				20
+			],
+			"fps": 24,
+			"prefix": "Monster Right note",
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-30,
+				0
+			],
+			"fps": 24,
+			"prefix": "Monster left note",
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-50,
+				-90
+			],
+			"fps": 24,
+			"prefix": "monster down",
+			"name": "singDOWN",
+			"looped": false
+		}
+	],
+	"spritesheet": "Monster_Assets",
+	"singDur": 4,
+	"flipX": false,
+	"healthColor": "0xFFF4FF6F"
+}

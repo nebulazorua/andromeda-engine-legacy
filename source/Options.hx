@@ -21,7 +21,6 @@ class OptionUtils
 		"Default",
 		"BF",
 		"Dad",
-		"GF",
 		"Center",
 	];
 
@@ -135,7 +134,8 @@ class Options
 	public var showMS:Bool = false;
 	public var showComboCounter:Bool = true;
 	public var showRatings:Bool = true;
-
+	public var ghosttapSounds:Bool = false;
+	public var hitsoundVol:Float = 50;
 	public var ratingInHUD:Bool = false;
 	public var menuFlash:Bool = true;
 	public var freeplayPreview:Bool = false;

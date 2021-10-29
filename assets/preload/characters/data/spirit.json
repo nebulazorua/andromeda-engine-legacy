@@ -1,0 +1,66 @@
+{
+	"charOffset": [
+		-150,
+		100
+	],
+	"scale": 6,
+	"anims": [
+		{
+			"offsets": [
+				-220,
+				-280
+			],
+			"fps": 24,
+			"prefix": "idle spirit_",
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-220,
+				-240
+			],
+			"fps": 24,
+			"prefix": "up_",
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-200,
+				-280
+			],
+			"fps": 24,
+			"prefix": "left_",
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-220,
+				-280
+			],
+			"fps": 24,
+			"prefix": "right_",
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"offsets": [
+				170,
+				110
+			],
+			"fps": 24,
+			"prefix": "spirit down_",
+			"name": "singDOWN",
+			"looped": false
+		}
+	],
+	"spritesheet": "spirit",
+	"singDur": 4,
+	"flipX": false,
+	"antialiasing": false,
+	"iconName": "spirit",
+	"beatDancer": false,
+	"healthColor": "0xFFFF3C6E"
+}

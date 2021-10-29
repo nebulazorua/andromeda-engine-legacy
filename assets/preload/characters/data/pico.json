@@ -1,0 +1,64 @@
+{
+	"iconName": "pico",
+	"beatDancer": false,
+	"charOffset": [
+		0,
+		300
+	],
+	"anims": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "Pico Idle Dance",
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-29,
+				22
+			],
+			"fps": 24,
+			"prefix": "pico Up note0",
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"offsets": [
+				55,
+				-1
+			],
+			"fps": 24,
+			"prefix": "Pico Note Right0",
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-82,
+				-11
+			],
+			"fps": 24,
+			"prefix": "Pico NOTE LEFT0",
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"offsets": [
+				189,
+				-80
+			],
+			"fps": 24,
+			"prefix": "Pico Down Note0",
+			"name": "singDOWN",
+			"looped": false
+		}
+	],
+	"spritesheet": "Pico_FNF_assetss",
+	"singDur": 4,
+	"flipX": true,
+	"healthColor": "0xFFB7D855"
+}

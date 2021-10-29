@@ -77,8 +77,27 @@ class ChartingState extends MusicBeatState
 		8,
 		12,
 		16,
+		20,
 		24,
 		32,
+		48,
+		64,
+		96,
+		192
+	];
+
+	var quantMults:Map<Int,Float> = [
+		4=>4/1,
+		8=>2/1,
+		12=>4/3,
+		16=>1,
+		20=>4/5,
+		24=>2/3,
+		32=>1/2,
+		48=>1/3,
+		64=>1/4,
+		96=>1/6,
+		192=>1/12
 	];
 
 	var _song:SwagSong;
@@ -577,13 +596,13 @@ class ChartingState extends MusicBeatState
 
 		if(FlxG.keys.justPressed.LEFT){
 			quantIdx-=1;
-			if(quantIdx>quantizations.length-1)
-				quantIdx = 0;
+			if(quantIdx<0)
+				quantIdx = quantizations.length-1;
 
 			quantization = quantizations[quantIdx];
 		}
 
-		Conductor.songPosition = FlxG.sound.music.time + OptionUtils.options.noteOffset;
+		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
@@ -682,7 +701,7 @@ class ChartingState extends MusicBeatState
 			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
 		{
 			var x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
-			var y = Math.floor(FlxG.mouse.y / (GRID_SIZE*quantization/16)) * (GRID_SIZE*quantization/16);
+			var y = Math.floor(FlxG.mouse.y / (GRID_SIZE*quantMults.get(quantization) )) * (GRID_SIZE*quantMults.get(quantization));
 			if (FlxG.keys.pressed.SHIFT)
 				y = FlxG.mouse.y;
 
@@ -1315,7 +1334,7 @@ class ChartingState extends MusicBeatState
 		FlxG.save.data.autosave = Json.stringify({
 			"song": _song,
 			"sliderVelocities": velChanges,
-		});
+		},"\t");
 		FlxG.save.flush();
 	}
 
@@ -1326,7 +1345,7 @@ class ChartingState extends MusicBeatState
 			"sliderVelocities": velChanges,
 		};
 
-		var data:String = Json.stringify(json);
+		var data:String = Json.stringify(json,"\t");
 
 		if ((data != null) && (data.length > 0))
 		{

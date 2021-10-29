@@ -78,6 +78,8 @@ class OptionsState extends MusicBeatState
 			new ToggleOption("pauseHoldAnims","Holds pause anims", "Do animations get paused on the first frame on holds"),
 			new ToggleOption("menuFlash","Flashing in menus","Do the background and buttons flash when selecting them in menus"),
 			new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),
+			new ToggleOption("ghosttapSounds","Ghost-tap hit sounds","Play a click sound when you ghost-tap"),
+			new StepOption("hitsoundVol","Hit sound volume",10,0,100,"%","","How loud the hitsounds are",true),
 			new ToggleOption("freeplayPreview","Song preview in freeplay","Do songs get played when selecting them in the freeplay menu"),
 			new ToggleOption("persistentCombo","Combo doesnt fade","Does the combo stay"),
 		]),

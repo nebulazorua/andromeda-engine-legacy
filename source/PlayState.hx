@@ -754,8 +754,6 @@ class PlayState extends MusicBeatState
 				focus='bf';
 			case 2:
 				focus='dad';
-			case 3:
-				focus='gf';
 		}
 
 		if(currentOptions.noChars){
@@ -1961,7 +1959,7 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			if(currentOptions.staticCam==4 || currentOptions.noChars){
+			if(currentOptions.staticCam==3 || currentOptions.noChars){
 				var centerX = (stage.centerX==-1)?(((dadMid.x+ opponent.camOffset.x) + (bfMid.x- stage.camOffset.x))/2):stage.centerX;
 				var centerY = (stage.centerY==-1)?(((dadMid.y+ opponent.camOffset.y) + (bfMid.y- stage.camOffset.y))/2):stage.centerY;
 				camFollow.setPosition(centerX,centerY);
@@ -1973,7 +1971,7 @@ class PlayState extends MusicBeatState
 						camFollow.setPosition(dadMid.x + opponent.camOffset.x, dadMid.y + opponent.camOffset.y);
 					case 'bf':
 						focusedChar=boyfriend;
-						camFollow.setPosition(bfMid.x - stage.camOffset.x, bfMid.y - stage.camOffset.y);
+						camFollow.setPosition(bfMid.x - stage.camOffset.x  + boyfriend.camOffset.x, bfMid.y - stage.camOffset.y + boyfriend.camOffset.y);
 					case 'gf':
 						focusedChar=gf;
 						camFollow.setPosition(gfMid.x + gf.camOffset.x, gfMid.y + gf.camOffset.y);
@@ -2825,8 +2823,12 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			if(!hitSomething && currentOptions.ghosttapping==false){
-				badNoteCheck();
+			if(!hitSomething){
+				if(currentOptions.ghosttapSounds)
+					FlxG.sound.play(Paths.sound('Ghost_Hit'),currentOptions.hitsoundVol/100);
+
+				if(currentOptions.ghosttapping==false)
+					badNoteCheck();
 			}
 		}
 	}
@@ -3123,7 +3125,7 @@ class PlayState extends MusicBeatState
 		}
 
 		if(currentOptions.hitSound && !note.isSustainNote)
-			FlxG.sound.play(Paths.sound('Normal_Hit'),.5);
+			FlxG.sound.play(Paths.sound('Normal_Hit'),currentOptions.hitsoundVol/100);
 
 		var strumLine = playerStrums.members[note.noteData%4];
 

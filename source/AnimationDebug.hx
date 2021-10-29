@@ -23,6 +23,7 @@ import openfl.events.IOErrorEvent;
 import flixel.text.FlxText;
 import flixel.util.FlxColor;
 import flixel.ui.FlxButton;
+import haxe.Json;
 import flixel.ui.FlxSpriteButton;
 using StringTools;
 /**
@@ -47,21 +48,15 @@ class AnimationDebug extends FlxState
 	var player:FlxUICheckBox;
 	var _file:FileReference;
 	var ghostBF:Character;
-	private function saveLevel()
+	private function save(data:String,name:String)
 	{
-		var data:String = '';
-		for(anim in animList){
-			if(anim!="dischargeScared")
-				data+=anim+" "+char.animOffsets.get(anim)[0] + " "+char.animOffsets.get(anim)[1]+"\n";
-		}
-
 		if ((data != null) && (data.length > 0))
 		{
 			_file = new FileReference();
 			_file.addEventListener(Event.COMPLETE, onSaveComplete);
 			_file.addEventListener(Event.CANCEL, onSaveCancel);
 			_file.addEventListener(IOErrorEvent.IO_ERROR, onSaveError);
-			_file.save(data.trim(), char.curCharacter + "Offsets.txt");
+			_file.save(data.trim(), name);
 		}
 	}
 
@@ -135,21 +130,41 @@ class AnimationDebug extends FlxState
 		});
 		cumfart.selectedLabel = daAnim;
 
-		player = new FlxUICheckBox(175, 50, null, null, "flipX", 100);
+		player = new FlxUICheckBox(175, 50, null, null, "Is Player", 100);
 		player.checked = false;
 		player.callback = function()
 		{
-			char.flipX=player.checked;
+			isDad=!player.checked;
+			displayCharacter(daAnim);
 		};
 
-		var saveButton:FlxButton = new FlxButton(100, 125, "Save", function()
+		var saveButton:FlxButton = new FlxButton(100, 125, "Save Offsets", function()
 		{
-			saveLevel();
+			var data:String = '';
+			for(anim in animList){
+				data+=anim+" "+char.animOffsets.get(anim)[0] + " "+char.animOffsets.get(anim)[1]+"\n";
+			}
+			save(data,char.curCharacter + "Offsets.txt");
+		});
+
+		var saveJson:FlxButton = new FlxButton(100, 200, "Save Character", function()
+		{
+
+			var animData:Array<Character.AnimShit> = [];
+			for(anim in char.charData.anims){
+				anim.offsets = [char.animOffsets.get(anim.name)[0],char.animOffsets.get(anim.name)[1]];
+				animData.push(anim);
+			}
+			char.charData.anims=animData;
+			var data:String = Json.stringify(char.charData,"\t");
+
+			save(data,'${char.curCharacter}${isDad==false?"-player":""}.json');
 		});
 
 		characterTab.add(cumfart);
 		characterTab.add(player);
 		characterTab.add(saveButton);
+		characterTab.add(saveJson);
 		UI_box.addGroup(characterTab);
 		dumbTexts = new FlxTypedGroup<FlxText>();
 		dumbTexts.cameras = [camHUD];
@@ -179,11 +194,6 @@ class AnimationDebug extends FlxState
 
 		animList=[];
 
-		if (daAnim == 'bf')
-			isDad = false;
-		else
-			isDad = true;
-
 		if(dad!=null)
 			layeringbullshit.remove(dad);
 
@@ -209,17 +219,15 @@ class AnimationDebug extends FlxState
 			layeringbullshit.add(dad);
 
 			char = dad;
-			dad.flipX = player.checked;
 		}
 		else
 		{
-			bf = new Boyfriend(0, 0);
+			bf = new Boyfriend(0, 0, daAnim);
 			bf.screenCenter();
 			bf.debugMode = true;
 			layeringbullshit.add(bf);
 
 			char = bf;
-			bf.flipX = player.checked;
 		}
 
 		genBoyOffsets();

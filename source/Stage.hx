@@ -165,43 +165,23 @@ class Stage extends FlxTypedGroup<FlxBasic> {
       case 'gf':
         p2.setPosition(gf.x, gf.y);
         gf.visible = false;
-
-      case "spooky":
-        p2.y += 200;
-      case "monster":
-        p2.y += 100;
-      case 'monster-christmas':
-        p2.y += 130;
       case 'dad':
         camPos.x += 400;
       case 'pico':
         camPos.x += 600;
-        p2.y += 300;
-      case 'parents-christmas':
-        p2.x -= 500;
       case 'senpai' | 'senpai-angry':
-        p2.x += 150;
-        p2.y += 360;
         camPos.set(p2.getGraphicMidpoint().x + 300, p2.getGraphicMidpoint().y);
       case 'spirit':
-        p2.x -= 150;
-        p2.y += 100;
         camPos.set(p2.getGraphicMidpoint().x + 300, p2.getGraphicMidpoint().y);
-      case "flexy":
-				p2.x += 75;
-				p2.y += 325;
-				camPos.x += 175;
-			case "dmp":
-				p2.x += 75;
-				p2.y += 250;
-				camPos.x += 175;
       case 'bf-pixel':
-        p2.y += 570;
-        p2.x += 200;
         camPos.set(p2.getGraphicMidpoint().x, p2.getGraphicMidpoint().y);
-      case 'bf' | 'bf-car' | 'bf-christmas':
-        p2.y += 350;
     }
+
+    p1.x += p1.posOffset.x;
+    p1.y += p1.posOffset.y;
+    p2.x += p2.posOffset.x;
+    p2.y += p2.posOffset.y;
+
 
   }
 
