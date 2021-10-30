@@ -81,11 +81,11 @@ class CachingState extends FlxUIState {
     }
 
     if(EngineData.options.cacheCharacters){
-      if(FileSystem.isDirectory("assets/shared/images/characters") ){
-        for (file in FileSystem.readDirectory("assets/shared/images/characters"))
+      if(FileSystem.isDirectory("assets/characters/images") ){
+        for (file in FileSystem.readDirectory("assets/characters/images"))
         {
           if(file.endsWith(".png") && !FileSystem.isDirectory(file)){
-            images.push('assets/shared/images/characters/${file}');
+            images.push('assets/characters/images/${file}');
           }
         }
       }

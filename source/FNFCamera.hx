@@ -144,7 +144,7 @@ class FNFCamera extends FlxCamera {
   }
 
   public function set_useRaymarcher(val:Bool){
-    if(_filters is Array){
+    if((_filters is Array)){
       if(!val && _filters.contains(raymarcherShader) || yaw==0 && pitch==0){
         _filters.remove(raymarcherShader);
       }else if(val && !_filters.contains(raymarcherShader) && (yaw!=0 || pitch!=0)){
@@ -158,13 +158,13 @@ class FNFCamera extends FlxCamera {
 
   public function set_yaw(val:Float){
     if(val!=0){
-      if(_filters is Array){
+      if((_filters is Array)){
         _filters.push(raymarcherShader);
       }else{
         _filters = [raymarcherShader];
       }
     }else if(val==0 && pitch==0){
-      if(_filters is Array && _filters.contains(raymarcherShader)){
+      if((_filters is Array) && _filters.contains(raymarcherShader)){
         _filters.remove(raymarcherShader);
       }
     }
@@ -174,13 +174,13 @@ class FNFCamera extends FlxCamera {
 
   public function set_pitch(val:Float){
     if(val!=0){
-      if(_filters is Array){
+      if((_filters is Array)){
         _filters.push(raymarcherShader);
       }else{
         _filters = [raymarcherShader];
       }
     }else if(val==0 && yaw==0){
-      if(_filters is Array && _filters.contains(raymarcherShader)){
+      if((_filters is Array) && _filters.contains(raymarcherShader)){
         _filters.remove(raymarcherShader);
       }
     }
