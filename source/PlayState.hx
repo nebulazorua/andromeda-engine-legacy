@@ -1482,6 +1482,11 @@ class PlayState extends MusicBeatState
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.strumTime, Obj2.strumTime);
 	}
 
+	function sortByStrum(wat:Int, Obj1:Note, Obj2:Note):Int
+	{
+		return FlxSort.byValues(FlxSort.DESCENDING, Obj1.strumTime, Obj2.strumTime);
+	}
+
 	function sortByOrder(wat:Int, Obj1:Note, Obj2:Note):Int
 	{
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.zIndex, Obj2.zIndex);
@@ -1827,11 +1832,11 @@ class PlayState extends MusicBeatState
 		//scoreTxt.text = "Score:" + (songScore + botplayScore) + ' / ${accuracyName}:' + shownAccuracy + "% / " + grade;
 		if(botplayScore!=0){
 			if(songScore==0)
-				scoreTxt.text = 'Bot Score: ${botplayScore} / ${accuracyName}: ${shownAccuracy}% / ${grade}';
+				scoreTxt.text = 'Bot Score: ${botplayScore} | ${accuracyName}: ${shownAccuracy}% | ${grade}';
 			else
-				scoreTxt.text = 'Score: ${songScore} / Bot Score: ${botplayScore} / ${accuracyName}: ${shownAccuracy}% / ${grade}';
+				scoreTxt.text = 'Score: ${songScore} | Bot Score: ${botplayScore} | ${accuracyName}: ${shownAccuracy}% | ${grade}';
 		}else{
-			scoreTxt.text = 'Score: ${songScore} / ${accuracyName}: ${shownAccuracy}% / ${grade}';
+			scoreTxt.text = 'Score: ${songScore} | ${accuracyName}: ${shownAccuracy}% | ${grade}';
 		}
 
 		scoreTxt.screenCenter(X);
@@ -2181,7 +2186,7 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 		{
 			if(startedCountdown){
-				renderedNotes.sort(sortByOrder);
+				renderedNotes.sort(sortByStrum);
 				renderedNotes.forEachAlive(function(daNote:Note)
 				{
 					var revPerc:Float = (modManager.exists("reverse")?modManager.get("reverse").getScrollReversePerc(daNote.noteData,daNote.mustPress==true?0:1):(scrollSpeed<0?0.0:1.0) );
@@ -2383,6 +2388,7 @@ class PlayState extends MusicBeatState
 
 					}
 				});
+				renderedNotes.sort(sortByOrder);
 			}
 		}
 		if(lastHitDadNote==null || !lastHitDadNote.alive || !lastHitDadNote.exists ){

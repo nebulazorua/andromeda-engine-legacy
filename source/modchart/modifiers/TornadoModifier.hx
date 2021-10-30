@@ -34,23 +34,9 @@ class TornadoModifier extends Modifier {
 
     var adjustedOffset = CoolUtil.scale(FlxMath.fastCos(rads),-1,1,min,max);
     var z = CoolUtil.scale(FlxMath.fastSin(rads),0,1,0,0.1);
-    if(note.isSustainNote){
-      if(note.prevNote!=null && !note.prevNote.wasGoodHit){
-        note.z = note.prevNote.z;
-        if(note.prevNote.isSustainNote){
-          pos.x = note.prevNote.x;
-        }else{
-          pos.x = note.prevNote.x + note.manualXOffset;
-        }
-      }else{
-        pos.x = modMgr.state.getXPosition(note);
-        note.z = 0;
-      }
-    }else{
-      pos.x += (adjustedOffset-offset)*getPercent(player);
-      note.z = z;
-    }
-    note.z = z;
+    pos.x += (adjustedOffset-offset)*getPercent(player);
+    note.z += z;
+
     return pos;
   }
 }

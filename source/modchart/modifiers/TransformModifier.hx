@@ -12,7 +12,7 @@ class TransformModifier extends Modifier { // this'll be transformX in ModManage
   override function getReceptorPos(receptor:Receptor, pos:FlxPoint, data:Int, player:Int){
     pos.x += getPercent(player)*100;
     pos.y += getSubmodPercent("transformY",player)*100;
-    receptor.z = getSubmodPercent('transformZ',player)*100;
+    receptor.z += getSubmodPercent('transformZ',player)*100;
 
     pos.x += getSubmodPercent('transform${receptor.direction}X',player)*100;
     pos.y += getSubmodPercent('transform${receptor.direction}Y',player)*100;
@@ -24,7 +24,7 @@ class TransformModifier extends Modifier { // this'll be transformX in ModManage
   override function getNotePos(note:Note, pos:FlxPoint, data:Int, player:Int){
     pos.x += getPercent(player)*100;
     pos.y += getSubmodPercent("transformY",player)*100;
-    note.z = getSubmodPercent('transformZ',player)*100;
+    note.z += getSubmodPercent('transformZ',player)*100;
 
     pos.x += getSubmodPercent('transform${data}X',player)*100;
     pos.y += getSubmodPercent('transform${data}Y',player)*100;

@@ -55,7 +55,7 @@ class PerspectiveModifier extends Modifier {
 
     return pos;
   }
-  
+
   override function updateReceptor(pos:FlxPoint, scale:FlxPoint, receptor:Receptor){
     var vec = getVector(receptor.z,pos);
 
@@ -65,7 +65,11 @@ class PerspectiveModifier extends Modifier {
   override function updateNote(pos:FlxPoint, scale:FlxPoint, note:Note){
     var vec = getVector(note.z,pos);
 
-    scale.scale(1/vec.z);
+    if(note.isSustainNote){
+      scale.set(scale.x*(1/vec.z),scale.y);
+    }else{
+      scale.scale(1/vec.z);
+    }
   }
 
 }
