@@ -2168,7 +2168,7 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 		{
 			if(startedCountdown){
-				renderedNotes.sort(sortByStrum);
+				renderedNotes.sort(sortByOrder);
 				renderedNotes.forEachAlive(function(daNote:Note)
 				{
 					var revPerc:Float = (modManager.exists("reverse")?modManager.get("reverse").getScrollReversePerc(daNote.noteData,daNote.mustPress==true?0:1):(scrollSpeed<0?0.0:1.0) );
@@ -2361,7 +2361,6 @@ class PlayState extends MusicBeatState
 
 					}
 				});
-				renderedNotes.sort(sortByOrder);
 			}
 		}
 		if(lastHitDadNote==null || !lastHitDadNote.alive || !lastHitDadNote.exists ){
