@@ -35,6 +35,22 @@ class CachingState extends FlxUIState {
   var barBG:FlxSprite;
   var loaded:Float = 0;
   var toLoad:Float = 0;
+  var isLoaded:Bool=false;
+  var threadActive:Bool=true;
+
+  var imagesLoaded:Int = 0;
+  var soundsLoaded:Int = 0;
+  var images:Array<String> = [];
+  var sounds:Array<String> = [];
+
+  var recentlyLoadedImg='';
+  var recentlyLoadedSnd='';
+
+  var loadImage:Thread;
+  var loadSound:Thread;
+
+  var loadingText:FlxText;
+  var percentText:FlxText;
 
   public static var cache:Map<String,FlxGraphic> = new Map<String,FlxGraphic>();
 
@@ -66,9 +82,6 @@ class CachingState extends FlxUIState {
 
     FlxG.sound.playMusic(Paths.music('old/title'));
 
-    var images:Array<String> = [];
-    var sounds:Array<String> = [];
-
     if(EngineData.options.cachePreload){
       if(FileSystem.isDirectory("assets/images") ){
         for (file in FileSystem.readDirectory("assets/images"))
@@ -94,44 +107,36 @@ class CachingState extends FlxUIState {
       if(FileSystem.isDirectory("assets/songs") ){
         for (dir in FileSystem.readDirectory("assets/songs"))
         {
-          if (FileSystem.isDirectory(dir)){
-            for (file in FileSystem.readDirectory(dir))
+          if (FileSystem.isDirectory('assets/songs/${dir}')){
+            for (file in FileSystem.readDirectory('assets/songs/${dir}'))
             {
               if(file.endsWith('.mp3') || file.endsWith('.ogg')){
-                sounds.push('assets/songs/{dir}/${file}');
+                sounds.push('assets/songs/${dir}/${file}');
               }
             }
           }
         }
       }
 
+
       if(FileSystem.isDirectory("assets/music") ){
-        for (dir in FileSystem.readDirectory("assets/music"))
+        for (file in FileSystem.readDirectory("assets/music"))
         {
-          if (FileSystem.isDirectory(dir)){
-            for (file in FileSystem.readDirectory(dir))
-            {
-              if(file.endsWith('.mp3') || file.endsWith('.ogg')){
-                sounds.push('assets/music/{dir}/${file}');
-              }
-            }
+          if(file.endsWith('.mp3') || file.endsWith('.ogg')){
+            sounds.push('assets/music/${file}');
           }
         }
       }
 
       if(FileSystem.isDirectory("assets/shared/music") ){
-        for (dir in FileSystem.readDirectory("assets/shared/music"))
+        for (file in FileSystem.readDirectory("assets/shared/music"))
         {
-          if (FileSystem.isDirectory(dir)){
-            for (file in FileSystem.readDirectory(dir))
-            {
-              if(file.endsWith('.mp3') || file.endsWith('.ogg')){
-                sounds.push('assets/shared/music/{dir}/${file}');
-              }
-            }
+          if(file.endsWith('.mp3') || file.endsWith('.ogg')){
+            sounds.push('assets/shared/music/${file}');
           }
         }
       }
+
     }
 
     if(EngineData.options.cacheSounds){
@@ -139,7 +144,7 @@ class CachingState extends FlxUIState {
         for (file in FileSystem.readDirectory("assets/sounds"))
         {
           if(file.endsWith('.mp3') || file.endsWith('.ogg')){
-            sounds.push('assets/sounds/{dir}/${file}');
+            sounds.push('assets/sounds/${file}');
           }
         }
       }
@@ -147,7 +152,7 @@ class CachingState extends FlxUIState {
         for (file in FileSystem.readDirectory("assets/shared/sounds"))
         {
           if(file.endsWith('.mp3') || file.endsWith('.ogg')){
-            sounds.push('assets/shared/sounds/{dir}/${file}');
+            sounds.push('assets/shared/sounds/${file}');
           }
         }
       }
@@ -167,52 +172,92 @@ class CachingState extends FlxUIState {
     bar.createFilledBar(0xFF808080, 0xFF4CFF00);
     add(bar);
 
-    var loadingText = new FlxText(barBG.x, barBG.y + 75, 0, "", 20);
+    loadingText = new FlxText(barBG.x, barBG.y + 75, 0, "", 20);
     loadingText.setFormat(null, 24, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
 		loadingText.scrollFactor.set();
 		add(loadingText);
 
-    var percentText = new FlxText(barBG.x + barBG.width/2, barBG.y, 0, "", 20);
+    percentText = new FlxText(barBG.x + barBG.width/2, barBG.y, 0, "", 20);
     percentText.setFormat(null, 16, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
     percentText.scrollFactor.set();
     add(percentText);
 
-
-    Thread.create(()->{
-      for(file in images){
-        var id = file.replace(".png","");
-        var data:BitmapData = BitmapData.fromFile(file);
-        var graphic = FlxG.bitmap.add(data,true,id);
-        graphic.destroyOnNoUse=false;
-        cache.set(id,graphic);
-        trace("loaded " + file);
-        loaded++;
-        loadingText.text = 'Loading ${file} (${loaded}/${toLoad})';
-        percentText.text = '${Math.floor((loaded/toLoad)*100)}%';
-        percentText.x = barBG.x + barBG.width/2;
-        loadingText.screenCenter(X);
-      }
-      for(file in sounds){
-        if(Assets.exists(file, AssetType.SOUND) || Assets.exists(file, AssetType.MUSIC)){ // https://github.com/HaxeFlixel/flixel/blob/master/flixel/system/frontEnds/SoundFrontEnd.hx
-          var sound = FlxG.sound.cache(file);
-          CoolUtil.cacheSound(file,sound);
-        }else{
-          CoolUtil.cacheSound(file,Sound.fromFile('./$file'));
+    loadImage = Thread.create(()->{
+      while (true)
+      {
+        if (!threadActive)
+        {
+          trace("Killing thread");
+          return;
         }
-
-        trace("loaded " + file);
-        loaded++;
-        loadingText.text = 'Loading ${file} (${loaded}/${toLoad})';
-        percentText.text = '${Math.floor((loaded/toLoad)*100)}%';
-        percentText.x = barBG.x + barBG.width/2;
-        loadingText.screenCenter(X);
+        var msg:Null<String> = Thread.readMessage(false);
+        if(msg!=null && msg!=recentlyLoadedImg){
+          recentlyLoadedImg=msg;
+          var id = msg.replace(".png","");
+          var data:BitmapData = BitmapData.fromFile(msg);
+          var graphic = FlxG.bitmap.add(data,true,id);
+          graphic.persist=true;
+          graphic.destroyOnNoUse=false;
+          cache.set(id,graphic);
+          trace("loaded " + msg);
+          loaded++;
+          imagesLoaded++;
+        }
       }
+    });
+    loadSound = Thread.create(()->{
+      while (true)
+      {
+        if (!threadActive)
+        {
+          trace("Killing thread");
+          return;
+        }
+        var msg:Null<String> = Thread.readMessage(false);
+        if(msg!=null && msg!=recentlyLoadedSnd){
+          recentlyLoadedSnd=msg;
+          if(Assets.exists(msg, AssetType.SOUND) || Assets.exists(msg, AssetType.MUSIC)){ // https://github.com/HaxeFlixel/flixel/blob/master/flixel/system/frontEnds/SoundFrontEnd.hx
+            var sound = FlxG.sound.cache(msg);
+            CoolUtil.cacheSound(msg,sound);
+          }else{
+            CoolUtil.cacheSound(msg,Sound.fromFile('./$msg'));
+          }
+
+          trace("loaded " + msg);
+          loaded++;
+          soundsLoaded++;
+        }
+      }
+    });
+
+    super.create();
+  }
+
+  override function update(elapsed:Float){
+    if(loaded<toLoad){
+      if(imagesLoaded<images.length){
+        var file = images[imagesLoaded];
+        if(file!=recentlyLoadedImg){
+          loadImage.sendMessage(file);
+          loadingText.text = 'Loading ${file} (${loaded}/${toLoad})';
+        }
+      }else if(soundsLoaded<sounds.length){
+        var file = sounds[soundsLoaded];
+        if(file!=recentlyLoadedSnd){
+          loadSound.sendMessage(file);
+          loadingText.text = 'Loading ${file} (${loaded}/${toLoad})';
+        }
+      }
+    }else if(loaded==toLoad && !isLoaded){
+      loadingText.text = 'Loaded!';
+      isLoaded=true;
+      threadActive=false;
       if (FlxG.sound.music != null)
       {
         FlxG.sound.music.stop();
       }
       FlxG.camera.flash(FlxColor.WHITE, 2, null, true);
-			FlxG.sound.play(Paths.sound('titleShoot'), 0.7);
+      FlxG.sound.play(Paths.sound('titleShoot'), 0.7);
 
       trace("Loaded!");
 
@@ -223,11 +268,13 @@ class CachingState extends FlxUIState {
         transOut = FlxTransitionableState.defaultTransOut;
         FlxG.switchState(finishState);
       });
+    }
 
-    });
-    super.create();
+    percentText.text = '${Math.floor((loaded/toLoad)*100)}%';
+    percentText.x = barBG.x + barBG.width/2;
+    loadingText.screenCenter(X);
+    super.update(elapsed);
   }
-
   public function new(state:FlxState){
     super();
     finishState=state;

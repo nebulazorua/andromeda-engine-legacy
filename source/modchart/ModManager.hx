@@ -176,35 +176,39 @@ class ModManager {
     }
   }
 
-  public function getNotePos(note:Note):FlxPoint{
+  public function updateNote(note:Note){
     var pos = FlxPoint.get(state.getXPosition(note),state.getYPosition(note));
     note.z = 0;
+
+    var scale = FlxPoint.get(note.scaleDefault.x,note.scaleDefault.y);
+    var player = note.mustPress==true?0:1;
+
     for(mod in mods){
-      pos = mod.getPos(pos, note.noteData, note.mustPress==true?0:1);
-    }
-    for(mod in mods){
-      pos = mod.getNotePos(note, pos, note.noteData, note.mustPress==true?0:1);
+      pos = mod.getPos(pos, note.noteData, player);
     }
 
-    return pos;
-  }
-
-  public function getNoteScale(note:Note):FlxPoint{
-    var def = note.scaleDefault;
-    var scale = FlxPoint.get(def.x,def.y);
     for(mod in mods){
-      scale = mod.getNoteScale(note, scale, note.noteData, note.mustPress==true?0:1);
+      pos = mod.getNotePos(note, pos, note.noteData, player);
+      scale = mod.getNoteScale(note, scale, note.noteData, player);
     }
-    return scale;
-  }
 
-  public function updateNote(note:Note, scale:FlxPoint, pos:FlxPoint){
     for(mod in mods){
       mod.updateNote(pos, scale, note);
     }
+
+    note.x = pos.x;
+    note.y = pos.y;
+    note.scale.copyFrom(scale);
+    note.updateHitbox();
+
+    scale.put();
+    pos.put();
+
   }
 
-  public function getReceptorPos(rec:Receptor, player:Int=0):FlxPoint{
+
+  public function updateReceptor(rec:Receptor, player:Int){
+    var scale = FlxPoint.get(rec.scaleDefault.x,rec.scaleDefault.y);
     var pos = FlxPoint.get();
     rec.z = 0;
     for(mod in mods){
@@ -212,25 +216,21 @@ class ModManager {
     }
 
     for(mod in mods){
+      scale = mod.getReceptorScale(rec, scale, rec.direction, player);
       pos = mod.getReceptorPos(rec, pos, rec.direction, player);
     }
 
-    return pos;
-  }
-
-  public function getReceptorScale(rec:Receptor, player:Int=0):FlxPoint{
-    var def = rec.scaleDefault;
-    var scale = FlxPoint.get(def.x,def.y);
-    for(mod in mods){
-      scale = mod.getReceptorScale(rec, scale, rec.direction, player);
-    }
-    return scale;
-  }
-
-  public function updateReceptor(rec:Receptor, scale:FlxPoint, pos:FlxPoint){
     for(mod in mods){
       mod.updateReceptor(pos, scale, rec);
     }
+
+    rec.point.x = pos.x;
+    rec.point.y = pos.y;
+    rec.scale.set(scale.x,scale.y);
+
+    scale.put();
+    pos.put();
+
   }
 
   public function queueEase(step:Float, endStep:Float, modName:String, percent:Float, style:String, player:Int=-1){

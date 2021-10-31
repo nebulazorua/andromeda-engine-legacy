@@ -2054,30 +2054,12 @@ class PlayState extends MusicBeatState
 
 		playerStrums.forEach( function(spr:Receptor)
 		{
-			var pos = modManager.getReceptorPos(spr,0);
-			var scale = modManager.getReceptorScale(spr,0);
-			modManager.updateReceptor(spr, scale, pos);
-
-			spr.point.x = pos.x;
-			spr.point.y = pos.y;
-			spr.scale.set(scale.x,scale.y);
-
-			scale.put();
-			pos.put();
+			modManager.updateReceptor(spr, 0);
 		});
 
 		dadStrums.forEach( function(spr:Receptor)
 		{
-			var pos = modManager.getReceptorPos(spr,1);
-			var scale = modManager.getReceptorScale(spr,1);
-			modManager.updateReceptor(spr, scale, pos);
-
-			spr.point.x = pos.x;
-			spr.point.y = pos.y;
-			spr.scale.set(scale.x,scale.y);
-
-			scale.put();
-			pos.put();
+			modManager.updateReceptor(spr, 1);
 
 		});
 
@@ -2206,18 +2188,24 @@ class PlayState extends MusicBeatState
 						}
 					}*/
 
-					var notePos = modManager.getNotePos(daNote);
-					var scale = modManager.getNoteScale(daNote);
-					modManager.updateNote(daNote, scale, notePos);
+					daNote.y = getYPosition(daNote);
+					if (daNote.y > FlxG.height+300 || daNote.y < -300)
+					{
+						daNote.active = false;
 
-					daNote.x = notePos.x;
-					daNote.y = notePos.y;
-					daNote.scale.copyFrom(scale);
-					daNote.updateHitbox();
+						daNote.visible = false;
+					}
+					else
+					{
+						if((daNote.mustPress || !daNote.mustPress && !currentOptions.middleScroll)){
+							daNote.visible = true;
+						}
 
-					scale.put();
-					notePos.put();
-
+						daNote.active = true;
+					}
+					if(daNote.visible){
+						modManager.updateNote(daNote);
+					}
 					var alpha = strumLine.incomingNoteAlpha;
 					var shitGotHit = (daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit);
 					if(daNote.isSustainNote){
@@ -2239,21 +2227,6 @@ class PlayState extends MusicBeatState
 
 							daNote.clipRect=clipRect;
 						}
-					}
-
-					if (daNote.y > FlxG.height+300 || daNote.y < -300)
-					{
-						daNote.active = false;
-
-						daNote.visible = false;
-					}
-					else
-					{
-						if((daNote.mustPress || !daNote.mustPress && !currentOptions.middleScroll)){
-							daNote.visible = true;
-						}
-
-						daNote.active = true;
 					}
 
 					if(daNote.mustPress){

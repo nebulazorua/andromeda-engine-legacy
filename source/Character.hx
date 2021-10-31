@@ -111,19 +111,9 @@ class Character extends FlxSprite
 				// whatever hard-coded shit here
 
 			default:
-				/*var xmlData:String = '';
-				if(Cache.charFrames[curCharacter]!=null){
-					frames=Cache.charFrames[curCharacter];
-				}else{
-					frames = FlxAtlasFrames.fromSparrow(BitmapData.fromFile("assets/shared/images/characters/"+curCharacter+".png"),File.getContent("assets/shared/images/characters/"+curCharacter+".xml"));
-					Cache.charFrames[curCharacter]=frames;
-				}
-				loadAnimations();
-				loadOffsets();*/
 				var pathBase = 'assets/characters/data/';
 				var charPath = pathBase + curCharacter + ".json";
 				var playerPath = pathBase + curCharacter + "-player.json";
-				trace(playerPath,charPath,isPlayer,FileSystem.exists(playerPath));
 				if(isPlayer && FileSystem.exists(playerPath))charPath=playerPath;
 				var shit:Null<Dynamic>=null;
 				var fuckHaxeflixel:PsychParsers.PsychChar = null;

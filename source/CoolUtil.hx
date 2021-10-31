@@ -21,11 +21,14 @@ class CoolUtil
 	}
 
 	public static function cacheSound(key:String,sound:Sound){
-		if(!Cache.soundCache.exists(key))
+		trace(key);
+		if(!Cache.soundCache.exists(key)){
 			Cache.soundCache.set(key,sound);
+		}
 	}
 
 	public static function getSound(path:String):Sound{
+		trace(path);
 		if(Cache.soundCache.get(path)!=null)
 			return Cache.soundCache.get(path);
 
