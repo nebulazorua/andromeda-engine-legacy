@@ -83,6 +83,7 @@ class TitleState extends MusicBeatState
 
 	function startIntro()
 	{
+		FlxG.autoPause=true;
 		if (!initialized)
 		{
 			// HAD TO MODIFY SOME BACKEND SHIT
