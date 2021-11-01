@@ -2,42 +2,53 @@
 
 "ANDROMEDA ENGINE IS GOATED" - bbpanzu
 
-Made as an alternative to other engines because im a lil' bitch and thought I could take a shot, so I did.
-- Fully rebindable controls, a brand new input system based on other rhythm games' (Though you can goto week 7's)
-- VERY customisable, even down to judgement window presets
-- SICK AS FUCK WEEK 6 SHADERS THAT YOU CAN ACTUALLY RUN!!! (SUCK ON THAT TABI) ((idk why they work though LOL THEY JUST DO ITS MAGIC))
+Made as an alternative to other engines because I thought I could take a shot, so I did.
+- Customizable-ish
+- Actually good lua modchart stuff
 - Scroll velocity
+- Adding characters n shit without source code modification
 
 AND IM STILL WORKIN' ON IT
 
 NOTE: ENGINE KINDA SORTA IN BETA STAGES RN
+
+## Original Funkin' team
+- [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programmer
+- [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
+- [Kawaisprite](https://twitter.com/kawaisprite) - Musician
+
+## Credits / shoutouts
+- [Nebula the Zorua](https://twitter.com/Nebula_Zorua) - Most engine stuff
+- [TKTems](https://twitter.com/TKTems) - Menu stuff
+- [4mbr0s3](https://www.youtube.com/channel/UCez-Erpr0oqmC71vnDrM9yA) - Implementation concept for new modifier stuff and inspiration to even BOTHER working on it
+- [kevinresol](https://github.com/kevinresol) - Original hxvm-lua
+- [AndreiDudenko](https://github.com/AndreiRudenko) - Original linc_luajit
+- [Echolocated](https://twitter.com/CH_echolocated) - "Epic" judgement rating and spreading the word about the engine
+- [Quaver](https://github.com/Quaver/Quaver) - Scroll code
+- [Poco](https://github.com/poco0317) - Wife3
+- [OpenITG](https://github.com/openitg/openitg) - Quants, some modifier math.
+- [Etterna](https://github.com/etternagame/etterna) - Poco did the math for Wife3 in Etterna, I think
+- [SrPerez](https://twitter.com/NewSrPerez) - Some math to do with receptors in KE
+- [Kade Engine](https://github.com/KadeDev/Kade-Engine) - SrPerez's math for receptors, caching loading screen stuff
+- [bbpanzu](https://twitter.com/bbsub3) - Bringing issues to my attention & letting more people know about AE
+- [Berdly the Antagonist](https://twitter.com/mylimit666) - Beat snap math
+- [Redsty Phoenix](https://twitter.com/RedstyP) - REALLY getting the word out
+- [Yoshubs](https://twitter.com/yoshubs) - Inspiration (and soon dialogue format)
+- [Shadow Mario](https://twitter.com/Shadow_Mario_) - Psych Engine character format (and soon dialogue format)
+- [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine) - Read Shadow Mario's credit
+- [gedehari](https://twitter.com/gedehar) - Inspiration (Soon: OpenFL shaders at runtime)
+- [BigWIngs](https://www.shadertoy.com/user/BigWIngs) - Raymarcher shader (https://www.shadertoy.com/view/WtGXDD)
+- [ryk](https://www.shadertoy.com/user/ryk) - VCR Distortion shader (https://www.shadertoy.com/view/ldjGzV)
+- [Mattias](https://www.shadertoy.com/user/Mattias) - CRT shader in VCR Distortion (https://www.shadertoy.com/view/Ms23DR)
+- [Klowner](https://www.shadertoy.com/user/Klowner) - Noise function from the CRT shader (https://www.shadertoy.com/view/MsXGD4)
+- [luka712](https://www.shadertoy.com/user/luka712) - Scanlines from CRT shader (https://www.shadertoy.com/view/Xtccz4)
+
 ## OG Friday Night Funkin'
 
 Play the Ludum Dare prototype here: https://ninja-muffin24.itch.io/friday-night-funkin
 Play the Newgrounds one here: https://www.newgrounds.com/portal/view/770371
 Support the project on the itch.io page: https://ninja-muffin24.itch.io/funkin
 Get the source code: https://github.com/ninjamuffin99/Funkin
-
-## Credits / shoutouts
-
-- [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programmer
-- [PhantomArcade3K](https://twitter.com/phantomarcade3k) and [Evilsk8r](https://twitter.com/evilsk8r) - Art
-- [Kawaisprite](https://twitter.com/kawaisprite) - Musician
-- [Nebula the Zorua](https://twitter.com/Nebula_Zorua) - Most engine stuff
-- [TKTems](https://twitter.com/TKTems) - Menu stuff
-- [Echolocated](https://twitter.com/CH_echolocated) - "Epic" judgement rating and spreading the word about the engine
-- [kevinresol](https://github.com/kevinresol) - Original hxvm-lua
-- [AndreiDudenko](https://github.com/AndreiRudenko) - Original linc_luajit
-- [Poco](https://github.com/poco0317) - Wife3
-- [OpenITG](https://github.com/openitg/openitg) - Quants, modifiers.
-- [Etterna](https://github.com/etternagame/etterna) - Poco did the math for Wife3 in Etterna, I think
-- [Quaver](https://github.com/Quaver/Quaver) - Scroll code
-- [SrPerez](https://twitter.com/NewSrPerez) - Some math to do with receptors in KE
-- [Kade Engine](https://github.com/KadeDev/Kade-Engine) - SrPerez's math for receptors
-- [bbpanzu](https://twitter.com/bbsub3) - Bringing issues to my attention & letting more people know about AE
-- [Redsty Phoenix](https://twitter.com/RedstyP) - REALLY getting the word out
-- [Yoshubs](https://twitter.com/yoshubs) - Inspiration
-- [Berdly the Antagonist](https://twitter.com/mylimit666) - Beat snap math
 
 Shoutouts to Newgrounds and Tom Fulp for creatin' the best website and community on the internet
 

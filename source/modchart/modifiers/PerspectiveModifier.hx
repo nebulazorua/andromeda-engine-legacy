@@ -48,7 +48,8 @@ class PerspectiveModifier extends Modifier {
     return returnedVector;
   }
 
-  override function getReceptorPos(receptor:Receptor, pos:FlxPoint, data:Int, player:Int){ // maybe replace FlxPoint with a Vector4?
+  override function getReceptorPos(receptor:Receptor, pos:FlxPoint, data:Int, player:Int){ // maybe replace FlxPoint with a Vector3?
+    // HI 4MBR0S3 IM SORRY :(( I GENUINELY FUCKIN FORGOT TO CREDIT PLEASEDONTHATEMEILOVEYOURSTUFF:(
     var vec = getVector(receptor.z,pos);
     pos.x=vec.x;
     pos.y=vec.y;
