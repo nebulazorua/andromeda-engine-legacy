@@ -198,7 +198,6 @@ class PlayState extends MusicBeatState
 	var phillyCityLights:FlxTypedGroup<FlxSprite>;
 	var lightFadeShader:BuildingEffect;
 	var vcrDistortionHUD:VCRDistortionEffect;
-	var rainShader:RainEffect;
 	var vcrDistortionGame:VCRDistortionEffect;
 	var phillyTrain:FlxSprite;
 	var trainSound:FlxSound;
@@ -1809,11 +1808,6 @@ class PlayState extends MusicBeatState
 			vcrDistortionGame.update(elapsed);
 		}
 		modManager.update(elapsed);
-
-		if(rainShader!=null){
-			rainShader.update(elapsed);
-		}
-
 		opponent = opponents.length>0?opponents[opponentIdx]:dad;
 
 		modchart.update(elapsed);
