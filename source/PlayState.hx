@@ -2182,7 +2182,8 @@ class PlayState extends MusicBeatState
 						}
 					}*/
 
-					daNote.y = getYPosition(daNote);
+					modManager.updateNote(daNote);
+
 					if (daNote.y > FlxG.height+300 || daNote.y < -300)
 					{
 						daNote.active = false;
@@ -2197,9 +2198,7 @@ class PlayState extends MusicBeatState
 
 						daNote.active = true;
 					}
-					if(daNote.visible){
-						modManager.updateNote(daNote);
-					}
+
 					var alpha = strumLine.incomingNoteAlpha;
 					var shitGotHit = (daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit);
 					if(daNote.isSustainNote){
