@@ -42,6 +42,9 @@ NOTE: ENGINE KINDA SORTA IN BETA STAGES RN
 - [Mattias](https://www.shadertoy.com/user/Mattias) - CRT shader in VCR Distortion (https://www.shadertoy.com/view/Ms23DR)
 - [Klowner](https://www.shadertoy.com/user/Klowner) - Noise function from the CRT shader (https://www.shadertoy.com/view/MsXGD4)
 - [luka712](https://www.shadertoy.com/user/luka712) - Scanlines from CRT shader (https://www.shadertoy.com/view/Xtccz4)
+- [Fogu](https://twitter.com/FoguDragon) - Helping test how AE behaves on low-end PCs
+- [Lizzy](https://twitter.com/tc_lizzy) - Keepin' me sane. Love ya, sweetheart!
+
 
 ## OG Friday Night Funkin'
 
