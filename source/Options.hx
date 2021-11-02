@@ -94,7 +94,7 @@ class Options
 	public var xMod:Float = 1;
 	public var pollingInput:Bool = false;
 	public var judgementWindow:String = 'ITG';
-	public var noteOffset:Int = 0;
+	public var noteOffset:Int = 100;
 	public var botPlay:Bool = false;
 	public var loadModcharts:Bool = true;
 	public var noFail:Bool = false;

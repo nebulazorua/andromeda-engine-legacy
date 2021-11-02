@@ -5,6 +5,7 @@ import haxe.Json;
 import haxe.format.JsonParser;
 import lime.utils.Assets;
 import sys.io.File;
+import flixel.util.typeLimit.OneOfTwo;
 
 using StringTools;
 
@@ -84,6 +85,18 @@ class Song
 			];
 		}
 		swagShit.validScore = true;
+
+		// god i HATE HAXEFLIXEL
+		// PLEASE JUST LEAVE MY SHIT AS FLOATS!!
+		/*for(section in 0...cumData.song.notes.length){
+			var secData:Array<Array<OneOfTwo<Float,String>>> = cumData.song.notes[section].sectionNotes;
+			var idx:Int=0;
+			for(note in secData){
+				swagShit.notes[section].sectionNotes[idx]=note;
+				idx++;
+			}
+		}*/
+
 		return swagShit;
 	}
 }

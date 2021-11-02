@@ -31,6 +31,7 @@ class NoteGraphic extends FlxSprite
 	public var scaleDefault:FlxPoint;
 	public var baseAngle:Float = 0;
 	public var modAngle:Float = 0;
+	public var graphicDir:Int=0;
 
 	public var quantToGrid:Map<Int,Int>=[
 		4=>0,
@@ -63,7 +64,7 @@ class NoteGraphic extends FlxSprite
 		super();
 		scaleDefault = FlxPoint.get();
 
-		var beat = Conductor.getBeat(strumTime);
+		var beat = Conductor.getBeatInMeasure(strumTime);
 		this.quantTexture = Note.getQuant(beat);
 
 		this.modifier=modifier;
@@ -301,6 +302,8 @@ class NoteGraphic extends FlxSprite
 			updateHitbox();
 			scaleDefault.set(scale.x,scale.y);
 		}
+
+		graphicDir=dir;
 
 		if(colors[dir]!=null){
 			animation.play('${colors[dir]}${suffix}',true);

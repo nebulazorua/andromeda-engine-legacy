@@ -86,20 +86,6 @@ class ChartingState extends MusicBeatState
 		192
 	];
 
-	var quantMults:Map<Int,Float> = [
-		4=>4/1,
-		8=>2/1,
-		12=>4/3,
-		16=>1,
-		20=>4/5,
-		24=>2/3,
-		32=>1/2,
-		48=>1/3,
-		64=>1/4,
-		96=>1/6,
-		192=>1/12
-	];
-
 	var _song:SwagSong;
 	var velChanges:Array<VelocityChange> = [];
 	var typingShit:FlxInputText;
@@ -630,7 +616,7 @@ class ChartingState extends MusicBeatState
 			{
 				curRenderedNotes.forEach(function(note:Note)
 				{
-					if (FlxG.mouse.overlaps(note))
+					if (FlxG.mouse.overlaps(note) || CoolUtil.truncateFloat(note.strumTime,2) == CoolUtil.truncateFloat(getStrumTime(dummyArrow.y),2)  && dummyArrow.graphicDir==note.noteData)
 					{
 						trace(note.strumTime,note.rawNoteData);
 						if (FlxG.keys.pressed.CONTROL)
@@ -700,13 +686,16 @@ class ChartingState extends MusicBeatState
 			&& FlxG.mouse.y > gridBG.y
 			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
 		{
+			var time = getStrumTime(FlxG.mouse.y);
+			var beat = Conductor.getBeat(time);
+			var snap = 4/quantization;
 			var x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
-			var y = Math.floor(FlxG.mouse.y / (GRID_SIZE*quantMults.get(quantization) )) * (GRID_SIZE*quantMults.get(quantization));
+			var y = getYfromStrum(Conductor.beatToSeconds(Math.floor(beat / snap) * snap));
 			if (FlxG.keys.pressed.SHIFT)
 				y = FlxG.mouse.y;
 
 			if(dummyArrow.y!=y || dummyArrow.x!=x){
-				var beat = Conductor.getBeat(getStrumTime(y) + sectionStartTime());
+				var beat = Conductor.getBeatInMeasure(getStrumTime(y) + sectionStartTime());
 				var quant = Note.getQuant(beat);
 				if(dummyArrow.quantTexture!=quant){
 					dummyArrow.quantTexture = quant;
@@ -1248,9 +1237,13 @@ class ChartingState extends MusicBeatState
 	{
 		var noteStrum = getStrumTime(dummyArrow.y) + sectionStartTime();
 		var noteData = Math.floor(FlxG.mouse.x / GRID_SIZE);
+		for(nD in _song.notes[curSection].sectionNotes){
+			if(nD[0]==noteStrum && nD[1]==noteData){
+				return;
+			}
+		}
 		var noteSus = 0;
 
-		trace(Conductor.getBeat(noteStrum));
 		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus]);
 
 		curSelectedNote = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
