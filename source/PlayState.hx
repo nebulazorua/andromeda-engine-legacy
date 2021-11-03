@@ -1278,16 +1278,10 @@ class PlayState extends MusicBeatState
 		daNote.visible = false;
 
 		daNote.kill();
-		if(daNote.mustPress){
-			if(daNote.isSustainNote)
-				susNoteLanes[daNote.noteData].remove(daNote);
-			else
-				noteLanes[daNote.noteData].remove(daNote);
-		}
+		if(daNote.mustPress)
+			noteLanes[daNote.noteData].remove(daNote);
 
 		hittableNotes.remove(daNote);
-
-		renderedNotes.remove(daNote, true);
 		daNote.destroy();
 	}
 
@@ -1502,7 +1496,6 @@ class PlayState extends MusicBeatState
 		var pos:Float = SONG.sliderVelocities[0].startTime*(SONG.initialSpeed);
 		velocityMarkers.push(pos);
 		for(i in 1...SONG.sliderVelocities.length){
-			trace(SONG.sliderVelocities[i],SONG.sliderVelocities[i-1],i-1,i);
 			pos+=(SONG.sliderVelocities[i].startTime-SONG.sliderVelocities[i-1].startTime)*(SONG.initialSpeed*SONG.sliderVelocities[i-1].multiplier);
 			velocityMarkers.push(pos);
 		}
@@ -2162,10 +2155,12 @@ class PlayState extends MusicBeatState
 		if (generatedMusic)
 		{
 			if(startedCountdown){
-				renderedNotes.sort(sortByOrder);
+				if(currentOptions.allowOrderSorting)
+					renderedNotes.sort(sortByOrder);
+
 				renderedNotes.forEachAlive(function(daNote:Note)
 				{
-					var revPerc:Float = (modManager.exists("reverse")?modManager.get("reverse").getScrollReversePerc(daNote.noteData,daNote.mustPress==true?0:1):(scrollSpeed<0?0.0:1.0) );
+					var revPerc:Float = modManager.get("reverse").getScrollReversePerc(daNote.noteData,daNote.mustPress==true?0:1);
 
 					var strumLine = playerStrums.members[daNote.noteData];
 					var isDownscroll = revPerc>.5;
@@ -2181,9 +2176,7 @@ class PlayState extends MusicBeatState
 							daNote.prevNote.updateHitbox();
 						}
 					}*/
-
 					modManager.updateNote(daNote);
-
 					if (daNote.y > FlxG.height+300 || daNote.y < -300)
 					{
 						daNote.active = false;
@@ -2202,24 +2195,24 @@ class PlayState extends MusicBeatState
 					var alpha = strumLine.incomingNoteAlpha;
 					var shitGotHit = (daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit);
 					if(daNote.isSustainNote){
-						if(shitGotHit){
-							var dY:Float = daNote.frameHeight;
-							var dH:Float = strumLine.y+Note.swagWidth/2-daNote.y;
-							dH /= daNote.scale.y;
-							dY -= dH;
+							if(shitGotHit){
+									var dY:Float = daNote.frameHeight;
+									var dH:Float = strumLine.y+Note.swagWidth/2-daNote.y;
+									dH /= daNote.scale.y;
+									dY -= dH;
 
-							var uH:Float = daNote.frameHeight*2;
-							var uY:Float = strumLine.y+Note.swagWidth/2-daNote.y;
+									var uH:Float = daNote.frameHeight*2;
+									var uY:Float = strumLine.y+Note.swagWidth/2-daNote.y;
 
-							uY /= daNote.scale.y;
-							uH -= uY;
+									uY /= daNote.scale.y;
+									 uH -= uY;
 
-							var clipRect = new FlxRect(0,0,daNote.width*2,0);
-							clipRect.y = CoolUtil.scale(revPerc,0,1,uY,dY);
-							clipRect.height = CoolUtil.scale(revPerc,0,1,uH,dH);
+									var clipRect = new FlxRect(0,0,daNote.width*2,0);
+									clipRect.y = CoolUtil.scale(revPerc,0,1,uY,dY);
+									clipRect.height = CoolUtil.scale(revPerc,0,1,uH,dH);
 
-							daNote.clipRect=clipRect;
-						}
+									daNote.clipRect=clipRect;
+							}
 					}
 
 					if(daNote.mustPress){
@@ -2321,7 +2314,7 @@ class PlayState extends MusicBeatState
 						daNote.wasGoodHit=true;
 						lastHitDadNote=daNote;
 						if(!daNote.isSustainNote){
-							daNote.kill();
+							destroyNote(daNote);
 						}else if(daNote.mustPress){
 							susNoteLanes[daNote.noteData].remove(daNote);
 						}
@@ -2330,27 +2323,29 @@ class PlayState extends MusicBeatState
 					// WIP interpolation shit? Need to fix the pause issue
 					// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
 
-					if (daNote.tooLate || daNote.wasGoodHit && (!daNote.isOnScreen(camNotes)) )
-					{
-						if (daNote.tooLate)
+					if(daNote!=null && daNote.alive){
+						if (daNote.tooLate || daNote.wasGoodHit && (!daNote.isOnScreen(camNotes)) )
 						{
-							//health -= 0.0475;
-							noteMiss(daNote.noteData);
-							if(currentOptions.accuracySystem==2){
-								if(!daNote.isSustainNote){
-									totalNotes+=2;
-									hitNotes+=ScoreUtils.malewifeMissWeight;
+							if (daNote.tooLate)
+							{
+								//health -= 0.0475;
+								noteMiss(daNote.noteData);
+								if(currentOptions.accuracySystem==2){
+									if(!daNote.isSustainNote){
+										totalNotes+=2;
+										hitNotes+=ScoreUtils.malewifeMissWeight;
+									}
+								}else{
+									hitNotes+=judgeMan.getJudgementAccuracy("miss");
+									if(currentOptions.accuracySystem!=1)
+										totalNotes++;
 								}
-							}else{
-								hitNotes+=judgeMan.getJudgementAccuracy("miss");
-								if(currentOptions.accuracySystem!=1)
-									totalNotes++;
-							}
 
-							vocals.volume = 0;
-							updateAccuracy();
+								vocals.volume = 0;
+								updateAccuracy();
+							}
+							destroyNote(daNote);
 						}
-						destroyNote(daNote);
 
 					}
 				});
@@ -2819,7 +2814,7 @@ class PlayState extends MusicBeatState
 			if(note.mustPress && note.canBeHit && note.strumTime<=Conductor.songPosition+5){
 				if(note.sustainLength>0 && botplayHoldMaxTimes[note.noteData]<note.sustainLength){
 					controlArray[note.noteData]=true;
-					botplayHoldTimes[note.noteData] = (note.sustainLength/1000)+.2;
+					botplayHoldTimes[note.noteData] = (note.sustainLength/1000)+.1;
 				}else if(note.isSustainNote && botplayHoldMaxTimes[note.noteData]==0){
 					holdArray[note.noteData] = true;
 				}
@@ -2881,7 +2876,7 @@ class PlayState extends MusicBeatState
 				if(note.mustPress && note.canBeHit && note.strumTime<=Conductor.songPosition+5){
 					if(note.sustainLength>0 && botplayHoldMaxTimes[note.noteData]<note.sustainLength){
 						controlArray[note.noteData]=true;
-						botplayHoldTimes[note.noteData] = (note.sustainLength/1000)+.2;
+						botplayHoldTimes[note.noteData] = (note.sustainLength/1000)+.1;
 					}else if(note.isSustainNote && botplayHoldMaxTimes[note.noteData]==0){
 						holdArray[note.noteData] = true;
 					}

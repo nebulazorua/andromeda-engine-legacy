@@ -2,6 +2,51 @@ package;
 import flixel.system.debug.log.LogStyle;
 using StringTools;
 
+class EngineData {
+  public static var LUAERROR:LogStyle = new LogStyle("[MODCHART] ", "FF8888", 12, false, false, false, null, true);
+  public static var characters:Array<String> = [];
+  public static var validJudgements:Array<String> = ["epic","sick","good","bad","shit","miss"];
+  public static var createThread=false;
+  public static var options:Options;
+  public static var weeksUnlocked:Array<Bool>=[true,true,true,true,true,true];
+  public static var mustUnlockWeeks:Bool=false; // TODO: make this work
+  public static var weekData:Array<WeekData> = [
+    new WeekData("Funkin' Virgin",0,'',[
+      new SongData("Tutorial","gf",0),
+    ]),
+    new WeekData("DADDY DEAREST",1,'dad',[
+      "Bopeebo",
+      "Fresh",
+      "Dadbattle"
+    ]),
+    new WeekData("Spooky Month",2,'spooky',[
+      "Spookeez",
+      "South",
+      new SongData("Monster","monster",2)
+    ]),
+    new WeekData("Pico",3,'pico',[
+      "Pico",
+      new SongData("Philly Nice","pico",3,"philly-nice"),
+      "Blammed"
+    ]),
+    new WeekData("MOMMY MUST MURDER",4,'mom',[
+      new SongData("Satin Panties","mom",4,"satin-panties"),
+      "High",
+      "MILF"
+    ]),
+    new WeekData("RED SNOW",5,'parents-christmas',[
+      "Cocoa",
+      "Eggnog",
+      new SongData("Winter Horrorland","monster",5,"winter-horrorland"),
+    ]),
+    new WeekData("hating simulator ft. moawling",6,'senpai',[
+      "Senpai",
+      "Roses",
+      new SongData("Thorns","spirit",6),
+    ]),
+  ];
+}
+
 
 class SongData {
   public var displayName:String = 'Tutorial';
@@ -89,49 +134,4 @@ class WeekData {
     }
     return charts;
   }
-}
-
-class EngineData {
-  public static var LUAERROR:LogStyle = new LogStyle("[MODCHART] ", "FF8888", 12, false, false, false, null, true);
-
-  public static var validJudgements:Array<String> = ["epic","sick","good","bad","shit","miss"];
-  public static var createThread=false;
-  public static var options:Options;
-  public static var weeksUnlocked:Array<Bool>=[true,true,true,true,true,true];
-  public static var mustUnlockWeeks:Bool=false; // TODO: make this work
-  public static var weekData:Array<WeekData> = [
-    new WeekData("Funkin' Virgin",0,'',[
-      new SongData("Tutorial","gf",0),
-    ]),
-    new WeekData("DADDY DEAREST",1,'dad',[
-      "Bopeebo",
-      "Fresh",
-      "Dadbattle"
-    ]),
-    new WeekData("Spooky Month",2,'spooky',[
-      "Spookeez",
-      "South",
-      new SongData("Monster","monster",2)
-    ]),
-    new WeekData("Pico",3,'pico',[
-      "Pico",
-      new SongData("Philly Nice","pico",3,"philly-nice"),
-      "Blammed"
-    ]),
-    new WeekData("MOMMY MUST MURDER",4,'mom',[
-      new SongData("Satin Panties","mom",4,"satin-panties"),
-      "High",
-      "MILF"
-    ]),
-    new WeekData("RED SNOW",5,'parents-christmas',[
-      "Cocoa",
-      "Eggnog",
-      new SongData("Winter Horrorland","monster",5,"winter-horrorland"),
-    ]),
-    new WeekData("hating simulator ft. moawling",6,'senpai',[
-      "Senpai",
-      "Roses",
-      new SongData("Thorns","spirit",6),
-    ]),
-  ];
 }

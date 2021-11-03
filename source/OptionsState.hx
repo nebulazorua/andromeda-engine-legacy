@@ -15,6 +15,7 @@ import lime.utils.Assets;
 import flixel.addons.transition.FlxTransitionableState;
 import Options;
 import flixel.graphics.FlxGraphic;
+using StringTools;
 
 #if desktop
 import Discord.DiscordClient;
@@ -89,6 +90,7 @@ class OptionsState extends MusicBeatState
 			}),
 			new ToggleOption("noChars","Hide characters","Hides characters ingame"),
 			new ToggleOption("noStage","Hide background","Hides stage ingame"),
+			new ToggleOption("allowOrderSorting","Sort notes by order","Allows notes to go infront and behind other notes, in exchange for FPS drops."),
 			new OptionCategory("Loading",[
 				new ToggleOption("shouldCache","Cache on startup","Should the engine cache anything when being loaded"),
 				new ToggleOption("cacheCharacters","Cache characters","Should the engine cache characters at startup"),
@@ -106,6 +108,7 @@ class OptionsState extends MusicBeatState
 	]);
 
 	private var optionText:FlxTypedGroup<Option>;
+	private var optionDesc:FlxText;
 	private var curSelected:Int = 0;
 	public static var category:Dynamic;
 
@@ -128,7 +131,13 @@ class OptionsState extends MusicBeatState
 		optionText = new FlxTypedGroup<Option>();
 		add(optionText);
 
+		optionDesc = new FlxText(5, FlxG.height-48,0,"",20);
+		optionDesc.setFormat(Paths.font("vcr.ttf"), 20, FlxColor.WHITE, CENTER, FlxTextBorderStyle.OUTLINE, FlxColor.BLACK);
+		optionDesc.textField.background=true;
+		optionDesc.textField.backgroundColor = FlxColor.BLACK;
 		refresh();
+		optionDesc.visible=false;
+		add(optionDesc);
 
 		super.create();
 	}
@@ -168,6 +177,12 @@ class OptionsState extends MusicBeatState
 			{
 				item.text.alpha = 1;
 				item.selected();
+				if(item.description!=null && item.description.replace(" ","")!=''){
+					optionDesc.visible=true;
+					optionDesc.text = item.description;
+				}else{
+					optionDesc.visible=false;
+				}
 			}else if(wasSelected){
 				item.deselected();
 			}

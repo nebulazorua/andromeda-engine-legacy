@@ -38,7 +38,7 @@ class ReverseModifier extends Modifier {
     if(percent>1)
       percent=CoolUtil.scale(percent,1,2,1,0);
 
-    if(modMgr.state.currentOptions.downScroll)
+    if(modMgr.state.currentOptions.downScroll && !scrolling)
       percent = 1-percent;
 
     return percent;
@@ -61,7 +61,7 @@ class ReverseModifier extends Modifier {
   override function getNotePos(note:Note, pos:FlxPoint, data:Int, player:Int){
     var perc = getScrollReversePerc(data,player);
     var state = modMgr.state;
-    
+
     var downscrollY = state.getYPosition(note, -1);
     var upscrollY = state.getYPosition(note, 1);
 

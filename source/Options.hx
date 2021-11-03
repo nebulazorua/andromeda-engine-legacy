@@ -121,6 +121,7 @@ class Options
 	public var fps:Int = 120;
 	public var noChars:Bool = false;
 	public var noStage:Bool = false;
+	public var allowOrderSorting:Bool = true;
 	public var shouldCache:Bool = false;
 	public var cacheCharacters:Bool = false;
 	public var cacheSongs:Bool = false;

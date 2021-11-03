@@ -16,6 +16,7 @@ import flixel.addons.transition.TransitionData;
 import flixel.math.FlxPoint;
 import flixel.math.FlxRect;
 import haxe.Json;
+import sys.FileSystem;
 
 using StringTools;
 
@@ -114,6 +115,17 @@ class InitState extends FlxUIState {
     }
 
     FlxG.fixedTimestep = false;
+
+    for(file in FileSystem.readDirectory('assets/characters/data') ){
+			if(file.endsWith(".json")){
+        var name = file.replace(".json","");
+        if(!name.endsWith("-player")){
+          EngineData.characters.push(name);
+        }
+			}
+		}
+
+    //characters
 
     if(currentOptions.shouldCache && canCache){
       FlxG.switchState(new CachingState(new TitleState()));

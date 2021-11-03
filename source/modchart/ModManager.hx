@@ -184,12 +184,12 @@ class ModManager {
     var player = note.mustPress==true?0:1;
 
     for(mod in mods){
-      pos = mod.getPos(pos, note.noteData, player);
+      pos = mod.getNotePos(note, pos, note.noteData, player);
+      scale = mod.getNoteScale(note, scale, note.noteData, player);
     }
 
     for(mod in mods){
-      pos = mod.getNotePos(note, pos, note.noteData, player);
-      scale = mod.getNoteScale(note, scale, note.noteData, player);
+      pos = mod.getPos(pos, note.noteData, player);
     }
 
     for(mod in mods){

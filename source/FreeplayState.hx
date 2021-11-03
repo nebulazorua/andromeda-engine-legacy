@@ -144,10 +144,6 @@ class FreeplayState extends MusicBeatState
 			addWeek(['Senpai', 'Roses', 'Thorns'], 6, ['senpai', 'senpai', 'spirit'])
 		*/
 
-		#if debug
-			addWeek(['Test'],0,['gf']);
-		#end
-
 		for(week in EngineData.weekData){
 			addWeekData(week);
 		}
@@ -157,6 +153,7 @@ class FreeplayState extends MusicBeatState
 		for(song in otherSongs){
 			//addSong(songName:String, weekNum:Int, songCharacter:String, ?chartName:String)
 			if(!songNames.contains(song.toLowerCase())){
+				var hasCharts:Bool = false;
 				var icon:String = 'dad';
 				var add:Bool = true;
 				var display:Null<String>=null;
@@ -171,14 +168,22 @@ class FreeplayState extends MusicBeatState
 						add = metadata.inFreeplay==null?true:metadata.inFreeplay;
 						icon = metadata.freeplayIcon==null?'dad':metadata.freeplayIcon;
 						display = metadata.displayName;
+						hasCharts=true;
 					}else{
 						if(FileSystem.exists(Paths.chart(song,song))){
 							var song = Song.loadFromJson(song,song);
 							icon = song==null?'dad':song.player2;
 							if(icon==null)icon='dad';
+							add=true;
+							hasCharts=true;
 						}
 					}
-					if(add)
+
+					if(FileSystem.exists(Paths.chart(song,song)) && !hasCharts){
+						hasCharts=true;
+					}
+
+					if(add && hasCharts)
 						addSong(display==null?song.replace("-"," "):display,0,icon,song);
 
 				}
@@ -276,7 +281,6 @@ class FreeplayState extends MusicBeatState
 			{
 				if(file.endsWith(".json") && !FileSystem.isDirectory(file)){
 					var difficultyName = file.replace(".json","").replace(songData.chartName.toLowerCase(),"");
-					trace(difficultyName,file);
 					switch(difficultyName.toLowerCase()){
 						case '-easy':
 							songDiffs.push(0);
@@ -378,6 +382,8 @@ class FreeplayState extends MusicBeatState
 		}else if(curDifficultyIdx<0){
 			curDifficultyIdx=selectableDiffs.length-1;
 		}
+		var oldDiff = curDifficulty;
+
 		curDifficulty = selectableDiffs[curDifficultyIdx];
 
 		#if !switch

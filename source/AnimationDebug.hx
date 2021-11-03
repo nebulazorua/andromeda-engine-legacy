@@ -121,7 +121,7 @@ class AnimationDebug extends FlxState
 		var characterTab = new FlxUI(null, UI_box);
 		characterTab.name = "Character";
 
-		var characters:Array<String> = CoolUtil.coolTextFile(Paths.txt('characterList'));
+		var characters:Array<String> = EngineData.characters;
 
 		var cumfart = new FlxUIDropDownMenu(50, 50, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
