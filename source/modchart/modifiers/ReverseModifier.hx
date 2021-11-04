@@ -38,14 +38,14 @@ class ReverseModifier extends Modifier {
     if(percent>1)
       percent=CoolUtil.scale(percent,1,2,1,0);
 
-    if(modMgr.state.currentOptions.downScroll && !scrolling)
+    if(modMgr.state.currentOptions.downScroll)
       percent = 1-percent;
 
     return percent;
   }
 
   public function getScrollReversePerc(dir:Int, player:Int){
-    return getReversePercent(dir,player)*(1-getReversePercent(dir,player,true));
+    return getReversePercent(dir,player);
   }
 
   override function getReceptorPos(receptor:Receptor, pos:FlxPoint, data:Int, player:Int){

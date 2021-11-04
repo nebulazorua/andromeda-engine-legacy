@@ -184,8 +184,6 @@ class Note extends NoteGraphic
 
 				prevNote.scaleDefault.set(prevNote.scale.x,prevNote.scale.y);
 				prevNote.updateHitbox();
-
-
 			}
 			scaleDefault.set(scale.x,scale.y);
 		}
