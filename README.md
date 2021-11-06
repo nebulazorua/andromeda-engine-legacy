@@ -38,7 +38,7 @@ NOTE: ENGINE KINDA SORTA IN BETA STAGES RN
 - [Shadow Mario](https://twitter.com/Shadow_Mario_) - Psych Engine character format (and soon dialogue format)
 - [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine) - Read Shadow Mario's credit
 - [gedehari](https://twitter.com/gedehar) - Inspiration (Soon: OpenFL shaders at runtime)
-- [Lizzy](https://twitter.com/tc_lizzy) - Keepin' me sane. Love ya, sweetheart!
+- [Lizzy](https://twitter.com/tc_lizzy) - Keepin' me sane.
 - [BigWIngs](https://www.shadertoy.com/user/BigWIngs) - Raymarcher shader (https://www.shadertoy.com/view/WtGXDD)
 - [ryk](https://www.shadertoy.com/user/ryk) - VCR Distortion shader (https://www.shadertoy.com/view/ldjGzV)
 - [Mattias](https://www.shadertoy.com/user/Mattias) - CRT shader in VCR Distortion (https://www.shadertoy.com/view/Ms23DR)
