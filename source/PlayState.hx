@@ -1375,7 +1375,7 @@ class PlayState extends MusicBeatState
 				else
 					oldNote = null;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, currentOptions.noteSkin, noteModifier, oldNote, false, getPosFromTime(daStrumTime));
+				var swagNote:Note = new Note(daStrumTime, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, false, getPosFromTime(daStrumTime));
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
 				swagNote.cameras = [camNotes];
@@ -1398,7 +1398,7 @@ class PlayState extends MusicBeatState
 					}
 					lastDadNotes[swagNote.noteData]=swagNote;
 				}
-
+				if(swagNote.canHold)swagNote.sustainLength=0;
 				var susLength:Float = swagNote.sustainLength;
 
 				susLength = susLength / Conductor.stepCrochet;
@@ -1409,7 +1409,7 @@ class PlayState extends MusicBeatState
 				{
 					oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 					var sussy = daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet;
-					var sustainNote:Note = new Note(sussy, daNoteData, currentOptions.noteSkin, noteModifier, oldNote, true, getPosFromTime(sussy));
+					var sustainNote:Note = new Note(sussy, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, true, getPosFromTime(sussy));
 					sustainNote.cameras = [camSus];
 					sustainNote.scrollFactor.set();
 					unspawnNotes.push(sustainNote);
@@ -1418,7 +1418,7 @@ class PlayState extends MusicBeatState
 
 					if (sustainNote.mustPress)
 					{
-						if(sustainNote.noteType=='tap'){
+						if(sustainNote.noteType=='default'){
 							noteCounter.set("holdTails",noteCounter.get("holdTails")+1);
 						}else{
 							if(!noteCounter.exists(sustainNote.noteType + "holdTail") )
@@ -1435,7 +1435,7 @@ class PlayState extends MusicBeatState
 
 				if (swagNote.mustPress)
 				{
-					if(swagNote.noteType=='tap'){
+					if(swagNote.noteType=='default'){
 						noteCounter.set("taps",noteCounter.get("taps")+1);
 					}else{
 						if(!noteCounter.exists(swagNote.noteType) )
@@ -2353,7 +2353,7 @@ class PlayState extends MusicBeatState
 					if(daNote!=null && daNote.alive){
 						if (daNote.tooLate || daNote.wasGoodHit && (isDownscroll && daNote.y>strumLine.y+daNote.height || !isDownscroll && daNote.y<strumLine.y-daNote.height))
 						{
-							if (daNote.tooLate)
+							if (daNote.tooLate && daNote.missable)
 							{
 								//health -= 0.0475;
 								noteMiss(daNote.noteData);
@@ -2960,9 +2960,23 @@ class PlayState extends MusicBeatState
 
 	}
 
+	function showMiss(direction:Int){
+		boyfriend.holding=false;
+		switch (direction)
+		{
+			case 0:
+				boyfriend.playAnim('singLEFTmiss', true);
+			case 1:
+				boyfriend.playAnim('singDOWNmiss', true);
+			case 2:
+				boyfriend.playAnim('singUPmiss', true);
+			case 3:
+				boyfriend.playAnim('singRIGHTmiss', true);
+		}
+	}
+
 	function noteMiss(direction:Int = 1):Void
 	{
-		boyfriend.holding=false;
 		health += judgeMan.getJudgementHealth('miss');
 		judgeMan.judgementCounter.set("miss",judgeMan.judgementCounter.get("miss")+1);
 		updateJudgementCounters();
@@ -2980,31 +2994,9 @@ class PlayState extends MusicBeatState
 		songScore += judgeMan.getJudgementScore('miss');
 
 		FlxG.sound.play(Paths.soundRandom('missnote', 1, 3), FlxG.random.float(0.3, 0.6));
-		// FlxG.sound.play(Paths.sound('missnote1'), 1, false);
-		// FlxG.log.add('played imss note');
-
-		/*boyfriend.stunned = true;
-
-		// get stunned for 5 seconds
-		new FlxTimer().start(5 / 60, function(tmr:FlxTimer)
-		{
-			boyfriend.stunned = false;
-		});*/
-
-		switch (direction)
-		{
-			case 0:
-				boyfriend.playAnim('singLEFTmiss', true);
-			case 1:
-				boyfriend.playAnim('singDOWNmiss', true);
-			case 2:
-				boyfriend.playAnim('singUPmiss', true);
-			case 3:
-				boyfriend.playAnim('singRIGHTmiss', true);
-		}
 
 		updateAccuracy();
-
+		showMiss(direction);
 	}
 
 	function badNoteCheck()
@@ -3035,7 +3027,8 @@ class PlayState extends MusicBeatState
 		if (!note.wasGoodHit){
 			var diff = note.strumTime - Conductor.songPosition;
 			switch(note.noteType){
-
+				case 'mine':
+					hurtNoteHit(note);
 				default:
 					goodNoteHit(note,diff);
 			}
@@ -3074,6 +3067,35 @@ class PlayState extends MusicBeatState
 			txt.text = '${name}: ${judgeMan.judgementCounter.get(judge)}';
 			txt.x=0;
 		}
+	}
+
+	function hurtNoteHit(note:Note):Void{
+		health -= 0.25;
+		judgeMan.judgementCounter.set("miss",judgeMan.judgementCounter.get("miss")+1);
+		updateJudgementCounters();
+		previousHealth=health;
+		if(luaModchartExists && lua!=null){
+			lua.call("hitMine",[note.noteData,note.strumTime,Conductor.songPosition,note.isSustainNote]);
+		}
+		if (combo > 5 && gf.animOffsets.exists('sad'))
+		{
+			gf.playAnim('sad');
+		}
+		combo = 0;
+		showCombo();
+
+		songScore -= 600;
+
+		FlxG.sound.play(Paths.sound('mineExplode'), FlxG.random.float(0.5, 0.7));
+
+		hitNotes-=1.2;
+
+		updateAccuracy();
+		boyfriend.holding=false;
+		if(boyfriend.animation.getByName("hurt")!=null)
+			boyfriend.playAnim('hurt', true);
+		else
+			showMiss(note.noteData);
 	}
 
 	function goodNoteHit(note:Note,noteDiff:Float):Void

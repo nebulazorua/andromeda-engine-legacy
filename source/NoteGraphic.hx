@@ -23,8 +23,9 @@ class NoteGraphic extends FlxSprite
 {
 	public var modifier = 'base';
 	public var skin='default';
+	public var graphicType='';
 	public var behaviour:NoteBehaviour;
-	public static var noteFrames:FlxFramesCollection;
+	public static var noteframeCaches:Map<String,FlxFramesCollection>=[];
 	public static var swagWidth:Float = 160 * 0.7;
 	public var quantTexture:Int = 4;
 	public var noteAngles:Array<Float>=[0,0,0,0];
@@ -59,9 +60,10 @@ class NoteGraphic extends FlxSprite
 
 	// TODO: redo alot of this to have shit determined when you select the noteskin
 
-	public function new(strumTime:Float=0,?modifier='base',?skin='default', behaviour:NoteBehaviour) // TODO: NoteType
+	public function new(strumTime:Float=0,?modifier:String='base',?skin:String='default',type:String='default', behaviour:NoteBehaviour)
 	{
 		super();
+		graphicType=type;
 		scaleDefault = FlxPoint.get();
 
 		var beat = Conductor.getBeatInMeasure(strumTime);
@@ -82,7 +84,7 @@ class NoteGraphic extends FlxSprite
 		{
 			case 'pixel':
 				//loadGraphic(Paths.image('pixelUI/arrows-pixels',"shared"), true, 17, 17);
-				loadGraphic(Paths.noteSkinImage(behaviour.arguments.note.sheet, 'skins', skin, modifier),true,behaviour.arguments.note.gridSizeX,behaviour.arguments.note.gridSizeY);
+				loadGraphic(Paths.noteSkinImage(behaviour.arguments.note.sheet, 'skins', skin, modifier, graphicType),true,behaviour.arguments.note.gridSizeX,behaviour.arguments.note.gridSizeY);
 
 				if(behaviour.arguments.note.quant){
 					var index = Reflect.field(behaviour.arguments.note,quantToIndex.get(quantTexture) );
@@ -122,9 +124,9 @@ class NoteGraphic extends FlxSprite
 			default:
 				var setSize:Bool=false;
 				var args = behaviour.arguments.notes;
-				if(frames!=noteFrames || noteFrames==null){
-					frames = noteFrames==null?Paths.noteSkinAtlas(args.sheet, 'skins', skin, modifier):noteFrames;
-					noteFrames=frames;
+				if(frames!=noteframeCaches.get(graphicType) || !noteframeCaches.exists(graphicType)){
+					frames = !noteframeCaches.exists(graphicType)?Paths.noteSkinAtlas(args.sheet, 'skins', skin, modifier, graphicType):noteframeCaches.get(graphicType);
+					noteframeCaches.set(graphicType,frames);
 					setSize=true;
 				}
 				var quantIdx = quantToIndex.get(quantTexture);
@@ -206,7 +208,7 @@ class NoteGraphic extends FlxSprite
 				if(end && !animation.curAnim.name.endsWith("end")){
 					var args = behaviour.arguments.sustainEnd;
 
-					loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier),true,args.gridSizeX,args.gridSizeY);
+					loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier, graphicType),true,args.gridSizeX,args.gridSizeY);
 					// TODO: quantsz
 					if(args.quant){
 						var index = Reflect.field(args,quantToIndex.get(quantTexture) );
@@ -236,7 +238,7 @@ class NoteGraphic extends FlxSprite
 				}else if(!end){
 					var args = behaviour.arguments.sustain;
 
-					loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier),true,args.gridSizeX,args.gridSizeY);
+					loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier, graphicType),true,args.gridSizeX,args.gridSizeY);
 					// TODO: quants
 					if(args.quant){
 						var index = Reflect.field(args,quantToIndex.get(quantTexture) );
@@ -264,7 +266,7 @@ class NoteGraphic extends FlxSprite
 				}
 			}
 		}else if(behaviour.actsLike=='pixel' && !sussy){
-			loadGraphic(Paths.noteSkinImage(behaviour.arguments.note.sheet, 'skins', skin, modifier),true,behaviour.arguments.note.gridSizeX,behaviour.arguments.note.gridSizeY);
+			loadGraphic(Paths.noteSkinImage(behaviour.arguments.note.sheet, 'skins', skin, modifier, graphicType),true,behaviour.arguments.note.gridSizeX,behaviour.arguments.note.gridSizeY);
 
 			if(behaviour.arguments.note.quant){
 				var addition  = 4*quantToGrid.get(quantTexture);

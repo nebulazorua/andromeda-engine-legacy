@@ -5,6 +5,7 @@ using StringTools;
 class EngineData {
   public static var LUAERROR:LogStyle = new LogStyle("[MODCHART] ", "FF8888", 12, false, false, false, null, true);
   public static var characters:Array<String> = [];
+  public static var noteTypes:Array<String> = ["default","mine"];
   public static var validJudgements:Array<String> = ["epic","sick","good","bad","shit","miss"];
   public static var createThread=false;
   public static var options:Options;

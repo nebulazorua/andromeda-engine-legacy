@@ -64,6 +64,7 @@ class ChartingState extends MusicBeatState
 	var GRID_SIZE:Int = 40;
 
 	var dummyArrow:NoteGraphic;
+	var dummyArrowLayer:FlxTypedGroup<NoteGraphic>;
 	var useHitSounds = false;
 	var curRenderedNotes:FlxTypedGroup<Note>;
 	var curRenderedSustains:FlxTypedGroup<Note>;
@@ -93,6 +94,7 @@ class ChartingState extends MusicBeatState
 	 * WILL BE THE CURRENT / LAST PLACED NOTE
 	**/
 	var curSelectedNote:Array<Dynamic>;
+	var recentNote:Array<Dynamic>;
 	var curSelectedMarker:VelocityChange;
 
 
@@ -173,12 +175,14 @@ class ChartingState extends MusicBeatState
 		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(FlxG.width / 2), 4);
 		add(strumLine);
 
+		dummyArrowLayer = new FlxTypedGroup<NoteGraphic>();
+		add(dummyArrowLayer);
 		dummyArrow = new NoteGraphic(0,PlayState.noteModifier,EngineData.options.noteSkin,Note.noteBehaviour);
 		dummyArrow.setDir(0,false,false);
 		dummyArrow.setGraphicSize(GRID_SIZE,GRID_SIZE);
 		dummyArrow.updateHitbox();
 		dummyArrow.alpha=.5;
-		add(dummyArrow);
+		dummyArrowLayer.add(dummyArrow);
 
 		var tabs = [
 			{name: "Song", label: 'Song'},
@@ -404,6 +408,8 @@ class ChartingState extends MusicBeatState
 
 	var stepperSusLength:FlxUINumericStepper;
 
+	var placingType:FlxUIDropDownMenu;
+	var noteType:FlxUIDropDownMenu;
 
 	function addNoteUI():Void
 	{
@@ -414,9 +420,44 @@ class ChartingState extends MusicBeatState
 		stepperSusLength.value = 0;
 		stepperSusLength.name = 'note_susLength';
 
+		/*
+		var modifiers:Array<String> = CoolUtil.coolTextFile(Paths.txt('noteModifiers'));
+		var modifierDropdown = new FlxUIDropDownMenu(140, 240, FlxUIDropDownMenu.makeStrIdLabelArray(modifiers, true), function(mod:String)
+		{
+			_song.noteModifier = modifiers[Std.parseInt(mod)];
+		});
+		*/
+
+		noteType = new FlxUIDropDownMenu(10, 125, FlxUIDropDownMenu.makeStrIdLabelArray(EngineData.noteTypes, true), function(type:String){
+			if(curSelectedNote!=null){
+				curSelectedNote[3] = type;
+				updateNoteUI();
+				updateGrid();
+			}
+		});
+		noteType.selectedLabel = EngineData.noteTypes[0];
+
+		placingType = new FlxUIDropDownMenu(150, 125, FlxUIDropDownMenu.makeStrIdLabelArray(EngineData.noteTypes, true), function(type:String){
+			dummyArrowLayer.remove(dummyArrow);
+			var type = EngineData.noteTypes[Std.parseInt(type)];
+			var behaviour = type=='default'?Note.noteBehaviour:Note.behaviours.get(type);
+			if(behaviour==null){
+				behaviour = Json.parse(Paths.noteSkinText("behaviorData.json",'skins',EngineData.options.noteSkin,PlayState.noteModifier,type));
+				Note.behaviours.set(type,behaviour);
+			}
+			dummyArrow = new NoteGraphic(0,PlayState.noteModifier,EngineData.options.noteSkin,type,behaviour);
+			dummyArrow.setDir(0,false,false);
+			dummyArrow.setGraphicSize(GRID_SIZE,GRID_SIZE);
+			dummyArrow.updateHitbox();
+			dummyArrow.alpha=.5;
+			dummyArrowLayer.add(dummyArrow);
+		});
+
+		placingType.selectedLabel = EngineData.noteTypes[0];
 
 		var applyLength:FlxButton = new FlxButton(100, 10, 'Apply');
-
+		tab_group_note.add(noteType);
+		tab_group_note.add(placingType);
 		tab_group_note.add(stepperSusLength);
 		tab_group_note.add(applyLength);
 
@@ -568,6 +609,8 @@ class ChartingState extends MusicBeatState
 		return daPos;
 	}
 
+	var lastMousePos:FlxPoint = FlxPoint.get();
+
 	override function update(elapsed:Float)
 	{
 		curStep = recalculateSteps();
@@ -616,7 +659,7 @@ class ChartingState extends MusicBeatState
 			{
 				curRenderedNotes.forEach(function(note:Note)
 				{
-					if (FlxG.mouse.overlaps(note) || CoolUtil.truncateFloat(note.strumTime,2) == CoolUtil.truncateFloat(getStrumTime(dummyArrow.y),2)  && dummyArrow.graphicDir==note.noteData)
+					if (FlxG.mouse.overlaps(note) || CoolUtil.truncateFloat(note.strumTime,2) == CoolUtil.truncateFloat(getStrumTime(dummyArrow.y),2) && note.rawNoteData==Math.floor(FlxG.mouse.x / GRID_SIZE) )
 					{
 						trace(note.strumTime,note.rawNoteData);
 						if (FlxG.keys.pressed.CONTROL)
@@ -657,12 +700,24 @@ class ChartingState extends MusicBeatState
 			}
 		}
 
+		if(FlxG.mouse.justReleased || FlxG.mouse.justReleasedRight){
+			recentNote=null;
+		}else if(FlxG.mouse.pressed || FlxG.mouse.pressedRight){
+			if(recentNote!=null){
+				if(lastMousePos.y!=dummyArrow.y){
+					lastMousePos.set(dummyArrow.x,dummyArrow.y);
+					var length = getStrumTime(dummyArrow.y)-(recentNote[0]-sectionStartTime());
+					setNoteSustain(length,recentNote);
+				}
+			}
+		}
+
 		if(FlxG.keys.justPressed.M){
 			addScrollChange();
 		}
 
 		curRenderedNotes.forEach(function(note:Note){
-			if(note.strumTime<=Conductor.songPosition && note.noteType=='tap'){
+			if(note.strumTime<=Conductor.songPosition){
 				if(note.color!=0xAAAAAA){
 					if(!note.wasGoodHit){
 						note.wasGoodHit=true;
@@ -854,14 +909,21 @@ class ChartingState extends MusicBeatState
 		super.update(elapsed);
 	}
 
-	function changeNoteSustain(value:Float):Void
+	function changeNoteSustain(value:Float,?note):Void
 	{
-		if (curSelectedNote != null)
+		if(note==null)note=curSelectedNote;
+		setNoteSustain(note[2]+value);
+	}
+
+	function setNoteSustain(value:Float,?note):Void
+	{
+		if(note==null)note=curSelectedNote;
+
+		if (note != null)
 		{
-			if (curSelectedNote[2] != null)
+			if (note[2] != null)
 			{
-				curSelectedNote[2] += value;
-				curSelectedNote[2] = Math.max(curSelectedNote[2], 0);
+				note[2] = Math.max(value, 0);
 			}
 		}
 
@@ -1001,8 +1063,10 @@ class ChartingState extends MusicBeatState
 
 	function updateNoteUI():Void
 	{
-		if (curSelectedNote != null)
+		if (curSelectedNote != null){
 			stepperSusLength.value = curSelectedNote[2];
+			noteType.selectedLabel = EngineData.noteTypes[curSelectedNote[3]];
+		}
 	}
 
 	function updateGrid():Void
@@ -1055,7 +1119,7 @@ class ChartingState extends MusicBeatState
  			var daStrumTime = i[0];
  			var daSus = i[2];
 
- 			var note:Note = new Note(daStrumTime, daNoteInfo%4, EngineData.options.noteSkin, PlayState.noteModifier, null, false, 0, true);
+ 			var note:Note = new Note(daStrumTime, daNoteInfo%4, EngineData.options.noteSkin, PlayState.noteModifier, EngineData.noteTypes[i[3]], null, false, 0, true);
 			note.wasGoodHit = daStrumTime<Conductor.songPosition;
  			note.rawNoteData = daNoteInfo;
  			note.sustainLength = daSus;
@@ -1067,7 +1131,7 @@ class ChartingState extends MusicBeatState
  			note.y = getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 
  			curRenderedNotes.add(note);
-
+			if(note.canHold)daSus=0;
  			if (daSus > 0)
  			{
  				/*var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
@@ -1077,7 +1141,7 @@ class ChartingState extends MusicBeatState
  				var sus = [];
  				for (susNote in 0...Math.floor(daSus))
  				{
- 					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteInfo % 4, EngineData.options.noteSkin, PlayState.noteModifier, oldNote, true,0,true);
+ 					var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteInfo % 4, EngineData.options.noteSkin, PlayState.noteModifier, EngineData.noteTypes[i[3]], oldNote, true,0,true);
  					sustainNote.rawNoteData = daNoteInfo;
  					sustainNote.setGraphicSize(GRID_SIZE, GRID_SIZE);
  					sustainNote.updateHitbox();
@@ -1143,6 +1207,9 @@ class ChartingState extends MusicBeatState
 			if (i[0] == note.strumTime && i[1] == note.rawNoteData)
 			{
 				curSelectedNote = i;
+				lastMousePos.set(dummyArrow.x,dummyArrow.y);
+				if(FlxG.mouse.pressed)
+					recentNote = i;
 			}
 		}
 
@@ -1244,12 +1311,12 @@ class ChartingState extends MusicBeatState
 		}
 		var noteSus = 0;
 
-		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus]);
+		_song.notes[curSection].sectionNotes.push([noteStrum, noteData, noteSus, Std.parseInt(placingType.selectedId)]);
 
 		curSelectedNote = _song.notes[curSection].sectionNotes[_song.notes[curSection].sectionNotes.length - 1];
-
+		recentNote = curSelectedNote;
 		if(FlxG.keys.pressed.CONTROL){
-			_song.notes[curSection].sectionNotes.push([noteStrum, (noteData+4)%8, noteSus]);
+			_song.notes[curSection].sectionNotes.push([noteStrum, (noteData+4)%8, noteSus, Std.parseInt(placingType.selectedId)]);
 		}
 
 		updateGrid();

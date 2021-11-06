@@ -2,7 +2,7 @@ package modchart.modifiers;
 
 import modchart.*;
 import flixel.math.FlxPoint;
-import lime.math.Vector4;
+import math.Vector3;
 import flixel.math.FlxMath;
 import flixel.FlxG;
 using StringTools;
@@ -25,10 +25,9 @@ class PerspectiveModifier extends Modifier {
   public var near = 0;
   public var far = 2;
 
-  public function getVector(curZ:Float,pos:FlxPoint):Vector4{
+  public function getVector(curZ:Float,pos:FlxPoint):Vector3{
     var oX = pos.x;
     var oY = pos.y;
-    var oZ = curZ-1;
 
     // should I be using a matrix?
     // .. nah im sure itll be fine just doing this manually
@@ -42,8 +41,8 @@ class PerspectiveModifier extends Modifier {
     var y = oY/ta;
     var a = (near+far)/(near-far);
     var b = 2*near*far/(near-far);
-    var z = a*oZ+b;
-    var returnedVector = new Vector4(x/z,y/z,z,1);
+    var z = a*(curZ-1)+b;
+    var returnedVector = new Vector3(x/z,y/z,z);
 
     return returnedVector;
   }

@@ -18,6 +18,7 @@ class Cache {
   public static var charFrames = new Map<String,FlxFramesCollection>();
   public static var charXmlData = new Map<String,String>();
   public static var xmlData = new Map<String,String>();
+  public static var textCache = new Map<String,String>();
   public static var pathCache = new Map<String,String>();
   public static var soundCache = new Map<String,Sound>();
 
@@ -34,13 +35,14 @@ class Cache {
     offsetData.clear();
     animData.clear();
     charFrames.clear();
+    textCache.clear();
     charXmlData.clear();
     LuaStorage.objectProperties.clear();
     LuaStorage.objects.clear();
     LuaStorage.notes=[];
     LuaStorage.noteIDs.clear();
     LuaStorage.noteMap.clear();
-    NoteGraphic.noteFrames=null;
+    NoteGraphic.noteframeCaches.clear();
     trace("CLEARED CACHE!");
   }
 
@@ -55,4 +57,17 @@ class Cache {
 
     return null;
   }
+
+  public static function getText(path:String):Null<String>{ // gets a text file and caches it if it hasnt been already
+    if(FileSystem.exists(path) && !textCache.exists(path)){
+      textCache.set(path,File.getContent(path));
+    }
+
+    if(textCache.exists(path)){
+      return textCache.get(path);
+    }
+
+    return null;
+  }
+
 }

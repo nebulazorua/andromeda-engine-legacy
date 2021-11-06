@@ -34,6 +34,7 @@ typedef NoteBehaviour = {
 	var antialiasing:Bool;
 	var scale:Float;
 	var arguments:Dynamic;
+	@:optional var noHolds:Bool;
 	@:optional var receptorAutoColor:Bool;
 	@:optional var receptorAlpha:Float;
 	@:optional var sustainAlpha:Float;
@@ -44,7 +45,8 @@ class Note extends NoteGraphic
 {
 	public static var skinManifest:Map<String,SkinManifest>=[];
 
-
+	public var missable:Bool=true;
+	public var canHold:Bool = true;
 	public var strumTime:Float = 0;
 	public var manualXOffset:Float = 0;
 	public var manualYOffset:Float = 0;
@@ -62,7 +64,7 @@ class Note extends NoteGraphic
 	public var sustainLength:Float = 0;
 	public var rawNoteData:Int = 0;
 	public var holdParent:Bool=false;
-	public var noteType:String = 'tap';
+	public var noteType:String = 'default';
 	public var beingCharted:Bool=false;
 	public var initialPos:Float = 0;
 
@@ -72,7 +74,7 @@ class Note extends NoteGraphic
 	public var z:Float = 0;
 	public var beat:Float = 0;
 	public static var noteBehaviour:NoteBehaviour;
-
+	public static var behaviours:Map<String,NoteBehaviour>=[];
 	public static var swagWidth:Float = 160 * 0.7;
 
 	public static var quants:Array<Int> = [
@@ -106,12 +108,26 @@ class Note extends NoteGraphic
 		return false;
 	}
 
-	public function new(strumTime:Float, noteData:Int, skin:String='default', modifier:String='base', ?prevNote:Note, ?sustainNote:Bool = false, ?initialPos:Float=0, ?beingCharted=false)
+	public function new(strumTime:Float, noteData:Int, skin:String='default', modifier:String='base', type:String='default', ?prevNote:Note, ?sustainNote:Bool = false, ?initialPos:Float=0, ?beingCharted=false)
 	{
-		super(strumTime,modifier,skin,Note.noteBehaviour);
+		var behaviour = type=='default'?Note.noteBehaviour:Note.behaviours.get(type);
+		if(behaviour==null){
+			behaviour = Json.parse(Paths.noteSkinText("behaviorData.json",'skins',skin,modifier,type));
+			Note.behaviours.set(type,behaviour);
+		}
+		super(strumTime,modifier,skin,type,behaviour);
+		if(behaviour.noHolds)
+			canHold=false;
+
+		if(!canHold && sustainNote){
+			visible=false;
+			kill();
+			destroy();
+			return;
+		}
 
 		this.beat = Conductor.getBeatInMeasure(strumTime);
-
+		this.noteType=type;
 		this.initialPos=initialPos;
 		this.beingCharted=beingCharted;
 
@@ -137,18 +153,22 @@ class Note extends NoteGraphic
 
 		// trace(prevNote);
 
-		alpha = Note.noteBehaviour.defaultAlpha!=null?Note.noteBehaviour.defaultAlpha:1;
+		alpha = behaviour.defaultAlpha!=null?behaviour.defaultAlpha:1;
 
-		y =  ((initialPos-Conductor.currentTrackPos) * PlayState.currentPState.scrollSpeed) - manualYOffset;
+		switch(noteType){
+			case 'mine':
+				missable=false;
+		}
+		//y =  ((initialPos-Conductor.currentTrackPos) * PlayState.currentPState.scrollSpeed) - manualYOffset;
 
 		if (isSustainNote && prevNote != null)
 		{
 			quantTexture = prevNote.quantTexture;
-			if(Note.noteBehaviour.actsLike!='pixel')
+			if(behaviour.actsLike!='pixel')
 				setTextures();
 
 			prevNote.holdParent=true;
-			alpha = Note.noteBehaviour.sustainAlpha!=null?Note.noteBehaviour.sustainAlpha:0.6;
+			alpha = behaviour.sustainAlpha!=null?behaviour.sustainAlpha:0.6;
 
 			//var off = -width;
 			//x+=width/2;
@@ -210,13 +230,19 @@ class Note extends NoteGraphic
 			var diff = strumTime-Conductor.songPosition;
 			var absDiff = Math.abs(diff);
 
+			var hitbox = Conductor.safeZoneOffset;
+			switch(noteType){
+				case 'mine':
+					hitbox = Conductor.safeZoneOffset*0.38; // should probably not scale but idk man
+			}
+
 			if(isSustainNote){
-				if (absDiff <= Conductor.safeZoneOffset*.5)
+				if (absDiff <= hitbox*.5)
 					canBeHit = true;
 				else
 					canBeHit = false;
 			}else{
-				if (absDiff<=Conductor.safeZoneOffset)
+				if (absDiff<=hitbox)
 					canBeHit = true;
 				else
 					canBeHit = false;

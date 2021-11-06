@@ -1,6 +1,6 @@
 {
-  "name": "Fallback",
-  "desc": "Used as a last resort if it cant find something in the current noteskin",
+  "name": "Vanilla",
+  "desc": "Vanilla FNF notes",
   "author": "PhantomArcade",
   "format": "andromeda1"
 }

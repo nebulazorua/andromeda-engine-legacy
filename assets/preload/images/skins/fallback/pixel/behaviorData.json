@@ -2,6 +2,8 @@
   "actsLike": "pixel",
   "scale": 6,
   "antialiasing": false,
+  "sustainAlpha": 0.6,
+  "receptorAlpha": 1,
   "arguments": {
     "note":{
       "sheet": "arrows",
