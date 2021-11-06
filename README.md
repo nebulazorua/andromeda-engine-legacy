@@ -24,6 +24,7 @@ NOTE: ENGINE KINDA SORTA IN BETA STAGES RN
 - [kevinresol](https://github.com/kevinresol) - Original hxvm-lua
 - [AndreiDudenko](https://github.com/AndreiRudenko) - Original linc_luajit
 - [Echolocated](https://twitter.com/CH_echolocated) - "Epic" judgement rating and spreading the word about the engine
+- [Bepixel](https://twitter.com/bepixel_owo) - Default mines sprite
 - [Quaver](https://github.com/Quaver/Quaver) - Scroll code
 - [Poco](https://github.com/poco0317) - Wife3
 - [OpenITG](https://github.com/openitg/openitg) - Quants, some modifier math.
@@ -37,13 +38,13 @@ NOTE: ENGINE KINDA SORTA IN BETA STAGES RN
 - [Shadow Mario](https://twitter.com/Shadow_Mario_) - Psych Engine character format (and soon dialogue format)
 - [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine) - Read Shadow Mario's credit
 - [gedehari](https://twitter.com/gedehar) - Inspiration (Soon: OpenFL shaders at runtime)
+- [Lizzy](https://twitter.com/tc_lizzy) - Keepin' me sane. Love ya, sweetheart!
 - [BigWIngs](https://www.shadertoy.com/user/BigWIngs) - Raymarcher shader (https://www.shadertoy.com/view/WtGXDD)
 - [ryk](https://www.shadertoy.com/user/ryk) - VCR Distortion shader (https://www.shadertoy.com/view/ldjGzV)
 - [Mattias](https://www.shadertoy.com/user/Mattias) - CRT shader in VCR Distortion (https://www.shadertoy.com/view/Ms23DR)
 - [Klowner](https://www.shadertoy.com/user/Klowner) - Noise function from the CRT shader (https://www.shadertoy.com/view/MsXGD4)
 - [luka712](https://www.shadertoy.com/user/luka712) - Scanlines from CRT shader (https://www.shadertoy.com/view/Xtccz4)
 - [Fogu](https://twitter.com/FoguDragon) - Helping test how AE behaves on low-end PCs
-- [Lizzy](https://twitter.com/tc_lizzy) - Keepin' me sane. Love ya, sweetheart!
 
 
 ## OG Friday Night Funkin'
