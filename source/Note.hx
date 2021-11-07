@@ -117,9 +117,12 @@ class Note extends NoteGraphic
 			Note.behaviours.set(type,behaviour);
 		}
 		super(strumTime,modifier,skin,type,behaviour);
-		if(behaviour.noHolds)
-			canHold=false;
-
+		switch(noteType){
+			case 'mine':
+				missable=false;
+				opponentMisses=true;
+				canHold=false;
+		}
 		if(!canHold && sustainNote){
 			visible=false;
 			kill();
@@ -156,11 +159,6 @@ class Note extends NoteGraphic
 
 		alpha = behaviour.defaultAlpha!=null?behaviour.defaultAlpha:1;
 
-		switch(noteType){
-			case 'mine':
-				missable=false;
-				opponentMisses=true;
-		}
 		//y =  ((initialPos-Conductor.currentTrackPos) * PlayState.currentPState.scrollSpeed) - manualYOffset;
 
 		if (isSustainNote && prevNote != null)
