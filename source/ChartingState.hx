@@ -1131,7 +1131,7 @@ class ChartingState extends MusicBeatState
  			note.y = getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 
  			curRenderedNotes.add(note);
-			if(note.canHold)daSus=0;
+			if(!note.canHold)daSus=0;
  			if (daSus > 0)
  			{
  				/*var sustainVis:FlxSprite = new FlxSprite(note.x + (GRID_SIZE / 2),
