@@ -1398,7 +1398,7 @@ class PlayState extends MusicBeatState
 					}
 					lastDadNotes[swagNote.noteData]=swagNote;
 				}
-				if(swagNote.canHold)swagNote.sustainLength=0;
+				if(!swagNote.canHold)swagNote.sustainLength=0;
 				var susLength:Float = swagNote.sustainLength;
 
 				susLength = susLength / Conductor.stepCrochet;
@@ -2353,7 +2353,7 @@ class PlayState extends MusicBeatState
 					if(daNote!=null && daNote.alive){
 						if (daNote.tooLate || daNote.wasGoodHit && (isDownscroll && daNote.y>strumLine.y+daNote.height || !isDownscroll && daNote.y<strumLine.y-daNote.height))
 						{
-							if (daNote.tooLate && daNote.missable)
+							if (daNote.tooLate && daNote.missable && daNote.mustPress)
 							{
 								//health -= 0.0475;
 								noteMiss(daNote.noteData);

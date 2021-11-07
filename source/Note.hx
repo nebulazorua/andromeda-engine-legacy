@@ -46,6 +46,7 @@ class Note extends NoteGraphic
 	public static var skinManifest:Map<String,SkinManifest>=[];
 
 	public var missable:Bool=true;
+	public var opponentMisses:Bool=false;
 	public var canHold:Bool = true;
 	public var strumTime:Float = 0;
 	public var manualXOffset:Float = 0;
@@ -158,6 +159,7 @@ class Note extends NoteGraphic
 		switch(noteType){
 			case 'mine':
 				missable=false;
+				opponentMisses=true;
 		}
 		//y =  ((initialPos-Conductor.currentTrackPos) * PlayState.currentPState.scrollSpeed) - manualYOffset;
 
@@ -256,7 +258,7 @@ class Note extends NoteGraphic
 		}
 		else
 		{
-			if (strumTime <= Conductor.songPosition)
+			if (strumTime <= Conductor.songPosition && !opponentMisses)
 				canBeHit = true;
 		}
 
