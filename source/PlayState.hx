@@ -2357,15 +2357,17 @@ class PlayState extends MusicBeatState
 							{
 								//health -= 0.0475;
 								noteMiss(daNote.noteData);
-								if(currentOptions.accuracySystem==2){
-									if(!daNote.isSustainNote){
-										totalNotes+=2;
-										hitNotes+=ScoreUtils.malewifeMissWeight;
+								if(!daNote.isSustainNote){
+									if(currentOptions.accuracySystem==2){
+										if(!daNote.isSustainNote){
+											totalNotes+=2;
+											hitNotes+=ScoreUtils.malewifeMissWeight;
+										}
+									}else{
+										hitNotes+=judgeMan.getJudgementAccuracy("miss");
+										if(currentOptions.accuracySystem!=1)
+											totalNotes++;
 									}
-								}else{
-									hitNotes+=judgeMan.getJudgementAccuracy("miss");
-									if(currentOptions.accuracySystem!=1)
-										totalNotes++;
 								}
 
 								vocals.volume = 0;
