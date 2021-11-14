@@ -55,6 +55,8 @@ class Note extends NoteGraphic
 	public var noteData:Int = 0;
 	public var canBeHit:Bool = false;
 	public var isSustainNote:Bool = false;
+	public var baseAlpha:Float = 1;
+	public var desiredAlpha:Float = 1;
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
@@ -157,7 +159,7 @@ class Note extends NoteGraphic
 
 		// trace(prevNote);
 
-		alpha = behaviour.defaultAlpha!=null?behaviour.defaultAlpha:1;
+		baseAlpha = behaviour.defaultAlpha!=null?behaviour.defaultAlpha:1;
 
 		//y =  ((initialPos-Conductor.currentTrackPos) * PlayState.currentPState.scrollSpeed) - manualYOffset;
 
@@ -168,7 +170,7 @@ class Note extends NoteGraphic
 				setTextures();
 
 			prevNote.holdParent=true;
-			alpha = behaviour.sustainAlpha!=null?behaviour.sustainAlpha:0.6;
+			baseAlpha = behaviour.sustainAlpha!=null?behaviour.sustainAlpha:0.6;
 
 			//var off = -width;
 			//x+=width/2;
@@ -211,6 +213,7 @@ class Note extends NoteGraphic
 
 	override function update(elapsed:Float)
 	{
+		alpha = CoolUtil.scale(desiredAlpha,0,1,0,baseAlpha);
 		super.update(elapsed);
 
 		if(isSustainNote){

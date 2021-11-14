@@ -40,11 +40,15 @@ class CoolUtil
 		return sound;
 	}
 
-	inline public static function clamp(n:Int, l:Int, h:Int){
+	inline public static function clamp(n:Float, l:Float, h:Float){
 		if(n>h)n=h;
 		if(n<l)n=l;
 
 		return n;
+	}
+
+	inline public static function quantize(f:Float, interval:Float){
+		return Std.int((f+interval/2)/interval)*interval;
 	}
 
 	inline public static function scale(x:Float,l1:Float,h1:Float,l2:Float,h2:Float):Float

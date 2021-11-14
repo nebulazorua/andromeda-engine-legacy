@@ -592,8 +592,6 @@ class PlayState extends MusicBeatState
 				storyDifficultyText = "Normal";
 			case 2:
 				storyDifficultyText = "Hard";
-			case 3:
-				storyDifficultyText = 'Erect';
 		}
 
 		iconRPC = SONG.player2;
@@ -978,9 +976,13 @@ class PlayState extends MusicBeatState
 				bfLua.sprite = boyfriend;
 				//iconP1.changeCharacter(newCharacter);
 			}else if(spriteName=="dad"){
+				var index = opponents.indexOf(dad);
+				if(index>=0)opponents.remove(dad);
 				dad = new Character(spriteX,spriteY,newCharacter);
 				newSprite = dad;
 				dadLua.sprite = dad;
+				if(index>=0)opponents.insert(index,dad);
+
 				//iconP2.changeCharacter(newCharacter);
 			}else if(spriteName=="gf"){
 				gf = new Character(spriteX,spriteY,newCharacter);
@@ -1293,14 +1295,16 @@ class PlayState extends MusicBeatState
 		noteCounter.set("holdTails",0);
 		noteCounter.set("taps",0);
 
+		// STUPID AMERICANS I WANNA NAME THE FILE BEHAVIOUR BUT I CANT
+		// DUMB FUCKING AMERICANS CANT JUST ADD A 'U' >:(
+
 		Note.noteBehaviour = Json.parse(Paths.noteSkinText("behaviorData.json",'skins',currentOptions.noteSkin,noteModifier));
 
 		var dynamicColouring:Null<Bool> = Note.noteBehaviour.receptorAutoColor;
 		if(dynamicColouring==null)dynamicColouring=false;
 		Receptor.dynamicColouring=dynamicColouring;
 
-		// STUPID AMERICANS I WANNA NAME THE FILE BEHAVIOUR BUT I CANT
-		// DUMB FUCKING AMERICANS CANT JUST ADD A 'U' >:(
+
 
 		var songData = SONG;
 		Conductor.changeBPM(SONG.bpm);
@@ -2203,7 +2207,6 @@ class PlayState extends MusicBeatState
 					scale.put();
 					notePos.put();
 
-					var alpha = strumLine.incomingNoteAlpha;
 					var shitGotHit = (daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit);
 					var shit = strumLine.y + Note.swagWidth/2;
 					if(daNote.isSustainNote){
@@ -2264,14 +2267,10 @@ class PlayState extends MusicBeatState
 
 					if(daNote.isSustainNote ){
 						if(daNote.tooLate)
-							daNote.alpha = .3;
-						else
-							daNote.alpha = FlxMath.lerp(.6, 0, 1-alpha);
+							daNote.desiredAlpha = .3;
 					}else{
 						if(daNote.tooLate)
-							daNote.alpha = .3;
-						else
-							daNote.alpha = alpha;
+							daNote.desiredAlpha = .3;
 					}
 
 					if (!daNote.mustPress && daNote.canBeHit && !daNote.wasGoodHit)

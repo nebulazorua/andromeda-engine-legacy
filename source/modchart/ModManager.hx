@@ -13,7 +13,7 @@ import haxe.Exception;
 
 // TODO: modifier priority system
 class ModManager {
-  private var definedMods:Map<String,Modifier>=[]; // ModList class for defining mods? idk
+  private var definedMods:Map<String,Modifier>=[];
 
 
   private var schedule:Map<String,Array<ModEvent>>=[];
@@ -48,7 +48,7 @@ class ModManager {
     defineMod("invert",new InvertModifier(this));
     defineMod("tornado",new TornadoModifier(this));
     defineMod("drunk",new DrunkModifier(this));
-    defineMod("allCams",new CamModifier(this,"cam",[state.camGame,state.camRating,state.camHUD,state.camNotes,state.camSus,state.camReceptor] ));
+    defineMod("stealth",new AlphaModifier(this));
     var gameCams:Array<FlxCamera> = [state.camGame];
     var hudCams:Array<FlxCamera> = [state.camHUD];
     if(state.currentOptions.ratingInHUD){

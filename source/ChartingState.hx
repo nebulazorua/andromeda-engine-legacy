@@ -912,6 +912,7 @@ class ChartingState extends MusicBeatState
 	function changeNoteSustain(value:Float,?note):Void
 	{
 		if(note==null)note=curSelectedNote;
+		if(note==null)return;
 		setNoteSustain(note[2]+value);
 	}
 

@@ -4,7 +4,7 @@ package math;
 
 /**
 	`Vector3` is a vector suitable for three-dimensional
-	math, containing (x, y, z, w) components
+	math, containing (x, y, z) components
 **/
 #if !lime_debug
 @:fileXml('tags="haxe,release"')

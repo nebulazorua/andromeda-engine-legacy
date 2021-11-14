@@ -116,17 +116,27 @@ class Character extends FlxSprite
 				var playerPath = pathBase + curCharacter + "-player.json";
 				if(isPlayer && FileSystem.exists(playerPath))charPath=playerPath;
 				var shit:Null<Dynamic>=null;
-				var fuckHaxeflixel:PsychParsers.PsychChar = null;
-
 				if(FileSystem.exists(charPath)){
 					shit = Json.parse(File.getContent(charPath));
 				}else if(FileSystem.exists(pathBase + "dad.json")){
 					shit = Json.parse(File.getContent(pathBase + "dad.json") );
 				}
+				var format = Reflect.field(shit,"format");
 
-				if(Reflect.field(shit,"no_antialiasing")!=null){
-					shit = PsychParsers.fromChar(fuckHaxeflixel);
+				if(format==null){
+					if(Reflect.field(shit,"no_antialiasing")!=null){
+						format = "psych1";
+					}
 				}
+				switch(format){
+					case 'psych1':
+						var psychChar:PsychParsers.PsychChar = cast shit;
+						shit = PsychParsers.fromChar(psychChar);
+						
+					default:
+						// nothing
+				}
+
 				charData=shit;
 
 				if(charData!=null){

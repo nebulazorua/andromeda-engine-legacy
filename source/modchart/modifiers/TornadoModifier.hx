@@ -15,8 +15,8 @@ class TornadoModifier extends Modifier {
 
     var start:Int = data-width;
     var end:Int = data+width;
-    start = CoolUtil.clamp(start,0,len);
-    end = CoolUtil.clamp(end,0,len);
+    start = Std.int(CoolUtil.clamp(start,0,len));
+    end = Std.int(CoolUtil.clamp(end,0,len));
 
     var min:Float = FlxMath.MAX_VALUE_FLOAT;
     var max:Float = -FlxMath.MAX_VALUE_FLOAT;

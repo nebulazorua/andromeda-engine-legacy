@@ -48,7 +48,8 @@ class PsychParsers {
     return obj;
   }*/
 
-  public static function fromChar(char:PsychChar){ // psych to andromeda
+  public static function fromChar(rawChar:Dynamic){ // psych to andromeda
+    var char:PsychChar = cast rawChar;
     var beatDancer = false;
     var colour = FlxColor.fromRGB(char.healthbar_colors[0],char.healthbar_colors[1],char.healthbar_colors[2]);
     var newAnims:Array<Character.AnimShit>= [];
@@ -58,13 +59,11 @@ class PsychParsers {
         name: anim.anim,
         fps: anim.fps,
         looped: anim.loop,
-        // DOES HAXEFLIXEL NOT HAVE AN EASY WAY
-        // TO GO FROM INT TO FLOAT???
-        // so fucking weird
-        offsets: [Std.parseFloat(Std.string(anim.offsets[0])),Std.parseFloat(Std.string(anim.offsets[1]))],
+        offsets: [anim.offsets[0],anim.offsets[1]],
         indices: anim.indices.length>0?anim.indices:null,
       });
     }
+
     var obj:Character.CharJson = {
       anims: newAnims,
       spritesheet: char.image.replace("characters/",""),
