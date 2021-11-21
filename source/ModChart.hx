@@ -3,6 +3,8 @@ import flixel.system.FlxAssets.FlxShader;
 import openfl.filters.ShaderFilter;
 import openfl.filters.BitmapFilter;
 import Shaders;
+import states.*;
+
 import Options;
 class ModChart {
   private var playState:PlayState;

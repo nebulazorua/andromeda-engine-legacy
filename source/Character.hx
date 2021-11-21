@@ -131,8 +131,14 @@ class Character extends FlxSprite
 				switch(format){
 					case 'psych1':
 						var psychChar:PsychParsers.PsychChar = cast shit;
-						shit = PsychParsers.fromChar(psychChar);
-						
+						var converted = PsychParsers.fromChar(psychChar);
+						if(isPlayer){
+							converted.camOffset[0]-=100;
+							converted.camOffset[1]-=100;
+						}else{
+							converted.camOffset[0]+=150;
+							converted.camOffset[1]-=100;
+						}
 					default:
 						// nothing
 				}

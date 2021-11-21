@@ -10,7 +10,8 @@ import flixel.tweens.FlxEase;
 import flixel.math.FlxPoint;
 import flixel.FlxCamera;
 import haxe.Exception;
-
+import states.*;
+import ui.*;
 // TODO: modifier priority system
 class ModManager {
   private var definedMods:Map<String,Modifier>=[];

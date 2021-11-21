@@ -32,6 +32,14 @@ class FNFCamera extends FlxCamera {
     }
   }
 
+  public function addFilter(filter:BitmapFilter){
+    _filters.push(filter);
+  }
+
+  public function delFilter(filter:BitmapFilter){
+    _filters.remove(filter);
+  }
+
   override function updateFollow(){
     // Either follow the object closely,
 		// or double check our deadzone and update accordingly.

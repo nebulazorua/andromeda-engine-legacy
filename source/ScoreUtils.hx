@@ -5,6 +5,7 @@ import Options;
 import haxe.Json;
 import haxe.format.JsonParser;
 import haxe.macro.Type;
+import states.*;
 
 class ScoreUtils
 {

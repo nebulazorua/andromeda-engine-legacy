@@ -1,5 +1,6 @@
 package modchart;
 import flixel.math.FlxPoint;
+import ui.*;
 
 class Modifier {
   public var modMgr:ModManager;

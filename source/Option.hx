@@ -2,6 +2,7 @@ package;
 import flixel.input.keyboard.FlxKey;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxSprite;
+import ui.*;
 class Option extends FlxTypedGroup<FlxSprite>
 {
   public var type:String = "Option";

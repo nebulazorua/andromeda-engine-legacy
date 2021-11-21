@@ -5,6 +5,30 @@
   "sustainAlpha": 0.6,
   "receptorAlpha": 1,
   "arguments": {
+      "splashes":{
+        "sheet": "splashes",
+        "scale":1.5,
+        "left":{
+          "offsetX": -60,
+          "offsetY": 0,
+          "prefix": "note impact 1 purple"
+        },
+        "up":{
+          "offsetX": -60,
+          "offsetY": 0,
+          "prefix": "note impact 1 green"
+        },
+        "down":{
+          "offsetX": -60,
+          "offsetY": 0,
+          "prefix": "note impact 1 blue"
+        },
+        "right":{
+          "offsetX": -60,
+          "offsetY": 0,
+          "prefix": "note impact 1 red"
+        }
+      },
       "notes":{
         "sheet": "NOTE_assets",
         "up":{

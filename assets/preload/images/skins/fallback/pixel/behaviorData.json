@@ -5,6 +5,30 @@
   "sustainAlpha": 0.6,
   "receptorAlpha": 1,
   "arguments": {
+    "splashes":{
+      "sheet": "splashes",
+      "scale":1.5,
+      "left":{
+        "offsetX": -55,
+        "offsetY": 0,
+        "prefix": "note impact 1 purple"
+      },
+      "up":{
+        "offsetX": -55,
+        "offsetY": 0,
+        "prefix": "note impact 1 green"
+      },
+      "down":{
+        "offsetX": -55,
+        "offsetY": 0,
+        "prefix": "note impact 1 blue"
+      },
+      "right":{
+        "offsetX": -55,
+        "offsetY": 0,
+        "prefix": "note impact 1 red"
+      }
+    },
     "note":{
       "sheet": "arrows",
       "gridSizeX": 17,

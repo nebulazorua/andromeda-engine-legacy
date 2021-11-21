@@ -8,7 +8,7 @@ import flixel.FlxG;
 import flixel.util.FlxAxes;
 import modchart.*
 import modchart.modifiers.*
-import objects.ui.*
+import states.*;
 
 class AndroHScript {
   var parser:Parser;

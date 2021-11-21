@@ -1,6 +1,7 @@
 package modchart;
 
 import flixel.tweens.FlxEase.EaseFunction;
+import ui.*;
 
 class Event {
   public var modMgr:ModManager;

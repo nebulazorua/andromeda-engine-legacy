@@ -11,6 +11,7 @@ import flash.events.KeyboardEvent;
 import flixel.util.FlxSave;
 import flixel.FlxState;
 import flixel.FlxSprite;
+import ui.*;
 import flixel.group.FlxGroup.FlxTypedGroup;
 class OptionUtils
 {
@@ -100,8 +101,8 @@ class Options
 	public var noFail:Bool = false;
 	public var useEpic:Bool = true;
 
-
 	// appearance
+	public var useNotesplashes:Bool = true;
 	public var allowNoteModifiers:Bool = true;
 	public var backTrans:Float = 0;
 	public var downScroll:Bool = false;

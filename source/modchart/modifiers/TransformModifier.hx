@@ -1,5 +1,5 @@
 package modchart.modifiers;
-
+import ui.*;
 import modchart.*;
 import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
@@ -30,11 +30,25 @@ class TransformModifier extends Modifier { // this'll be transformX in ModManage
     pos.y += getSubmodPercent('transform${data}Y',player)*100;
 
     note.z += getSubmodPercent('transform${data}Z',player)*100;
+
+    // thank u schmovin
+    var rX = getSubmodPercent("rotateX",player)*100;
+    var rY = getSubmodPercent("rotateY",player)*100;
+    var rZ = getSubmodPercent("rotateZ",player)*100;
+
+
+    var rotateZ = CoolUtil.rotate(pos.x,pos.y,rZ);
+    var rotateX = CoolUtil.rotate(note.z,rotateZ.y,rX);
+    var rotateY = CoolUtil.rotate(rotateZ.x,rotateX.x,rY);
+
+    pos.x = rotateY.x;
+    pos.y = rotateX.y;
+    note.z = rotateY.y;
     return pos;
   }
 
   override function getSubmods(){
-    var subMods:Array<String> = ["transformY","transformZ"];
+    var subMods:Array<String> = ["transformY","transformZ","rotateX","rotateY","rotateZ"];
 
     var receptors = modMgr.receptors[0];
     var kNum = receptors.length;

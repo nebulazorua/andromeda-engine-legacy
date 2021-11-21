@@ -10,6 +10,7 @@ import Sys;
 import sys.FileSystem;
 import haxe.Json;
 import flixel.system.FlxAssets.FlxGraphicAsset;
+import ui.*;
 using StringTools;
 class Paths
 {

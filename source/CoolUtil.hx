@@ -8,6 +8,10 @@ import flixel.util.FlxColor;
 import openfl.media.Sound;
 import openfl.Assets;
 import openfl.utils.AssetType;
+import states.*;
+import ui.*;
+import flixel.math.FlxPoint;
+import math.Vector3;
 using StringTools;
 
 class CoolUtil
@@ -25,6 +29,15 @@ class CoolUtil
 		if(!Cache.soundCache.exists(key)){
 			Cache.soundCache.set(key,sound);
 		}
+	}
+
+	public static function rotate(x:Float, y:Float, angle:Float, ?point:FlxPoint):FlxPoint{
+		var p = point==null?FlxPoint.get():point;
+		p.set(
+			(x*Math.cos(angle*Math.PI/180))-(y*Math.sin(angle*Math.PI/180)),
+			(x*Math.sin(angle*Math.PI/180))+(y*Math.cos(angle*Math.PI/180))
+		);
+		return p;
 	}
 
 	public static function getSound(path:String):Sound{

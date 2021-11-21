@@ -6,6 +6,7 @@ import flixel.graphics.frames.FlxAtlasFrames;
 import openfl.utils.AssetType;
 import openfl.utils.Assets;
 import sys.io.File;
+import ui.*;
 import flash.display.BitmapData;
 import Sys;
 import sys.FileSystem;
@@ -43,6 +44,7 @@ class Cache {
     LuaStorage.noteIDs.clear();
     LuaStorage.noteMap.clear();
     NoteGraphic.noteframeCaches.clear();
+    NoteSplash.cache.clear();
     trace("CLEARED CACHE!");
   }
 

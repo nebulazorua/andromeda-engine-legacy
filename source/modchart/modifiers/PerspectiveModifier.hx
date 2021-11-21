@@ -1,5 +1,5 @@
 package modchart.modifiers;
-
+import ui.*;
 import modchart.*;
 import flixel.math.FlxPoint;
 import math.Vector3;
@@ -25,6 +25,12 @@ class PerspectiveModifier extends Modifier {
   public var near = 0;
   public var far = 2;
 
+  function FastTan(rad:Float) // thanks schmoovin
+  {
+    return FlxMath.fastSin(rad) / FlxMath.fastCos(rad);
+  }
+
+
   public function getVector(curZ:Float,pos:FlxPoint):Vector3{
     var oX = pos.x;
     var oY = pos.y;
@@ -36,12 +42,15 @@ class PerspectiveModifier extends Modifier {
     //var aspect = FlxG.width/FlxG.height;
     var aspect = 1;
 
-    var ta = Math.tan(fov/2);
+    var shit = curZ-1;
+    if(shit>0)shit=0; // thanks schmovin!!
+
+    var ta = FastTan(fov/2);
     var x = oX * aspect/ta;
     var y = oY/ta;
     var a = (near+far)/(near-far);
     var b = 2*near*far/(near-far);
-    var z = a*(curZ-1)+b;
+    var z = a*(shit)+b;
     var returnedVector = new Vector3(x/z,y/z,z);
 
     return returnedVector;

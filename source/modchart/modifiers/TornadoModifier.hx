@@ -1,5 +1,5 @@
 package modchart.modifiers;
-
+import ui.*;
 import modchart.*;
 import flixel.math.FlxPoint;
 import flixel.math.FlxMath;

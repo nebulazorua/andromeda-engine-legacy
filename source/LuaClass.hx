@@ -21,7 +21,8 @@ import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import haxe.DynamicAccess;
 import openfl.display.GraphicsShader;
-
+import states.*;
+import ui.*;
 typedef LuaProperty = {
     var defaultValue:Any;
     var getter:(State,Any)->Int;

@@ -16,6 +16,37 @@ typedef ShaderEffect = {
 
 // ONE OF THE FEW THINGS TAKEN FROM WEEK 7
 // IDK HOW THIS SHIT WORKS, MAN!
+
+class JBugHoldsEffect {
+  public var shader: JBugHoldShader = new JBugHoldShader();
+  public function new(){
+    shader.objY.value = [0];
+    shader.enabled.value=[false];
+    shader.fadingStartY.value = [0];
+    shader.fadingEndY.value = [0];
+    //shader.height.value=[0];
+  }
+
+  public function setEnabled(toggle:Bool){
+    shader.enabled.value=[toggle];
+  }
+
+  public function setFade(start:Float){
+    shader.fadingStartY.value = [start];
+    shader.fadingEndY.value = [start-100];
+  }
+
+  public function setFadeRange(start:Float,end:Float){
+    shader.fadingStartY.value = [start];
+    shader.fadingEndY.value = [end];
+  }
+
+  public function update(y:Float){
+    shader.objY.value = [y];
+  }
+
+}
+
 class ColorSwap {
   public var shader:ColorSwapShader = new ColorSwapShader();
   public var hasOutline(default, set):Bool = false;
@@ -53,6 +84,39 @@ class ColorSwap {
     shader.val.value = [val];
     shader.awesomeOutline.value = [hasOutline];
   }
+}
+
+class JBugHoldShader extends FlxShader
+{
+  @:glFragmentSource('
+    #pragma header
+    uniform float objY;
+    uniform float fadingStartY;
+    uniform bool enabled;
+    uniform float fadingEndY;
+    float scaleNum(float x, float l1, float h1, float l2, float h2){
+        return ((x - l1) * (h2 - l2) / (h1 - l1) + l2);
+    }
+
+    void main()
+    {
+        vec4 col = vec4(flixel_texture2D(bitmap, openfl_TextureCoordv));
+
+        if(!enabled){
+          gl_FragColor = col;
+        }else{
+          float yInfluence = 0;
+          float alpha = clamp(scaleNum(objY-yInfluence,fadingStartY,fadingEndY,0.,1.),0.,1.);
+          vec4 newCol = mix(col, vec4(0.,0.,0.,0.), alpha);
+          gl_FragColor = newCol;
+        }
+    }
+  ')
+  public function new()
+  {
+    super();
+  }
+
 }
 
 class ColorSwapShader extends FlxShader
