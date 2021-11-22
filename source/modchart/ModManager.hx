@@ -181,9 +181,7 @@ class ModManager {
     var pos = FlxPoint.get(state.getXPosition(note),state.getYPosition(note,1));
     note.z = 0;
     for(mod in mods){
-      pos = mod.getPos(pos, note.noteData, note.mustPress==true?0:1);
-    }
-    for(mod in mods){
+      pos = mod.getPos(pos, note.noteData, note.mustPress==true?0:1, note);
       pos = mod.getNotePos(note, pos, note.noteData, note.mustPress==true?0:1);
     }
 
@@ -207,13 +205,10 @@ class ModManager {
 
 
   public function getReceptorPos(rec:Receptor, player:Int=0):FlxPoint{
-    var pos = FlxPoint.get();
+    var pos = FlxPoint.get(0,0);
     rec.z = 0;
     for(mod in mods){
-      pos = mod.getPos(pos, rec.direction, player);
-    }
-
-    for(mod in mods){
+      pos = mod.getPos(pos, rec.direction, player, rec);
       pos = mod.getReceptorPos(rec, pos, rec.direction, player);
     }
 

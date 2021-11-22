@@ -17,7 +17,7 @@ import flixel.math.FlxPoint;
 
 // TODO: have the receptor manage its own notes n shit
 
-class Receptor extends FlxSprite {
+class Receptor extends FNFSprite {
   public static var dynamicColouring:Bool=false;  // if this is true, then it'll tint to the hit note's dominant colour when it hits a note
   // (DOESNT WORK RN!)
 
@@ -37,8 +37,6 @@ class Receptor extends FlxSprite {
 
   public var desiredX:Float = 0;
   public var desiredY:Float = 0;
-
-  public var z:Float = 0;
 
   public function new(x:Float,y:Float,noteData:Int,skin:String='default',modifier:String='base',behaviour:NoteBehaviour,daScale:Float=.7){
     super(x,y);
@@ -120,7 +118,8 @@ class Receptor extends FlxSprite {
   public function playAnim(anim:String,?force:Bool=false){
     animation.play(anim,force);
     updateHitbox();
-    offset.set((frameWidth/2)-(54*(.7/noteScale) ),(frameHeight/2)-(56*(.7/noteScale) ) );
+    offset.set((frameWidth/2)-(54*(.7/noteScale) ),(frameHeight/2)-(56*(.7/noteScale)));
+
   }
 
   override function update(elapsed:Float){

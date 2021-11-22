@@ -34,8 +34,8 @@ class CoolUtil
 	public static function rotate(x:Float, y:Float, angle:Float, ?point:FlxPoint):FlxPoint{
 		var p = point==null?FlxPoint.get():point;
 		p.set(
-			(x*Math.cos(angle*Math.PI/180))-(y*Math.sin(angle*Math.PI/180)),
-			(x*Math.sin(angle*Math.PI/180))+(y*Math.cos(angle*Math.PI/180))
+			(x*Math.cos(angle))-(y*Math.sin(angle)),
+			(x*Math.sin(angle))+(y*Math.cos(angle))
 		);
 		return p;
 	}

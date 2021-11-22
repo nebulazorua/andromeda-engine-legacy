@@ -20,7 +20,7 @@ import states.*;
 
 using StringTools;
 
-class NoteGraphic extends FlxSprite
+class NoteGraphic extends FNFSprite
 {
 	public var modifier = 'base';
 	public var skin='default';

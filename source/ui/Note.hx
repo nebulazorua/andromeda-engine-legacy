@@ -74,8 +74,7 @@ class Note extends NoteGraphic
 	public var initialPos:Float = 0;
 	public var desiredZIndex:Float = 0;
 	public var zIndex:Float = 0;
-
-	public var z:Float = 0;
+	
 	public var beat:Float = 0;
 	public static var noteBehaviour:NoteBehaviour;
 	public static var behaviours:Map<String,NoteBehaviour>=[];
