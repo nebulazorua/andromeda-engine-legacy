@@ -74,12 +74,13 @@ class Note extends NoteGraphic
 	public var initialPos:Float = 0;
 	public var desiredZIndex:Float = 0;
 	public var zIndex:Float = 0;
-	
+
 	public var beat:Float = 0;
 	public static var noteBehaviour:NoteBehaviour;
 	public static var behaviours:Map<String,NoteBehaviour>=[];
 	public static var swagWidth:Float = 160 * 0.7;
 	//public var holdShader:JBugHoldsEffect;
+	public var effect:NoteEffect;
 
 	public static var quants:Array<Int> = [
 		4, // quarter note
@@ -168,6 +169,9 @@ class Note extends NoteGraphic
 			holdShader = new JBugHoldsEffect();
 			shader = holdShader.shader;
 		}*/
+
+		effect = new NoteEffect();
+		shader = effect.shader;
 
 		if (isSustainNote && prevNote != null)
 		{

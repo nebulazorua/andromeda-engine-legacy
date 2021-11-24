@@ -27,9 +27,7 @@ class AlphaModifier extends Modifier {
     return modMgr.state.center.y + fadeDistY * CoolUtil.scale(getHiddenSudden(player),0,1,0,0.25) + modMgr.state.center.y * getSubmodPercent("suddenOffset",player);
   }
 
-  override function updateNote(pos:FlxPoint, scale:FlxPoint, note:Note){
-    var player = note.mustPress==true?0:1;
-    var yPos = pos.y;
+  function getAlpha(yPos:Float,player:Int,note:Note){
     var distFromCenter = yPos - modMgr.state.center.y;
     var alpha:Float = 0;
 
@@ -59,7 +57,24 @@ class AlphaModifier extends Modifier {
       alpha += CoolUtil.scale(Math.abs(distFromCenter),realFadeDist,2*realFadeDist,-1,0)*getSubmodPercent("randomVanish",player);
     }
 
-    note.desiredAlpha=CoolUtil.clamp(alpha+1,0,1);
+    return CoolUtil.clamp(alpha+1,0,1);
+  }
+
+  override function updateNote(pos:FlxPoint, scale:FlxPoint, note:Note){
+    var player = note.mustPress==true?0:1;
+    var yPos = pos.y;
+    var alpha = getAlpha(yPos,player,note);
+    var distFromHalf = Math.abs(alpha-0.5);
+    var glow = CoolUtil.scale(distFromHalf,0,0.5,1.3,0);
+    note.desiredAlpha = alpha>0.5?1:0;
+
+    if(glow!=0){
+      note.effect.setFlash(glow);
+    }
+
+  }
+
+  override function update(elapsed:Float){
 
   }
 

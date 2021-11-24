@@ -23,7 +23,7 @@ class DrunkModifier extends Modifier {
 
     if((obj is Note)){
       if(bumpyPerc!=0){
-        obj.z += bumpyPerc * .5 * FlxMath.fastSin((pos.y/16)*bumpySpeed);
+        obj.z += (bumpyPerc * (.3 * FlxMath.fastSin((pos.y/24)*bumpySpeed)));
       }
     }
 

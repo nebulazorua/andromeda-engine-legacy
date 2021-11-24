@@ -2238,8 +2238,6 @@ class PlayState extends MusicBeatState
 
 					if (daNote.y > FlxG.height)
 					{
-						daNote.active = false;
-
 						daNote.visible = false;
 					}
 					else
@@ -2247,8 +2245,6 @@ class PlayState extends MusicBeatState
 						if((daNote.mustPress || !daNote.mustPress && !currentOptions.middleScroll)){
 							daNote.visible = true;
 						}
-
-						daNote.active = true;
 					}
 
 					if(daNote.mustPress){

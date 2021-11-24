@@ -21,9 +21,9 @@ using StringTools;
 // perspective projection woo
 
 class PerspectiveModifier extends Modifier {
-  public var fov = Math.PI/2;
-  public var near = 0;
-  public var far = 2;
+  var fov = Math.PI/2;
+  var near = 0;
+  var far = 2;
 
   function FastTan(rad:Float) // thanks schmoovin
   {
@@ -50,7 +50,7 @@ class PerspectiveModifier extends Modifier {
     var y = oY/ta;
     var a = (near+far)/(near-far);
     var b = 2*near*far/(near-far);
-    var z = a*(shit)+b;
+    var z = (a*shit+b);
     var returnedVector = new Vector3(x/z,y/z,z);
 
     return returnedVector;

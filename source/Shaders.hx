@@ -14,8 +14,17 @@ typedef ShaderEffect = {
   var shader:Dynamic;
 }
 
-// ONE OF THE FEW THINGS TAKEN FROM WEEK 7
-// IDK HOW THIS SHIT WORKS, MAN!
+class NoteEffect {
+  public var shader: NoteShader = new NoteShader();
+  public function new(){
+    shader.cracker.value = [0];
+  }
+
+  public function setFlash(val: Float){
+    shader.cracker.value=[val];
+  }
+
+}
 
 class JBugHoldsEffect {
   public var shader: JBugHoldShader = new JBugHoldShader();
@@ -86,6 +95,33 @@ class ColorSwap {
   }
 }
 
+class NoteShader extends FlxShader
+{
+  @:glFragmentSource('
+    #pragma header
+    uniform float cracker;
+
+    float scaleNum(float x, float l1, float h1, float l2, float h2){
+        return ((x - l1) * (h2 - l2) / (h1 - l1) + l2);
+    }
+
+    void main()
+    {
+        vec4 col = flixel_texture2D(bitmap, openfl_TextureCoordv);
+        vec4 newCol = col;
+        if(cracker!=0 && col.a>0)
+          newCol = mix(col,vec4(1.0,1.0,1.0,col.a),cracker);
+
+        gl_FragColor = newCol;
+    }
+  ')
+  public function new()
+  {
+    super();
+  }
+
+}
+
 class JBugHoldShader extends FlxShader
 {
   @:glFragmentSource('
@@ -100,7 +136,7 @@ class JBugHoldShader extends FlxShader
 
     void main()
     {
-        vec4 col = vec4(flixel_texture2D(bitmap, openfl_TextureCoordv));
+        vec4 col = flixel_texture2D(bitmap, openfl_TextureCoordv);
 
         if(!enabled){
           gl_FragColor = col;
