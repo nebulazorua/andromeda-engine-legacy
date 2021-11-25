@@ -213,7 +213,6 @@ class PlayState extends MusicBeatState
 
 	var bgGirls:BackgroundGirls;
 	var wiggleShit:WiggleEffect = new WiggleEffect();
-
 	var turn:String='';
 	var focus:String='';
 
@@ -691,6 +690,7 @@ class PlayState extends MusicBeatState
 		modchart.addCamEffect(gameCam3D);
 		modchart.addHudEffect(hudCam3D);
 		modchart.addNoteEffect(noteCam3D);*/
+
 
 		if(SONG.noteModifier!=null)
 			noteModifier=SONG.noteModifier;
@@ -1533,7 +1533,6 @@ class PlayState extends MusicBeatState
 			if(currentOptions.middleScroll && player==0)
 				babyArrow.visible=false;
 
-			babyArrow.x += Note.swagWidth*i;
 			babyArrow.updateHitbox();
 			babyArrow.scrollFactor.set();
 
@@ -1561,14 +1560,17 @@ class PlayState extends MusicBeatState
 			}
 
 			babyArrow.playAnim('static');
+			babyArrow.screenCenter(X);
+			babyArrow.x -= Note.swagWidth;
+			babyArrow.x -= 54;
+			babyArrow.x += Note.swagWidth*i;
 			if(!currentOptions.middleScroll){
-				babyArrow.x += 50;
-				babyArrow.x += ((FlxG.width / 2) * player);
-			}else{
-				babyArrow.screenCenter(X);
-				babyArrow.x -= Note.swagWidth;
-				babyArrow.x -= 54;
-				babyArrow.x += Note.swagWidth*i;
+				switch(player){
+					case 0:
+						babyArrow.x -= FlxG.width/2 - Note.swagWidth*2 - 50;
+					case 1:
+						babyArrow.x += FlxG.width/2 - Note.swagWidth*2 - 50;
+					}
 			}
 
 			newStrumLine.x = babyArrow.x;
@@ -2293,9 +2295,7 @@ class PlayState extends MusicBeatState
 							if (SONG.notes[Math.floor(curStep / 16)].altAnim)
 								altAnim = '-alt';
 						}
-						if(luaModchartExists && lua!=null){
-							lua.call("dadNoteHit",[Math.abs(daNote.noteData),daNote.strumTime,Conductor.songPosition]); // TODO: Note lua class???
-						}
+
 						health -= modchart.opponentHPDrain;
 
 							//if(!daNote.isSustainNote){
@@ -2316,7 +2316,13 @@ class PlayState extends MusicBeatState
 								//dad.playAnim('singRIGHT' + altAnim, true);
 								anim='singRIGHT' + altAnim;
 							}
+							if(opponent.animation.getByName(anim)==null){
+								anim = anim.replace(altAnim,"");
+							}
 
+							if(luaModchartExists && lua!=null){
+								lua.call("dadNoteHit",[Math.abs(daNote.noteData),daNote.strumTime,Conductor.songPosition,anim]); // TODO: Note lua class???
+							}
 						if(opponent.animation.curAnim!=null){
 							var canHold = daNote.isSustainNote && opponent.animation.getByName(anim+"Hold")!=null;
 							if(canHold && !opponent.animation.curAnim.name.startsWith(anim)){

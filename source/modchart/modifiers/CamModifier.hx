@@ -33,8 +33,8 @@ class CamModifier extends Modifier {
     var xOffset = (getSubmodPercent(prefix + "XOffset",0)+getSubmodPercent(prefix + "XOffset",1))*100;
     var yOffset = (getSubmodPercent(prefix + "YOffset",0)+getSubmodPercent(prefix + "YOffset",1))*100;
 
-    var xScrollOffset = (getSubmodPercent(prefix + "ScrollXOffset",0)+getSubmodPercent(prefix + "ScrollXOffset",1))*100;
-    var yScrollOffset = (getSubmodPercent(prefix + "ScrollYOffset",0)+getSubmodPercent(prefix + "ScrollYOffset",1))*100;
+    var xScrollOffset = (getSubmodPercent(prefix + "ScrollXOffset",0))*100;
+    var yScrollOffset = (getSubmodPercent(prefix + "ScrollYOffset",0))*100;
 
     for(camera in cams){
       var cam:FNFCamera = camera;

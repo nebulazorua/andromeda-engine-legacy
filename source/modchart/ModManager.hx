@@ -43,13 +43,13 @@ class ModManager {
     // it goes from first defined to last defined
 
     defineMod("reverse",new ReverseModifier(this)); // also cross, split, alternate, centered
+    defineMod("stealth",new AlphaModifier(this));
     defineMod("transform",new TransformModifier(this));
     defineMod("mini",new ScaleModifier(this)); // also squish and stretch
     defineMod("flip",new FlipModifier(this));
     defineMod("invert",new InvertModifier(this));
     defineMod("tornado",new TornadoModifier(this));
     defineMod("drunk",new DrunkModifier(this));
-    defineMod("stealth",new AlphaModifier(this));
     var gameCams:Array<FlxCamera> = [state.camGame];
     var hudCams:Array<FlxCamera> = [state.camHUD];
     if(state.currentOptions.ratingInHUD){

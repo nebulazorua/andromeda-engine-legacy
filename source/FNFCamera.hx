@@ -57,20 +57,20 @@ class FNFCamera extends FlxCamera {
 
 			if (style == SCREEN_BY_SCREEN)
 			{
-				if (targetX >= (scroll.x + width))
+				if (targetX >= (_scroll.x + width))
 				{
 					_scrollTarget.x += width;
 				}
-				else if (targetX < scroll.x)
+				else if (targetX < _scroll.x)
 				{
 					_scrollTarget.x -= width;
 				}
 
-				if (targetY >= (scroll.y + height))
+				if (targetY >= (_scroll.y + height))
 				{
 					_scrollTarget.y += height;
 				}
-				else if (targetY < scroll.y)
+				else if (targetY < _scroll.y)
 				{
 					_scrollTarget.y -= height;
 				}
@@ -115,12 +115,12 @@ class FNFCamera extends FlxCamera {
 
 			if (followLerp >= 60 / FlxG.updateFramerate)
 			{
-				scroll.copyFrom(_scrollTarget); // no easing
+				_scroll.copyFrom(_scrollTarget); // no easing
 			}
 			else
 			{
-				_scroll.x += (_scrollTarget.x - scroll.x) * followLerp * FlxG.updateFramerate / 60;
-				_scroll.y += (_scrollTarget.y - scroll.y) * followLerp * FlxG.updateFramerate / 60;
+				_scroll.x += (_scrollTarget.x - _scroll.x) * followLerp * FlxG.updateFramerate / 60;
+				_scroll.y += (_scrollTarget.y - _scroll.y) * followLerp * FlxG.updateFramerate / 60;
 			}
 		}
   }

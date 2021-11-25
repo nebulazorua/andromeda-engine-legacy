@@ -17,44 +17,15 @@ typedef ShaderEffect = {
 class NoteEffect {
   public var shader: NoteShader = new NoteShader();
   public function new(){
-    shader.cracker.value = [0];
+    shader.flash.value = [0];
   }
 
   public function setFlash(val: Float){
-    shader.cracker.value=[val];
+    shader.flash.value=[val];
   }
 
 }
 
-class JBugHoldsEffect {
-  public var shader: JBugHoldShader = new JBugHoldShader();
-  public function new(){
-    shader.objY.value = [0];
-    shader.enabled.value=[false];
-    shader.fadingStartY.value = [0];
-    shader.fadingEndY.value = [0];
-    //shader.height.value=[0];
-  }
-
-  public function setEnabled(toggle:Bool){
-    shader.enabled.value=[toggle];
-  }
-
-  public function setFade(start:Float){
-    shader.fadingStartY.value = [start];
-    shader.fadingEndY.value = [start-100];
-  }
-
-  public function setFadeRange(start:Float,end:Float){
-    shader.fadingStartY.value = [start];
-    shader.fadingEndY.value = [end];
-  }
-
-  public function update(y:Float){
-    shader.objY.value = [y];
-  }
-
-}
 
 class ColorSwap {
   public var shader:ColorSwapShader = new ColorSwapShader();
@@ -99,7 +70,7 @@ class NoteShader extends FlxShader
 {
   @:glFragmentSource('
     #pragma header
-    uniform float cracker;
+    uniform float flash;
 
     float scaleNum(float x, float l1, float h1, float l2, float h2){
         return ((x - l1) * (h2 - l2) / (h1 - l1) + l2);
@@ -109,43 +80,10 @@ class NoteShader extends FlxShader
     {
         vec4 col = flixel_texture2D(bitmap, openfl_TextureCoordv);
         vec4 newCol = col;
-        if(cracker!=0 && col.a>0)
-          newCol = mix(col,vec4(1.0,1.0,1.0,col.a),cracker);
+        if(flash!=0 && col.a>0)
+          newCol = mix(col,vec4(1.0,1.0,1.0,col.a),flash);
 
         gl_FragColor = newCol;
-    }
-  ')
-  public function new()
-  {
-    super();
-  }
-
-}
-
-class JBugHoldShader extends FlxShader
-{
-  @:glFragmentSource('
-    #pragma header
-    uniform float objY;
-    uniform float fadingStartY;
-    uniform bool enabled;
-    uniform float fadingEndY;
-    float scaleNum(float x, float l1, float h1, float l2, float h2){
-        return ((x - l1) * (h2 - l2) / (h1 - l1) + l2);
-    }
-
-    void main()
-    {
-        vec4 col = flixel_texture2D(bitmap, openfl_TextureCoordv);
-
-        if(!enabled){
-          gl_FragColor = col;
-        }else{
-          float yInfluence = 0;
-          float alpha = clamp(scaleNum(objY-yInfluence,fadingStartY,fadingEndY,0.,1.),0.,1.);
-          vec4 newCol = mix(col, vec4(0.,0.,0.,0.), alpha);
-          gl_FragColor = newCol;
-        }
     }
   ')
   public function new()

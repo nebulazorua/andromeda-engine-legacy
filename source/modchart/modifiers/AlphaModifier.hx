@@ -62,11 +62,13 @@ class AlphaModifier extends Modifier {
 
   override function updateNote(pos:FlxPoint, scale:FlxPoint, note:Note){
     var player = note.mustPress==true?0:1;
-    var yPos = pos.y;
+    var yPos:Float = modMgr.state.getYPosition(note,1,false)+modMgr.state.upscrollOffset;
+
+
     var alpha = getAlpha(yPos,player,note);
     var distFromHalf = Math.abs(alpha-0.5);
     var glow = CoolUtil.scale(distFromHalf,0,0.5,1.3,0);
-    note.desiredAlpha = alpha>0.5?1:0;
+    note.desiredAlpha = (alpha>=0.5?1:0) - getSubmodPercent("noteAlpha",player);
 
     if(glow!=0){
       note.effect.setFlash(glow);
@@ -79,7 +81,7 @@ class AlphaModifier extends Modifier {
   }
 
   override function getSubmods(){
-    var subMods:Array<String> = ["hidden","hiddenOffset","sudden","suddenOffset","blink","randomVanish"];
+    var subMods:Array<String> = ["noteAlpha","hidden","hiddenOffset","sudden","suddenOffset","blink","randomVanish"];
     return subMods;
   }
 }

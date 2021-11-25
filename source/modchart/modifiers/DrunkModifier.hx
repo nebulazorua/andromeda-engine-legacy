@@ -35,9 +35,6 @@ class DrunkModifier extends Modifier {
     return pos;
   }
 
-
-
-
   override function getSubmods(){
     return ["tipsy", "bumpy", "drunkSpeed", "tipsySpeed", "bumpySpeed"];
   }

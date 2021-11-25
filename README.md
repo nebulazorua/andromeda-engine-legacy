@@ -2,15 +2,17 @@
 
 "ANDROMEDA ENGINE IS GOATED" - bbpanzu
 
-Made as an alternative to other engines because I thought I could take a shot, so I did.
-- Customizable-ish
-- Actually good lua modchart stuff
-- Scroll velocity
-- Adding characters n shit without source code modification
+Andromeda Engine is a fork of Friday Night Funkin' with customization and gameplay in mind.
 
-AND IM STILL WORKIN' ON IT
-
-NOTE: ENGINE KINDA SORTA IN BETA STAGES RN
+Andromeda Engine includes but is not limited to:
+- Customizable note skins
+- Better input
+- A modifier system based on NotITG's and Schmovin's (Schmovin' concept by [4mbr0s3 2](https://www.youtube.com/channel/UCez-Erpr0oqmC71vnDrM9yA))
+- A whole lotta options
+- The ability to add characters without recompiling source (Support for Psych's character format, too!)
+- The ability to add songs to freeplay without recompiling source
+- The best lua modchart system so far
+- Scroll velocities/mid-song speed changes
 
 ## Original Funkin' team
 - [ninjamuffin99](https://twitter.com/ninja_muffin99) - Programmer
@@ -24,7 +26,7 @@ NOTE: ENGINE KINDA SORTA IN BETA STAGES RN
 - [kevinresol](https://github.com/kevinresol) - Original hxvm-lua
 - [AndreiDudenko](https://github.com/AndreiRudenko) - Original linc_luajit
 - [Echolocated](https://twitter.com/CH_echolocated) - "Epic" judgement rating and spreading the word about the engine
-- [Bepixel](https://twitter.com/bepixel_owo) - Default mines sprite
+- [Bepixel](https://twitter.com/bepixel_owo) - Default mines
 - [Quaver](https://github.com/Quaver/Quaver) - Scroll code
 - [Poco](https://github.com/poco0317) - Wife3
 - [OpenITG](https://github.com/openitg/openitg) - Quants, some modifier math.
@@ -34,11 +36,11 @@ NOTE: ENGINE KINDA SORTA IN BETA STAGES RN
 - [bbpanzu](https://twitter.com/bbsub3) - Bringing issues to my attention & letting more people know about AE
 - [Berdly the Antagonist](https://twitter.com/mylimit666) - Beat snap math
 - [Redsty Phoenix](https://twitter.com/RedstyP) - REALLY getting the word out
-- [Yoshubs](https://twitter.com/yoshubs) - Inspiration (and soon dialogue format)
-- [Shadow Mario](https://twitter.com/Shadow_Mario_) - Psych Engine character format (and soon dialogue format)
+- [Yoshubs](https://twitter.com/yoshubs) - Cache dumping, inspiration (and soon dialogue format).
+- [Shadow Mario](https://twitter.com/Shadow_Mario_) - Inspiration, Psych Engine character format
 - [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine) - Read Shadow Mario's credit
 - [gedehari](https://twitter.com/gedehar) - Inspiration (Soon: OpenFL shaders at runtime)
-- [Lizzy](https://twitter.com/tc_lizzy) - Keepin' me sane.
+- [Lizzy](https://twitter.com/tc_lizzy) - Keepin' me sane. Love ya, hunny!
 - [BigWIngs](https://www.shadertoy.com/user/BigWIngs) - Raymarcher shader (https://www.shadertoy.com/view/WtGXDD)
 - [ryk](https://www.shadertoy.com/user/ryk) - VCR Distortion shader (https://www.shadertoy.com/view/ldjGzV)
 - [Mattias](https://www.shadertoy.com/user/Mattias) - CRT shader in VCR Distortion (https://www.shadertoy.com/view/Ms23DR)
@@ -46,6 +48,7 @@ NOTE: ENGINE KINDA SORTA IN BETA STAGES RN
 - [luka712](https://www.shadertoy.com/user/luka712) - Scanlines from CRT shader (https://www.shadertoy.com/view/Xtccz4)
 - [Fogu](https://twitter.com/FoguDragon) - Helping test how AE behaves on low-end PCs
 
+Also check out [Forever Engine](https://github.com/Yoshubs/Forever-Engine-Legacy)!
 
 ## OG Friday Night Funkin'
 
@@ -122,7 +125,8 @@ To run it from your desktop (Windows, Mac, Linux) it can be a bit more involved.
 * MSVC v140 - VS 2015 C++ build tools (v14.00)
 
 This will install about 22GB of crap, but once that is done you can open up a command line in the project's directory and run `lime test windows -debug`. Once that command finishes (it takes forever even on a higher end PC), you can run FNF from the .exe file under export\release\windows\bin
-Right now, compiling for Mac does not work, and I have not tested on Windows.
+Right now, compiling for Mac does not work.
+
 If you get an error about StatePointer, you'll want to run these:
 `haxelib remove linc_luajit
 haxelib remove hxvm-luajit`
