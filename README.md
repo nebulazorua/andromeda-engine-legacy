@@ -62,6 +62,8 @@ Then for each of these type `haxelib git [libraryname] [library]` so `haxelib gi
 discord_rpc https://github.com/Aidan63/linc_discord-rpc
 hxvm-luajit https://github.com/nebulazorua/hxvm-luajit
 linc_luajit https://github.com/nebulazorua/linc_luajit
+If you are on mac then, you will have to get linc_luajit from here:
+https://github.com/gaminbottomtext/linc_luajit 
 ```
 
 You should have everything ready for compiling the game! Follow the guide below to continue!
