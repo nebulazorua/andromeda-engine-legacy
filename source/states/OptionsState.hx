@@ -35,21 +35,22 @@ class OptionsState extends MusicBeatState
 				new ControlOption(controls,Control.PAUSE),
 				new ControlOption(controls,Control.RESET),
 			]),
-			new ToggleOption("resetKey","Reset key","Should pressing the bound reset key instantly kill you"),
-			new ToggleOption("loadModcharts","Load Lua modcharts","Should the engine load lua-based modcharts"),
-			new ToggleOption("ghosttapping","Ghost-tapping","Missing when you hit nothing"),
+			new ToggleOption("resetKey","Reset key","Whether the reset button should be triggered or not"),
+			new ToggleOption("loadModcharts","Load Lua modcharts","Whether the engine loads lua-based modcharts"),
+			new ToggleOption("ghosttapping","Ghost-tapping","Whether you miss when you hit nothing"),
 			new ToggleOption("failForMissing","Sudden Death","FC or die"),
 			new ToggleOption("botPlay","BotPlay","Let a bot play for you"),
 			new OptionCategory("Freeplay Modifiers",[
 				new StepOption("cMod","Speed Constant",0.1,0,10,"","","A constant speed to override the scrollspeed. 0 for default speed",true),
 				new StepOption("xMod","Speed Mult",0.1,0,2,"","x","A multiplier to a chart's scrollspeed",true),
-				new ToggleOption("noFail","No Fail","With this on, you can't die"),
+				new StepOption("mMod","Minimum Speed",0.1,0,10,"","x","The minimum scrollspeed a chart can have",true),
+				new ToggleOption("noFail","No Fail","You can't blueball, but there's an indicator that you failed and you don't save the score."),
 			]),
 			new OptionCategory("Advanced",[
 				new JudgementsOption("judgementWindow","Judgements","Which judgement window to use"),
-				new ToggleOption("useEpic","Use Epics","Should epics be used"),
-				new ToggleOption("pollingInput","Old input","Should inputs get checked every frame"),
-				new ScrollOption("accuracySystem","Accuracy System","How is accuracy determined",0,2,["Basic","ITG","Wife3"])
+				new ToggleOption("useEpic","Use Epics","Whether epics should be used"),
+				new ToggleOption("pollingInput","Old input","Whether to check input every frame, or on key press."),
+				new ScrollOption("accuracySystem","Accuracy System","How accuracy is determined",0,2,["Basic","ITG","Wife3"])
 			]),
 			new StateOption("Calibrate Offset",new SoundOffsetState()),
 			// TODO: make a better 'calibrate offset'
@@ -59,7 +60,7 @@ class OptionsState extends MusicBeatState
 			new ToggleOption("camFollowsAnims","Directional Camera","Whether the camera moves depending on a character's animations"),
 			new ToggleOption("downScroll","Downscroll","Arrows come from the top down instead of the bottom up."),
 			new ToggleOption("middleScroll","Centered Notes","Places your notes in the center of the screen and hides the opponent's."),
-			new NoteskinOption("noteSkin","NoteSkin","Which noteskin you are using"),
+			new NoteskinOption("noteSkin","NoteSkin","Which noteskin to use"),
 			new ToggleOption("allowNoteModifiers","Allow note modifiers","Whether note modifiers (e.g pixel notes in week 6) get used"),
 			new StepOption("backTrans","BG Darkness",10,0,100,"%","","How dark the background is",true),
 			new ScrollOption("staticCam","Camera Focus","Who the camera should focus on",0,OptionUtils.camFocuses.length-1,OptionUtils.camFocuses),
@@ -73,18 +74,18 @@ class OptionsState extends MusicBeatState
 			]),
 		]),
 		new OptionCategory("Preferences",[
-			new ToggleOption("showComboCounter","Show combo","Ratings show your combo when you hit a note"),
-			new ToggleOption("showRatings","Show ratings","Ratings show up when you hit a note"),
-			new ToggleOption("showMS","Show Hit MS","Display the milliseconds for when you hit a note"),
-			new ToggleOption("showCounters","Show judgement counters","Should there be judgement counters on the left"),
-			new ToggleOption("ratingInHUD","Judgements in HUD","Are ratings part of the UI"),
-			new ToggleOption("pauseHoldAnims","Holds pause anims", "Do animations get paused on the first frame on holds"),
-			new ToggleOption("menuFlash","Flashing in menus","Do the background and buttons flash when selecting them in menus"),
+			new ToggleOption("showComboCounter","Show combo","Whether to show your combo when you hit a note"),
+			new ToggleOption("showRatings","Show judgements","Whether to show judgements when you hit a note"),
+			new ToggleOption("showMS","Show Hit MS","Whether to display the millisecond difference when you hit a note"),
+			new ToggleOption("showCounters","Show judgement counters","Whether judgement counters get shown on the side"),
+			new ToggleOption("ratingInHUD","Fixed Judgements","Places judgements, milliseconds and combo in the HUD"),
+			new ToggleOption("pauseHoldAnims","Holds pause anims", "Whether to pause animations on their first frame"),
+			new ToggleOption("menuFlash","Flashing in menus","Whether buttons and the background should flash in menus"),
 			new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),
 			new ToggleOption("ghosttapSounds","Ghost-tap hit sounds","Play a click sound when you ghost-tap"),
-			new StepOption("hitsoundVol","Hit sound volume",10,0,100,"%","","How loud the hitsounds are",true),
-			new ToggleOption("freeplayPreview","Song preview in freeplay","Do songs get played when selecting them in the freeplay menu"),
-			new ToggleOption("persistentCombo","Combo doesnt fade","Does the combo stay"),
+			new StepOption("hitsoundVol","Hit sound volume",10,0,100,"%","","Hitsound volume",true),
+			new ToggleOption("freeplayPreview","Song preview in freeplay","Whether songs get played as you hover over them in Freeplay"),
+			new ToggleOption("persistentCombo","Combo doesnt fade","Combo stays on screen instead of fading out"),
 		]),
 		new OptionCategory("Performance",[
 			new StepOption("fps","FPS Cap",30,30,360,"","","The FPS the game tries to run at",true,function(value:Float,step:Float){
@@ -92,21 +93,18 @@ class OptionsState extends MusicBeatState
 			}),
 			new ToggleOption("noChars","Hide characters","Hides characters ingame"),
 			new ToggleOption("noStage","Hide background","Hides stage ingame"),
-			new ToggleOption("allowOrderSorting","Sort notes by order","Allows notes to go infront and behind other notes, in exchange for FPS drops."),
+			new ToggleOption("allowOrderSorting","Sort notes by order","Allows notes to go infront and behind other notes. May cause FPS drops on very high note-density charts."),
 			new OptionCategory("Loading",[
-				new ToggleOption("shouldCache","Cache on startup","Should the engine cache anything when being loaded"),
-				new ToggleOption("cacheCharacters","Cache characters","Should the engine cache characters at startup"),
-				new ToggleOption("cacheSongs","Cache songs","Should the engine cache songs at startup"),
-				new ToggleOption("cacheSounds","Cache sounds","Should the engine cache misc sounds at startup"),
-				new ToggleOption("cachePreload","Cache misc images","Should the engine cache misc images"),
-				new ToggleOption("cacheUsedImages","Cache loaded images","Should images be cached when they get loaded ",function(state:Bool){
+				new ToggleOption("shouldCache","Cache on startup","Whether the engine caches stuff when the game starts"),
+				new ToggleOption("cacheCharacters","Cache characters","Whether the engine caches characters if it caches on startup"),
+				new ToggleOption("cacheSongs","Cache songs","Whether the engine caches songs if it caches on startup"),
+				new ToggleOption("cacheSounds","Cache sounds","Whether the engine caches misc sounds if it caches on startup"),
+				new ToggleOption("cachePreload","Cache misc images","Whether the engine caches misc images if it caches on startup"),
+				new ToggleOption("cacheUsedImages","Persistent Images","Whether images should persist in memory",function(state:Bool){
 					FlxGraphic.defaultPersist = state;
 				}),
 			]),
-		]),
-		/*new OptionCategory("Experimental",[
-			new ToggleOption("holdsOneNote","Holds are long notes","Should holds be treated like a single, long note")
-		])*/
+		])
 	]);
 
 	private var optionText:FlxTypedGroup<Option>;

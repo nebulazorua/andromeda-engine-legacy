@@ -540,8 +540,12 @@ class PlayState extends MusicBeatState
 
 		var speed = SONG.speed;
 		if(!isStoryMode){
+			var mMod = currentOptions.mMod<.1?speed:currentOptions.mMod;
 			speed = currentOptions.cMod<.1?speed:currentOptions.cMod;
 			speed *= currentOptions.xMod;
+			if(speed<mMod){
+				speed=mMod;
+			}
 		}
 
 		SONG.initialSpeed = speed*.45;
@@ -1567,9 +1571,9 @@ class PlayState extends MusicBeatState
 			if(!currentOptions.middleScroll){
 				switch(player){
 					case 0:
-						babyArrow.x -= FlxG.width/2 - Note.swagWidth*2 - 50;
+						babyArrow.x -= FlxG.width/2 - Note.swagWidth*2 - 100;
 					case 1:
-						babyArrow.x += FlxG.width/2 - Note.swagWidth*2 - 50;
+						babyArrow.x += FlxG.width/2 - Note.swagWidth*2 - 100;
 					}
 			}
 
@@ -1845,7 +1849,7 @@ class PlayState extends MusicBeatState
 		}
 
 		scoreTxt.screenCenter(X);
-
+		botplayTxt.screenCenter(X);
 		botplayTxt.visible = ScoreUtils.botPlay;
 
 		if(judgeMan.judgementCounter.get('miss')>0 && currentOptions.failForMissing){

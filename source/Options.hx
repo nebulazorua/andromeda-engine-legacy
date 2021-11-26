@@ -93,6 +93,7 @@ class Options
 	public var resetKey:Bool = true;
 	public var cMod:Float = 0;
 	public var xMod:Float = 1;
+	public var mMod:Float = 1;
 	public var pollingInput:Bool = false;
 	public var judgementWindow:String = 'ITG';
 	public var noteOffset:Int = 100;
