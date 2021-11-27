@@ -746,11 +746,15 @@ class NoteskinOption extends Option
 	private var labelAlphabet:Alphabet;
 	private var skinNames:Array<String> = [];
 	private var curValue:Int = 0;
+	private var defaultDesc:String = '';
+	function updateDescription(){
+		description = '${Note.skinManifest.get(skinNames[curValue]).name}';
+	}
 	public function new(property:String,label:String,description:String){
 		super();
 		this.property=property;
 		this.label=label;
-		this.description=description;
+		//this.defaultDesc=description;
 		var idx=0;
 
 		var noteskinOrder = CoolUtil.coolTextFile(Paths.txtImages('skins/noteskinOrder'));
@@ -770,7 +774,7 @@ class NoteskinOption extends Option
 
 		var idx = skinNames.indexOf(Reflect.field(OptionUtils.options,property));
 		curValue = idx==-1?0:idx;
-		trace(curValue);
+		updateDescription();
 
 		leftArrow = new FlxSprite(0,0);
 		leftArrow.frames = Paths.getSparrowAtlas("arrows");
