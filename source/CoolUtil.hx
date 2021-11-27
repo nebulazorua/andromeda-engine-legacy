@@ -18,12 +18,6 @@ class CoolUtil
 {
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
 
-	public static function lazyPlaySound(sound,volume:Float=1,looped=false,?group,autodestroy=true,?onComplete){
-		Thread.create(()->{
-			FlxG.sound.play(sound,volume,looped,group,autodestroy,onComplete);
-		});
-	}
-
 	public static function cacheSound(key:String,sound:Sound){
 		trace(key);
 		if(!Cache.soundCache.exists(key)){

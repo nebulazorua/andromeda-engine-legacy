@@ -23,7 +23,7 @@ import haxe.Json;
 import sys.io.File;
 import openfl.media.Sound;
 import ui.*;
-#if windows
+#if cpp
 import Sys;
 import sys.FileSystem;
 #end

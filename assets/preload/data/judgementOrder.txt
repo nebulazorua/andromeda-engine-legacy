@@ -1,8 +1,9 @@
+Andromeda
 Vanilla
 Vanilla-like
-Standard
 Quaver
 ITG
+Kade Engine
 Judge Four
 Judge Six
 JUSTICE

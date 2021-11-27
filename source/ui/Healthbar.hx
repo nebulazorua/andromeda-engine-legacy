@@ -12,12 +12,18 @@ class Healthbar extends FlxSpriteGroup {
   public var bar:FlxBar;
   public var iconP1:HealthIcon;
   public var iconP2:HealthIcon;
+  public var smooth:Bool = false;
 
+  var display:Float = 0;
+  var instance:FlxBasic;
+  var property:String;
   public function new(x:Float,y:Float,player1:String,player2:String,instance:FlxBasic,property:String,min:Float,max:Float,baseColor:FlxColor=0xFFFF0000,secondaryColor:FlxColor=0xFF66FF33){
     super(x,y);
+    this.instance=instance;
+    this.property=property;
     bg = new FlxSprite(0, 0).loadGraphic(Paths.image('healthBar'));
 
-    bar = new FlxBar(bg.x + 4, bg.y + 4, RIGHT_TO_LEFT, Std.int(bg.width - 8), Std.int(bg.height - 8), instance, property, min, max);
+    bar = new FlxBar(bg.x + 4, bg.y + 4, RIGHT_TO_LEFT, Std.int(bg.width - 8), Std.int(bg.height - 8), this, 'display', min, max);
     bar.createFilledBar(baseColor,secondaryColor);
 
 
@@ -55,6 +61,15 @@ class Healthbar extends FlxSpriteGroup {
   }
 
   override function update(elapsed:Float){
+    var num = Reflect.getProperty(instance,property);
+    if(smooth){
+      display = FlxMath.lerp(display,num,Main.adjustFPS(.2));
+      if(Math.abs(display-num)<.1){
+        display=num;
+      }
+    }else{
+      display=num;
+    }
 
     var percent = bar.percent;
     setIconSize(Std.int(FlxMath.lerp(iconP1.width, 150, Main.adjustFPS(0.1))),Std.int(FlxMath.lerp(iconP2.width, 150, Main.adjustFPS(0.1))));

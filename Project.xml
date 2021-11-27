@@ -47,6 +47,22 @@
 	<define name="PRELOAD_ALL" unless="web" />
 	<define name="NO_PRELOAD_ALL" unless="PRELOAD_ALL"/>
 
+	<!--
+		Andromeda Engine defines
+		Comment/Uncomment these depending on what you want for your mod
+
+		NOTE: if you use FORCED_JUDGE, make sure to set a default judgement preset in EngineData.hx!
+	-->
+	<define name="HAXEFLIXEL_LOGO"/> <!--god this thing is nostalgic-->
+	<!-- <define name="NO_BOTPLAY" unless="debug"/> -->
+	<!-- <define name="DISABLE_CHART_EDITOR" unless="debug"/> -->
+	<!-- <define name="DISABLE_CHARACTER_EDITOR" unless="debug"/> -->
+	<!-- <define name="NO_FREEPLAY_MODS"/> -->
+	<!-- <define name="FORCE_LUA_MODCHARTS"/> -->
+	<!-- <define name="FORCED_JUDGE"/> -->
+
+
+
 	<section if="PRELOAD_ALL">
 		<library name="songs"    preload="true" />
 		<library name="shared"   preload="true" />
@@ -153,7 +169,7 @@
 	<!--Disable the Flixel core focus lost screen-->
 
 	<haxedef name="FLX_NO_FOCUS_LOST_SCREEN" />
-	
+
 	<!--Disable the Flixel core debugger. Automatically gets set whenever you compile in release mode!-->
 	<haxedef name="FLX_NO_DEBUG" unless="debug" />
 

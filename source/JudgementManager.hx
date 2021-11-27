@@ -10,10 +10,10 @@ import lime.utils.Assets;
 typedef JudgementInfo =
 {
 	var comboBreakJudgements:Array<String>;
-	var judgementHealth:AnonType;
-	var judgementAccuracy:AnonType;
-	var judgementScores:AnonType;
-	var judgementWindows:AnonType;
+	var judgementHealth:Any;
+	var judgementAccuracy:Any;
+	var judgementScores:Any;
+	var judgementWindows:Any;
 	var judgements:Array<String>;
 	@:optional var wifeZeroPoint:Null<Float>;
 }
@@ -71,14 +71,7 @@ class JudgementManager
   var judgeData:JudgementData;
 	var highestAcc:Float = 0;
 	public static var rawJudgements:AnonType;
-	public static var defaultJudgement = new JudgementData(Json.parse('{
-			"comboBreakJudgements":[],
-			"judgementHealth": {"sick":1.2,"good":1.2, "bad":1.2, "shit":1.2,"miss":-2.375 },
-			"judgements": ["sick","good","bad","shit"],
-			"judgementAccuracy": {"sick": 100, "good":50, "bad": -25, "shit": -50, "miss": -100},
-			"judgementScores": {"sick":350,"good":200,"bad":100,"shit":50,"miss":-10},
-			"judgementWindows": {"sick":32, "good":123, "bad":148, "shit":166}
-	}'));// vanilla
+	public static var defaultJudgement = new JudgementData(EngineData.defaultJudgementData);
 	public var judgementCounter:Map<String,Int> = [];
 	public static function dataExists(name:String){
 		rawJudgements = Json.parse(Assets.getText(Paths.json("judgements")));

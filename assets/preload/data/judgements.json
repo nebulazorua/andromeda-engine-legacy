@@ -1,4 +1,12 @@
 {
+  "Andromeda":{
+    "comboBreakJudgements":["shit"],
+    "judgementHealth": {"sick":0.8,"good":0.4, "bad":0, "shit":-2,"miss":-5 },
+    "judgements": ["sick","good","bad","shit"],
+    "judgementAccuracy": {"sick": 100, "good":80, "bad": 50, "shit": -75, "miss": -240},
+    "judgementScores": {"sick":350,"good":100,"bad":0,"shit":-50,"miss":-100},
+    "judgementWindows": {"sick":43, "good":85, "bad":115, "shit":166, "miss": 180}
+  },
   "Vanilla":{
 			"comboBreakJudgements":[],
 			"judgementHealth": {"sick":1.2,"good":1.2, "bad":1.2, "shit":1.2,"miss":-2.375 },
@@ -39,7 +47,7 @@
     "judgementScores": {"sick":350,"epic":500,"good":100,"bad":0,"shit":-50,"miss":-100},
     "judgementWindows": {"epic":21, "sick":43, "good":102, "bad":135, "shit":180}
   },
-  "Standard":{
+  "Kade Engine":{
     "comboBreakJudgements":["bad"],
     "wifeZeroPoint": 65,
     "judgementHealth": {"sick":0.8,"good":0.4, "bad":0, "shit":-4,"miss":-8 },

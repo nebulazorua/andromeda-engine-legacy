@@ -52,7 +52,7 @@ class ReverseModifier extends Modifier {
     var perc = getReversePercent(data,player,false);
 
     var shift = CoolUtil.scale(perc,0,1,modMgr.state.upscrollOffset,modMgr.state.downscrollOffset);
-    shift = CoolUtil.scale(getSubmodPercent("centered",player),0,1,shift,0);
+    shift = CoolUtil.scale(getSubmodPercent("centered",player),0,1,shift,receptor.offset.y);
 
     pos.y = pos.y+shift;
     return pos;

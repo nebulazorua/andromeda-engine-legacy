@@ -45,6 +45,8 @@ class ModManager {
     defineMod("reverse",new ReverseModifier(this)); // also cross, split, alternate, centered
     defineMod("stealth",new AlphaModifier(this));
     defineMod("transform",new TransformModifier(this));
+    defineMod("opponentSwap",new OpponentModifier(this));
+    defineMod("scrollAngle",new AngleModifier(this));
     defineMod("mini",new ScaleModifier(this)); // also squish and stretch
     defineMod("flip",new FlipModifier(this));
     defineMod("invert",new InvertModifier(this));

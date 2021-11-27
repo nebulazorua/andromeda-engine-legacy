@@ -60,7 +60,7 @@ import Controls.Control;
 import openfl.media.Sound;
 import openfl.display.GraphicsShader;
 import sys.io.File;
-#if windows
+#if cpp
 import vm.lua.LuaVM;
 import vm.lua.Exception;
 import Sys;
@@ -260,7 +260,7 @@ class PlayState extends MusicBeatState
 	#end
 
 	function setupLuaSystem(){
-		if(luaModchartExists && currentOptions.loadModcharts){
+		if(luaModchartExists){
 			lua = new LuaVM();
 			lua.setGlobalVar("storyDifficulty",storyDifficulty);
 			lua.setGlobalVar("chartName",songData.chartName);
@@ -280,10 +280,6 @@ class PlayState extends MusicBeatState
 
 			Lua_helper.add_callback(lua.state,"log", function(string:String){
 				FlxG.log.add(string);
-			});
-
-			Lua_helper.add_callback(lua.state,"lazyPlaySound", function(sound:String,volume:Float=1,looped:Bool=false){
-				CoolUtil.lazyPlaySound(sound,volume,looped);
 			});
 
 			Lua_helper.add_callback(lua.state,"playSound", function(sound:String,volume:Float=1,looped:Bool=false){
@@ -317,63 +313,6 @@ class PlayState extends MusicBeatState
 			Lua_helper.add_callback(lua.state,"compensateFPS", function(num:Float){ // prob need new name? idk
 				return Main.adjustFPS(num);
 			});
-
-			Lua_helper.add_callback(lua.state,"getXPos", function(note:Dynamic){
-				try{
-					if(note.InternalClassName.sub(0,3)=='note' ){
-						var id = note.InternalClassName;
-						trace(id);
-						if(LuaStorage.noteMap.exists(id))
-							return getXPosition(LuaStorage.noteMap.get(id));
-					}
-				}catch(e:Dynamic){
-					trace(e);
-				}
-				return 0;
-			});
-
-			/*Lua_helper.add_callback(lua.state,"getYPos", function(note:Dynamic){
-				if(note.InternalClassName.sub(0,3)=='note' ){
-					var id = note.InternalClassName.sub(4);
-					if(LuaStorage.notes[id]!=null)
-						return getYPosition(LuaStorage.notes[id]);
-
-
-				}
-				return 0;
-			});*/
-
-			// ^^ do not work currently
-
-
-			/*Lua_helper.add_callback(lua.state,"newShader", function(?fragShaderPath:String='', ?vertShaderPath:String='', ?shaderName:String){
-				var vert:String = '';
-				var frag:String = '';
-
-				var fullPath = 'assets/songs/{$SONG.song.toLowerCase()}/';
-
-				if(fragShaderPath!='' && FileSystem.exists(fullPath + fragShaderPath)){
-					frag = File.getContent("./" + fullPath + fragShaderPath);
-				}
-
-				if(vertShaderPath != '' && FileSystem.exists(fullPath + vertShaderPath)){
-					vert = File.getContent("./" + fullPath + vertShaderPath);
-				}
-
-				var shader:GraphicsShader = new GraphicsShader(vert,frag);
-				var name = "UnnamedShader"+unnamedLuaShaders;
-
-				if(shaderName!=null)
-					name=shaderName;
-				else
-					unnamedLuaShaders++;
-
-				var lShader = new LuaShaderClass(shader,name,shaderName!=null);
-				var classIdx = Lua.gettop(lua.state)+1;
-				lShader.Register(lua.state);
-				Lua.pushvalue(lua.state,classIdx);
-			});*/
-			// put on pause for now
 
 			Lua_helper.add_callback(lua.state,"newOpponent", function(x:Float, y:Float, ?character:String = "bf", ?spriteName:String){
 				var char = new Character(x,y,character,false,!currentOptions.noChars);
@@ -472,9 +411,24 @@ class PlayState extends MusicBeatState
 			currentOptions.noFail=false;
 		}
 		#end
+		#if NO_BOTPLAY
+			currentOptions.botPlay=false;
+		#end
+		#if NO_FREEPLAY_MODS
+			currentOptions.mMod=0;
+			currentOptions.cMod=0;
+			currentOptions.xMod=1;
+			currentOptions.noFail=false;
+		#end
+
+
 		ScoreUtils.ghostTapping = currentOptions.ghosttapping;
 		ScoreUtils.botPlay = currentOptions.botPlay;
+		#if FORCED_JUDGE
+		judgeMan = new JudgementManager(new JudgementManager.JudgementData(EngineData.defaultJudgementData));
+		#else
 		judgeMan = new JudgementManager(JudgementManager.getDataByName(currentOptions.judgementWindow));
+		#end
 		Conductor.safeZoneOffset = judgeMan.getHighestWindow();
 		Conductor.calculate();
 		ScoreUtils.wifeZeroPoint = judgeMan.getWifeZero();
@@ -490,7 +444,7 @@ class PlayState extends MusicBeatState
 			FlxG.sound.music.stop();
 
 		//lua = new LuaVM();
-		#if windows
+		#if cpp
 			luaModchartExists = FileSystem.exists(Paths.modchart(songData.chartName.toLowerCase()));
 		#end
 
@@ -822,6 +776,7 @@ class PlayState extends MusicBeatState
 		FlxG.worldBounds.set(0, 0, FlxG.width, FlxG.height);
 
 		healthBar = new Healthbar(0,FlxG.height*.9,boyfriend.iconName,dad.iconName,this,'health',0,2);
+		healthBar.smooth = currentOptions.smoothHPBar;
 		healthBar.scrollFactor.set();
 		healthBar.screenCenter(X);
 		if(currentOptions.healthBarColors)
@@ -1157,7 +1112,13 @@ class PlayState extends MusicBeatState
 		Conductor.rawSongPos -= Conductor.crochet * 5;
 		Conductor.songPosition=Conductor.rawSongPos;
 
+		#if FORCE_LUA_MODCHARTS
 		setupLuaSystem();
+		#else
+		if(currentOptions.loadModcharts)
+			setupLuaSystem();
+		#end
+
 		var swagCounter:Int = 0;
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
@@ -1812,6 +1773,27 @@ class PlayState extends MusicBeatState
 	// https://github.com/Quaver/Quaver
 	// https://github.com/Quaver/Quaver
 
+	function updateScoreText(){
+		if(currentOptions.onlyScore){
+			if(botplayScore!=0){
+				if(songScore==0)
+					scoreTxt.text = 'Bot Score: ${botplayScore}';
+				else
+					scoreTxt.text = 'Score: ${songScore} | Bot Score: ${botplayScore}';
+			}else{
+				scoreTxt.text = 'Score: ${songScore}';
+			}
+		}else{
+			if(botplayScore!=0){
+				if(songScore==0)
+					scoreTxt.text = 'Bot Score: ${botplayScore} | ${accuracyName}: ${shownAccuracy}% | ${grade}';
+				else
+					scoreTxt.text = 'Score: ${songScore} | Bot Score: ${botplayScore} | ${accuracyName}: ${shownAccuracy}% | ${grade}';
+			}else{
+				scoreTxt.text = 'Score: ${songScore} | ${accuracyName}: ${shownAccuracy}% | ${grade}';
+			}
+		}
+	}
 	override public function update(elapsed:Float)
 	{
 		#if !debug
@@ -1832,21 +1814,8 @@ class PlayState extends MusicBeatState
 		if(presetTxt!=null)
 			presetTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
 
-
-		shownAccuracy = truncateFloat(FlxMath.lerp(shownAccuracy,accuracy*100, Main.adjustFPS(0.2)),2);
-
-		if(Math.abs((accuracy*100)-shownAccuracy) <= 0.15)
-			shownAccuracy=truncateFloat(accuracy*100,2);
-
 		//scoreTxt.text = "Score:" + (songScore + botplayScore) + ' / ${accuracyName}:' + shownAccuracy + "% / " + grade;
-		if(botplayScore!=0){
-			if(songScore==0)
-				scoreTxt.text = 'Bot Score: ${botplayScore} | ${accuracyName}: ${shownAccuracy}% | ${grade}';
-			else
-				scoreTxt.text = 'Score: ${songScore} | Bot Score: ${botplayScore} | ${accuracyName}: ${shownAccuracy}% | ${grade}';
-		}else{
-			scoreTxt.text = 'Score: ${songScore} | ${accuracyName}: ${shownAccuracy}% | ${grade}';
-		}
+		updateScoreText();
 
 		scoreTxt.screenCenter(X);
 		botplayTxt.screenCenter(X);
@@ -1876,6 +1845,7 @@ class PlayState extends MusicBeatState
 			#end
 		}
 
+		#if !DISABLE_CHART_EDITOR
 		if (FlxG.keys.justPressed.SEVEN)
 		{
 			FlxG.switchState(new ChartingState());
@@ -1884,6 +1854,7 @@ class PlayState extends MusicBeatState
 			DiscordClient.changePresence("Chart Editor", null, null, true);
 			#end
 		}
+		#end
 
 		// FlxG.watch.addQuick('VOL', vocals.amplitudeLeft);
 		// FlxG.watch.addQuick('VOLRight', vocals.amplitudeRight);
@@ -1898,9 +1869,11 @@ class PlayState extends MusicBeatState
 		/* if (FlxG.keys.justPressed.NINE)
 			FlxG.switchState(new Charting()); */
 
+		#if !DISABLE_CHARACTER_EDITOR
 		if (FlxG.keys.justPressed.EIGHT){
 			FlxG.switchState(new OffsetEditorState(SONG.player1));
 		}
+		#end
 
 		super.update(elapsed);
 		if (startingSong)
@@ -2466,7 +2439,7 @@ class PlayState extends MusicBeatState
 		vocals.volume = 0;
 		inst.stop();
 
-		#if windows
+		#if cpp
 		if(lua!=null){
 			lua.destroy();
 			lua=null;
@@ -2581,7 +2554,7 @@ class PlayState extends MusicBeatState
 					var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
 					numScore.screenCenter(XY);
 					numScore.x = coolText.x + (43 * daLoop) - 90;
-					numScore.y += 80;
+					numScore.y += 25;
 
 					if (noteModifier!='pixel')
 					{
@@ -2596,8 +2569,12 @@ class PlayState extends MusicBeatState
 
 					if(currentOptions.ratingInHUD){
 						numScore.scrollFactor.set(0,0);
+						numScore.y += 50;
+						numScore.x -= 50;
 					}
 					numScore.cameras=ratingCameras;
+					numScore.x += currentOptions.judgeX;
+					numScore.y += currentOptions.judgeY;
 
 					add(numScore);
 					if(currentOptions.persistentCombo){
@@ -2629,6 +2606,8 @@ class PlayState extends MusicBeatState
 		}
 	}
 
+	var judge:FlxSprite;
+
 	private function popUpScore(daRating:String,?noteDiff:Float):Void
 	{
 		var placement:String = Std.string(combo);
@@ -2652,12 +2631,8 @@ class PlayState extends MusicBeatState
 		rating.x = coolText.x - 40;
 		rating.y -= 60;
 		add(rating);
-		rating.acceleration.y = 550;
-		rating.velocity.y -= FlxG.random.int(140, 175);
-		rating.velocity.x -= FlxG.random.int(0, 10);
 		if(!currentOptions.showRatings)
 			rating.visible=false;
-
 
 
 		if (noteModifier!='pixel')
@@ -2682,6 +2657,42 @@ class PlayState extends MusicBeatState
 			rating.y -= 25;
 		}
 
+		rating.x += currentOptions.judgeX;
+		rating.y += currentOptions.judgeY;
+
+		if(currentOptions.smJudges){
+			if(judge!=null && judge.alive){
+				judge.kill();
+			}
+			var scaleX = rating.scale.x;
+			var scaleY = rating.scale.y;
+			rating.scale.scale(1.1);
+			FlxTween.tween(rating, {"scale.x": scaleX, "scale.y": scaleY}, 0.1, {
+				onComplete: function(tween:FlxTween)
+				{
+					FlxTween.tween(rating, {"scale.x": 0, "scale.y": 0}, 0.2, {
+						onComplete: function(tween:FlxTween)
+						{
+							coolText.destroy();
+							rating.kill();
+							rating.destroy();
+							if(judge==rating)judge=null;
+						},
+						ease: FlxEase.quadIn,
+						startDelay: 0.6
+					});
+				},
+				ease: FlxEase.quadOut
+			});
+
+		}else{
+			rating.acceleration.y = 550;
+			rating.velocity.y -= FlxG.random.int(140, 175);
+			rating.velocity.x -= FlxG.random.int(0, 10);
+		}
+
+		judge=rating;
+
 		rating.cameras=ratingCameras;
 		coolText.cameras=ratingCameras;
 
@@ -2703,8 +2714,9 @@ class PlayState extends MusicBeatState
 
 				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
 				numScore.screenCenter();
-				numScore.x = coolText.x + (32 * daLoop) - 25;
-				numScore.y += 130;
+				numScore.x = coolText.x + (32 * daLoop) + 15;
+				numScore.y += 50;
+
 				if(i=='point'){
 					if(noteModifier!="pixel")
 						numScore.x += 25;
@@ -2747,9 +2759,14 @@ class PlayState extends MusicBeatState
 
 				if(currentOptions.ratingInHUD){
 					numScore.y -= 60;
-					numScore.x += 100;
+					numScore.x += 75;
 					numScore.scrollFactor.set(0,0);
+					numScore.y += 50;
 				}
+
+				numScore.x += currentOptions.judgeX;
+				numScore.y += currentOptions.judgeY;
+
 				numScore.cameras=ratingCameras;
 
 				add(numScore);
@@ -2772,15 +2789,17 @@ class PlayState extends MusicBeatState
 
 		// add(coolText);
 
-		FlxTween.tween(rating, {alpha: 0}, 0.2, {
-			onComplete: function(tween:FlxTween)
-			{
-				coolText.destroy();
+		if(!currentOptions.smJudges){
+			FlxTween.tween(rating, {alpha: 0}, 0.2, {
+				onComplete: function(tween:FlxTween)
+				{
+					coolText.destroy();
 
-				rating.destroy();
-			},
-			startDelay: Conductor.crochet * 0.001
-		});
+					rating.destroy();
+				},
+				startDelay: Conductor.crochet * 0.001
+			});
+		}
 
 
 		updateAccuracy();
@@ -2800,9 +2819,11 @@ class PlayState extends MusicBeatState
 	}
 
 	private function keyPress(event:KeyboardEvent){
+		#if !NO_BOTPLAY
 		if(event.keyCode == FlxKey.F6){
 			ScoreUtils.botPlay = !ScoreUtils.botPlay;
 		}
+		#end
 		if(ScoreUtils.botPlay)return;
 		var direction = bindData.indexOf(event.keyCode);
 		if(direction!=-1 && !pressedKeys[direction]){
@@ -3332,7 +3353,7 @@ class PlayState extends MusicBeatState
 
 	override function switchTo(next:FlxState){
 		// Do all cleanup of stuff here! This makes it so you dont need to copy+paste shit to every switchState
-		#if windows
+		#if cpp
 		if(lua!=null){
 			lua.destroy();
 			lua=null;

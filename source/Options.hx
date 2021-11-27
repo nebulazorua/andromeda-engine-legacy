@@ -118,6 +118,11 @@ class Options
 	public var staticCam:Int = 0;
 	public var noteSkin:String = 'default';
 	public var persistentCombo:Bool = false;
+	public var smJudges:Bool = false;
+	public var judgeX:Float = 0;
+	public var judgeY:Float = 0;
+	public var onlyScore:Bool = false;
+	public var smoothHPBar:Bool = false;
 
 	// performance
 	public var fps:Int = 120;
@@ -748,13 +753,13 @@ class NoteskinOption extends Option
 	private var curValue:Int = 0;
 	private var defaultDesc:String = '';
 	function updateDescription(){
-		description = '${Note.skinManifest.get(skinNames[curValue]).name}';
+		description = '${defaultDesc}.\nSkin description: ${Note.skinManifest.get(skinNames[curValue]).desc}';
 	}
 	public function new(property:String,label:String,description:String){
 		super();
 		this.property=property;
 		this.label=label;
-		//this.defaultDesc=description;
+		this.defaultDesc=description;
 		var idx=0;
 
 		var noteskinOrder = CoolUtil.coolTextFile(Paths.txtImages('skins/noteskinOrder'));
@@ -864,6 +869,7 @@ class NoteskinOption extends Option
 
 		curValue=value;
 		name = Note.skinManifest.get(skinNames[value]).name;
+		updateDescription();
 		return true;
 	};
 	public override function right():Bool{
@@ -879,6 +885,7 @@ class NoteskinOption extends Option
 
 		curValue=value;
 		name = Note.skinManifest.get(skinNames[value]).name;
+		updateDescription();
 		return true;
 	};
 }
