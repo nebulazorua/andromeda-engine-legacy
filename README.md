@@ -9,9 +9,9 @@ Andromeda Engine includes but is not limited to:
 - Better input
 - A modifier system based on NotITG's and Schmovin's (Schmovin' concept by [4mbr0s3 2](https://www.youtube.com/channel/UCez-Erpr0oqmC71vnDrM9yA))
 - A whole lotta options
-- The ability to add characters without recompiling source (Support for Psych's character format, too!)
+- The ability to add characters without recompiling source (Press 8 ingame to open the character editor) (Support for Psych's character format, too!)
 - The ability to add songs to freeplay without recompiling source
-- The best lua modchart system so far
+- The best lua modchart system in FNF so far (probably (in my opinion, anyway))
 - Scroll velocities/mid-song speed changes
 
 ## Original Funkin' team
