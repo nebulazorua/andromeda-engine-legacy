@@ -14,14 +14,23 @@ class Healthbar extends FlxSpriteGroup {
   public var iconP2:HealthIcon;
   public var smooth:Bool = false;
 
-  var display:Float = 0;
+  public var value:Float = 1;
+
+  var display:Float = 1;
   var instance:FlxBasic;
   var property:String;
-  public function new(x:Float,y:Float,player1:String,player2:String,instance:FlxBasic,property:String,min:Float,max:Float,baseColor:FlxColor=0xFFFF0000,secondaryColor:FlxColor=0xFF66FF33){
+  public function new(x:Float,y:Float,player1:String,player2:String,?instance:FlxBasic,?property:String,min:Float=0,max:Float=2,baseColor:FlxColor=0xFFFF0000,secondaryColor:FlxColor=0xFF66FF33){
     super(x,y);
+    if(property==null || instance==null){
+      property='value';
+      instance=this;
+    }
+
+
     this.instance=instance;
     this.property=property;
-    bg = new FlxSprite(0, 0).loadGraphic(Paths.image('healthBar'));
+    display = Reflect.getProperty(instance,property);
+    bg = new FlxSprite(0, 0).loadGraphic(Paths.image('healthBar','shared'));
 
     bar = new FlxBar(bg.x + 4, bg.y + 4, RIGHT_TO_LEFT, Std.int(bg.width - 8), Std.int(bg.height - 8), this, 'display', min, max);
     bar.createFilledBar(baseColor,secondaryColor);

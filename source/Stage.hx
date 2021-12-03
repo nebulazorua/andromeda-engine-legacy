@@ -53,6 +53,8 @@ class Stage extends FlxTypedGroup<FlxBasic> {
     "blank"
   ];
 
+  public var doDistractions:Bool = true;
+
   // spooky bg
   public var halloweenBG:FlxSprite;
   var lightningStrikeBeat:Int = 0;
@@ -154,34 +156,48 @@ class Stage extends FlxTypedGroup<FlxBasic> {
 
   public function setPlayerPositions(?p1:Character,?p2:Character,?gf:Character){
 
-    p1.setPosition(bfPosition.x,bfPosition.y);
-    p2.setPosition(dadPosition.x,dadPosition.y);
-    gf.setPosition(gfPosition.x,gfPosition.y);
-    camPos.set(p2.getGraphicMidpoint().x, p2.getGraphicMidpoint().y);
-    switch(p1.curCharacter){
-
+    if(p1!=null)p1.setPosition(bfPosition.x,bfPosition.y);
+    if(gf!=null)gf.setPosition(gfPosition.x,gfPosition.y);
+    if(p2!=null){
+      p2.setPosition(dadPosition.x,dadPosition.y);
+      camPos.set(p2.getGraphicMidpoint().x, p2.getGraphicMidpoint().y);
     }
 
-    switch(p2.curCharacter){
-      case 'gf':
-        p2.setPosition(gf.x, gf.y);
-        gf.visible = false;
-      case 'dad':
-        camPos.x += 400;
-      case 'pico':
-        camPos.x += 600;
-      case 'senpai' | 'senpai-angry':
-        camPos.set(p2.getGraphicMidpoint().x + 300, p2.getGraphicMidpoint().y);
-      case 'spirit':
-        camPos.set(p2.getGraphicMidpoint().x + 300, p2.getGraphicMidpoint().y);
-      case 'bf-pixel':
-        camPos.set(p2.getGraphicMidpoint().x, p2.getGraphicMidpoint().y);
+    if(p1!=null){
+      switch(p1.curCharacter){
+
+      }
     }
 
-    p1.x += p1.posOffset.x;
-    p1.y += p1.posOffset.y;
-    p2.x += p2.posOffset.x;
-    p2.y += p2.posOffset.y;
+    if(p2!=null){
+
+      switch(p2.curCharacter){
+        case 'gf':
+          if(gf!=null){
+            p2.setPosition(gf.x, gf.y);
+            gf.visible = false;
+          }
+        case 'dad':
+          camPos.x += 400;
+        case 'pico':
+          camPos.x += 600;
+        case 'senpai' | 'senpai-angry':
+          camPos.set(p2.getGraphicMidpoint().x + 300, p2.getGraphicMidpoint().y);
+        case 'spirit':
+          camPos.set(p2.getGraphicMidpoint().x + 300, p2.getGraphicMidpoint().y);
+        case 'bf-pixel':
+          camPos.set(p2.getGraphicMidpoint().x, p2.getGraphicMidpoint().y);
+      }
+    }
+
+    if(p1!=null){
+      p1.x += p1.posOffset.x;
+      p1.y += p1.posOffset.y;
+    }
+    if(p2!=null){
+      p2.x += p2.posOffset.x;
+      p2.y += p2.posOffset.y;
+    }
 
 
   }
@@ -491,8 +507,8 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         centerX = skyBG.getMidpoint().x+100;
         centerY = skyBG.getMidpoint().y-100;
       case 'blank':
-        centerX = 0;
-        centerY = 0;
+        centerX = 400;
+        centerY = 130;
       default:
         defaultCamZoom = 1;
         curStage = 'stage';
@@ -535,39 +551,42 @@ class Stage extends FlxTypedGroup<FlxBasic> {
       d.dance();
     }
 
-    switch(curStage){
-      case 'limo':
-        if (FlxG.random.bool(10) && fastCarCanDrive)
-          fastCarDrive();
-      case 'spooky':
-        if (FlxG.random.bool(10) && beat > lightningStrikeBeat + lightningOffset)
-        {
-          lightningStrikeBeat = beat;
-          lightningStrikeShit();
-        }
-      case 'philly':
-        if (!trainMoving)
-          trainCooldown += 1;
+    if(doDistractions){
 
-        if (beat%4== 0)
-        {
-          phillyCityLights.forEach(function(light:FlxSprite)
+      switch(curStage){
+        case 'limo':
+          if (FlxG.random.bool(10) && fastCarCanDrive)
+            fastCarDrive();
+        case 'spooky':
+          if (FlxG.random.bool(10) && beat > lightningStrikeBeat + lightningOffset)
           {
-            light.visible = false;
-          });
+            lightningStrikeBeat = beat;
+            lightningStrikeShit();
+          }
+        case 'philly':
+          if (!trainMoving)
+            trainCooldown += 1;
 
-          curLight = FlxG.random.int(0, phillyCityLights.length - 1);
+          if (beat%4== 0)
+          {
+            phillyCityLights.forEach(function(light:FlxSprite)
+            {
+              light.visible = false;
+            });
 
-          phillyCityLights.members[curLight].visible = true;
-          phillyCityLights.members[curLight].alpha = 1;
-          lightFadeShader.setAlpha(0);
-        }
+            curLight = FlxG.random.int(0, phillyCityLights.length - 1);
 
-        if (beat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
-        {
-          trainCooldown = FlxG.random.int(-4, 0);
-          trainStart();
-        }
+            phillyCityLights.members[curLight].visible = true;
+            phillyCityLights.members[curLight].alpha = 1;
+            lightFadeShader.setAlpha(0);
+          }
+
+          if (beat % 8 == 4 && FlxG.random.bool(30) && !trainMoving && trainCooldown > 8)
+          {
+            trainCooldown = FlxG.random.int(-4, 0);
+            trainStart();
+          }
+      }
     }
   }
 

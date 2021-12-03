@@ -110,7 +110,7 @@ class Paths
 		var idx = 0;
 		var path:String='';
 		if(useOpenFLAssetSystem){
-			if(noteType!='' && noteType!='default'){
+			if(noteType!='' && noteType!='default' && noteType!='receptor'){
 				while(idx<pathsNotetype.length){
 					path = pathsNotetype[idx];
 					if(OpenFlAssets.exists(path))
@@ -122,12 +122,11 @@ class Paths
 			}else{
 				while(idx<pathsNoNotetype.length){
 					path = pathsNoNotetype[idx];
-					if(OpenFlAssets.exists(path))
+					if(FileSystem.exists(path))
 						break;
 
 					idx++;
 				}
-				trace(path);
 			}
 
 			if(!OpenFlAssets.exists(path)){
@@ -175,13 +174,18 @@ class Paths
 			var doShit=FlxG.bitmap.checkCache(bitmapName);
 			if(!doShit){
 				var pathPng = noteSkinPath('${key}.png',library,skin,modifier,noteType,useOpenFLAssetSystem);
+				var image:Null<BitmapData>=null;
 				if(FileSystem.exists(pathPng)){
 					doShit=true;
-					FlxG.bitmap.add(BitmapData.fromFile(pathPng),false,bitmapName);
+					image = BitmapData.fromFile(pathPng);
+					trace(bitmapName);
+					FlxG.bitmap.add(image,false,bitmapName);
 				}
-				if(doShit)
-					return FlxG.bitmap.get(bitmapName);
-			}
+				if(image!=null)
+					return image;
+			}else
+				return FlxG.bitmap.get(bitmapName);
+			
 		}
 		return image('skins/fallback/base/$key','preload');
 	}

@@ -86,7 +86,6 @@ class NoteGraphic extends FNFSprite
 			case 'pixel':
 				//loadGraphic(Paths.image('pixelUI/arrows-pixels',"shared"), true, 17, 17);
 				loadGraphic(Paths.noteSkinImage(behaviour.arguments.note.sheet, 'skins', skin, modifier, graphicType),true,behaviour.arguments.note.gridSizeX,behaviour.arguments.note.gridSizeY);
-
 				if(behaviour.arguments.note.quant){
 					var index = Reflect.field(behaviour.arguments.note,quantToIndex.get(quantTexture) );
 					if(index==null){

@@ -721,7 +721,7 @@ class PlayState extends MusicBeatState
 		doof.scrollFactor.set();
 		doof.finishThing = startCountdown;
 
-		Conductor.rawSongPos = -5000;
+		Conductor.rawSongPos = -5000 + currentOptions.noteOffset;
 		Conductor.songPosition=Conductor.rawSongPos;
 
 		strumLine = new FlxSprite(0, 50).makeGraphic(FlxG.width, 10);
@@ -1814,6 +1814,11 @@ class PlayState extends MusicBeatState
 		if(presetTxt!=null)
 			presetTxt.visible = ScoreUtils.botPlay?false:modchart.hudVisible;
 
+
+		shownAccuracy = truncateFloat(FlxMath.lerp(shownAccuracy,accuracy*100, Main.adjustFPS(0.2)),2);
+
+		if(Math.abs((accuracy*100)-shownAccuracy) <= 0.1)
+			shownAccuracy=truncateFloat(accuracy*100,2);
 		//scoreTxt.text = "Score:" + (songScore + botplayScore) + ' / ${accuracyName}:' + shownAccuracy + "% / " + grade;
 		updateScoreText();
 
@@ -1871,7 +1876,7 @@ class PlayState extends MusicBeatState
 
 		#if !DISABLE_CHARACTER_EDITOR
 		if (FlxG.keys.justPressed.EIGHT){
-			FlxG.switchState(new OffsetEditorState(SONG.player1));
+			FlxG.switchState(new CharacterEditorState(SONG.player2,new PlayState()));
 		}
 		#end
 
@@ -2400,7 +2405,6 @@ class PlayState extends MusicBeatState
 					}
 				}
 			}
-
 		}
 		if(currentOptions.ratingInHUD){
 			camRating.zoom = camHUD.zoom;
@@ -2556,6 +2560,21 @@ class PlayState extends MusicBeatState
 					numScore.x = coolText.x + (43 * daLoop) - 90;
 					numScore.y += 25;
 
+					if(currentOptions.fcBasedComboColor){
+						if(judgeMan.judgementCounter.get("miss")==0 && judgeMan.judgementCounter.get("bad")==0 && judgeMan.judgementCounter.get("shit")==0){
+							if(judgeMan.judgementCounter.get("good")>0)
+								numScore.color = 0x77e07e;
+							else if(judgeMan.judgementCounter.get("sick")>0){
+								numScore.color = 0x99f7f4;
+							}
+							else if(judgeMan.judgementCounter.get("epic")>0){
+								numScore.color = 0xf5da53;
+							}
+						}
+					}
+
+
+
 					if (noteModifier!='pixel')
 					{
 						numScore.antialiasing = true;
@@ -2670,17 +2689,22 @@ class PlayState extends MusicBeatState
 			FlxTween.tween(rating, {"scale.x": scaleX, "scale.y": scaleY}, 0.1, {
 				onComplete: function(tween:FlxTween)
 				{
-					FlxTween.tween(rating, {"scale.x": 0, "scale.y": 0}, 0.2, {
-						onComplete: function(tween:FlxTween)
-						{
-							coolText.destroy();
-							rating.kill();
-							rating.destroy();
-							if(judge==rating)judge=null;
-						},
-						ease: FlxEase.quadIn,
-						startDelay: 0.6
-					});
+					if(rating.alive){
+						FlxTween.tween(rating, {"scale.x": 0, "scale.y": 0}, 0.2, {
+							onComplete: function(tween:FlxTween)
+							{
+								coolText.destroy();
+								rating.kill();
+								rating.destroy();
+								if(judge==rating)judge=null;
+							},
+							ease: FlxEase.quadIn,
+							startDelay: 0.6
+						});
+					}else{
+						rating.destroy();
+						coolText.destroy();
+					}
 				},
 				ease: FlxEase.quadOut
 			});

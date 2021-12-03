@@ -45,6 +45,18 @@ class InitState extends FlxUIState {
     }
   }
 
+  public static function getCharacters(){
+    EngineData.characters=[];
+    for(file in FileSystem.readDirectory('assets/characters/data') ){
+      if(file.endsWith(".json")){
+        var name = file.replace(".json","");
+        if(!name.endsWith("-player")){
+          EngineData.characters.push(name);
+        }
+      }
+    }
+  }
+
   override function create()
   {
     OptionUtils.bindSave();
@@ -60,6 +72,8 @@ class InitState extends FlxUIState {
 		Highscore.load();
 
     FlxG.sound.muteKeys=null;
+    FlxG.sound.volumeUpKeys=null;
+    FlxG.sound.volumeDownKeys=null;
     FlxG.sound.volume = FlxG.save.data.volume;
 
     FlxG.sound.volumeHandler = function(volume:Float){
@@ -118,25 +132,23 @@ class InitState extends FlxUIState {
 
     FlxG.fixedTimestep = false;
 
-    for(file in FileSystem.readDirectory('assets/characters/data') ){
-			if(file.endsWith(".json")){
-        var name = file.replace(".json","");
-        if(!name.endsWith("-player")){
-          EngineData.characters.push(name);
-        }
-			}
-		}
+    getCharacters();
 
     //characters
-
+    var nextState:FlxUIState = new TitleState();
     if(currentOptions.shouldCache && canCache){
-      FlxG.switchState(new CachingState(new TitleState()));
+      nextState = new CachingState(nextState);
     }else{
       initTransition();
       transIn = FlxTransitionableState.defaultTransIn;
       transOut = FlxTransitionableState.defaultTransOut;
-      FlxG.switchState(new TitleState());
     }
+
+    #if GOTO_CHAR_EDITOR
+    FlxG.switchState(new CharacterEditorState('bf',nextState));
+    #else
+    FlxG.switchState(nextState);
+    #end
   }
 
 

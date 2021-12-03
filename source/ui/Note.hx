@@ -74,6 +74,7 @@ class Note extends NoteGraphic
 	public var initialPos:Float = 0;
 	public var desiredZIndex:Float = 0;
 	public var zIndex:Float = 0;
+	public var hitbox:Float = 166;
 
 	public var beat:Float = 0;
 	public static var noteBehaviour:NoteBehaviour;
@@ -121,11 +122,15 @@ class Note extends NoteGraphic
 		}
 		super(strumTime,modifier,skin,type,behaviour);
 		this.noteType=type;
+
+		hitbox = Conductor.safeZoneOffset;
+
 		switch(noteType){
 			case 'mine':
 				causesMiss=false;
 				opponentMisses=true;
 				canHold=false;
+				hitbox = Conductor.safeZoneOffset*0.38; // should probably not scale but idk man
 		}
 		if(!canHold && sustainNote){
 			visible=false;
@@ -241,12 +246,6 @@ class Note extends NoteGraphic
 		{
 			var diff = strumTime-Conductor.songPosition;
 			var absDiff = Math.abs(diff);
-
-			var hitbox = Conductor.safeZoneOffset;
-			switch(noteType){
-				case 'mine':
-					hitbox = Conductor.safeZoneOffset*0.38; // should probably not scale but idk man
-			}
 
 			if(isSustainNote){
 				if (absDiff <= hitbox*.5)

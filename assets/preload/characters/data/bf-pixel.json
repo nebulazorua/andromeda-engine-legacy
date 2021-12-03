@@ -68,7 +68,7 @@
   "spritesheet": "bfPixel",
   "singDur": 4,
   "iconName": "bf-pixel",
-  "healthColor": "0xFF50a5eb",
+  "healthColor": "0xFF31B0D1",
   "charOffset": [0,300],
   "camOffset": [-100, -100],
   "beatDancer": false,

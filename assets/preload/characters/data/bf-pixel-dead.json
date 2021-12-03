@@ -26,7 +26,7 @@
   "spritesheet": "bfPixelsDEAD",
   "singDur": 4,
   "iconName": "bf-pixel",
-  "healthColor": "0xFF50a5eb",
+  "healthColor": "0xFF31B0D1",
   "charOffset": [0,300],
   "beatDancer": false,
   "flipX": true,

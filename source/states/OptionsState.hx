@@ -51,7 +51,7 @@ class OptionsState extends MusicBeatState
 			new OptionCategory("Advanced",[
 				#if !FORCED_JUDGE new JudgementsOption("judgementWindow","Judgements","The judgement windows to use"),
 				new ToggleOption("useEpic","Use Epics","Allows the 'Epic' judgement to be used"),#end
-				new ToggleOption("pollingInput","Old input","Makes input get checked every frame instead of on key press"),
+				new ToggleOption("pollingInput","Polling Input","Makes input get checked every frame instead of on key press"),
 				new ScrollOption("accuracySystem","Accuracy System","How accuracy is determined",0,2,["Basic","ITG","Wife3"])
 			]),
 			new StateOption("Calibrate Offset",new SoundOffsetState()),
@@ -91,6 +91,7 @@ class OptionsState extends MusicBeatState
 			new ToggleOption("persistentCombo","Combo doesnt fade","Combo stays on screen instead of fading out"),
 			new ToggleOption("onlyScore","Minimal Information","Only shows your score below the hp bar"),
 			new ToggleOption("smoothHPBar","Smooth Healthbar","Makes the HP Bar smoother"),
+			new ToggleOption("fcBasedComboColor","FC Combo Colouring","Makes the combo's colour changes with type of FC you have"),
 			new StateOption("Judgement Position",new JudgeCustomizationState()),
 		]),
 		new OptionCategory("Performance",[

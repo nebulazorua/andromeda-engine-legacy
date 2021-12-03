@@ -8,6 +8,8 @@ import flixel.math.FlxRect;
 import flixel.util.FlxTimer;
 import Options;
 import ui.*;
+import flixel.input.keyboard.FlxKey;
+
 class MusicBeatState extends FlxUIState
 {
 	private var lastBeat:Float = 0;
@@ -17,6 +19,10 @@ class MusicBeatState extends FlxUIState
 	public var curBeat:Int = 0;
 	public var curDecStep:Float=0;
 	public var curDecBeat:Float=0;
+	public var canChangeVolume:Bool=true;
+
+	public var volumeDownKeys:Array<FlxKey> = [MINUS, NUMPADMINUS];
+	public var volumeUpKeys:Array<FlxKey> = [PLUS, NUMPADPLUS];
 
 	private var controls(get, never):Controls;
 
@@ -42,6 +48,16 @@ class MusicBeatState extends FlxUIState
 
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
+
+
+		#if FLX_KEYBOARD
+		if(canChangeVolume){
+			if (FlxG.keys.anyJustReleased(volumeUpKeys))
+				FlxG.sound.changeVolume(0.1);
+			else if (FlxG.keys.anyJustReleased(volumeDownKeys))
+				FlxG.sound.changeVolume(-0.1);
+		}
+		#end
 
 		super.update(elapsed);
 	}

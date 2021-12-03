@@ -96,7 +96,7 @@ class Options
 	public var mMod:Float = 1;
 	public var pollingInput:Bool = false;
 	public var judgementWindow:String = 'ITG';
-	public var noteOffset:Int = 100;
+	public var noteOffset:Int = 0;
 	public var botPlay:Bool = false;
 	public var loadModcharts:Bool = true;
 	public var noFail:Bool = false;
@@ -121,9 +121,7 @@ class Options
 	public var smJudges:Bool = false;
 	public var judgeX:Float = 0;
 	public var judgeY:Float = 0;
-	public var onlyScore:Bool = false;
-	public var smoothHPBar:Bool = false;
-
+	public var fcBasedComboColor:Bool = false;
 	// performance
 	public var fps:Int = 120;
 	public var noChars:Bool = false;
@@ -140,6 +138,8 @@ class Options
 	// preference
 	public var pauseHoldAnims:Bool = true;
 	public var showMS:Bool = false;
+	public var onlyScore:Bool = false;
+	public var smoothHPBar:Bool = false;
 	public var showComboCounter:Bool = true;
 	public var showRatings:Bool = true;
 	public var ghosttapSounds:Bool = false;
@@ -182,7 +182,7 @@ class StateOption extends Option
 	}
 }
 
-class Checkbox extends FlxSprite
+class OptionCheckbox extends FlxSprite
 {
 	public var state:Bool=false;
 	public var tracker:FlxSprite;
@@ -265,7 +265,7 @@ class Checkbox extends FlxSprite
 class ToggleOption extends Option
 {
 	private var property = "dummy";
-	private var checkbox:Checkbox;
+	private var checkbox:OptionCheckbox;
 	private var callback:Bool->Void;
 
 	public function new(property:String,?name:String,?description:String='',?callback:Bool->Void){
@@ -274,7 +274,7 @@ class ToggleOption extends Option
 		this.name = name;
 		this.callback=callback;
 		this.description=description;
-		checkbox = new Checkbox(Reflect.field(OptionUtils.options,property));
+		checkbox = new OptionCheckbox(Reflect.field(OptionUtils.options,property));
 		add(checkbox);
 	}
 

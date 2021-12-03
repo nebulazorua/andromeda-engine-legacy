@@ -38,15 +38,17 @@ class Alphabet extends FlxSpriteGroup
 	var lastSprite:AlphaCharacter;
 	var xPosResetted:Bool = false;
 	var lastWasSpace:Bool = false;
+	var fontScale:Float = 1;
 
 	var splitWords:Array<String> = [];
 
 	var isBold:Bool = false;
 
-	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false)
+	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, fontScale:Float=1)
 	{
 		super(x, y);
 
+		this.fontScale=fontScale;
 		_finalText = text;
 		this.text = text;
 		isBold = bold;
@@ -98,12 +100,12 @@ class Alphabet extends FlxSpriteGroup
 
 				if (lastWasSpace)
 				{
-					xPos += 40;
+					xPos += 40*fontScale;
 					lastWasSpace = false;
 				}
 
 				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
-				var letter:AlphaCharacter = new AlphaCharacter(xPos, 0);
+				var letter:AlphaCharacter = new AlphaCharacter(xPos, 0, fontScale);
 
 				if (isBold && !isNumber && !isSymbol)
 				{
@@ -202,7 +204,7 @@ class Alphabet extends FlxSpriteGroup
 				// trace(_finalText.fastCodeAt(loopNum) + " " + _finalText.charAt(loopNum));
 
 				// var letter:AlphaCharacter = new AlphaCharacter(30 * loopNum, 0);
-				var letter:AlphaCharacter = new AlphaCharacter(xPos, 55 * yMulti);
+				var letter:AlphaCharacter = new AlphaCharacter(xPos, 55 * yMulti, fontScale);
 				letter.row = curRow;
 				if (isBold)
 				{
@@ -287,10 +289,11 @@ class AlphaCharacter extends FlxSprite
 	public static var symbols:String = "|~#$%()*+-:;<=>@[]^_.,'!?";
 
 	public var row:Int = 0;
-
-	public function new(x:Float, y:Float)
+	public var fontScale:Float = 1;
+	public function new(x:Float, y:Float, fontScale:Float=1)
 	{
 		super(x, y);
+		this.fontScale=fontScale;
 		var tex = Paths.getSparrowAtlas('alphabet');
 		frames = tex;
 
@@ -301,6 +304,7 @@ class AlphaCharacter extends FlxSprite
 	{
 		animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
 		animation.play(letter);
+		scale.set(fontScale,fontScale);
 		updateHitbox();
 	}
 
@@ -314,6 +318,7 @@ class AlphaCharacter extends FlxSprite
 
 		animation.addByPrefix(letter, letter + " " + letterCase, 24);
 		animation.play(letter);
+		scale.set(fontScale,fontScale);
 		updateHitbox();
 
 		FlxG.log.add('the row' + row);
@@ -326,6 +331,7 @@ class AlphaCharacter extends FlxSprite
 	{
 		animation.addByPrefix(letter, letter, 24);
 		animation.play(letter);
+		scale.set(fontScale,fontScale);
 
 		updateHitbox();
 	}
@@ -365,6 +371,7 @@ class AlphaCharacter extends FlxSprite
 				animation.addByPrefix(letter, letter, 24);
 				animation.play(letter);
 		}
+		scale.set(fontScale,fontScale);
 
 		updateHitbox();
 	}

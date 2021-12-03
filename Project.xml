@@ -60,7 +60,7 @@
 	<!-- <define name="NO_FREEPLAY_MODS"/> -->
 	<!-- <define name="FORCE_LUA_MODCHARTS"/> -->
 	<!-- <define name="FORCED_JUDGE"/> -->
-
+	<!-- <define name="GOTO_CHAR_EDITOR" if="debug"/> -->
 
 
 	<section if="PRELOAD_ALL">
