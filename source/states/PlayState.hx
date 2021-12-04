@@ -452,7 +452,7 @@ class PlayState extends MusicBeatState
 
 		trace(luaModchartExists);
 		judgementSprites = new FlxTypedGroup<JudgeSprite>();
-		judgementSprites.add(new JudgeSprite());
+		//judgementSprites.add(new JudgeSprite());
 
 		grade = "N/A";
 		hitNotes=0;
@@ -749,7 +749,7 @@ class PlayState extends MusicBeatState
 		//noteSplashes.add(recyclableSplash);
 
 		add(noteSplashes);
-		add(judgementSprites);
+		//add(judgementSprites);
 
 		// startCountdown();
 
@@ -2372,23 +2372,19 @@ class PlayState extends MusicBeatState
 		});
 
 		if (!inCutscene){
-			if(currentOptions.pollingInput){
-				if(ScoreUtils.botPlay)
-					botplay();
-				else
-					keyShit();
-			}else{
-				if(ScoreUtils.botPlay)
-					botplay();
+			if(ScoreUtils.botPlay)
+				botplay();
 
-				if(pressedKeys.contains(true)){
-					for(idx in 0...pressedKeys.length){
-						var isHeld = pressedKeys[idx];
-						if(isHeld)
-							for(daNote in getHittableHolds(idx))
-								noteHit(daNote);
+			if(currentOptions.pollingInput)
+				keyShit();
 
-					}
+
+			if(pressedKeys.contains(true)){
+				for(idx in 0...pressedKeys.length){
+					var isHeld = pressedKeys[idx];
+					if(isHeld)
+						for(daNote in getHittableHolds(idx))
+							noteHit(daNote);
 				}
 			}
 		}
@@ -2514,7 +2510,7 @@ class PlayState extends MusicBeatState
 			comboSprites.remove(comboSprites[0]);
 		}
 		var placement:String = Std.string(combo);
-		var ratingCameras = [];
+		var ratingCameras = [camRating];
 		var coolText:FlxText = new FlxText(0, 0, 0, placement, 32);
 		coolText.screenCenter();
 		coolText.x = FlxG.width * 0.55;
@@ -2540,9 +2536,12 @@ class PlayState extends MusicBeatState
 				{
 					idx++;
 					if(i=='-'){
-						i='Negative';
+						i='negative';
 					}
-					var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
+					//var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
+					var numScore:ComboSprite = new ComboSprite(0,0,noteModifier);
+					//numScore.setup();
+					numScore.number = i;
 					numScore.screenCenter(XY);
 					numScore.x = coolText.x + (43 * daLoop) - 90;
 					numScore.y += 25;
@@ -2629,85 +2628,97 @@ class PlayState extends MusicBeatState
 			pixelShitPart2 = '-pixel';
 		}
 
-		var rating:JudgeSprite = judgementSprites.recycle(JudgeSprite);
-		rating.visible=true;
-		rating.scale.set(1,1);
-		rating.setStyle(noteModifier);
-		rating.judgement = daRating;
-		rating.screenCenter();
-		rating.x = coolText.x - 40;
-		rating.y -= 60;
-		judgementSprites.add(rating);
-		if(!currentOptions.showRatings)
-			rating.visible=false;
-
-
-		if (noteModifier!='pixel')
-		{
-			rating.setGraphicSize(Std.int(rating.width * 0.7));
-			rating.antialiasing = true;
-		}
-		else
-		{
-			rating.setGraphicSize(Std.int(rating.width * daPixelZoom * .7));
-		}
-
-		rating.updateHitbox();
 		var ratingCameras = [camRating];
-
-		if(currentOptions.ratingInHUD){
-			coolText.scrollFactor.set(0,0);
-			rating.scrollFactor.set(0,0);
-
+		if(currentOptions.showRatings){
+			var rating:JudgeSprite = new JudgeSprite(0,0,noteModifier);//judgementSprites.recycle(JudgeSprite);
+			rating.setup();
+			rating.judgement = daRating;
 			rating.screenCenter();
-			coolText.screenCenter();
-			rating.y -= 25;
-		}
+			rating.x = coolText.x - 40;
+			rating.y -= 60;
+			add(rating);
 
-		rating.x += currentOptions.judgeX;
-		rating.y += currentOptions.judgeY;
 
-		if(currentOptions.smJudges){
-			if(judge!=null && judge.alive){
-				judge.kill();
+			if (noteModifier!='pixel')
+			{
+				rating.setGraphicSize(Std.int(rating.width * 0.7));
+				rating.antialiasing = true;
 			}
-			var scaleX = rating.scale.x;
-			var scaleY = rating.scale.y;
-			rating.scale.scale(1.1);
-			if(rating.currentTween!=null && rating.currentTween.active){
-				rating.currentTween.cancel();
+			else
+			{
+				rating.setGraphicSize(Std.int(rating.width * daPixelZoom * .7));
 			}
-			rating.currentTween = FlxTween.tween(rating, {"scale.x": scaleX, "scale.y": scaleY}, 0.1, {
+
+			rating.updateHitbox();
+
+			if(currentOptions.ratingInHUD){
+				coolText.scrollFactor.set(0,0);
+				rating.scrollFactor.set(0,0);
+
+				rating.screenCenter();
+				coolText.screenCenter();
+				rating.y -= 25;
+			}
+
+			rating.x += currentOptions.judgeX;
+			rating.y += currentOptions.judgeY;
+
+			if(currentOptions.smJudges){
+				if(judge!=null && judge.alive){
+					judge.kill();
+				}
+				var scaleX = rating.scale.x;
+				var scaleY = rating.scale.y;
+				rating.scale.scale(1.1);
+				if(rating.currentTween!=null && rating.currentTween.active){
+					rating.currentTween.cancel();
+				}
+				rating.currentTween = FlxTween.tween(rating, {"scale.x": scaleX, "scale.y": scaleY}, 0.1, {
+					onComplete: function(tween:FlxTween)
+					{
+						if(rating.alive && rating.currentTween==tween){
+							rating.currentTween = FlxTween.tween(rating, {"scale.x": 0, "scale.y": 0}, 0.2, {
+								onComplete: function(tween:FlxTween)
+								{
+									rating.kill();
+									rating.destroy();
+									if(judge==rating)judge=null;
+								},
+								ease: FlxEase.quadIn,
+								startDelay: 0.6
+							});
+						}
+					},
+					ease: FlxEase.quadOut
+				});
+
+			}else{
+				rating.acceleration.y = 550;
+				rating.velocity.y -= FlxG.random.int(140, 175);
+				rating.velocity.x -= FlxG.random.int(0, 10);
+			}
+
+			judge=rating;
+
+			rating.cameras=ratingCameras;
+			coolText.cameras=ratingCameras;
+
+			FlxTween.tween(rating, {alpha: 0}, 0.2, {
 				onComplete: function(tween:FlxTween)
 				{
-					if(rating.alive && rating.currentTween==tween){
-						rating.currentTween = FlxTween.tween(rating, {"scale.x": 0, "scale.y": 0}, 0.2, {
-							onComplete: function(tween:FlxTween)
-							{
-								coolText.destroy();
-								rating.kill();
-								if(judge==rating)judge=null;
-							},
-							ease: FlxEase.quadIn,
-							startDelay: 0.6
-						});
-					}else{
-						coolText.destroy();
-					}
+					rating.kill();
+					rating.destroy();
 				},
-				ease: FlxEase.quadOut
+				startDelay: Conductor.crochet * 0.001
 			});
-
 		}else{
-			rating.acceleration.y = 550;
-			rating.velocity.y -= FlxG.random.int(140, 175);
-			rating.velocity.x -= FlxG.random.int(0, 10);
+
+			coolText.cameras=ratingCameras;
+			if(currentOptions.ratingInHUD){
+				coolText.scrollFactor.set(0,0);
+				coolText.screenCenter();
+			}
 		}
-
-		judge=rating;
-
-		//rating.cameras=ratingCameras;
-		coolText.cameras=ratingCameras;
 
 		showCombo();
 		var daLoop:Float=0;
@@ -2721,11 +2732,14 @@ class PlayState extends MusicBeatState
 					daLoop-=.5;
 				}
 				if(i=='-'){
-					i='Negative';
+					i='negative';
 					daLoop--;
 				}
 
-				var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
+			//	var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
+				var numScore:ComboSprite = new ComboSprite(0,0,noteModifier);
+				numScore.setup();
+				numScore.number = i;
 				numScore.screenCenter();
 				numScore.x = coolText.x + (32 * daLoop) + 15;
 				numScore.y += 50;
@@ -2734,7 +2748,7 @@ class PlayState extends MusicBeatState
 					if(noteModifier!="pixel")
 						numScore.x += 25;
 					else{
-						numScore.y += 35;
+						//numScore.y += 35;
 						numScore.x += 24;
 					}
 				}
@@ -2802,16 +2816,8 @@ class PlayState extends MusicBeatState
 
 		// add(coolText);
 
-		if(!currentOptions.smJudges){
-			FlxTween.tween(rating, {alpha: 0}, 0.2, {
-				onComplete: function(tween:FlxTween)
-				{
-					coolText.destroy();
+		coolText.destroy();
 
-				},
-				startDelay: Conductor.crochet * 0.001
-			});
-		}
 
 
 		updateAccuracy();
@@ -2880,7 +2886,6 @@ class PlayState extends MusicBeatState
 	}
 
 	private function botplay(){
-		// TOO LAZY TO WRITE NEW CODE AND THIS WORKS FINE SO
 		var holdArray:Array<Bool> = [false,false,false,false];
 		var controlArray:Array<Bool> = [false,false,false,false];
 		for(note in playerNotes){
@@ -2940,6 +2945,11 @@ class PlayState extends MusicBeatState
 
 	private function keyShit():Void
 	{
+		if(FlxG.keys.justPressed.F6){
+			ScoreUtils.botPlay = !ScoreUtils.botPlay;
+			return;
+		}
+
 		var pressed:Array<Bool> = [controls.LEFT_P,controls.DOWN_P,controls.UP_P,controls.RIGHT_P];
 		var held:Array<Bool> = [controls.LEFT,controls.DOWN,controls.UP,controls.RIGHT];
 
@@ -2954,12 +2964,7 @@ class PlayState extends MusicBeatState
 		if(held.contains(true)){
 			for(dir in 0...held.length){
 				var isHeld = held[dir];
-				if(isHeld){
-					var holds = getHittableHolds(dir);
-					for(note in holds){
-						noteHit(note);
-					}
-				}
+				pressedKeys[dir]=isHeld;
 			}
 		}
 	}

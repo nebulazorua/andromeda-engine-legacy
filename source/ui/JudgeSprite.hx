@@ -1,10 +1,12 @@
 package ui;
 import states.*;
+import haxe.Timer;
 import flixel.tweens.FlxTween;
 
 class JudgeSprite extends FNFSprite {
   public var currentTween:FlxTween;
   var currentStyle:String='';
+  //public var created:Float;
   public var judgement(default, set):String;
   public function set_judgement(val:String){
     if(animation.getByName(val)!=null){
@@ -14,8 +16,24 @@ class JudgeSprite extends FNFSprite {
       animation.play('shit',true);
       return judgement='shit';
     }
-
   }
+
+  public function setup(){
+    alpha=1;
+    if(currentTween!=null && currentTween.active){
+      currentTween.cancel();
+    }
+    //created = Timer.stamp();
+    currentTween=null;
+    scale.set(1,1);
+    velocity.set(0,0);
+    drag.set(0,0);
+    maxVelocity.set(0,0);
+    acceleration.set(0,0);
+    updateHitbox();
+    visible=true;
+  }
+
   public function setStyle(style:String){
     if(style!=currentStyle){
       currentStyle=style;
@@ -45,7 +63,7 @@ class JudgeSprite extends FNFSprite {
     animation.play('shit',true);
     judgement='shit';
 
-    visible=false;
-    scrollFactor.set();
+  //  visible=false;
+  //  scrollFactor.set();
   }
 }

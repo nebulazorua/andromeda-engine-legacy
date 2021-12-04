@@ -139,7 +139,7 @@ class Options
 	// preference
 	public var showMem:Bool = true;
 	public var showMemPeak:Bool = true;
-	public var showFPS:Bool = true;
+	public var showFPS:Bool = false;
 	public var pauseHoldAnims:Bool = true;
 	public var showMS:Bool = false;
 	public var onlyScore:Bool = false;
