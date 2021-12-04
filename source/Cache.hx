@@ -12,6 +12,7 @@ import Sys;
 import sys.FileSystem;
 import flixel.util.FlxDestroyUtil;
 import openfl.media.Sound;
+import flixel.FlxBasic;
 
 class Cache {
   public static var offsetData = new Map<String,String>();
@@ -27,12 +28,13 @@ class Cache {
     pathCache.clear();
     xmlData.clear();
     soundCache.clear();
-    Clear();
-    // TODO: wipe graphics too
+    clear();
+    clearImages();
+
     trace("WIPED CACHE!");
   }
 
-  public static function Clear(){ // clears most things that are cached
+  public static function clear(){ // clears most things that are cached
     offsetData.clear();
     animData.clear();
     charFrames.clear();
@@ -46,6 +48,29 @@ class Cache {
     NoteGraphic.noteframeCaches.clear();
     NoteSplash.cache.clear();
     trace("CLEARED CACHE!");
+  }
+
+  public static function clearImages(){
+    if(!EngineData.options.cacheUsedImages){
+      // CREDIT TO HAYA AND SHUBS
+      // TRY OUT FOREVER ENGINE!
+      // NO, LIKE, SERIOUSLY.
+      // https://github.com/Yoshubs/Forever-Engine-Legacy
+      var l:Int = 0;
+      @:privateAccess
+      for (key in FlxG.bitmap._cache.keys())
+      {
+        var obj = FlxG.bitmap._cache.get(key);
+        if (obj != null)
+        {
+          Assets.cache.removeBitmapData(key);
+          FlxG.bitmap._cache.remove(key);
+          obj.destroy();
+          l++;
+        }
+      }
+      trace('destroyed ${l}');
+    }
   }
 
   public static function getXML(path:String):Null<String>{ // gets an XML file and caches it if it hasnt been already

@@ -34,6 +34,8 @@ typedef CharJson = {
 	var beatDancer:Bool; // dances every beat like gf and spooky kids
 	var flipX:Bool;
 
+	@:optional var format:String;
+	@:optional var camMovement:Float;
 	@:optional var camOffset:Array<Float>;
 	@:optional var scale:Float;
 	@:optional var antialiasing:Bool;
@@ -56,7 +58,7 @@ class Character extends FlxSprite
 	public var charData:CharJson;
 	public var dadVar:Float = 4;
 	public var isIdling:Bool=false;
-
+	public var camMovementMult:Float = 1;
 	var idleAnims:Array<String> = ['danceLeft','danceRight','idle'];
 	public var beatDancer:Bool = false;
 	public var charPath:String='';
@@ -139,8 +141,11 @@ class Character extends FlxSprite
 						}
 						shit=converted;
 					default:
+						format = 'andromeda';
 						// nothing
 				}
+
+				Reflect.setField(shit,'format',format);
 
 				charData=shit;
 
@@ -215,6 +220,11 @@ class Character extends FlxSprite
 				antialiasing=true;
 
 
+			if(charData.camMovement==null){
+				camMovementMult=1;
+			}else if(charData.camMovement!=null){
+				camMovementMult=charData.camMovement;
+			}
 			dadVar = charData.singDur;
 			flipX = charData.flipX;
 			var clr:Null<FlxColor> = FlxColor.fromString(charData.healthColor);

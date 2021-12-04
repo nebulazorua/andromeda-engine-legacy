@@ -119,7 +119,7 @@ class PauseSubState extends MusicBeatSubstate
 						FlxG.switchState(new FreeplayState());
 					}
 
-					Cache.Clear();
+					Cache.clear();
 			}
 		}
 

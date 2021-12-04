@@ -24,6 +24,7 @@ class JudgeCustomizationState extends MusicBeatState {
   }
 
   override function create(){
+    super.create();
     FlxG.mouse.visible=true;
 
     defaultPos = FlxPoint.get();
@@ -79,7 +80,7 @@ class JudgeCustomizationState extends MusicBeatState {
     instructions.screenCenter(X);
     add(instructions);
 
-    super.create();
+
   }
 
   var prevComboNums:Array<String> = [];

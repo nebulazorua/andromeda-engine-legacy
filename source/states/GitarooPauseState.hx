@@ -18,6 +18,7 @@ class GitarooPauseState extends MusicBeatState
 
 	override function create()
 	{
+		super.create();
 		if (FlxG.sound.music != null)
 			FlxG.sound.music.stop();
 
@@ -47,7 +48,7 @@ class GitarooPauseState extends MusicBeatState
 
 		changeThing();
 
-		super.create();
+
 	}
 
 	override function update(elapsed:Float)

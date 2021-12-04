@@ -55,6 +55,7 @@ class CachingState extends FlxUIState {
   public static var cache:Map<String,FlxGraphic> = new Map<String,FlxGraphic>();
 
   override function create(){
+    super.create();
     FlxG.autoPause=false;
     bg = new FlxSprite().loadGraphic(Paths.image("loadingBG","preload"));
     bg.setGraphicSize(Std.int(bg.width*.85));
@@ -231,7 +232,7 @@ class CachingState extends FlxUIState {
       }
     });
 
-    super.create();
+
   }
 
   override function update(elapsed:Float){

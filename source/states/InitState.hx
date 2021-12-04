@@ -66,6 +66,10 @@ class InitState extends FlxUIState {
     getNoteskins();
 
     EngineData.options = currentOptions;
+    ui.FPSMem.showFPS = currentOptions.showFPS;
+    ui.FPSMem.showMem = currentOptions.showMem;
+    ui.FPSMem.showMemPeak = currentOptions.showMemPeak;
+
     PlayerSettings.init();
 
 		FlxG.save.bind('funkin', 'ninjamuffin99');

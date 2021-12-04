@@ -95,6 +95,7 @@ class OffsetEditorState extends FlxState
 
 	override function create()
 	{
+		super.create();
 		FlxG.mouse.visible = true;
 		FlxG.sound.music.stop();
 		var gridBG:FlxSprite = FlxGridOverlay.create(10, 10);
@@ -183,7 +184,7 @@ class OffsetEditorState extends FlxState
 
 		displayCharacter(daAnim);
 
-		super.create();
+
 	}
 
 	function displayCharacter(daAnim:String){

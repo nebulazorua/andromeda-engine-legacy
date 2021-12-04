@@ -30,6 +30,7 @@ class SoundOffsetState extends MusicBeatState
   public var offsetTxt:FlxText;
   public var metronome:Character;
   override function create(){
+    super.create();
     #if desktop
     // Updating Discord Rich Presence
     DiscordClient.changePresence("Calibrating audio", null);
@@ -70,7 +71,7 @@ class SoundOffsetState extends MusicBeatState
     metronome.y += 100;
     add(metronome);
 
-    super.create();
+
   }
 
   override function beatHit(){

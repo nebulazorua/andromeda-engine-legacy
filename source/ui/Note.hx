@@ -209,8 +209,10 @@ class Note extends NoteGraphic
 				prevNote.lastSustainPiece=false;
 				//prevNote.noteGraphic.animation.play('${colors[noteData]}hold');
 				prevNote.setDir(noteData,true,false);
-				if(!beingCharted)
-					prevNote.scale.y *= Conductor.stepCrochet/100*1.5*PlayState.getFNFSpeed(strumTime);//prevNote.scale.y *= Math.abs(prevNote.y-y)/(prevNote.frameHeight);
+				if(!beingCharted){
+					prevNote.scale.y *= (Conductor.stepCrochet / 100 * 1.5);
+					prevNote.scale.y *= PlayState.getFNFSpeed(strumTime);
+				}
 
 
 				prevNote.scaleDefault.set(prevNote.scale.x,prevNote.scale.y);

@@ -61,7 +61,6 @@ class Paths
 		var folders:Array<String>=[];
 		// TODO: openflassets shit maybe?
 		for(folder in FileSystem.readDirectory('${base}/${library}') ){
-			trace(folder);
 			if(!folder.contains(".") && FileSystem.isDirectory('${base}/${library}/${folder}')){
 				folders.push(folder);
 			}
@@ -178,14 +177,13 @@ class Paths
 				if(FileSystem.exists(pathPng)){
 					doShit=true;
 					image = BitmapData.fromFile(pathPng);
-					trace(bitmapName);
 					FlxG.bitmap.add(image,false,bitmapName);
 				}
 				if(image!=null)
 					return image;
 			}else
 				return FlxG.bitmap.get(bitmapName);
-			
+
 		}
 		return image('skins/fallback/base/$key','preload');
 	}

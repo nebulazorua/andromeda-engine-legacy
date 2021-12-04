@@ -25,106 +25,120 @@ class OptionsState extends MusicBeatState
 {
 
 	public static var instance:OptionsState;
-	private var defCat:OptionCategory = new OptionCategory("Default",[
-		new OptionCategory("Gameplay",[
-			new OptionCategory("Controls",[ // TODO: rewrite
-				new ControlOption(controls,Control.LEFT),
-				new ControlOption(controls,Control.DOWN),
-				new ControlOption(controls,Control.UP),
-				new ControlOption(controls,Control.RIGHT),
-				new ControlOption(controls,Control.PAUSE),
-				new ControlOption(controls,Control.RESET),
-			]),
-			new ToggleOption("resetKey","Reset key","Toggle pressing the bound key to instantly die"),
-			#if !FORCE_LUA_MODCHARTS new ToggleOption("loadModcharts","Load Lua modcharts","Toggles lua modcharts"), #end
-			new ToggleOption("ghosttapping","Ghost-tapping","Allows you to press keys while no notes are able to be hit."),
-			new ToggleOption("failForMissing","Sudden Death","FC or die"),
-			#if !NO_BOTPLAY new ToggleOption("botPlay","BotPlay","Let a bot play for you"), #end
-			#if !NO_FREEPLAY_MODS
-			new OptionCategory("Freeplay Modifiers",[
-				new StepOption("cMod","Speed Constant",0.1,0,10,"","","A constant speed to override the scrollspeed. 0 for chart-dependant speed",true),
-				new StepOption("xMod","Speed Mult",0.1,0,2,"","x","A multiplier to a chart's scrollspeed",true),
-				new StepOption("mMod","Minimum Speed",0.1,0,10,"","x","The minimum scrollspeed a chart can have",true),
-				new ToggleOption("noFail","No Fail","You can't blueball, but there's an indicator that you failed and you don't save the score."),
-			]),
-			#end
-			new OptionCategory("Advanced",[
-				#if !FORCED_JUDGE new JudgementsOption("judgementWindow","Judgements","The judgement windows to use"),
-				new ToggleOption("useEpic","Use Epics","Allows the 'Epic' judgement to be used"),#end
-				new ToggleOption("pollingInput","Polling Input","Makes input get checked every frame instead of on key press"),
-				new ScrollOption("accuracySystem","Accuracy System","How accuracy is determined",0,2,["Basic","ITG","Wife3"])
-			]),
-			new StateOption("Calibrate Offset",new SoundOffsetState()),
-			// TODO: make a better 'calibrate offset'
-		]),
-		new OptionCategory("Appearance",[
-			new ToggleOption("useNotesplashes","Show NoteSplashes","Notesplashes showing up on sicks and above."),
-			new ToggleOption("camFollowsAnims","Directional Camera","Camera moving depending on a character's animations"),
-			new ToggleOption("downScroll","Downscroll","Arrows come from the top down instead of the bottom up."),
-			new ToggleOption("middleScroll","Centered Notes","Places your notes in the center of the screen and hides the opponent's."),
-			new NoteskinOption("noteSkin","NoteSkin","The noteskin to use"),
-			new ToggleOption("allowNoteModifiers","Allow note modifiers","Whether note modifiers (e.g pixel notes in week 6) get used"),
-			new StepOption("backTrans","BG Darkness",10,0,100,"%","","How dark the background is",true),
-			new ScrollOption("staticCam","Camera Focus","Who the camera should focus on",0,OptionUtils.camFocuses.length-1,OptionUtils.camFocuses),
-			new ToggleOption("oldMenus","Vanilla Menus","Forces the vanilla menus to be used"),
-			new ToggleOption("oldTitle","Vanilla Title Screen","Forces the vanilla title to be used"),
-			new ToggleOption("healthBarColors","Healthbar Colours","Whether the healthbar colour changes with the character"),
-			new OptionCategory("Effects",[
-				new ToggleOption("picoCamshake","Train camera shake","Whether the train in week 3's background shakes the camera"),
-				//new ToggleOption("senpaiShaders","Week 6 shaders","Is the CRT effect active in week 6"),
-				new ScrollOption("senpaiShaderStrength","Week 6 shaders","How strong the week 6 shaders are",0,2,["Off","CRT","All"])
-			]),
-		]),
-		new OptionCategory("Preferences",[
-			new ToggleOption("showComboCounter","Show combo","Shows your combo when you hit a note"),
-			new ToggleOption("showRatings","Show judgements","Shows judgements when you hit a note"),
-			new ToggleOption("showMS","Show Hit MS","Shows millisecond difference when you hit a note"),
-			new ToggleOption("showCounters","Show judgement counters","Whether judgement counters get shown on the side"),
-			new ToggleOption("ratingInHUD","Fixed Judgements","Fixes judgements, milliseconds and combo to the screen"),
-			new ToggleOption("smJudges","Simply Judgements","Animates judgements like ITG's Simply Love theme"),
-			new ToggleOption("pauseHoldAnims","Holds pause anims", "Whether to pause animations on their first frame"),
-			new ToggleOption("menuFlash","Flashing in menus","Whether buttons and the background should flash in menus"),
-			new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),
-			new ToggleOption("ghosttapSounds","Ghost-tap hit sounds","Play a click sound when you ghost-tap"),
-			new StepOption("hitsoundVol","Hit sound volume",10,0,100,"%","","What volume the hitsound should be",true),
-			new ToggleOption("freeplayPreview","Song preview in freeplay","Whether songs get played as you hover over them in Freeplay"),
-			new ToggleOption("persistentCombo","Combo doesnt fade","Combo stays on screen instead of fading out"),
-			new ToggleOption("onlyScore","Minimal Information","Only shows your score below the hp bar"),
-			new ToggleOption("smoothHPBar","Smooth Healthbar","Makes the HP Bar smoother"),
-			new ToggleOption("fcBasedComboColor","FC Combo Colouring","Makes the combo's colour changes with type of FC you have"),
-			new StateOption("Judgement Position",new JudgeCustomizationState()),
-		]),
-		new OptionCategory("Performance",[
-			new StepOption("fps","FPS Cap",30,30,360,"","","The FPS the game tries to run at",true,function(value:Float,step:Float){
-				Main.setFPSCap(Std.int(value));
-			}),
-			new ToggleOption("noChars","Hide characters","Hides characters ingame"),
-			new ToggleOption("noStage","Hide background","Hides stage ingame"),
-			new ToggleOption("allowOrderSorting","Sort notes by order","Allows notes to go infront and behind other notes. May cause FPS drops on very high note-density charts."),
-			new OptionCategory("Loading",[
-				new ToggleOption("shouldCache","Cache on startup","Whether the engine caches stuff when the game starts"),
-				new ToggleOption("cacheCharacters","Cache characters","Whether the engine caches characters if it caches on startup"),
-				new ToggleOption("cacheSongs","Cache songs","Whether the engine caches songs if it caches on startup"),
-				new ToggleOption("cacheSounds","Cache sounds","Whether the engine caches misc sounds if it caches on startup"),
-				new ToggleOption("cachePreload","Cache misc images","Whether the engine caches misc images if it caches on startup"),
-				new ToggleOption("cacheUsedImages","Persistent Images","Whether images should persist in memory",function(state:Bool){
-					FlxGraphic.defaultPersist = state;
-				}),
-			]),
-		])
-	]);
+	private var defCat:OptionCategory;
 
 	private var optionText:FlxTypedGroup<Option>;
 	private var optionDesc:FlxText;
 	private var curSelected:Int = 0;
 	public static var category:Dynamic;
 
+	private function createDefault(){
+		defCat = new OptionCategory("Default",[
+			new OptionCategory("Gameplay",[
+				new OptionCategory("Controls",[ // TODO: rewrite
+					new ControlOption(controls,Control.LEFT),
+					new ControlOption(controls,Control.DOWN),
+					new ControlOption(controls,Control.UP),
+					new ControlOption(controls,Control.RIGHT),
+					new ControlOption(controls,Control.PAUSE),
+					new ControlOption(controls,Control.RESET),
+				]),
+				new ToggleOption("resetKey","Reset key","Toggle pressing the bound key to instantly die"),
+				#if !FORCE_LUA_MODCHARTS new ToggleOption("loadModcharts","Load Lua modcharts","Toggles lua modcharts"), #end
+				new ToggleOption("ghosttapping","Ghost-tapping","Allows you to press keys while no notes are able to be hit."),
+				new ToggleOption("failForMissing","Sudden Death","FC or die"),
+				#if !NO_BOTPLAY new ToggleOption("botPlay","BotPlay","Let a bot play for you"), #end
+				#if !NO_FREEPLAY_MODS
+				new OptionCategory("Freeplay Modifiers",[
+					new StepOption("cMod","Speed Constant",0.1,0,10,"","","A constant speed to override the scrollspeed. 0 for chart-dependant speed",true),
+					new StepOption("xMod","Speed Mult",0.1,0,2,"","x","A multiplier to a chart's scrollspeed",true),
+					new StepOption("mMod","Minimum Speed",0.1,0,10,"","","The minimum scrollspeed a chart can have",true),
+					new ToggleOption("noFail","No Fail","You can't blueball, but there's an indicator that you failed and you don't save the score."),
+				]),
+				#end
+				new OptionCategory("Advanced",[
+					#if !FORCED_JUDGE new JudgementsOption("judgementWindow","Judgements","The judgement windows to use"),
+					new ToggleOption("useEpic","Use Epics","Allows the 'Epic' judgement to be used"),#end
+					new ToggleOption("pollingInput","Polling Input","Makes input get checked every frame instead of on key press"),
+					new ScrollOption("accuracySystem","Accuracy System","How accuracy is determined",0,2,["Basic","ITG","Wife3"])
+				]),
+				new StateOption("Calibrate Offset",new SoundOffsetState()),
+				// TODO: make a better 'calibrate offset'
+			]),
+			new OptionCategory("Appearance",[
+				new ToggleOption("showComboCounter","Show combo","Shows your combo when you hit a note"),
+				new ToggleOption("showRatings","Show judgements","Shows judgements when you hit a note"),
+				new ToggleOption("showMS","Show Hit MS","Shows millisecond difference when you hit a note"),
+				new ToggleOption("showCounters","Show judgement counters","Whether judgement counters get shown on the side"),
+				new ToggleOption("downScroll","Downscroll","Arrows come from the top down instead of the bottom up."),
+				new ToggleOption("middleScroll","Centered Notes","Places your notes in the center of the screen and hides the opponent's. \"Middlescroll\""),
+				new ToggleOption("allowNoteModifiers","Allow note modifiers","Whether note modifiers (e.g pixel notes in week 6) get used"),
+				new StepOption("backTrans","BG Darkness",10,0,100,"%","","How dark the background is",true),
+				new ScrollOption("staticCam","Camera Focus","Who the camera should focus on",0,OptionUtils.camFocuses.length-1,OptionUtils.camFocuses),
+				new ToggleOption("oldMenus","Vanilla Menus","Forces the vanilla menus to be used"),
+				new ToggleOption("oldTitle","Vanilla Title Screen","Forces the vanilla title to be used"),
+				new ToggleOption("healthBarColors","Healthbar Colours","Whether the healthbar colour changes with the character"),
+				new ToggleOption("persistentCombo","Combo doesnt fade","Combo stays on screen instead of fading out"),
+				new ToggleOption("onlyScore","Minimal Information","Only shows your score below the hp bar"),
+				new ToggleOption("smoothHPBar","Smooth Healthbar","Makes the HP Bar smoother"),
+				new ToggleOption("fcBasedComboColor","FC Combo Colouring","Makes the combo's colour changes with type of FC you have"),
+				new NoteskinOption("noteSkin","NoteSkin","The noteskin to use"),
+				new OptionCategory("Effects",[
+					new ToggleOption("picoCamshake","Train camera shake","Whether the train in week 3's background shakes the camera"),
+					//new ToggleOption("senpaiShaders","Week 6 shaders","Is the CRT effect active in week 6"),
+					new ScrollOption("senpaiShaderStrength","Week 6 shaders","How strong the week 6 shaders are",0,2,["Off","CRT","All"])
+				]),
+			]),
+			new OptionCategory("Preferences",[
+				new ToggleOption("useNotesplashes","Show NoteSplashes","Notesplashes showing up on sicks and above."),
+				new ToggleOption("camFollowsAnims","Directional Camera","Camera moving depending on a character's animations"),
+				new ToggleOption("ratingInHUD","Fixed Judgements","Fixes judgements, milliseconds and combo to the screen"),
+				new ToggleOption("smJudges","Simply Judgements","Animates judgements like ITG's Simply Love theme"),
+				new ToggleOption("pauseHoldAnims","Holds pause anims", "Whether to pause animations on their first frame"),
+				new ToggleOption("menuFlash","Flashing in menus","Whether buttons and the background should flash in menus"),
+				new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),
+				new ToggleOption("showFPS","Show FPS","Shows your FPS in the top left",function(state:Bool){
+					ui.FPSMem.showFPS=state;
+				}),
+				new ToggleOption("showMem","Show Memory","Shows memory usage in the top left",function(state:Bool){
+					ui.FPSMem.showMem=state;
+				}),
+				new ToggleOption("showMemPeak","Show Memory Peak","Shows peak memory usage in the top left",function(state:Bool){
+					ui.FPSMem.showMemPeak=state;
+				}),
+				new ToggleOption("ghosttapSounds","Ghost-tap hit sounds","Play a click sound when you ghost-tap"),
+				new StepOption("hitsoundVol","Hit sound volume",10,0,100,"%","","What volume the hitsound should be",true),
+				new ToggleOption("freeplayPreview","Song preview in freeplay","Whether songs get played as you hover over them in Freeplay"),
+				new StateOption("Judgement Position",new JudgeCustomizationState()),
+			]),
+			new OptionCategory("Performance",[
+				new StepOption("fps","FPS Cap",30,30,360,"","","The FPS the game tries to run at",true,function(value:Float,step:Float){
+					Main.setFPSCap(Std.int(value));
+				}),
+				new ToggleOption("noChars","Hide characters","Hides characters ingame"),
+				new ToggleOption("noStage","Hide background","Hides stage ingame"),
+				new ToggleOption("allowOrderSorting","Sort notes by order","Allows notes to go infront and behind other notes. May cause FPS drops on very high note-density charts."),
+				new OptionCategory("Loading",[
+					new ToggleOption("shouldCache","Cache on startup","Whether the engine caches stuff when the game starts"),
+					new ToggleOption("cacheCharacters","Cache characters","Whether the engine caches characters if it caches on startup"),
+					new ToggleOption("cacheSongs","Cache songs","Whether the engine caches songs if it caches on startup"),
+					new ToggleOption("cacheSounds","Cache sounds","Whether the engine caches misc sounds if it caches on startup"),
+					new ToggleOption("cachePreload","Cache misc images","Whether the engine caches misc images if it caches on startup"),
+					new ToggleOption("cacheUsedImages","Persistent Images","Whether images should persist in memory",function(state:Bool){
+						FlxGraphic.defaultPersist = state;
+					}),
+				]),
+			])
+		]);
+	}
 	override function create()
 	{
+		super.create();
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("Changing options", null);
 		#end
+		createDefault();
 		category=defCat;
 		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuBG"));
 
@@ -146,7 +160,7 @@ class OptionsState extends MusicBeatState
 		optionDesc.visible=false;
 		add(optionDesc);
 
-		super.create();
+
 	}
 
 	function refresh(){
@@ -273,6 +287,7 @@ class OptionsState extends MusicBeatState
 		}
 
 		if(accepted){
+			trace("shit");
 			if(option.type=='Category'){
 				category=option;
 				refresh();
@@ -280,6 +295,7 @@ class OptionsState extends MusicBeatState
 				option.createOptionText(curSelected,optionText);
 			}
 			changeSelection();
+			trace("cum");
 		}
 
 

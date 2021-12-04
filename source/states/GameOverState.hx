@@ -23,6 +23,7 @@ class GameOverState extends FlxTransitionableState
 
 	override function create()
 	{
+		super.create();
 		/* var loser:FlxSprite = new FlxSprite(100, 100);
 			var loseTex = FlxAtlasFrames.fromSparrow(AssetPaths.lose.png, AssetPaths.lose.xml);
 			loser.frames = loseTex;
@@ -49,7 +50,7 @@ class GameOverState extends FlxTransitionableState
 		// FlxTween.tween(restart, {alpha: 1}, 1, {ease: FlxEase.quartInOut});
 		// FlxTween.tween(restart, {y: restart.y + 40}, 7, {ease: FlxEase.quartInOut, type: PINGPONG});
 
-		super.create();
+
 	}
 
 	private var fading:Bool = false;

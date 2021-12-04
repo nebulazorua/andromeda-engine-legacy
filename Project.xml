@@ -18,7 +18,7 @@
 	<!-- ____________________________ Window Settings ___________________________ -->
 
 	<!--These window settings apply to all targets-->
-	<window width="1280" height="720" fps="" background="#000000" hardware="true" vsync="false" />
+	<window width="1280" height="720" fps="60" background="#000000" hardware="true" vsync="false" />
 
 	<!--HTML5-specific-->
 	<window if="html5" resizable="true" />
@@ -117,7 +117,7 @@
 		THEN UHHH I USED THE NAME OF THE FONT WITH SETFORMAT() ON THE TEXT!!!
 		NOT USING A DIRECT THING TO THE ASSET!!!
 	-->
-	<assets path="assets/fonts" embed='true'/>
+	<assets path="assets/fonts"/>
 	<!-- _______________________________ Libraries ______________________________ -->
 
 	<haxelib name="flixel" />

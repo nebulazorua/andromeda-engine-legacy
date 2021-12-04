@@ -122,6 +122,7 @@ class Options
 	public var judgeX:Float = 0;
 	public var judgeY:Float = 0;
 	public var fcBasedComboColor:Bool = false;
+
 	// performance
 	public var fps:Int = 120;
 	public var noChars:Bool = false;
@@ -136,6 +137,9 @@ class Options
 
 
 	// preference
+	public var showMem:Bool = true;
+	public var showMemPeak:Bool = true;
+	public var showFPS:Bool = true;
 	public var pauseHoldAnims:Bool = true;
 	public var showMS:Bool = false;
 	public var onlyScore:Bool = false;

@@ -9,9 +9,15 @@ import flixel.util.FlxTimer;
 import Options;
 import ui.*;
 import flixel.input.keyboard.FlxKey;
+import flixel.FlxState;
+import haxe.Timer;
 
 class MusicBeatState extends FlxUIState
 {
+	public static var lastState:FlxState;
+	public static var currentState:FlxState;
+
+	public static var times:Array<Float> = [];
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 
@@ -31,12 +37,16 @@ class MusicBeatState extends FlxUIState
 
 	override function create()
 	{
-		Cache.Clear();
+		if(lastState!=this){
+			trace("clearing cache");
+			Cache.wipe();
+		}
 		if (transIn != null)
 			trace('reg ' + transIn.region);
-
 		super.create();
 	}
+
+	var lastUpdate:Float = 0;
 
 	override function update(elapsed:Float)
 	{
@@ -86,5 +96,11 @@ class MusicBeatState extends FlxUIState
 	public function beatHit():Void
 	{
 		//do literally nothing dumbass
+	}
+	override function switchTo(next:FlxState){
+		MusicBeatState.lastState=FlxG.state;
+		trace("i want " + Type.typeof(next) + " and am in " + Type.typeof(FlxG.state));
+		trace("last state is " + Type.typeof(MusicBeatState.lastState));
+		return super.switchTo(next);
 	}
 }

@@ -93,6 +93,7 @@ class FreeplayState extends MusicBeatState
 
 	override function create()
 	{
+		super.create();
 		FlxG.mouse.visible=true;
 		var initSonglist = CoolUtil.coolTextFile(Paths.txt('freeplaySonglist'));
 
@@ -268,7 +269,6 @@ class FreeplayState extends MusicBeatState
 			trace(md);
 		 */
 
-		super.create();
 	}
 
 	public function addSongData(songData:EngineData.SongData){

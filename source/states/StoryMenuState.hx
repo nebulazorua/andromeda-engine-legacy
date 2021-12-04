@@ -50,6 +50,7 @@ class StoryMenuState extends MusicBeatState
 
 	override function create()
 	{
+		super.create();
 		FlxG.mouse.visible = true;
 		weekData = EngineData.weekData;
 
@@ -185,7 +186,7 @@ class StoryMenuState extends MusicBeatState
 
 		FlxG.stage.addEventListener(MouseEvent.MOUSE_WHEEL,scroll);
 
-		super.create();
+
 	}
 
 	override function update(elapsed:Float)

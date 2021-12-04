@@ -161,6 +161,7 @@ class MainMenuState extends MusicBeatState
 
 	override function create()
 	{
+		super.create();
 		#if desktop
 		// Updating Discord Rich Presence
 		DiscordClient.changePresence("In the Menus", null);
@@ -268,7 +269,7 @@ class MainMenuState extends MusicBeatState
 		// NG.core.calls.event.logEvent('swag').send();
 
 		changeItem();
-		super.create();
+
 	}
 
 	var selectedSomethin:Bool = false;

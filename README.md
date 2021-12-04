@@ -36,10 +36,11 @@ Andromeda Engine includes but is not limited to:
 - [bbpanzu](https://twitter.com/bbsub3) - Bringing issues to my attention & letting more people know about AE
 - [Berdly the Antagonist](https://twitter.com/mylimit666) - Beat snap math
 - [Redsty Phoenix](https://twitter.com/RedstyP) - REALLY getting the word out
-- [Yoshubs](https://twitter.com/yoshubs) - Cache dumping, inspiration (and soon dialogue format).
+- Codist - Dialogue format
+- [Yoshubs](https://twitter.com/yoshubs) - Cache dumping, inspiring me to optimize and improve input (and soon dialogue format).
 - [Shadow Mario](https://twitter.com/Shadow_Mario_) - Inspiration, Psych Engine character format
 - [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine) - Read Shadow Mario's credit
-- [gedehari](https://twitter.com/gedehar) - Inspiration (Soon: OpenFL shaders at runtime)
+- [gedehari](https://twitter.com/gedehari) - Inspiration
 - [Lizzy](https://twitter.com/tc_lizzy) - Keepin' me sane. Love ya, hunny!
 - [BigWIngs](https://www.shadertoy.com/user/BigWIngs) - Raymarcher shader (https://www.shadertoy.com/view/WtGXDD)
 - [ryk](https://www.shadertoy.com/user/ryk) - VCR Distortion shader (https://www.shadertoy.com/view/ldjGzV)
@@ -47,6 +48,7 @@ Andromeda Engine includes but is not limited to:
 - [Klowner](https://www.shadertoy.com/user/Klowner) - Noise function from the CRT shader (https://www.shadertoy.com/view/MsXGD4)
 - [luka712](https://www.shadertoy.com/user/luka712) - Scanlines from CRT shader (https://www.shadertoy.com/view/Xtccz4)
 - [Fogu](https://twitter.com/FoguDragon) - Helping test how AE behaves on low-end PCs
+- hayasgpt - Cache dumping
 
 Also check out [Forever Engine](https://github.com/Yoshubs/Forever-Engine-Legacy)!
 

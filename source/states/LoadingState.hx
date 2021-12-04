@@ -146,7 +146,7 @@ class LoadingState extends MusicBeatState
 
 	inline static public function loadAndSwitchState(target:FlxState, stopMusic = false)
 	{
-		Cache.Clear();
+		Cache.clear();
 		FlxG.switchState(getNextState(target, stopMusic));
 	}
 

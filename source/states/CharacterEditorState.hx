@@ -213,10 +213,12 @@ class CharacterEditorState extends MusicBeatState {
   function updateGhost(){
     if(ghost!=null){
       for(prop in Reflect.fields(curCharacter.charData)){
-        var val = Reflect.getProperty(ghost.charData,prop);
+        var val = Reflect.field(curCharacter.charData,prop);
         Reflect.setProperty(ghost.charData,prop,val);
       }
       ghost.setCharData();
+      ghost.x = curCharacter.x;
+      ghost.y = curCharacter.y;
     }
   }
 
@@ -244,6 +246,7 @@ class CharacterEditorState extends MusicBeatState {
   }
 
   override function create(){
+    super.create();
     camHUD = new FlxCamera();
     camHUD.bgColor.alpha = 0;
     camGame = new FlxCamera();
@@ -299,8 +302,10 @@ class CharacterEditorState extends MusicBeatState {
     layering.add(healthUI);
     layering.add(charUI);
     layering.add(animUI);
-    super.create();
+
   }
+
+  var pressedOffsetShit:Array<Float>=[0,0,0,0];
 
   override function update(elapsed:Float){
     Conductor.songPosition = FlxG.sound.music.time;
@@ -347,6 +352,42 @@ class CharacterEditorState extends MusicBeatState {
   		{
   			camOffset.velocity.set();
   		}
+
+      var offsetKeys:Array<Bool> = [
+        FlxG.keys.justPressed.LEFT,
+        FlxG.keys.justPressed.DOWN,
+        FlxG.keys.justPressed.UP,
+        FlxG.keys.justPressed.RIGHT,
+      ];
+
+      var offsetHeld:Array<Bool> = [
+        FlxG.keys.pressed.LEFT,
+        FlxG.keys.pressed.DOWN,
+        FlxG.keys.pressed.UP,
+        FlxG.keys.pressed.RIGHT,
+      ];
+
+      var offsets = [
+        [1,0],
+        [0,-1],
+        [0,1],
+        [-1,0]
+      ];
+
+      for(offIdx in 0...offsetKeys.length){
+        if(offsetHeld[offIdx]){
+          pressedOffsetShit[offIdx]+=elapsed;
+        }else{
+          pressedOffsetShit[offIdx]=0;
+        }
+        if(offsetKeys[offIdx] || pressedOffsetShit[offIdx]>=.3){
+          curCharacter.offset.x += offsets[offIdx][0];
+          curCharacter.offset.y += offsets[offIdx][1];
+
+          offsetXBox.text = Std.string(curCharacter.offset.x);
+          offsetYBox.text = Std.string(curCharacter.offset.y);
+        }
+      }
 
 
       if(FlxG.keys.justPressed.R){
@@ -972,6 +1013,7 @@ class CharacterEditorState extends MusicBeatState {
         curCharacter.posOffset.x = offset;
         curCharacter.charData.charOffset[0]=offset;
         stage.setPlayerPositions(boyfriend,dad);
+        updateGhost();
       }
     }
 
@@ -998,6 +1040,7 @@ class CharacterEditorState extends MusicBeatState {
         curCharacter.posOffset.y = offset;
         curCharacter.charData.charOffset[1]=offset;
         stage.setPlayerPositions(boyfriend,dad);
+        updateGhost();
       }
     }
 
