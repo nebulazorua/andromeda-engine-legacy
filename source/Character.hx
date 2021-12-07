@@ -94,6 +94,53 @@ class Character extends FlxSprite
     super.destroy();
   }
 
+	public static function getIcon(charName:String,player:Bool=false){
+		var json:CharJson = getJSON(charName,player);
+		return json.iconName;
+	}
+
+	public static function getJSON(charName:String,player:Bool=false):CharJson{
+		var pathBase = 'assets/characters/data/';
+		var daCharPath = pathBase + charName + ".json";
+		var playerPath = pathBase + charName + "-player.json";
+		if(player && FileSystem.exists(playerPath))daCharPath=playerPath;
+
+		var shit:Null<Dynamic>=null;
+		if(FileSystem.exists(daCharPath)){
+			shit = Json.parse(File.getContent(daCharPath));
+		}else if(FileSystem.exists(pathBase + "dad.json")){
+			shit = Json.parse(File.getContent(pathBase + "dad.json") );
+		}
+
+		var format = Reflect.field(shit,"format");
+
+		if(format==null){
+			if(Reflect.field(shit,"no_antialiasing")!=null){
+				format = "psych1";
+			}
+		}
+		switch(format){
+			case 'psych1':
+				var psychChar:PsychParsers.PsychChar = cast shit;
+				var converted = PsychParsers.fromChar(psychChar);
+				if(player){
+					converted.camOffset[0]-=100;
+					converted.camOffset[1]-=100;
+				}else{
+					converted.camOffset[0]+=150;
+					converted.camOffset[1]-=100;
+				}
+				shit=converted;
+			default:
+				format = 'andromeda';
+				// nothing
+		}
+
+		Reflect.setField(shit,'format',format);
+
+		return shit;
+	}
+
 	public function setChar(newChar:String){
 		switch (curCharacter)
 		{
@@ -109,45 +156,7 @@ class Character extends FlxSprite
 				if(isPlayer && FileSystem.exists(playerPath))daCharPath=playerPath;
 				charPath=daCharPath;
 
-				var shit:Null<Dynamic>=null;
-				if(FileSystem.exists(charPath)){
-					shit = Json.parse(File.getContent(charPath));
-				}else if(FileSystem.exists(pathBase + "dad.json")){
-					shit = Json.parse(File.getContent(pathBase + "dad.json") );
-				}else{
-					charPath = '';
-					charData=null;
-					setCharData();
-					return;
-				}
-
-				var format = Reflect.field(shit,"format");
-
-				if(format==null){
-					if(Reflect.field(shit,"no_antialiasing")!=null){
-						format = "psych1";
-					}
-				}
-				switch(format){
-					case 'psych1':
-						var psychChar:PsychParsers.PsychChar = cast shit;
-						var converted = PsychParsers.fromChar(psychChar);
-						if(isPlayer){
-							converted.camOffset[0]-=100;
-							converted.camOffset[1]-=100;
-						}else{
-							converted.camOffset[0]+=150;
-							converted.camOffset[1]-=100;
-						}
-						shit=converted;
-					default:
-						format = 'andromeda';
-						// nothing
-				}
-
-				Reflect.setField(shit,'format',format);
-
-				charData=shit;
+				charData=getJSON(curCharacter,isPlayer);
 
 				setCharData();
 			}

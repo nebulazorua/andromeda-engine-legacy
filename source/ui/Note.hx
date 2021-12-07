@@ -115,23 +115,27 @@ class Note extends NoteGraphic
 
 	public function new(strumTime:Float, noteData:Int, skin:String='default', modifier:String='base', type:String='default', ?prevNote:Note, ?sustainNote:Bool = false, ?initialPos:Float=0, ?beingCharted=false)
 	{
+		var graphicType:String = type;
 		var behaviour = type=='default'?Note.noteBehaviour:Note.behaviours.get(type);
 		if(behaviour==null){
 			behaviour = Json.parse(Paths.noteSkinText("behaviorData.json",'skins',skin,modifier,type));
 			Note.behaviours.set(type,behaviour);
 		}
-		super(strumTime,modifier,skin,type,behaviour);
 		this.noteType=type;
-
 		hitbox = Conductor.safeZoneOffset;
-
 		switch(noteType){
+			case 'alt':
+				graphicType='default'; // makes it look like a normal note
 			case 'mine':
 				causesMiss=false;
 				opponentMisses=true;
 				canHold=false;
 				hitbox = Conductor.safeZoneOffset*0.38; // should probably not scale but idk man
 		}
+		super(strumTime,modifier,skin,graphicType,behaviour);
+
+
+
 		if(!canHold && sustainNote){
 			visible=false;
 			kill();

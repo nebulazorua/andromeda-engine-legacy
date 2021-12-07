@@ -1042,15 +1042,15 @@ class ChartingState extends MusicBeatState
 	{
 		if (check_mustHitSection.checked)
 		{
-			leftIcon.changeCharacter(_song.player1);
-			rightIcon.changeCharacter(_song.player2);
+			leftIcon.changeCharacter(Character.getIcon(_song.player1));
+			rightIcon.changeCharacter(Character.getIcon(_song.player2));
 			leftIcon.setGraphicSize(0, 45);
 			rightIcon.setGraphicSize(0, 45);
 		}
 		else
 		{
-			leftIcon.changeCharacter(_song.player2);
-			rightIcon.changeCharacter(_song.player1);
+			leftIcon.changeCharacter(Character.getIcon(_song.player2));
+			rightIcon.changeCharacter(Character.getIcon(_song.player1));
 			leftIcon.setGraphicSize(0, 45);
 			rightIcon.setGraphicSize(0, 45);
 		}

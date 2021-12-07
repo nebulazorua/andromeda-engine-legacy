@@ -172,7 +172,7 @@ class FreeplayState extends MusicBeatState
 					}else{
 						if(FileSystem.exists(Paths.chart(song,song))){
 							var song = Song.loadFromJson(song,song);
-							icon = song==null?'dad':song.player2;
+							icon = song==null?'dad':Character.getIcon(song.player2);
 							if(icon==null)icon='dad';
 							add=true;
 							hasCharts=true;

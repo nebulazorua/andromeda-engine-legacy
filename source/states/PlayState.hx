@@ -962,6 +962,9 @@ class PlayState extends MusicBeatState
 			}else{
 				newSprite = new Character(spriteX,spriteY,newCharacter);
 			}
+			healthBar.setIcons(dad.iconName,boyfriend.iconName);
+			if(currentOptions.healthBarColors)
+				healthBar.setColors(dad.iconColor,boyfriend.iconColor);
 
 			luaSprites[spriteName]=newSprite;
 			add(newSprite);
@@ -2245,6 +2248,14 @@ class PlayState extends MusicBeatState
 								altAnim = '-alt';
 						}
 
+						switch(daNote.noteType){
+							case 'alt':
+								altAnim='-alt';
+							case 'mine':
+								// this really SHOULDN'T happen, but..
+								health += 0.25; // they hit a mine, not you
+						}
+
 						health -= modchart.opponentHPDrain;
 
 							//if(!daNote.isSustainNote){
@@ -2998,6 +3009,7 @@ class PlayState extends MusicBeatState
 			noteMiss(3);
 	}
 
+
 	function noteHit(note:Note):Void
 	{
 		if (!note.wasGoodHit){
@@ -3005,8 +3017,10 @@ class PlayState extends MusicBeatState
 			switch(note.noteType){
 				case 'mine':
 					hurtNoteHit(note);
+				case 'alt':
+					goodNoteHit(note,diff,true);
 				default:
-					goodNoteHit(note,diff);
+					goodNoteHit(note,diff,false);
 			}
 			var judge = judgeMan.determine(diff);
 
@@ -3067,7 +3081,10 @@ class PlayState extends MusicBeatState
 
 		FlxG.sound.play(Paths.sound('mineExplode'), FlxG.random.float(0.5, 0.7));
 
-		hitNotes-=1.2;
+		if(currentOptions.accuracySystem==2)
+			hitNotes+=ScoreUtils.malewifeMineWeight;
+		else
+			hitNotes-=1.2;
 
 		updateAccuracy();
 		boyfriend.holding=false;
@@ -3077,7 +3094,7 @@ class PlayState extends MusicBeatState
 			showMiss(note.noteData);
 	}
 
-	function goodNoteHit(note:Note,noteDiff:Float):Void
+	function goodNoteHit(note:Note,noteDiff:Float,altAnim:Bool=false):Void
 	{
 		var judgement = note.isSustainNote?judgeMan.determine(0):judgeMan.determine(noteDiff);
 
@@ -3102,6 +3119,7 @@ class PlayState extends MusicBeatState
 			var score:Int = judgeMan.getJudgementScore(judgement);
 			if(currentOptions.accuracySystem==2){
 				var wifeScore = ScoreUtils.malewife(noteDiff,Conductor.safeZoneOffset/180);
+				trace(wifeScore);
 				totalNotes+=2;
 				hitNotes+=wifeScore;
 			}else{
@@ -3154,6 +3172,9 @@ class PlayState extends MusicBeatState
 			anim='singUP';
 		case 3:
 			anim='singRIGHT';
+		}
+		if(altAnim && boyfriend.animation.getByName(anim+"alt")!=null){
+			anim+='-alt';
 		}
 
 		if(breaksCombo && !note.isSustainNote){

@@ -5,7 +5,7 @@ import JudgementManager;
 class EngineData {
   public static var LUAERROR:LogStyle = new LogStyle("[MODCHART] ", "FF8888", 12, false, false, false, null, true);
   public static var characters:Array<String> = [];
-  public static var noteTypes:Array<String> = ["default","mine"];
+  public static var noteTypes:Array<String> = ["default","alt","mine"];
   public static var validJudgements:Array<String> = ["epic","sick","good","bad","shit","miss"];
   public static var defaultJudgementData:JudgementInfo = {
     comboBreakJudgements: ["shit"],
@@ -13,7 +13,7 @@ class EngineData {
     judgements: ["sick","good","bad","shit"],
     judgementAccuracy: {sick: 100, good: 80, bad: 50, shit: -75, miss: -240},
     judgementScores: {sick:350, good:100, bad:0, shit:-50, miss:-100},
-    judgementWindows: {sick: 43, good: 85, bad: 115, shit: 166, miss: 180}
+    judgementWindows: {sick: 43, good: 85, bad: 126, shit: 166, miss: 180}
     // miss window acts as a sort of "antimash"
   };
   public static var createThread=false;

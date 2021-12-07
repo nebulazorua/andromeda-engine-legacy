@@ -81,20 +81,27 @@ class Healthbar extends FlxSpriteGroup {
     }
 
     var percent = bar.percent;
+    var opponentPercent = 100-bar.percent;
     setIconSize(Std.int(FlxMath.lerp(iconP1.width, 150, Main.adjustFPS(0.1))),Std.int(FlxMath.lerp(iconP2.width, 150, Main.adjustFPS(0.1))));
     var iconOffset:Int = 26;
     iconP1.x = bar.x + (bar.width * (FlxMath.remapToRange(percent, 0, 100, 100, 0) * 0.01) - iconOffset);
     iconP2.x = bar.x + (bar.width * (FlxMath.remapToRange(percent, 0, 100, 100, 0) * 0.01)) - (iconP2.width - iconOffset);
 
-    if (percent < 20)
-      iconP1.animation.curAnim.curFrame = 1;
+    if (percent < 20 && iconP1.lossIndex!=-1)
+      iconP1.animation.curAnim.curFrame = iconP1.lossIndex;
+    else if(percent > 80 && iconP1.winningIndex!=-1)
+      iconP1.animation.curAnim.curFrame = iconP1.winningIndex;
     else
-      iconP1.animation.curAnim.curFrame = 0;
+      iconP1.animation.curAnim.curFrame = iconP1.neutralIndex;
 
-    if (percent > 80)
-      iconP2.animation.curAnim.curFrame = 1;
+
+    if (opponentPercent < 20 && iconP2.lossIndex!=-1)
+      iconP2.animation.curAnim.curFrame = iconP2.lossIndex;
+    else if(opponentPercent > 80 && iconP2.winningIndex!=-1)
+      iconP2.animation.curAnim.curFrame = iconP2.winningIndex;
     else
-      iconP2.animation.curAnim.curFrame = 0;
+      iconP2.animation.curAnim.curFrame = iconP2.neutralIndex;
+
     super.update(elapsed);
 
 
