@@ -962,9 +962,9 @@ class PlayState extends MusicBeatState
 			}else{
 				newSprite = new Character(spriteX,spriteY,newCharacter);
 			}
-			healthBar.setIcons(dad.iconName,boyfriend.iconName);
+			healthBar.setIcons(boyfriend.iconName,dad.iconName);
 			if(currentOptions.healthBarColors)
-				healthBar.setColors(dad.iconColor,boyfriend.iconColor);
+				healthBar.setColors(boyfriend.iconColor,dad.iconColor);
 
 			luaSprites[spriteName]=newSprite;
 			add(newSprite);
@@ -3119,7 +3119,6 @@ class PlayState extends MusicBeatState
 			var score:Int = judgeMan.getJudgementScore(judgement);
 			if(currentOptions.accuracySystem==2){
 				var wifeScore = ScoreUtils.malewife(noteDiff,Conductor.safeZoneOffset/180);
-				trace(wifeScore);
 				totalNotes+=2;
 				hitNotes+=wifeScore;
 			}else{
