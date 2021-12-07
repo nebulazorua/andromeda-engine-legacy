@@ -942,21 +942,21 @@ class PlayState extends MusicBeatState
 			remove(sprite);
 			// TODO: Make this BETTER!!!
 			if(spriteName=="bf"){
-				boyfriend = new Boyfriend(spriteX,spriteY,newCharacter);
+				boyfriend = new Boyfriend(spriteX,spriteY,newCharacter,boyfriend.hasSprite);
 				newSprite = boyfriend;
 				bfLua.sprite = boyfriend;
 				//iconP1.changeCharacter(newCharacter);
 			}else if(spriteName=="dad"){
 				var index = opponents.indexOf(dad);
 				if(index>=0)opponents.remove(dad);
-				dad = new Character(spriteX,spriteY,newCharacter);
+				dad = new Character(spriteX,spriteY,newCharacter, dad.isPlayer ,dad.hasSprite);
 				newSprite = dad;
 				dadLua.sprite = dad;
 				if(index>=0)opponents.insert(index,dad);
 
 				//iconP2.changeCharacter(newCharacter);
 			}else if(spriteName=="gf"){
-				gf = new Character(spriteX,spriteY,newCharacter);
+				gf = new Character(spriteX,spriteY,newCharacter, gf.isPlayer ,gf.hasSprite);
 				newSprite = gf;
 				gfLua.sprite = gf;
 			}else{
@@ -2543,6 +2543,8 @@ class PlayState extends MusicBeatState
 							else if(judgeMan.judgementCounter.get("epic")>0){
 								numScore.color = 0xA97FDB;
 							}
+						}else{
+							numScore.color = 0xFFFFFF;
 						}
 					}
 

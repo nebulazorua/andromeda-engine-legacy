@@ -58,6 +58,7 @@ class Character extends FlxSprite
 	public var charData:CharJson;
 	public var dadVar:Float = 4;
 	public var isIdling:Bool=false;
+	public var hasSprite:Bool=true;
 	public var camMovementMult:Float = 1;
 	var idleAnims:Array<String> = ['danceLeft','danceRight','idle'];
 	public var beatDancer:Bool = false;
@@ -296,7 +297,7 @@ class Character extends FlxSprite
 
 		var tex:FlxAtlasFrames;
 		antialiasing = true;
-
+		hasSprite=hasTexture;
 		if(hasTexture){
 			setChar(curCharacter);
 			if(animation.getByName("idle")!=null)

@@ -37,7 +37,6 @@ class HealthIcon extends FlxSprite
 			return;
 		}
 		loadGraphic(image);
-		updateHitbox();
 
 		for(w in 0...Math.floor(width/150)){
 			charArray.push(w);
@@ -61,9 +60,12 @@ class HealthIcon extends FlxSprite
 		}
 		animation.add('icon',charArray,0,false);
 		animation.play('icon',true);
-		updateHitbox();
 		if(animation.curAnim!=null)
 			animation.curAnim.curFrame = neutralIndex;
+
+		width=150;
+		height=150;
+		updateHitbox();
 	}
 	public function new(char:String = 'bf', isPlayer:Bool = false)
 	{
