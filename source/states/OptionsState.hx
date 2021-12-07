@@ -115,6 +115,7 @@ class OptionsState extends MusicBeatState
 				new StepOption("fps","FPS Cap",30,30,360,"","","The FPS the game tries to run at",true,function(value:Float,step:Float){
 					Main.setFPSCap(Std.int(value));
 				}),
+				new ToggleOption("recycleComboJudges","Recycling","Instead of making a new sprite for each judgement and combo number, objects are reused when possible.\nMay cause layering issues."),
 				new ToggleOption("noChars","Hide characters","Hides characters ingame"),
 				new ToggleOption("noStage","Hide background","Hides stage ingame"),
 				new ToggleOption("allowOrderSorting","Sort notes by order","Allows notes to go infront and behind other notes. May cause FPS drops on very high note-density charts."),

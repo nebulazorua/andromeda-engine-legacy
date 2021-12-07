@@ -25,7 +25,6 @@ class ComboSprite extends FNFSprite {
       currentTween.cancel();
     }
     currentTween=null;
-    //created = Timer.stamp();
     scale.set(1,1);
     velocity.set(0,0);
     drag.set(0,0);

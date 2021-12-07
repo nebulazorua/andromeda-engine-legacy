@@ -186,8 +186,8 @@ class PlayState extends MusicBeatState
 	public var opponents:Array<Character> = [];
 	public var opponentIdx:Int = 0;
 
-	var judgementSprites:FlxTypedGroup<JudgeSprite>;
-
+	var judgeBin:FlxTypedGroup<JudgeSprite>;
+	var comboBin:FlxTypedGroup<ComboSprite>;
 	var accuracyName:String = 'Accuracy';
 
 	var bindData:Array<FlxKey>;
@@ -451,8 +451,9 @@ class PlayState extends MusicBeatState
 		#end
 
 		trace(luaModchartExists);
-		judgementSprites = new FlxTypedGroup<JudgeSprite>();
-		//judgementSprites.add(new JudgeSprite());
+		judgeBin = new FlxTypedGroup<JudgeSprite>();
+		comboBin = new FlxTypedGroup<ComboSprite>();
+		//judgeBin.add(new JudgeSprite());
 
 		grade = "N/A";
 		hitNotes=0;
@@ -749,7 +750,7 @@ class PlayState extends MusicBeatState
 		//noteSplashes.add(recyclableSplash);
 
 		add(noteSplashes);
-		//add(judgementSprites);
+		//add(judgeBin);
 
 		// startCountdown();
 
@@ -838,7 +839,7 @@ class PlayState extends MusicBeatState
 
 		strumLineNotes.cameras = [camReceptor];
 		renderedNotes.cameras = [camNotes];
-		judgementSprites.cameras = [camRating];
+		//judgeBin.cameras = [camRating];
 		noteSplashes.cameras = [camReceptor];
 		healthBar.cameras = [camHUD];
 		scoreTxt.cameras = [camHUD];
@@ -1064,10 +1065,9 @@ class PlayState extends MusicBeatState
 
 	function startCountdown():Void
 	{
-		if(!currentOptions.pollingInput){
-			FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN,keyPress);
-			FlxG.stage.addEventListener(KeyboardEvent.KEY_UP,keyRelease);
-		}
+		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN,keyPress);
+		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP,keyRelease);
+
 		inCutscene = false;
 
 		generateStaticArrows(0);
@@ -1234,8 +1234,6 @@ class PlayState extends MusicBeatState
 		daNote.visible = false;
 
 		daNote.kill();
-		//if(daNote.mustPress)
-		//	noteLanes[daNote.noteData].remove(daNote);
 
 		renderedNotes.remove(daNote,true);
 		if(daNote.mustPress){
@@ -2159,7 +2157,6 @@ class PlayState extends MusicBeatState
 			if(startedCountdown){
 				if(currentOptions.allowOrderSorting)
 					renderedNotes.sort(sortByOrder);
-
 				renderedNotes.forEachAlive(function(daNote:Note)
 				{
 					var revPerc:Float = modManager.get("reverse").getScrollReversePerc(daNote.noteData,daNote.mustPress==true?0:1);
@@ -2185,10 +2182,6 @@ class PlayState extends MusicBeatState
 					var shitGotHit = (daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit);
 					var shit = strumLine.y + Note.swagWidth/2;
 					if(daNote.isSustainNote){
-						/*if(daNote.holdShader!=null){
-							daNote.holdShader.setEnabled(true);
-							daNote.holdShader.setFadeRange(shit+25,shit);
-						}*/
 						if(shitGotHit){
 							var dY:Float = daNote.frameHeight;
 							var dH:Float = strumLine.y+Note.swagWidth/2-daNote.y;
@@ -2219,21 +2212,6 @@ class PlayState extends MusicBeatState
 							daNote.visible = true;
 						}
 					}
-					/*
-					if(daNote.mustPress){
-						var lane = noteLanes[daNote.noteData];
-						if(daNote.isSustainNote){
-							lane = susNoteLanes[daNote.noteData];
-						}
-						if(daNote.canBeHit && !lane.contains(daNote)){
-							lane.push(daNote);
-							lane.sort((a,b)->Std.int(a.strumTime-b.strumTime));
-						}else if(!daNote.canBeHit && lane.contains(daNote)){
-							lane.remove(daNote);
-							lane.sort((a,b)->Std.int(a.strumTime-b.strumTime));
-						}
-					}
-					*/
 
 
 					if(!daNote.mustPress && currentOptions.middleScroll){
@@ -2325,9 +2303,6 @@ class PlayState extends MusicBeatState
 						}
 					}
 
-					// WIP interpolation shit? Need to fix the pause issue
-					// daNote.y = (strumLine.y - (songTime - daNote.strumTime) * (0.45 * PlayState.SONG.speed));
-
 					if(daNote!=null && daNote.alive){
 						if (daNote.tooLate || daNote.wasGoodHit && (isDownscroll && daNote.y>strumLine.y+daNote.height || !isDownscroll && daNote.y<strumLine.y-daNote.height))
 						{
@@ -2374,9 +2349,6 @@ class PlayState extends MusicBeatState
 		if (!inCutscene){
 			if(ScoreUtils.botPlay)
 				botplay();
-
-			if(currentOptions.pollingInput)
-				keyShit();
 
 
 			if(pressedKeys.contains(true)){
@@ -2539,8 +2511,13 @@ class PlayState extends MusicBeatState
 						i='negative';
 					}
 					//var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
-					var numScore:ComboSprite = new ComboSprite(0,0,noteModifier);
-					//numScore.setup();
+					var numScore:Null<ComboSprite> = null;
+					if(currentOptions.recycleComboJudges){
+						numScore = comboBin.recycle(ComboSprite);
+						numScore.setStyle(noteModifier);
+					}else
+						numScore = new ComboSprite(0,0,noteModifier);
+					numScore.setup();
 					numScore.number = i;
 					numScore.screenCenter(XY);
 					numScore.x = coolText.x + (43 * daLoop) - 90;
@@ -2590,10 +2567,11 @@ class PlayState extends MusicBeatState
 						}
 
 					}else{
-						FlxTween.tween(numScore, {alpha: 0}, 0.2, {
+						numScore.currentTween = FlxTween.tween(numScore, {alpha: 0}, 0.2, {
 							onComplete: function(tween:FlxTween)
 							{
-								numScore.destroy();
+								numScore.kill();
+							//	numScore.destroy();
 							},
 							startDelay: Conductor.crochet * 0.002
 						});
@@ -2630,7 +2608,15 @@ class PlayState extends MusicBeatState
 
 		var ratingCameras = [camRating];
 		if(currentOptions.showRatings){
-			var rating:JudgeSprite = new JudgeSprite(0,0,noteModifier);//judgementSprites.recycle(JudgeSprite);
+			var rating:Null<JudgeSprite> = null;
+
+			if(currentOptions.recycleComboJudges){
+				rating = judgeBin.recycle(JudgeSprite);
+				rating.setStyle(noteModifier);
+			}else
+				rating = new JudgeSprite(0,0,noteModifier);//judgementSprites.recycle(JudgeSprite);
+
+
 			rating.setup();
 			rating.judgement = daRating;
 			rating.screenCenter();
@@ -2672,6 +2658,7 @@ class PlayState extends MusicBeatState
 				rating.scale.scale(1.1);
 				if(rating.currentTween!=null && rating.currentTween.active){
 					rating.currentTween.cancel();
+					rating.currentTween=null;
 				}
 				rating.currentTween = FlxTween.tween(rating, {"scale.x": scaleX, "scale.y": scaleY}, 0.1, {
 					onComplete: function(tween:FlxTween)
@@ -2681,7 +2668,7 @@ class PlayState extends MusicBeatState
 								onComplete: function(tween:FlxTween)
 								{
 									rating.kill();
-									rating.destroy();
+									//rating.destroy();
 									if(judge==rating)judge=null;
 								},
 								ease: FlxEase.quadIn,
@@ -2693,6 +2680,14 @@ class PlayState extends MusicBeatState
 				});
 
 			}else{
+				rating.currentTween = FlxTween.tween(rating, {alpha: 0}, 0.2, {
+					onComplete: function(tween:FlxTween)
+					{
+						rating.kill();
+					//	rating.destroy();
+					},
+					startDelay: Conductor.crochet * 0.001
+				});
 				rating.acceleration.y = 550;
 				rating.velocity.y -= FlxG.random.int(140, 175);
 				rating.velocity.x -= FlxG.random.int(0, 10);
@@ -2703,14 +2698,6 @@ class PlayState extends MusicBeatState
 			rating.cameras=ratingCameras;
 			coolText.cameras=ratingCameras;
 
-			FlxTween.tween(rating, {alpha: 0}, 0.2, {
-				onComplete: function(tween:FlxTween)
-				{
-					rating.kill();
-					rating.destroy();
-				},
-				startDelay: Conductor.crochet * 0.001
-			});
 		}else{
 
 			coolText.cameras=ratingCameras;
@@ -2737,7 +2724,13 @@ class PlayState extends MusicBeatState
 				}
 
 			//	var numScore:FlxSprite = new FlxSprite().loadGraphic(Paths.image(pixelShitPart1 + 'num' + i + pixelShitPart2));
-				var numScore:ComboSprite = new ComboSprite(0,0,noteModifier);
+				var numScore:Null<ComboSprite> = null;
+				if(currentOptions.recycleComboJudges){
+					numScore = comboBin.recycle(ComboSprite);
+					numScore.setStyle(noteModifier);
+				}else
+					numScore = new ComboSprite(0,0,noteModifier);
+
 				numScore.setup();
 				numScore.number = i;
 				numScore.screenCenter();
@@ -2785,10 +2778,9 @@ class PlayState extends MusicBeatState
 				numScore.velocity.x = FlxG.random.float(-2.5, 2.5);
 
 				if(currentOptions.ratingInHUD){
-					numScore.y -= 60;
+					numScore.y += 10;
 					numScore.x += 75;
 					numScore.scrollFactor.set(0,0);
-					numScore.y += 50;
 				}
 
 				numScore.x += currentOptions.judgeX;
@@ -2798,10 +2790,11 @@ class PlayState extends MusicBeatState
 
 				add(numScore);
 
-				FlxTween.tween(numScore, {alpha: 0}, 0.2, {
+				numScore.currentTween = FlxTween.tween(numScore, {alpha: 0}, 0.2, {
 					onComplete: function(tween:FlxTween)
 					{
-						numScore.destroy();
+						numScore.kill();
+						//numScore.destroy();
 					},
 					startDelay: Conductor.crochet * 0.0005
 				});
@@ -2941,32 +2934,6 @@ class PlayState extends MusicBeatState
 			}
 		}
 		return sustains;
-	}
-
-	private function keyShit():Void
-	{
-		if(FlxG.keys.justPressed.F6){
-			ScoreUtils.botPlay = !ScoreUtils.botPlay;
-			return;
-		}
-
-		var pressed:Array<Bool> = [controls.LEFT_P,controls.DOWN_P,controls.UP_P,controls.RIGHT_P];
-		var held:Array<Bool> = [controls.LEFT,controls.DOWN,controls.UP,controls.RIGHT];
-
-		if(pressed.contains(true)){
-			for(dir in 0...pressed.length){
-				var isPressed = pressed[dir];
-				if(isPressed){
-					handleInput(dir);
-				}
-			}
-		}
-		if(held.contains(true)){
-			for(dir in 0...held.length){
-				var isHeld = held[dir];
-				pressedKeys[dir]=isHeld;
-			}
-		}
 	}
 
 	function showMiss(direction:Int){
@@ -3328,10 +3295,9 @@ class PlayState extends MusicBeatState
 			lua=null;
 		}
 		#end
-		if(!currentOptions.pollingInput){
-			FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN,keyPress);
-			FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP,keyRelease);
-		}
+		FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN,keyPress);
+		FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP,keyRelease);
+
 		return super.switchTo(next);
 	}
 

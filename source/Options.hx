@@ -94,7 +94,6 @@ class Options
 	public var cMod:Float = 0;
 	public var xMod:Float = 1;
 	public var mMod:Float = 1;
-	public var pollingInput:Bool = false;
 	public var judgementWindow:String = 'ITG';
 	public var noteOffset:Int = 0;
 	public var botPlay:Bool = false;
@@ -128,13 +127,13 @@ class Options
 	public var noChars:Bool = false;
 	public var noStage:Bool = false;
 	public var allowOrderSorting:Bool = true;
+	public var recycleComboJudges:Bool = false;
 	public var shouldCache:Bool = false;
 	public var cacheCharacters:Bool = false;
 	public var cacheSongs:Bool = false;
 	public var cacheSounds:Bool = false;
 	public var cachePreload:Bool = false;
 	public var cacheUsedImages:Bool = false;
-
 
 	// preference
 	public var showMem:Bool = true;
