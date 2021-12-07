@@ -6,27 +6,27 @@
   "receptorAlpha": 1,
   "arguments": {
       "splashes":{
-        "sheet": "splashes",
-        "scale":1.5,
+        "sheet": "AndroSplash",
+        "scale":1,
         "left":{
           "offsetX": -60,
           "offsetY": 0,
-          "prefix": "note impact 1 purple"
+          "prefix": "splash left"
         },
         "up":{
           "offsetX": -60,
           "offsetY": 0,
-          "prefix": "note impact 1 green"
+          "prefix": "splash up"
         },
         "down":{
           "offsetX": -60,
           "offsetY": 0,
-          "prefix": "note impact 1 blue"
+          "prefix": "splash down"
         },
         "right":{
           "offsetX": -60,
           "offsetY": 0,
-          "prefix": "note impact 1 red"
+          "prefix": "splash right"
         }
       },
       "notes":{

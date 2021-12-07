@@ -964,13 +964,12 @@ class PlayState extends MusicBeatState
 			}
 			healthBar.setIcons(boyfriend.iconName,dad.iconName);
 			if(currentOptions.healthBarColors)
-				healthBar.setColors(boyfriend.iconColor,dad.iconColor);
+				healthBar.setColors(dad.iconColor,boyfriend.iconColor);
 
 			luaSprites[spriteName]=newSprite;
 			add(newSprite);
-			trace(currAnim);
 			if(currAnim!="idle" && !currAnim.startsWith("dance")){
-				newSprite.playAnim(currAnim);
+				newSprite.playAnim(currAnim,true);
 			}else if(currAnim=='idle' || currAnim.startsWith("dance")){
 				newSprite.dance();
 			}
