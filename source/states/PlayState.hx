@@ -3030,7 +3030,7 @@ class PlayState extends MusicBeatState
 			{
 				if (Math.abs(note.noteData) == spr.ID)
 				{
-					spr.playNote(note,currentOptions.useNotesplashes?(judge=='sick' || judge=='epic'):false);
+					spr.playNote(note,(currentOptions.useNotesplashes && !note.isSustainNote)?(judge=='sick' || judge=='epic'):false);
 				}
 			});
 			updateReceptors();
@@ -3215,10 +3215,12 @@ class PlayState extends MusicBeatState
 			lua.setGlobalVar("curStep",curStep);
 			lua.call("stepHit",[curStep]);
 		}
-		if (inst != null && !startingSong){
-			if (inst.time > Conductor.rawSongPos + 45 || inst.time < Conductor.rawSongPos - 45)
-			{
-				resyncVocals();
+		if(!paused){
+			if (inst != null && !startingSong){
+				if (inst.time > Conductor.rawSongPos + 45 || inst.time < Conductor.rawSongPos - 45)
+				{
+					resyncVocals();
+				}
 			}
 		}
 	}

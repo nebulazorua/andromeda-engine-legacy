@@ -9,22 +9,22 @@
       "sheet": "splashes",
       "scale":1.5,
       "left":{
-        "offsetX": -55,
+        "offsetX": -60,
         "offsetY": 0,
         "prefix": "note impact 1 purple"
       },
       "up":{
-        "offsetX": -55,
+        "offsetX": -60,
         "offsetY": 0,
         "prefix": "note impact 1 green"
       },
       "down":{
-        "offsetX": -55,
+        "offsetX": -60,
         "offsetY": 0,
         "prefix": "note impact 1 blue"
       },
       "right":{
-        "offsetX": -55,
+        "offsetX": -60,
         "offsetY": 0,
         "prefix": "note impact 1 red"
       }

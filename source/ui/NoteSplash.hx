@@ -17,6 +17,7 @@ class NoteSplash extends FlxSprite{
   public static var cache:Map<String,FlxFramesCollection>=[];
   var animFramerate:Float = 24;
   var splashOffset:Array<Null<Float>>=[];
+  var splashAngle:Float = 0;
   var loadedSplashData:Dynamic;
   public function setTextures(note:Note){
     var behaviour = note.behaviour;
@@ -34,8 +35,11 @@ class NoteSplash extends FlxSprite{
         if(loadedSplashData==data)return;
         loadedSplashData=data;
         var framerate:Null<Int> = 24;
+        var angel:Null<Float> = 0;
+        if(data.angle!=null)angel=data.angle;
         if(data.framerate!=null)framerate=data.framerate;
         animFramerate=framerate;
+        splashAngle=angel;
         animation.addByPrefix('splash', data.prefix, framerate, false);
         if(data.offsetX==null)splashOffset[0]=0;else splashOffset[0]=data.offsetX;
         if(data.offsetY==null)splashOffset[1]=0;else splashOffset[1]=data.offsetY;
@@ -52,10 +56,13 @@ class NoteSplash extends FlxSprite{
 
   public function play(receptor:Receptor){
     visible=true;
-    setPosition(receptor.x-Note.swagWidth/2,receptor.y-Note.swagWidth/2);
+    setPosition(receptor.x - Note.swagWidth - receptor.offset.x,receptor.y - Note.swagWidth - receptor.offset.y);
     animation.play('splash',true);
     scrollFactor.copyFrom(receptor.scrollFactor);
-    offset.set(splashOffset[0],splashOffset[1]);
+    centerOffsets();
+    offset.x += splashOffset[0];
+    offset.y += splashOffset[1];
+    angle = splashAngle;
     animation.curAnim.frameRate = animFramerate + FlxG.random.int(-2,2);
   }
 
