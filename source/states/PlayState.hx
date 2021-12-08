@@ -1563,7 +1563,7 @@ class PlayState extends MusicBeatState
 		}else{
 			if(judgeMan.judgementCounter.get("bad")+judgeMan.judgementCounter.get("shit")>=noteCounter.get("taps")/2)
 				fcType = ' (WTFC)';
-			else if(judgeMan.judgementCounter.get("bad")>0)
+			else if(judgeMan.judgementCounter.get("bad")>0 || judgeMan.judgementCounter.get("shit")>0)
 				fcType += '(FC)';
 			else if(judgeMan.judgementCounter.get("good")>0)
 				fcType += '(GFC)';
