@@ -131,11 +131,11 @@ This will install about 22GB of crap, but once that is done you can open up a co
 Right now, compiling for Mac does not work.
 
 If you get an error about StatePointer, you'll want to run these:
-`haxelib remove linc_luajit
-haxelib remove hxvm-luajit`
+```haxelib remove linc_luajit
+haxelib remove hxvm-luajit```
 And then
-`haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit
-haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit`
+```haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit
+haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit```
 
 (Thanks KadeDev for figuring this out because I was stuck on why it happened tbh)
 
