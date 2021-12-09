@@ -52,7 +52,6 @@ class ChartingState extends MusicBeatState
 	public static var lastSection:Int = 0;
 
 	var bpmTxt:FlxText;
-
 	var strumLine:FlxSprite;
 	var curSong:String = 'Dadbattle';
 	var amountSteps:Int = 0;
@@ -103,6 +102,12 @@ class ChartingState extends MusicBeatState
 
 	var leftIcon:HealthIcon;
 	var rightIcon:HealthIcon;
+	var startPos:Float = 0;
+
+	public function new(?pos:Float){
+		super();
+		startPos=pos;
+	}
 
 	override function create()
 	{
@@ -207,6 +212,31 @@ class ChartingState extends MusicBeatState
 		add(curRenderedSustains);
 		add(curRenderedMarkers);
 		curSection = 0;
+
+		vocals.time = startPos;
+		FlxG.sound.music.time = startPos;
+		Conductor.songPosition = startPos;
+		var oldStep:Int = curStep;
+
+		updateCurStep();
+		updateBeat();
+
+		if (oldStep != curStep && curStep > 0)
+			stepHit();
+		while (curStep >= 16 * (curSection + 1))
+		{
+			trace(curStep);
+			trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
+			trace('DUMBSHIT');
+
+			if (_song.notes[curSection + 1] == null)
+			{
+				addSection();
+			}
+
+			changeSection(curSection + 1, false);
+		}
+		
 		updateSectionUI();
 
 
@@ -580,11 +610,13 @@ class ChartingState extends MusicBeatState
 			else
 				return _song.notes[curSection].lengthInSteps;
 	}*/
-	function sectionStartTime():Float
+	function sectionStartTime(?section:Int):Float
 	{
+		if(section==null)section=curSection;
+
 		var daBPM:Int = _song.bpm;
 		var daPos:Float = 0;
-		for (i in 0...curSection)
+		for (i in 0...section)
 		{
 			if (_song.notes[i].changeBPM)
 			{
@@ -594,19 +626,10 @@ class ChartingState extends MusicBeatState
 		}
 		return daPos;
 	}
-	function sectionEndTime():Float
+	function sectionEndTime(?section:Int):Float
 	{
-		var daBPM:Int = _song.bpm;
-		var daPos:Float = 0;
-		for (i in 0...curSection+1)
-		{
-			if (_song.notes[i].changeBPM)
-			{
-				daBPM = _song.notes[i].bpm;
-			}
-			daPos += 4 * (1000 * 60 / daBPM);
-		}
-		return daPos;
+		if(section==null)section=curSection;
+		return sectionStartTime(section+1);
 	}
 
 	var lastMousePos:FlxPoint = FlxPoint.get();
@@ -636,7 +659,7 @@ class ChartingState extends MusicBeatState
 
 		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
 
-		if (curBeat % 4 == 0 && curStep >= 16 * (curSection + 1))
+		if (curStep >= 16 * (curSection + 1))
 		{
 			trace(curStep);
 			trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
@@ -649,6 +672,7 @@ class ChartingState extends MusicBeatState
 
 			changeSection(curSection + 1, false);
 		}
+
 
 		FlxG.watch.addQuick('daBeat', curBeat);
 		FlxG.watch.addQuick('daStep', curStep);
@@ -768,12 +792,19 @@ class ChartingState extends MusicBeatState
 		if (FlxG.keys.justPressed.ENTER)
 		{
 			lastSection = curSection;
-
+			var time = FlxG.sound.music.time;
 			PlayState.setSong(_song);
 			PlayState.SONG.sliderVelocities = velChanges;
 			FlxG.sound.music.stop();
 			vocals.stop();
 			FlxG.mouse.visible = false;
+			if(FlxG.keys.pressed.SHIFT){
+				PlayState.startPos = time;
+			}else{
+				PlayState.startPos = 0;
+			}
+			PlayState.inCharter=true;
+			PlayState.charterPos = time;
 			FlxG.switchState(new PlayState());
 		}
 
@@ -820,6 +851,8 @@ class ChartingState extends MusicBeatState
 				{
 					vocals.play();
 					FlxG.sound.music.play();
+					vocals.time = FlxG.sound.music.time;
+					FlxG.sound.music.time = vocals.time;
 				}
 			}
 

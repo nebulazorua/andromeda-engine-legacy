@@ -51,16 +51,20 @@
 		Andromeda Engine defines
 		Comment/Uncomment these depending on what you want for your mod
 
-		NOTE: if you use FORCED_JUDGE, make sure to set a default judgement preset in EngineData.hx!
+		NOTE: if you use FORCED_JUDGE and want your own judgement windows, make sure to set the preset in EngineData.hx!
 	-->
-	<define name="HAXEFLIXEL_LOGO"/> <!--god this thing is nostalgic-->
-	<!-- <define name="NO_BOTPLAY" unless="debug"/> -->
-	<!-- <define name="DISABLE_CHART_EDITOR" unless="debug"/> -->
-	<!-- <define name="DISABLE_CHARACTER_EDITOR" unless="debug"/> -->
-	<!-- <define name="NO_FREEPLAY_MODS"/> -->
-	<!-- <define name="FORCE_LUA_MODCHARTS"/> -->
-	<!-- <define name="FORCED_JUDGE"/> -->
-	<!-- <define name="GOTO_CHAR_EDITOR" if="debug"/> -->
+	<define name="HAXEFLIXEL_LOGO"/> <!--Allows the Haxeflixel watermark to show on startup when compiled as release;.-->
+	<!-- <define name="NO_BOTPLAY" unless="debug"/> --> <!--Disables the ability to use botplay-->
+	<!-- <define name="DISABLE_CHART_EDITOR" unless="debug"/> -->  <!--Disables the ability to use the chart editor ingame-->
+	<!-- <define name="DISABLE_CHARACTER_EDITOR" unless="debug"/> -->  <!--Disables the ability to use the character editor ingame-->
+	<!-- <define name="NO_FREEPLAY_MODS"/> --> <!--Disables the ability to change freeplay modifiers (CMod, MMod, XMod, NoFail)-->
+	<!-- <define name="FORCE_LUA_MODCHARTS"/> --> <!--Disables the ability to turn off lua modcharts-->
+	<!-- <define name="FORCED_JUDGE"/> -->  <!--Disables the ability to change judgement window.-->
+	<!-- <define name="GOTO_CHAR_EDITOR" if="debug"/> --> <!--Makes it so you go straight to the character editor when compiling. Mainly just for testing-->
+	<!-- <define name="ALLOW_SET_STARTPOS"/> --> <!--Enables the ability to set a start pos from the pause menu-->
+
+
+	<define name="ALLOW_SET_STARTPOS" if="debug"/>
 
 
 	<section if="PRELOAD_ALL">

@@ -125,6 +125,7 @@ class Note extends NoteGraphic
 		hitbox = Conductor.safeZoneOffset;
 		switch(noteType){
 			case 'alt':
+				trace("alt note");
 				graphicType='default'; // makes it look like a normal note
 			case 'mine':
 				causesMiss=false;

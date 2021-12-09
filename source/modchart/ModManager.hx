@@ -233,7 +233,7 @@ class ModManager {
   }
 
   public function queueEase(step:Float, endStep:Float, modName:String, percent:Float, style:String, player:Int=-1){
-    if(state.curDecStep<=0){
+    if(state.curDecStep<step){
       var easeFunc = Reflect.getProperty(FlxEase, style);
       if(easeFunc==null)easeFunc=FlxEase.linear;
 
@@ -248,13 +248,11 @@ class ModManager {
           this
         )
       );
-    }else{
-      throw new Exception("You cannot queue modifiers after step '0'!");
     }
   }
 
   public function queueEaseL(step:Float, length:Float, modName:String, percent:Float, style:String, player:Int=-1){
-    if(state.curDecStep<=0){
+    if(state.curDecStep<step){
       var easeFunc = Reflect.getProperty(FlxEase, style);
       if(easeFunc==null)easeFunc=FlxEase.linear;
       var stepSex = Conductor.stepToSeconds(step);
@@ -270,13 +268,11 @@ class ModManager {
           this
         )
       );
-    }else{
-      throw new Exception("You cannot queue modifiers after step '0'!");
     }
   }
 
   public function queueSet(step:Float, modName:String, percent:Float, player:Int=-1){
-    if(state.curDecStep<=0){
+    if(state.curDecStep<step){
       schedule[modName].push(
         new SetEvent(
           step,
@@ -286,8 +282,6 @@ class ModManager {
           this
         )
       );
-    }else{
-      throw new Exception("You cannot queue modifiers after step '0'!");
     }
   }
 

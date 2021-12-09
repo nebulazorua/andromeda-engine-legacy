@@ -1,16 +1,12 @@
 {
-	"iconName": "bf",
 	"charOffset": [
 		0,
 		0
 	],
-	"camOffset":[
+	"camOffset": [
 		0,
 		0
 	],
-	"beatDancer": false,
-	"singDur": 4,
-	"spritesheet": "BOYFRIEND",
 	"anims": [
 		{
 			"offsets": [
@@ -151,8 +147,24 @@
 			"prefix": "BF idle shaking",
 			"looped": true,
 			"name": "scared"
+		},
+		{
+			"offsets": [
+				-3,
+				4
+			],
+			"fps": 24,
+			"prefix": "BF HEY",
+			"looped": false,
+			"name": "singUP-alt"
 		}
 	],
+	"spritesheet": "BOYFRIEND",
+	"singDur": 4,
+	"flipX": false,
+	"antialiasing": true,
+	"iconName": "bf",
+	"beatDancer": false,
 	"healthColor": "0xFF31B0D1",
-	"flipX": false
+	"format": "andromeda"
 }

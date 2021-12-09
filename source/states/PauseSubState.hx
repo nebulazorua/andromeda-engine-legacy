@@ -21,7 +21,13 @@ class PauseSubState extends MusicBeatSubstate
 	var startTimer:FlxTimer;
 	var grpMenuShit:FlxTypedGroup<Alphabet>;
 
-	var menuItems:Array<String> = ['Resume', 'Restart Song', 'Exit to menu'];
+	var menuItems:Array<String> = [
+		'Resume',
+		'Restart Song',
+		#if ALLOW_SET_STARTPOS
+		"Set Start Position",
+		#end
+		'Exit to menu'];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
@@ -69,6 +75,15 @@ class PauseSubState extends MusicBeatSubstate
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
 
+		if(PlayState.startPos>0)
+			menuItems.insert(2,"Restart from beginning");
+
+
+		if(PlayState.inCharter)
+			menuItems.insert(3,"Exit to charter");
+
+
+
 		for (i in 0...menuItems.length)
 		{
 			var songText:Alphabet = new Alphabet(0, (70 * i) + 30, menuItems[i], true, false);
@@ -112,12 +127,20 @@ class PauseSubState extends MusicBeatSubstate
 					close();
 				case "Restart Song":
 					FlxG.resetState();
+				case "Restart from beginning":
+					PlayState.startPos=0;
+					FlxG.resetState();
+				case "Set Start Position":
+					PlayState.startPos = Conductor.rawSongPos;
+				case "Exit to charter":
+					FlxG.switchState(new ChartingState(PlayState.charterPos==0?Conductor.rawSongPos:PlayState.charterPos));
 				case "Exit to menu":
-					if(PlayState.isStoryMode){
+
+					if(PlayState.isStoryMode)
 						FlxG.switchState(new StoryMenuState());
-					}else{
+					else
 						FlxG.switchState(new FreeplayState());
-					}
+
 
 					Cache.clear();
 			}
