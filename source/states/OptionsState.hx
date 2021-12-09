@@ -59,7 +59,6 @@ class OptionsState extends MusicBeatState
 				new OptionCategory("Advanced",[
 					#if !FORCED_JUDGE new JudgementsOption("judgementWindow","Judgements","The judgement windows to use"),
 					new ToggleOption("useEpic","Use Epics","Allows the 'Epic' judgement to be used"),#end
-					new ToggleOption("pollingInput","Polling Input","Makes input get checked every frame instead of on key press"),
 					new ScrollOption("accuracySystem","Accuracy System","How accuracy is determined",0,2,["Basic","ITG","Wife3"])
 				]),
 				new StateOption("Calibrate Offset",new SoundOffsetState()),
