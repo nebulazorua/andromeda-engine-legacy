@@ -60,7 +60,7 @@ class Receptor extends FNFSprite {
 
     switch(behaviour.actsLike){
       case 'default':
-        frames = Paths.noteSkinAtlas(behaviour.arguments.receptors.sheet, 'skins', skin, modifier, 'receptor');
+        frames = Paths.noteSkinAtlas(behaviour.arguments.receptors.sheet, 'skins', skin, modifier);
 
         antialiasing = behaviour.antialiasing;
         setGraphicSize(Std.int((width * behaviour.scale) * daScale/.7));
@@ -81,7 +81,6 @@ class Receptor extends FNFSprite {
         trace(width,behaviour.arguments.receptor.sheet);
 
         setGraphicSize(Std.int((width * behaviour.scale) * daScale/.7));
-        updateHitbox();
         antialiasing = behaviour.antialiasing;
 
         animation.add('static', Reflect.field(behaviour.arguments.receptor,'${dir}Idle') );
