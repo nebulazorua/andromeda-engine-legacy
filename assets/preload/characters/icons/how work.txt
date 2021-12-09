@@ -1,0 +1,8 @@
+note that the icons are in a 150x150 grid, and the height is just ignored. only width is taken into account
+
+if you have 1 icon (150x150 image), it'll leave that icon whether winning, losing or neutral
+if you have 2 icons (300x150 image), the 1st icon (the left one) is neutral, and the 2nd is losing.
+if you have 3 icons (400x150 image), the 1st icon (left one) is losing, the 2nd (middle) is neutral and 3rd (right) is winning
+If you have >3 icons (image is >400x150), same rules as the above apply, but everything after the 3rd can only be set in code
+
+if you dont want the icon to be antialiased, that has to be set at compile time in EngineData.hax

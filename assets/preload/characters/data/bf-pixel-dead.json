@@ -1,0 +1,35 @@
+{
+  "anims": [
+    {
+      "prefix": "BF Dies pixel",
+      "name": "firstDeath",
+      "fps": 24,
+      "looped": false,
+      "offsets": []
+    },
+    {
+      "prefix": "Retry Loop",
+      "name": "deathLoop",
+      "fps": 24,
+      "looped": false,
+      "offsets": []
+    },
+    {
+      "prefix": "RETRY CONFIRM",
+      "name": "deathConfirm",
+      "fps": 24,
+      "looped": false,
+      "offsets": []
+    }
+
+  ],
+  "spritesheet": "bfPixelsDEAD",
+  "singDur": 4,
+  "iconName": "bf-pixel",
+  "healthColor": "0xFF31B0D1",
+  "charOffset": [0,300],
+  "beatDancer": false,
+  "flipX": true,
+  "scale": 6,
+  "antialiasing": false
+}

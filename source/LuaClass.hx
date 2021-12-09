@@ -1,7 +1,7 @@
 package;
 
 // TODO: Clean up
-
+import modchart.*;
 import llua.Convert;
 import llua.Lua;
 import llua.State;
@@ -20,7 +20,9 @@ import Options;
 import flixel.tweens.FlxEase;
 import flixel.tweens.FlxTween;
 import haxe.DynamicAccess;
-
+import openfl.display.GraphicsShader;
+import states.*;
+import ui.*;
 typedef LuaProperty = {
     var defaultValue:Any;
     var getter:(State,Any)->Int;
@@ -30,6 +32,9 @@ typedef LuaProperty = {
 class LuaStorage {
   public static var objectProperties:Map<String,Map<String,LuaProperty>> = [];
   public static var objects:Map<String,LuaClass> = [];
+  public static var notes:Array<Note> = [];
+  public static var noteIDs:Map<Note,String>=[];
+  public static var noteMap:Map<String,Note>=[];
 }
 
 class LuaClass {
@@ -52,6 +57,10 @@ class LuaClass {
       Lua.pushcfunction(l,methods[k]);
       Lua.setfield(l,classIdx,k);
     }
+
+    Lua.pushstring(l,"InternalClassName");
+    Lua.pushstring(l,className);
+    Lua.settable(l,classIdx);
 
     LuaL.newmetatable(l,className + "Metatable");
     var mtIdx = Lua.gettop(l);
@@ -299,6 +308,32 @@ class LuaSprite extends LuaClass {
 
   private static var setScaleC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setScale);
 
+  private static function setScaleX(l:StatePointer):Int{
+    // 1 = self
+    // 2 = scale
+    var scale = LuaL.checknumber(state,2);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.scale.x = scale;
+    return 0;
+  }
+
+  private static var setScaleXC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setScaleX);
+
+  private static function setScaleY(l:StatePointer):Int{
+    // 1 = self
+    // 2 = scale
+    var scale = LuaL.checknumber(state,2);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.scale.y = scale;
+    return 0;
+  }
+
+  private static var setScaleYC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setScaleY);
+
   private static function getProperty(l:StatePointer):Int{
     // 1 = self
     // 2 = property
@@ -428,7 +463,7 @@ class LuaSprite extends LuaClass {
 
     var spriteName = Lua.tostring(state,-1);
     var sprite = PlayState.currentPState.luaSprites[spriteName];
-    var fullPath = "assets/data/" + PlayState.SONG.song.toLowerCase()+"/"+path+".png";
+    var fullPath = "assets/songs/" + PlayState.SONG.song.toLowerCase()+"/"+path+".png";
     var data:BitmapData;
     if(FileSystem.exists(fullPath) && !FileSystem.isDirectory(fullPath)){
       try{
@@ -451,7 +486,7 @@ class LuaSprite extends LuaClass {
     var spriteName = Lua.tostring(state,-1);
     var sprite = PlayState.currentPState.luaSprites[spriteName];
 
-    var fullPath = "assets/data/" + PlayState.SONG.song.toLowerCase()+"/"+path;
+    var fullPath = "assets/songs/" + PlayState.SONG.song.toLowerCase()+"/"+path;
     var fullPathXML = fullPath + ".xml";
     var fullPathPNG = fullPath + ".png";
     var bitmapData:BitmapData;
@@ -803,6 +838,40 @@ class LuaSprite extends LuaClass {
           return 0;
         }
       },
+
+      "scaleX"=>{ // TODO: sprite.scale.x
+        defaultValue:sprite.scale.x,
+        getter:function(l:State,data:Any){
+          Lua.pushnumber(l,sprite.scale.x);
+          return 1;
+        },
+        setter:function(l:State){
+          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+            return 0;
+          }
+          sprite.scale.set(Lua.tonumber(l,3),sprite.scale.y);
+          LuaClass.DefaultSetter(l);
+          return 0;
+        }
+      },
+      "scaleY"=>{ // TODO: sprite.scale.y
+        defaultValue:sprite.scale.x,
+        getter:function(l:State,data:Any){
+          Lua.pushnumber(l,sprite.scale.y);
+          return 1;
+        },
+        setter:function(l:State){
+          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+            return 0;
+          }
+          sprite.scale.set(sprite.scale.x,Lua.tonumber(l,3));
+          LuaClass.DefaultSetter(l);
+          return 0;
+        }
+      },
+
     ];
   }
   override function Register(l:State){
@@ -885,16 +954,24 @@ class LuaCam extends LuaClass {
     return 0;
   }
 
-  private static function setShaders(l:StatePointer):Int{
+  private static function addShaders(l:StatePointer):Int{
     // 1 = self
     // 2 = table of shaders
     var stuff = Convert.fromLua(state,2);
-    trace(stuff);
+
+    return 0;
+  }
+
+  private static function delShaders(l:StatePointer):Int{
+    // 1 = self
+    // 2 = table of shaders
+    var stuff = Convert.fromLua(state,2);
+
     return 0;
   }
 
   private static var shakeC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(shake);
-  private static var setShadersC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setShaders);
+  private static var addShadersC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addShaders);
 
   public function new(cam:FlxCamera,name:String,?addToGlobal:Bool=true){
     super();
@@ -970,14 +1047,14 @@ class LuaCam extends LuaClass {
           return 0;
         }
       },
-      "setShaders"=>{
+      "addShaders"=>{
         defaultValue:0,
         getter:function(l:State,data:Any){
-          Lua.pushcfunction(l,setShadersC);
+          Lua.pushcfunction(l,addShadersC);
           return 1;
         },
         setter:function(l:State){
-          LuaL.error(l,"setShaders is read-only.");
+          LuaL.error(l,"addShaders is read-only.");
           return 0;
         }
       },
@@ -989,9 +1066,162 @@ class LuaCam extends LuaClass {
   }
 }
 
+class LuaNote extends LuaSprite {
+  private static var state:State;
+  public var id:String='0';
+
+  override function Register(l:State){
+    state=l;
+    super.Register(l);
+  }
+
+  public function new(note:Note){
+    super(note,'note${LuaStorage.notes.length}',true);
+    id = Std.string(LuaStorage.notes.length);
+    LuaStorage.notes.push(note);
+    LuaStorage.noteIDs.set(note,id);
+    LuaStorage.noteMap.set(id,note);
+
+    properties.set("id",{
+      defaultValue:id,
+      getter:function(l:State,data:Any){
+        Lua.pushstring(l,id);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"id is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("noteData",{
+      defaultValue:note.noteData,
+      getter:function(l:State,data:Any){
+        Lua.pushnumber(l,note.noteData);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"noteData is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("strumTime",{
+      defaultValue:note.strumTime,
+      getter:function(l:State,data:Any){
+        Lua.pushnumber(l,note.strumTime);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"strumTime is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("manualXOffset",{
+      defaultValue:note.manualXOffset,
+      getter:function(l:State,data:Any){
+        Lua.pushnumber(l,note.manualXOffset);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"manualXOffset is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("wasGoodHit",{
+      defaultValue:note.wasGoodHit,
+      getter:function(l:State,data:Any){
+        Lua.pushboolean(l,note.wasGoodHit);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"wasGoodHit is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("tooLate",{
+      defaultValue:note.tooLate,
+      getter:function(l:State,data:Any){
+        Lua.pushboolean(l,note.tooLate);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"tooLate is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("sustainLength",{
+      defaultValue:note.sustainLength,
+      getter:function(l:State,data:Any){
+        Lua.pushnumber(l,note.sustainLength);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"sustainLength is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("isSustainNote",{
+      defaultValue:note.isSustainNote,
+      getter:function(l:State,data:Any){
+        Lua.pushboolean(l,note.isSustainNote);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"isSustainNote is read-only.");
+        return 0;
+      }
+    });
+
+    properties.set("mustPress",{
+      defaultValue:note.mustPress,
+      getter:function(l:State,data:Any){
+        Lua.pushboolean(l,note.mustPress);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"mustPress is read-only.");
+        return 0;
+      }
+    });
+
+
+  }
+}
+
 class LuaReceptor extends LuaSprite {
   private static var state:State;
 
+  override function SetNumProperty(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+        LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      var key = Lua.tostring(l,2);
+      if(key=='x')key='desiredX';
+      if(key=='y')key='desiredY';
+      Reflect.setProperty(sprite,key,Lua.tonumber(l,3));
+      return 0;
+  }
+  override function GetNumProperty(l:State,data:Any){
+      // 1 = self
+      // 2 = key
+      // 3 = metatable
+      var key = Lua.tostring(l,2);
+      if(key=='x')key='desiredX';
+      if(key=='y')key='desiredY';
+      Lua.pushnumber(l,Reflect.getProperty(sprite,key));
+      return 1;
+  }
 
   private function SetAngle(l:State){
       // 1 = self
@@ -1032,13 +1262,13 @@ class LuaReceptor extends LuaSprite {
     });
 
     properties.set("x",{
-      defaultValue:receptor.x,
+      defaultValue:receptor.desiredX,
       getter:GetNumProperty,
       setter:SetNumProperty
     });
 
     properties.set("y",{
-      defaultValue:receptor.y,
+      defaultValue:receptor.desiredY,
       getter:GetNumProperty,
       setter:SetNumProperty
     });
@@ -1133,8 +1363,28 @@ class LuaCharacter extends LuaSprite {
     return 0;
   }
 
+  private static function leftToRight(l:StatePointer){
+    // 1 = self
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.leftToRight();
+    return 0;
+  }
+
+  private static function rightToLeft(l:StatePointer){
+    // 1 = self
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.rightToLeft();
+    return 0;
+  }
+
   private static var playAnimC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(playAnim);
   private static var addOffsetC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addOffset);
+  private static var leftToRightC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(leftToRight);
+  private static var rightToLeftC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(rightToLeft);
 
   public function new(character:Character,name:String,?addToGlobal:Bool=true){
     super(character,name,addToGlobal);
@@ -1184,6 +1434,28 @@ class LuaCharacter extends LuaSprite {
         return 0;
       }
     });
+    properties.set("leftToRight",{
+      defaultValue:0,
+      getter:function(l:State,data:Any){
+        Lua.pushcfunction(l,leftToRightC);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"leftToRight is read-only.");
+        return 0;
+      }
+    });
+    properties.set("rightToLeft",{
+      defaultValue:0,
+      getter:function(l:State,data:Any){
+        Lua.pushcfunction(l,rightToLeftC);
+        return 1;
+      },
+      setter:function(l:State){
+        LuaL.error(l,"rightToLeft is read-only.");
+        return 0;
+      }
+    });
   }
   override function Register(l:State){
     state=l;
@@ -1193,7 +1465,7 @@ class LuaCharacter extends LuaSprite {
 
 class LuaShaderClass extends LuaClass {
   private static var state:State;
-  private static var effect:Any;
+  private var shader:GraphicsShader;
   private function SetNumProperty(l:State){
       // 1 = self
       // 2 = key
@@ -1203,7 +1475,7 @@ class LuaShaderClass extends LuaClass {
         LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
         return 0;
       }
-      Reflect.setProperty(effect,Lua.tostring(l,2),Lua.tonumber(l,3));
+      //Reflect.setProperty(effect,Lua.tostring(l,2),Lua.tonumber(l,3));
       return 0;
   }
 
@@ -1214,7 +1486,7 @@ class LuaShaderClass extends LuaClass {
     Lua.getfield(state,1,"className");
     var name = Lua.tostring(state,-1);
     var shader = PlayState.currentPState.luaObjects[name];
-    Convert.toLua(state,Reflect.getProperty(shader,property));
+    //Convert.toLua(state,Reflect.getProperty(shader,property));
     return 1;
   }
 
@@ -1227,7 +1499,7 @@ class LuaShaderClass extends LuaClass {
     Lua.getfield(state,1,"className");
     var name = Lua.tostring(state,-1);
     var shader = PlayState.currentPState.luaObjects[name];
-    Reflect.setProperty(shader,property,value);
+    //Reflect.setProperty(shader,property,value);
 
     return 1;
   }
@@ -1235,7 +1507,7 @@ class LuaShaderClass extends LuaClass {
   private static var setvarC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setProperty);
   private static var getvarC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(getProperty);
 
-  public function new(shader:Any,shaderName:String,?addToGlobal=false){
+  public function new(shader:GraphicsShader,shaderName:String,?addToGlobal=false){
     super();
     if(PlayState.currentPState.luaObjects.get(shaderName)!=null){
       var counter:Int = 0;
@@ -1246,6 +1518,7 @@ class LuaShaderClass extends LuaClass {
     }
     className = shaderName;
     this.addToGlobal=addToGlobal;
+    this.shader=shader;
     PlayState.currentPState.luaObjects[shaderName]=shader;
     properties = [
       "className"=>{
@@ -1406,202 +1679,125 @@ class LuaModchart extends LuaClass {
   }
 }
 
-/*class LuaReceptor extends LuaClass {
+class LuaModMgr extends LuaClass {
   private static var state:State;
-  private static var internalNames = [
-    "left",
-    "down",
-    "up",
-    "right"
-  ];
-  public function new(noteData:Int,plr:Bool){ // god i've gotta make this better
+  private var manager:ModManager;
+
+  /*
+  private static function setScaleY(l:StatePointer):Int{
+    // 1 = self
+    // 2 = scale
+    var scale = LuaL.checknumber(state,2);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.scale.y = scale;
+    return 0;
+  }
+
+  private static var setScaleYC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setScaleY);
+  */
+
+  private static function queueEase(l:StatePointer):Int{
+    // 1 = self
+    // 2 = step
+    // 3 = endStep
+    // 4 = modName
+    // 5 = percent
+    // 6 = easing style
+    // 7 = player
+    var step = LuaL.checknumber(state,2);
+    var eStep = LuaL.checknumber(state,3);
+    var modN = LuaL.checkstring(state,4);
+    var perc = LuaL.checknumber(state,5);
+    var ease = LuaL.checkstring(state,6);
+    var player:Int = -1;
+
+    if(Lua.isnumber(state,7))
+      player = Std.int(Lua.tonumber(state,7));
+
+    Lua.getfield(state,1,"className");
+    var className = Lua.tostring(state,-1);
+    var mgr = PlayState.currentPState.luaObjects[className];
+    try{
+      mgr.queueEase(step,eStep,modN,perc,ease,player);
+    }catch(e){
+      trace(e.stack,e.message);
+    }
+    return 0;
+  }
+
+  private static var queueEaseC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(queueEase);
+
+  private static function queueSet(l:StatePointer):Int{
+    // 1 = self
+    // 2 = step
+    // 3 = modName
+    // 4 = percent
+    // 5 = player
+    var step = LuaL.checknumber(state,2);
+    var modN = LuaL.checkstring(state,3);
+    var perc = LuaL.checknumber(state,4);
+    var player:Int = -1;
+
+    if(Lua.isnumber(state,5))
+      player = Std.int(Lua.tonumber(state,5));
+
+    Lua.getfield(state,1,"className");
+    var className = Lua.tostring(state,-1);
+    var mgr = PlayState.currentPState.luaObjects[className];
+    mgr.queueSet(step,modN,perc,player);
+    return 0;
+  }
+  private static var queueSetC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(queueSet);
+
+
+
+  public function new(mgr:ModManager,?name="modMgr",?addToGlobal=true){
     super();
-    className= internalNames[noteData] + (plr?"Plr":"Dad") + "Note";
-    properties=[
-      "alpha"=>{
-        defaultValue: 1 ,
-        getter: function(l:State,data:Any):Int{
-          if(plr){
-            Lua.pushnumber(l,PlayState.currentPState.refNotes.members[noteData].alpha);
-            Lua.pushnumber(l,PlayState.currentPState.refReceptors.members[noteData].alpha);
-          }else{
-            Lua.pushnumber(l,PlayState.currentPState.opponentRefNotes.members[noteData].alpha);
-            Lua.pushnumber(l,PlayState.currentPState.opponentRefReceptors.members[noteData].alpha);
-          }
+    className=name;
+    this.addToGlobal=addToGlobal;
+    this.manager=mgr;
+    PlayState.currentPState.luaObjects[name]=mgr;
+    properties = [
+      "className"=>{
+        defaultValue:className,
+        getter:function(l:State,data:Any){
+          Lua.pushstring(l,className);
           return 1;
         },
-        setter: function(l:State):Int{
-          // 1 = self
-          // 2 = key
-          // 3 = value
-          // 4 = metatable
-          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
-            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
-            return 0;
-          }
-
-          var alpha = Lua.tonumber(l,3);
-          if(plr){
-            PlayState.currentPState.refNotes.members[noteData].alpha=alpha;
-            PlayState.currentPState.refReceptors.members[noteData].alpha=alpha;
-          }else{
-            PlayState.currentPState.opponentRefNotes.members[noteData].alpha=alpha;
-            PlayState.currentPState.opponentRefReceptors.members[noteData].alpha=alpha;
-          }
-          LuaClass.DefaultSetter(l);
+        setter:function(l:State){
+          LuaL.error(l,"className is read-only.");
           return 0;
         }
       },
-      "receptorAlpha"=>{
-        defaultValue: 1 ,
-        getter: function(l:State,data:Any):Int{
-          if(plr)
-            Lua.pushnumber(l,PlayState.currentPState.refReceptors.members[noteData].alpha);
-          else
-            Lua.pushnumber(l,PlayState.currentPState.opponentRefReceptors.members[noteData].alpha);
+      "queueSet"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,queueSetC);
           return 1;
         },
-        setter: function(l:State):Int{
-          // 1 = self
-          // 2 = key
-          // 3 = value
-          // 4 = metatable
-          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
-            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
-            return 0;
-          }
-
-          var alpha = Lua.tonumber(l,3);
-          if(plr)
-            PlayState.currentPState.refReceptors.members[noteData].alpha=alpha;
-          else
-            PlayState.currentPState.opponentRefReceptors.members[noteData].alpha=alpha;
-
-          LuaClass.DefaultSetter(l);
+        setter:function(l:State){
+          LuaL.error(l,"queueSet is read-only.");
           return 0;
         }
       },
-      "noteAlpha"=>{
-        defaultValue: 1 ,
-        getter: function(l:State,data:Any):Int{
-          if(plr)
-            Lua.pushnumber(l,PlayState.currentPState.refNotes.members[noteData].alpha);
-          else
-            Lua.pushnumber(l,PlayState.currentPState.opponentRefNotes.members[noteData].alpha);
+      "queueEase"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,queueEaseC);
           return 1;
         },
-        setter: function(l:State):Int{
-          // 1 = self
-          // 2 = key
-          // 3 = value
-          // 4 = metatable
-          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
-            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
-            return 0;
-          }
-
-          var alpha = Lua.tonumber(l,3);
-          if(plr)
-            PlayState.currentPState.refNotes.members[noteData].alpha=alpha;
-          else
-            PlayState.currentPState.opponentRefNotes.members[noteData].alpha=alpha;
-
-          LuaClass.DefaultSetter(l);
-          return 0;
-        }
-      },
-      "angle"=>{
-        defaultValue: 1 ,
-        getter: function(l:State,data:Any):Int{
-          if(plr)
-            Lua.pushnumber(l,PlayState.currentPState.refNotes.members[noteData].angle);
-          else
-            Lua.pushnumber(l,PlayState.currentPState.opponentRefNotes.members[noteData].angle);
-          return 1;
-        },
-        setter: function(l:State):Int{
-          // 1 = self
-          // 2 = key
-          // 3 = value
-          // 4 = metatable
-          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
-            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
-            return 0;
-          }
-
-          var angle = Lua.tonumber(l,3);
-          if(plr)
-            PlayState.currentPState.refNotes.members[noteData].angle=angle;
-          else
-            PlayState.currentPState.opponentRefNotes.members[noteData].angle=angle;
-
-          LuaClass.DefaultSetter(l);
-          return 0;
-        }
-      },
-
-      "xOffset"=>{
-        defaultValue: 0,
-        getter: function(l:State,data:Any):Int{
-          if(plr)
-            Lua.pushnumber(l,PlayState.currentPState.playerNoteOffsets[noteData][0]);
-          else
-            Lua.pushnumber(l,PlayState.currentPState.opponentNoteOffsets[noteData][0]);
-          return 1;
-        },
-        setter: function(l:State):Int{
-          // 1 = self
-          // 2 = key
-          // 3 = value
-          // 4 = metatable
-          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
-            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
-            return 0;
-          }
-
-          var offset = Lua.tonumber(l,3);
-          if(plr)
-            PlayState.currentPState.playerNoteOffsets[noteData][0]=offset;
-          else
-            PlayState.currentPState.opponentNoteOffsets[noteData][0]=offset;
-
-          LuaClass.DefaultSetter(l);
-          return 0;
-        }
-      },
-      "yOffset"=>{
-        defaultValue: 0,
-        getter: function(l:State,data:Any):Int{
-          if(plr)
-            Lua.pushnumber(l,PlayState.currentPState.playerNoteOffsets[noteData][1]);
-          else
-            Lua.pushnumber(l,PlayState.currentPState.opponentNoteOffsets[noteData][1]);
-          return 1;
-        },
-        setter: function(l:State):Int{
-          // 1 = self
-          // 2 = key
-          // 3 = value
-          // 4 = metatable
-          if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
-            LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
-            return 0;
-          }
-
-          var offset = Lua.tonumber(l,3);
-          if(plr)
-            PlayState.currentPState.playerNoteOffsets[noteData][1]=offset;
-          else
-            PlayState.currentPState.opponentNoteOffsets[noteData][1]=offset;
-
-          LuaClass.DefaultSetter(l);
+        setter:function(l:State){
+          LuaL.error(l,"queueEase is read-only.");
           return 0;
         }
       },
     ];
   }
+
   override function Register(l:State){
     state=l;
     super.Register(l);
   }
-}*/
+}

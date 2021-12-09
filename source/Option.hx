@@ -2,6 +2,7 @@ package;
 import flixel.input.keyboard.FlxKey;
 import flixel.group.FlxGroup.FlxTypedGroup;
 import flixel.FlxSprite;
+import ui.*;
 class Option extends FlxTypedGroup<FlxSprite>
 {
   public var type:String = "Option";
@@ -55,7 +56,7 @@ class Option extends FlxTypedGroup<FlxSprite>
     text = new Alphabet(0, (70 * curSelected) + 30, name, true, false);
     text.movementType = "list";
     text.isMenuItem = true;
-    text.offsetX = 70;
+    text.offsetX = 50;
     text.gotoTargetPosition();
     add(text);
     return text;

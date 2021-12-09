@@ -1,0 +1,24 @@
+{
+  "actsLike": "default",
+  "scale": 0.7,
+  "antialiasing": true,
+  "arguments": {
+      "noHolds": true,
+      "notes":{
+        "sheet": "MINES",
+        "up":{
+          "prefix": "mine"
+        },
+        "down":{
+          "prefix": "mine"
+        },
+        "left":{
+          "prefix": "mine"
+        },
+        "right":{
+          "prefix": "mine"
+        }
+
+      }
+  }
+}

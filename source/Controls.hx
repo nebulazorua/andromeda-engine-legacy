@@ -514,13 +514,12 @@ class Controls extends FlxActionSet
 				inline bindKeys(Control.DOWN, [FlxKey.DOWN]);
 				inline bindKeys(Control.LEFT, [FlxKey.LEFT]);
 				inline bindKeys(Control.RIGHT, [FlxKey.RIGHT]);
-				for (i in [Control.LEFT,Control.DOWN,Control.UP,Control.RIGHT]){
+				for (i in [Control.LEFT,Control.DOWN,Control.UP,Control.RIGHT,Control.PAUSE,Control.RESET]){
 					inline bindKeys(i,[OptionUtils.getKey(i)]);
 				}
 
 				inline bindKeys(Control.ACCEPT, [Z, SPACE, ENTER]);
 				inline bindKeys(Control.BACK, [BACKSPACE, ESCAPE]);
-				inline bindKeys(Control.PAUSE, [P, ENTER, ESCAPE]);
 				inline bindKeys(Control.RESET, [R]);
 		}
 	}

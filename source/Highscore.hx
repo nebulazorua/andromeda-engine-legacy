@@ -55,11 +55,10 @@ class Highscore
 	static function setScore(song:String, score:Int):Void
 	{
 		// Reminder that I don't need to format this song, it should come formatted!
-		if(!ScoreUtils.botPlay){ // IF ITS A BOT PLAYING THEN DONT DO SHIT!!
-			songScores.set(song, score);
-			FlxG.save.data.songScores = songScores;
-			FlxG.save.flush();
-		}
+		songScores.set(song, score);
+		FlxG.save.data.songScores = songScores;
+		FlxG.save.flush();
+
 	}
 
 	public static function formatSong(song:String, diff:Int):String
@@ -70,6 +69,12 @@ class Highscore
 			daSong += '-easy';
 		else if (diff == 2)
 			daSong += '-hard';
+
+		/*var judgeMan = new JudgementManager(JudgementManager.getDataByName(currentOptions.judgementWindow));
+		var judgementData = judgeMan.getJudgeId();*/
+
+		// TODO: make ^ this work so highscore shit is dependant on judge windows
+
 
 		return daSong;
 	}

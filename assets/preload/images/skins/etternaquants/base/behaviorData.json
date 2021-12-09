@@ -1,0 +1,196 @@
+{
+  "actsLike": "default",
+  "scale": 0.7,
+  "antialiasing": true,
+  "receptorAutoColor":true,
+  "sustainAlpha": 0.6,
+  "receptorAlpha": 1,
+  "arguments": {
+      "notes":{
+        "sheet": "NOTE_assets",
+        "quants": {
+          "4th":{
+            "prefix": "red0",
+            "longPrefix": "red hold piece",
+            "longEndPrefix": "red hold end",
+            "up":{
+              "angle": 0
+            },
+            "left":{
+              "angle": -90
+            },
+            "right":{
+              "angle": 90
+            },
+            "down":{
+              "angle": 180
+            }
+          },
+          "8th":{
+            "prefix": "blue0",
+            "longPrefix": "blue hold piece",
+            "longEndPrefix": "blue hold end",
+            "up":{
+              "angle": 0
+            },
+            "left":{
+              "angle": -90
+            },
+            "right":{
+              "angle": 90
+            },
+            "down":{
+              "angle": 180
+            }
+          },
+          "12th":{
+            "prefix": "green0",
+            "longPrefix": "green hold piece",
+            "longEndPrefix": "green hold end",
+            "up":{
+              "angle": 0
+            },
+            "left":{
+              "angle": -90
+            },
+            "right":{
+              "angle": 90
+            },
+            "down":{
+              "angle": 180
+            }
+          },
+          "16th":{
+            "prefix": "yellow0",
+            "longPrefix": "yellow hold piece",
+            "longEndPrefix": "yellow hold end",
+            "up":{
+              "angle": 0
+            },
+            "left":{
+              "angle": -90
+            },
+            "right":{
+              "angle": 90
+            },
+            "down":{
+              "angle": 180
+            }
+          },
+          "24th":{
+            "prefix": "purple0",
+            "longPrefix": "purple hold piece",
+            "longEndPrefix": "purple hold end",
+            "up":{
+              "angle": 0
+            },
+            "left":{
+              "angle": -90
+            },
+            "right":{
+              "angle": 90
+            },
+            "down":{
+              "angle": 180
+            }
+          },
+          "32nd":{
+            "prefix": "cyan0",
+            "longPrefix": "cyan hold piece",
+            "longEndPrefix": "cyan hold end",
+            "up":{
+              "angle": 0
+            },
+            "left":{
+              "angle": -90
+            },
+            "right":{
+              "angle": 90
+            },
+            "down":{
+              "angle": 180
+            }
+          },
+          "48th":{
+            "prefix": "pink0",
+            "longPrefix": "pink hold piece",
+            "longEndPrefix": "pink hold end",
+            "up":{
+              "angle": 0
+            },
+            "left":{
+              "angle": -90
+            },
+            "right":{
+              "angle": 90
+            },
+            "down":{
+              "angle": 180
+            }
+          },
+          "64th":{
+            "prefix": "gray0",
+            "longPrefix": "gray hold piece",
+            "longEndPrefix": "gray hold end",
+            "up":{
+              "angle": 0
+            },
+            "left":{
+              "angle": -90
+            },
+            "right":{
+              "angle": 90
+            },
+            "down":{
+              "angle": 180
+            }
+          },
+          "192nd":{
+            "prefix": "gray0",
+            "longPrefix": "gray hold piece",
+            "longEndPrefix": "gray hold end",
+            "up":{
+              "angle": 0
+            },
+            "left":{
+              "angle": -90
+            },
+            "right":{
+              "angle": 90
+            },
+            "down":{
+              "angle": 180
+            }
+          }
+        }
+      },
+
+      "receptors":{
+        "sheet": "receptors",
+        "down":{
+          "prefix":"arrowUP",
+          "press":"up press",
+          "confirm":"up confirm",
+          "angle":180
+        },
+        "up":{
+          "prefix":"arrowUP",
+          "press":"up press",
+          "confirm":"up confirm",
+          "angle":0
+        },
+        "right":{
+          "prefix":"arrowUP",
+          "press":"up press",
+          "confirm":"up confirm",
+          "angle":90
+        },
+        "left":{
+          "prefix":"arrowUP",
+          "press":"up press",
+          "confirm":"up confirm",
+          "angle":-90
+        }
+      }
+  }
+}

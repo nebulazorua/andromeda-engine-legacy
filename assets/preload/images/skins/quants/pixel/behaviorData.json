@@ -1,0 +1,57 @@
+{
+  "actsLike": "pixel",
+  "scale": 6,
+  "antialiasing": false,
+  "sustainAlpha": 0.6,
+  "receptorAlpha": 1,
+  "arguments": {
+    "note":{
+      "sheet": "arrows",
+      "quant":true,
+      "gridSizeX": 17,
+      "gridSizeY": 17,
+
+      "left": 0,
+      "down": 1,
+      "up": 2,
+      "right": 3
+    },
+    "sustain":{
+      "sheet": "sustains",
+      "gridSizeX": 7,
+      "gridSizeY": 6,
+
+      "quant":true
+    },
+    "sustainEnd":{
+      "sheet": "sustains",
+      "gridSizeX": 7,
+      "gridSizeY": 6,
+
+      "quant":true
+    },
+    "receptor":{
+      "sheet": "receptors",
+      "gridSizeX": 17,
+      "gridSizeY": 17,
+
+      "leftIdle": [0],
+      "downIdle": [1],
+      "upIdle": [2],
+      "rightIdle": [3],
+
+      "leftPressed": [4,8],
+      "downPressed": [5,9],
+      "upPressed": [6,10],
+      "rightPressed": [7,11],
+
+      "leftConfirm": [12,16],
+      "downConfirm": [13,17],
+      "upConfirm": [14,18],
+      "rightConfirm": [15,19]
+    }
+
+
+
+  }
+}

@@ -1,0 +1,90 @@
+{
+  "actsLike": "default",
+  "scale": 0.7,
+  "antialiasing": true,
+  "sustainAlpha": 0.6,
+  "receptorAlpha": 1,
+  "arguments": {
+      "splashes":{
+        "alpha": 1,
+        "sheet": "AndroSplash",
+        "scale":1,
+        "left":{
+          "framerate": 30,
+          "offsetX": -35,
+          "offsetY": 0,
+          "prefix": "splash left0"
+        },
+        "up":{
+          "framerate": 30,
+          "offsetX": -5,
+          "offsetY": 0,
+          "prefix": "splash up0"
+        },
+        "down":{
+          "framerate": 30,
+          "offsetX": -5,
+          "offsetY": -2,
+          "prefix": "splash down0"
+        },
+        "right":{
+          "framerate": 30,
+          "offsetX": -3,
+          "offsetY": 2,
+          "prefix": "splash right0"
+        }
+      },
+      "notes":{
+        "sheet": "NOTE_assets",
+        "up":{
+          "prefix": "green0",
+          "longPrefix": "green hold piece",
+          "longEndPrefix": "green hold end",
+          "angle": 0
+        },
+        "down":{
+          "prefix": "blue0",
+          "longPrefix": "blue hold piece",
+          "longEndPrefix": "blue hold end",
+          "angle": 0
+        },
+        "left":{
+          "prefix": "purple0",
+          "longPrefix": "purple hold piece",
+          "longEndPrefix": "pruple end hold",
+          "angle": 0
+        },
+        "right":{
+          "prefix": "red0",
+          "longPrefix": "red hold piece",
+          "longEndPrefix": "red hold end",
+          "angle": 0
+        }
+
+      },
+      "receptors":{
+        "sheet": "NOTE_assets",
+        "down":{
+          "prefix":"arrowDOWN",
+          "press":"down press",
+          "confirm":"down confirm"
+        },
+        "up":{
+          "prefix":"arrowUP",
+          "press":"up press",
+          "confirm":"up confirm"
+        },
+        "right":{
+          "prefix":"arrowRIGHT",
+          "press":"right press",
+          "confirm":"right confirm"
+        },
+        "left":{
+          "prefix":"arrowLEFT",
+          "press":"left press",
+          "confirm":"left confirm"
+        }
+
+      }
+  }
+}

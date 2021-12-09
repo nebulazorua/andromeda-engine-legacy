@@ -211,7 +211,7 @@ class ChannelEventInstance extends Channel {//basically a sound instance
 		if ( data == null ) return 0.0;
 		
 		var pos : Int = 0;
-		var res = data.getTimelinePosition( Cpp.addr(pos) );
+		var res = data.getModManagerPosition( Cpp.addr(pos) );
 		var posF : Float = 1.0 * pos / 1000.0;
 		return posF;
 	}
@@ -221,7 +221,7 @@ class ChannelEventInstance extends Channel {//basically a sound instance
 		if ( data == null ) return 0.0;
 		
 		var pos : Int = 0;
-		var res = data.getTimelinePosition( Cpp.addr(pos) );
+		var res = data.getModManagerPosition( Cpp.addr(pos) );
 		return 1.0 * pos;
 	}
 	
@@ -231,7 +231,7 @@ class ChannelEventInstance extends Channel {//basically a sound instance
 		if ( posMs < 0.0) posMs = 0.0;
 		var pos : Int = 0;
 		pos = Math.round( posMs );
-		var res = data.setTimelinePosition( pos );
+		var res = data.setModManagerPosition( pos );
 		if ( res != FMOD_OK){
 			#if debug
 			//trace("[SND][Channel]{"+name+"} Repositionning S err " + FaxeRef.fmodResultToString(res)+" to :"+pos+" ("+posMs+")");

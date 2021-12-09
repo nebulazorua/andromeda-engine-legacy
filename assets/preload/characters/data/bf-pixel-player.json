@@ -1,0 +1,78 @@
+{
+  "anims": [
+    {
+      "prefix": "BF IDLE",
+      "name": "idle",
+      "fps": 24,
+      "looped": false,
+      "offsets": []
+    },
+    {
+      "prefix": "BF UP NOTE",
+      "name": "singUP",
+      "fps": 24,
+      "looped": false,
+      "offsets": []
+    },
+    {
+      "prefix": "BF RIGHT NOTE",
+      "name": "singRIGHT",
+      "fps": 24,
+      "looped": false,
+      "offsets": []
+    },
+    {
+      "prefix": "BF LEFT NOTE",
+      "name": "singLEFT",
+      "fps": 24,
+      "looped": false,
+      "offsets": []
+    },
+    {
+      "prefix": "BF DOWN NOTE",
+      "name": "singDOWN",
+      "fps": 24,
+      "looped": false,
+      "offsets": []
+    },
+    {
+      "prefix": "BF UP MISS",
+      "name": "singUPmiss",
+      "fps": 24,
+      "looped": false,
+      "offsets": []
+    },
+    {
+      "prefix": "BF RIGHT MISS",
+      "name": "singRIGHTmiss",
+      "fps": 24,
+      "looped": false,
+      "offsets": []
+    },
+    {
+      "prefix": "BF LEFT MISS",
+      "name": "singLEFTmiss",
+      "fps": 24,
+      "looped": false,
+      "offsets": []
+    },
+    {
+      "prefix": "BF DOWN MISS",
+      "name": "singDOWNmiss",
+      "fps": 24,
+      "looped": false,
+      "offsets": []
+    }
+
+  ],
+  "spritesheet": "bfPixel",
+  "singDur": 4,
+  "iconName": "bf-pixel",
+  "healthColor": "0xFF31B0D1",
+  "charOffset": [0,0],
+  "camOffset": [-100, -100],
+  "beatDancer": false,
+  "flipX": false,
+  "scale": 6,
+  "antialiasing": false
+}

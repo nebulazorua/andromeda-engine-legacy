@@ -4,6 +4,8 @@ import Section.SwagSection;
 import haxe.Json;
 import haxe.format.JsonParser;
 import lime.utils.Assets;
+import sys.io.File;
+import flixel.util.typeLimit.OneOfTwo;
 
 using StringTools;
 
@@ -22,8 +24,9 @@ typedef SwagSong =
 
 	var player1:String;
 	var player2:String;
+	var stage:String;
 	var validScore:Bool;
-	var noBG:Bool;
+	var noteModifier:String;
 	@:optional var sliderVelocities:Array<VelocityChange>;
 	@:optional var initialSpeed:Float;
 }
@@ -34,7 +37,8 @@ class Song
 	public var notes:Array<SwagSection>;
 	public var bpm:Int;
 	public var needsVoices:Bool = true;
-	public var noBG:Bool = false;
+	public var stage:String;
+	public var noteModifier:String;
 	public var speed:Float = 1;
 	public var initialSpeed:Float = 1;
 	public var sliderVelocities:Array<VelocityChange>=[];
@@ -50,7 +54,7 @@ class Song
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
-		var rawJson = Assets.getText(Paths.json(folder.toLowerCase() + '/' + jsonInput.toLowerCase())).trim();
+		var rawJson = File.getContent(Paths.chart(jsonInput.toLowerCase(),folder.toLowerCase())).trim();
 
 		while (!rawJson.endsWith("}"))
 		{
@@ -81,6 +85,7 @@ class Song
 			];
 		}
 		swagShit.validScore = true;
+		
 		return swagShit;
 	}
 }

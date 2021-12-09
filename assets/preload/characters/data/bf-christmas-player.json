@@ -1,0 +1,114 @@
+{
+	"iconName": "bf",
+	"beatDancer": false,
+	"charOffset": [
+		0,
+		0
+	],
+	"anims": [
+		{
+			"offsets": [
+				-5,
+				0
+			],
+			"fps": 24,
+			"prefix": "BF idle dance",
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-49,
+				27
+			],
+			"fps": 24,
+			"prefix": "BF NOTE UP0",
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"offsets": [
+				2,
+				-6
+			],
+			"fps": 24,
+			"prefix": "BF NOTE LEFT0",
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-58,
+				-7
+			],
+			"fps": 24,
+			"prefix": "BF NOTE RIGHT0",
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-10,
+				-50
+			],
+			"fps": 24,
+			"prefix": "BF NOTE DOWN0",
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-29,
+				27
+			],
+			"fps": 24,
+			"prefix": "BF NOTE UP MISS",
+			"name": "singUPmiss",
+			"looped": false
+		},
+		{
+			"offsets": [
+				2,
+				14
+			],
+			"fps": 24,
+			"prefix": "BF NOTE LEFT MISS",
+			"name": "singLEFTmiss",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-40,
+				21
+			],
+			"fps": 24,
+			"prefix": "BF NOTE RIGHT MISS",
+			"name": "singRIGHTmiss",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-21,
+				-19
+			],
+			"fps": 24,
+			"prefix": "BF NOTE DOWN MISS",
+			"name": "singDOWNmiss",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-3,
+				4
+			],
+			"fps": 24,
+			"prefix": "BF HEY",
+			"name": "hey",
+			"looped": false
+		}
+	],
+	"spritesheet": "bfChristmas",
+	"singDur": 4,
+	"flipX": false,
+	"healthColor": "0xFF31B0D1"
+}

@@ -1,0 +1,68 @@
+{
+	"charOffset": [
+		0,
+		0
+	],
+	"camOffset": [
+		150,
+		0
+	],
+	"anims": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "Mom Idle",
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"offsets": [
+				14,
+				71
+			],
+			"fps": 24,
+			"prefix": "Mom Up Pose",
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"offsets": [
+				10,
+				-60
+			],
+			"fps": 24,
+			"prefix": "Mom Pose Left",
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"offsets": [
+				250,
+				-23
+			],
+			"fps": 24,
+			"prefix": "Mom Left Pose",
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"offsets": [
+				20,
+				-160
+			],
+			"fps": 24,
+			"prefix": "MOM DOWN POSE",
+			"name": "singDOWN",
+			"looped": false
+		}
+	],
+	"spritesheet": "Mom_Assets",
+	"singDur": 4,
+	"flipX": false,
+	"iconName": "mom",
+	"beatDancer": false,
+	"healthColor": "0xFFD8558E"
+}

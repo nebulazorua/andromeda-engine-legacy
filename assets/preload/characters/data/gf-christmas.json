@@ -1,0 +1,193 @@
+{
+	"iconName": "gf",
+	"beatDancer": true,
+	"charOffset": [
+		0,
+		0
+	],
+	"anims": [
+		{
+			"offsets": [
+				0,
+				-9
+			],
+			"fps": 24,
+			"prefix": "GF Dancing Beat",
+			"indices": [
+				30,
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11,
+				12,
+				13,
+				14
+			],
+			"name": "danceLeft",
+			"looped": false
+		},
+		{
+			"offsets": [
+				0,
+				-9
+			],
+			"fps": 24,
+			"prefix": "GF Dancing Beat",
+			"indices": [
+				15,
+				16,
+				17,
+				18,
+				19,
+				20,
+				21,
+				22,
+				23,
+				24,
+				25,
+				26,
+				27,
+				28,
+				29
+			],
+			"name": "danceRight",
+			"looped": false
+		},
+		{
+			"offsets": [
+				45,
+				-8
+			],
+			"fps": 24,
+			"prefix": "GF Dancing Beat Hair blowing",
+			"indices": [
+				0,
+				1,
+				2,
+				3
+			],
+			"name": "hairBlow",
+			"looped": true
+		},
+		{
+			"offsets": [
+				0,
+				-9
+			],
+			"fps": 24,
+			"prefix": "GF Dancing Beat Hair Landing",
+			"indices": [
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11
+			],
+			"name": "hairFall",
+			"looped": false
+		},
+		{
+			"offsets": [
+				0,
+				4
+			],
+			"fps": 24,
+			"prefix": "GF Up Note",
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"offsets": [
+				0,
+				-19
+			],
+			"fps": 24,
+			"prefix": "GF left Note",
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"offsets": [
+				0,
+				-20
+			],
+			"fps": 24,
+			"prefix": "GF Right Note",
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"offsets": [
+				0,
+				-20
+			],
+			"fps": 24,
+			"prefix": "GF Down Note",
+			"name": "singDOWN",
+			"looped": false
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "GF Cheer",
+			"name": "cheer",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-2,
+				-17
+			],
+			"fps": 24,
+			"prefix": "GF FEAR",
+			"name": "scared",
+			"looped": false
+		},
+		{
+			"offsets": [
+				-2,
+				-21
+			],
+			"fps": 24,
+			"prefix": "gf sad",
+			"indices": [
+				0,
+				1,
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8,
+				9,
+				10,
+				11
+			],
+			"name": "sad",
+			"looped": false
+		}
+	],
+	"spritesheet": "gfChristmas",
+	"singDur": 4,
+	"flipX": false,
+	"healthColor": "0xFFA5004D"
+}

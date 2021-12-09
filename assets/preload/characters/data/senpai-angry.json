@@ -1,0 +1,70 @@
+{
+	"charOffset": [
+		150,
+		360
+	],
+	"scale": 6,
+	"camOffset": [
+		-75,
+		-430
+	],
+	"anims": [
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "Angry Senpai Idle",
+			"name": "idle",
+			"looped": false
+		},
+		{
+			"offsets": [
+				5,
+				37
+			],
+			"fps": 24,
+			"prefix": "Angry Senpai UP NOTE",
+			"name": "singUP",
+			"looped": false
+		},
+		{
+			"offsets": [
+				40,
+				0
+			],
+			"fps": 24,
+			"prefix": "Angry Senpai LEFT NOTE",
+			"name": "singLEFT",
+			"looped": false
+		},
+		{
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"prefix": "Angry Senpai RIGHT NOTE",
+			"name": "singRIGHT",
+			"looped": false
+		},
+		{
+			"offsets": [
+				14,
+				0
+			],
+			"fps": 24,
+			"prefix": "Angry Senpai DOWN NOTE",
+			"name": "singDOWN",
+			"looped": false
+		}
+	],
+	"spritesheet": "senpai",
+	"singDur": 4,
+	"flipX": false,
+	"antialiasing": false,
+	"iconName": "senpai",
+	"beatDancer": false,
+	"healthColor": "0xFFFFAA6F"
+}
