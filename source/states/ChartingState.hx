@@ -236,7 +236,7 @@ class ChartingState extends MusicBeatState
 
 			changeSection(curSection + 1, false);
 		}
-		
+
 		updateSectionUI();
 
 
@@ -266,6 +266,18 @@ class ChartingState extends MusicBeatState
 				vol = 0;
 
 			FlxG.sound.music.volume = vol;
+		};
+
+		var check_mute_vox = new FlxUICheckBox(10, 175, null, null, "Mute Vocals (in editor)", 100);
+		check_mute_vox.checked = false;
+		check_mute_vox.callback = function()
+		{
+			var vol:Float = 1;
+
+			if (check_mute_vox.checked)
+				vol = 0;
+
+			vocals.volume = vol;
 		};
 
 		var saveButton:FlxButton = new FlxButton(110, 8, "Save", function()
@@ -337,6 +349,7 @@ class ChartingState extends MusicBeatState
 
 		tab_group_song.add(check_voices);
 		tab_group_song.add(check_mute_inst);
+		tab_group_song.add(check_mute_vox);
 		tab_group_song.add(check_use_hit);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
@@ -923,10 +936,18 @@ class ChartingState extends MusicBeatState
 		var shiftThing:Int = 1;
 		if (FlxG.keys.pressed.SHIFT)
 			shiftThing = 4;
-		if (FlxG.keys.justPressed.D)
+		if (FlxG.keys.justPressed.D){
+			for(i in 0...shiftThing){
+				if (_song.notes[curSection + i] == null)
+				{
+					addSection();
+				}
+			}
 			changeSection(curSection + shiftThing);
+		}
 		if (FlxG.keys.justPressed.A)
 			changeSection(curSection - shiftThing);
+
 
 		bpmTxt.text = bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
 			+ " / "
