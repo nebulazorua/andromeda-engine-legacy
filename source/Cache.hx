@@ -51,11 +51,11 @@ class Cache {
   }
 
   public static function clearImages(){
+    // CREDIT TO HAYA AND SHUBS
+    // TRY OUT FOREVER ENGINE!
+    // NO, LIKE, SERIOUSLY.
+    // https://github.com/Yoshubs/Forever-Engine-Legacy
     if(!EngineData.options.cacheUsedImages){
-      // CREDIT TO HAYA AND SHUBS
-      // TRY OUT FOREVER ENGINE!
-      // NO, LIKE, SERIOUSLY.
-      // https://github.com/Yoshubs/Forever-Engine-Legacy
       var l:Int = 0;
       @:privateAccess
       for (key in FlxG.bitmap._cache.keys())

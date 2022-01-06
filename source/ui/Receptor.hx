@@ -115,7 +115,6 @@ class Receptor extends FNFSprite {
     animation.play(anim,force);
     updateHitbox();
     offset.set((frameWidth/2)-(54*(.7/noteScale) ),(frameHeight/2)-(56*(.7/noteScale)));
-
   }
 
   override function update(elapsed:Float){

@@ -15,8 +15,7 @@ import ui.*;
 // TODO: modifier priority system
 class ModManager {
   private var definedMods:Map<String,Modifier>=[];
-
-
+  
   private var schedule:Map<String,Array<ModEvent>>=[];
   private var funcs:Array<FuncEvent>=[];
   private var mods:Array<Modifier> = [];
