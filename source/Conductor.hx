@@ -51,10 +51,6 @@ class Conductor
 	}
 
 	public static function getBeatInMeasure(time:Float):Float{
-		// vv doesnt work w/ bpm changes lmao
-		//return time / getCrotchetAtTime(time);
-		
-		// vv THIS does though
 		var lastBPMChange = getBPMFromSeconds(time);
 		return (time-lastBPMChange.songTime) / (lastBPMChange.stepCrochet*4);
 	}

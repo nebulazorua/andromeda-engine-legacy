@@ -90,8 +90,13 @@ class FPSMem extends TextField
       text = "";
       if(showFPS)
 			   text += "FPS: " + currentFPS + "\n";
-      if(showMem)
-        text += "Memory: " + currentMem + " MB\n";
+      if(showMem){
+				if(currentMem<0){
+        	text += "Memory: Leaking " + Math.abs(currentMem) + " MB\n";
+				}else{
+					text += "Memory: " + currentMem + " MB\n";
+				}
+			}
 			if(showMemPeak)
 				text += "Mem Peak: " + highestMem + " MB\n";
 
