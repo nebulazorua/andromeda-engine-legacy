@@ -47,11 +47,14 @@ class ChartingState extends MusicBeatState
 	 * Array of notes showing when each section STARTS in STEPS
 	 * Usually rounded up??
 	 */
+	var chartingBG:FlxSprite;
+
 	var curSection:Int = 0;
 
 	public static var lastSection:Int = 0;
-
-	var bpmTxt:FlxText;
+	var songInfoTxt:FlxText;
+	var timeTxt:FlxText;
+	var controlsTxt:FlxText;
 	var strumLine:FlxSprite;
 	var curSong:String = 'Dadbattle';
 	var amountSteps:Int = 0;
@@ -113,6 +116,16 @@ class ChartingState extends MusicBeatState
 	{
 		super.create();
 		InitState.getCharacters();
+
+		// taken straight from story menu state lmao!
+		chartingBG = new FlxSprite(-80).loadGraphic(Paths.image('menuBGDesat'));
+		chartingBG.color = FlxColor.fromRGB(FlxG.random.int(50, 205), FlxG.random.int(50, 205), FlxG.random.int(50, 205));
+		chartingBG.setGraphicSize(Std.int(chartingBG.width * 1.1));
+		chartingBG.antialiasing = true;
+		chartingBG.screenCenter();
+		chartingBG.scrollFactor.set();
+		add(chartingBG);
+
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
 		add(gridBG);
 
@@ -127,8 +140,8 @@ class ChartingState extends MusicBeatState
 		add(leftIcon);
 		add(rightIcon);
 
-		leftIcon.setPosition(0, -100);
-		rightIcon.setPosition(gridBG.width / 2, -100);
+		leftIcon.setPosition(60, -50);
+		rightIcon.setPosition(220, -50);
 
 		var gridBlackLine:FlxSprite = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
 		add(gridBlackLine);
@@ -173,11 +186,25 @@ class ChartingState extends MusicBeatState
 		Conductor.changeBPM(_song.bpm);
 		Conductor.mapBPMChanges(_song);
 
-		bpmTxt = new FlxText(1000, 50, 0, "", 16);
-		bpmTxt.scrollFactor.set();
-		add(bpmTxt);
+		timeTxt = new FlxText(60, 50, 0, "", 16);
+		timeTxt.setFormat('vcr.ttf', 24, FlxColor.WHITE, CENTER);
+		timeTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1.25, 1);
+		timeTxt.scrollFactor.set();
+		add(timeTxt);
 
-		strumLine = new FlxSprite(0, 50).makeGraphic(Std.int(FlxG.width / 2), 4);
+		songInfoTxt = new FlxText(140, 70, 0, "", 16);
+		songInfoTxt.setFormat('vcr.ttf', 24, FlxColor.WHITE, CENTER);
+		songInfoTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1.25, 1);
+		songInfoTxt.scrollFactor.set();
+		add(songInfoTxt);
+
+		controlsTxt = new FlxText(40, 150, 0, "", 16);
+		controlsTxt.setFormat('vcr.ttf', 16, FlxColor.WHITE, CENTER);
+		controlsTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1.25, 1);
+		controlsTxt.scrollFactor.set();
+		add(controlsTxt);
+
+		strumLine = new FlxSprite(0, 50).makeGraphic(320, 4);
 		add(strumLine);
 
 		dummyArrowLayer = new FlxTypedGroup<NoteGraphic>();
@@ -198,8 +225,8 @@ class ChartingState extends MusicBeatState
 
 		UI_box = new FlxUITabMenu(null, tabs, true);
 
-		UI_box.resize(300, 400);
-		UI_box.x = FlxG.width / 2;
+		UI_box.resize(300, 600);
+		UI_box.x = 890;
 		UI_box.y = 20;
 		add(UI_box);
 
@@ -247,7 +274,7 @@ class ChartingState extends MusicBeatState
 		var UI_songTitle = new Inputbox(10, 10, 70, _song.song, 8);
 		typingShit = UI_songTitle;
 
-		var check_voices = new FlxUICheckBox(10, 25, null, null, "Has voice track", 100);
+		var check_voices = new FlxUICheckBox(90, 10, null, null, "Voices Enabled?", 100);
 		check_voices.checked = _song.needsVoices;
 		// _song.needsVoices = check_voices.checked;
 		check_voices.callback = function()
@@ -256,7 +283,7 @@ class ChartingState extends MusicBeatState
 			trace('CHECKED!');
 		};
 
-		var check_mute_inst = new FlxUICheckBox(10, 200, null, null, "Mute Instrumental (in editor)", 100);
+		var check_mute_inst = new FlxUICheckBox(check_voices.x, check_voices.y + 30, null, null, "Mute Instrumental (Editor Only)", 100);
 		check_mute_inst.checked = false;
 		check_mute_inst.callback = function()
 		{
@@ -268,7 +295,7 @@ class ChartingState extends MusicBeatState
 			FlxG.sound.music.volume = vol;
 		};
 
-		var check_mute_vox = new FlxUICheckBox(10, 175, null, null, "Mute Vocals (in editor)", 100);
+		var check_mute_vox = new FlxUICheckBox(check_voices.x, check_mute_inst.y + 30, null, null, "Mute Vocals \n(Editor Only)", 100);
 		check_mute_vox.checked = false;
 		check_mute_vox.callback = function()
 		{
@@ -280,47 +307,64 @@ class ChartingState extends MusicBeatState
 			vocals.volume = vol;
 		};
 
-		var saveButton:FlxButton = new FlxButton(110, 8, "Save", function()
+		var check_use_hit = new FlxUICheckBox(check_voices.x, check_mute_vox.y + 30, null, null, "Play Hit Sounds (Editor Only)", 100);
+		check_use_hit.checked = false;
+		check_use_hit.callback = function()
+		{
+			useHitSounds=check_use_hit.checked;
+		};
+
+		var saveButton:FlxButton = new FlxButton(210, 8, "Save JSON", function()
 		{
 			saveLevel();
 		});
 
-		var reloadSong:FlxButton = new FlxButton(saveButton.x + saveButton.width + 10, saveButton.y, "Reload Audio", function()
+		var reloadSong:FlxButton = new FlxButton(saveButton.x, saveButton.y + 30, "Reload Audio", function()
 		{
 			loadSong(_song.song);
 		});
 
-		var reloadSongJson:FlxButton = new FlxButton(reloadSong.x, saveButton.y + 30, "Reload JSON", function()
+		var reloadSongJson:FlxButton = new FlxButton(reloadSong.x, reloadSong.y + 30, "Reload JSON", function()
 		{
 			loadJson(_song.song.toLowerCase());
 		});
 
-		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'load autosave', loadAutosave);
+		var loadAutosaveBtn:FlxButton = new FlxButton(reloadSongJson.x, reloadSongJson.y + 30, 'Load Autosave', loadAutosave);
 
-		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 80, 0.1, 1, 0.1, 10, 1);
-		stepperSpeed.value = _song.speed;
-		stepperSpeed.name = 'song_speed';
+		var stepperBPMInfo = new FlxText(10, 25, 'Song BPM');
 
-		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 65, 1, 1, 1, 339, 0);
+		var stepperBPM:FlxUINumericStepper = new FlxUINumericStepper(10, 40, 1, 1, 1, 339, 0);
 		stepperBPM.value = Conductor.bpm;
 		stepperBPM.name = 'song_bpm';
 
+		var stepperSpeedInfo = new FlxText(10, 55, 'Song Speed');
+
+		var stepperSpeed:FlxUINumericStepper = new FlxUINumericStepper(10, 70, 0.1, 1, 0.1, 10, 1);
+		stepperSpeed.value = _song.speed;
+		stepperSpeed.name = 'song_speed';
+
 		var characters:Array<String> = EngineData.characters;
 
-		var player1DropDown = new FlxUIDropDownMenu(10, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		var player1Info = new FlxText(10, 125, 'Player 1');
+
+		var player1DropDown = new FlxUIDropDownMenu(10, 140, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.player1 = characters[Std.parseInt(character)];
 		});
 		player1DropDown.selectedLabel = _song.player1;
 
-		var player2DropDown = new FlxUIDropDownMenu(140, 100, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
+		var player2Info = new FlxText(160, 125, 'Player 2');
+
+		var player2DropDown = new FlxUIDropDownMenu(160, 140, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
 			_song.player2 = characters[Std.parseInt(character)];
 		});
 
 		player2DropDown.selectedLabel = _song.player2;
 
-		var stageDropdown = new FlxUIDropDownMenu(10, 240, FlxUIDropDownMenu.makeStrIdLabelArray(Stage.stageNames, true), function(stageName:String)
+		var stageInfo = new FlxText(10, 165, 'Stage');
+
+		var stageDropdown = new FlxUIDropDownMenu(10, 180, FlxUIDropDownMenu.makeStrIdLabelArray(Stage.stageNames, true), function(stageName:String)
 		{
 			_song.stage = Stage.stageNames[Std.parseInt(stageName)];
 		});
@@ -329,19 +373,15 @@ class ChartingState extends MusicBeatState
 
 		// TODO: noteskin.noteModifiers or some shit
 		var modifiers:Array<String> = CoolUtil.coolTextFile(Paths.txt('noteModifiers'));
-		var modifierDropdown = new FlxUIDropDownMenu(140, 240, FlxUIDropDownMenu.makeStrIdLabelArray(modifiers, true), function(mod:String)
+
+		var modInfo = new FlxText(160, 165, 'Note Modifier');
+
+		var modifierDropdown = new FlxUIDropDownMenu(160, 180, FlxUIDropDownMenu.makeStrIdLabelArray(modifiers, true), function(mod:String)
 		{
 			_song.noteModifier = modifiers[Std.parseInt(mod)];
 		});
 
 		modifierDropdown.selectedLabel = _song.noteModifier;
-
-		var check_use_hit = new FlxUICheckBox(135, 200, null, null, "Use hit sounds (in editor)", 100);
-		check_use_hit.checked = false;
-		check_use_hit.callback = function()
-		{
-			useHitSounds=check_use_hit.checked;
-		};
 
 		var tab_group_song = new FlxUI(null, UI_box);
 		tab_group_song.name = "Song";
@@ -353,14 +393,20 @@ class ChartingState extends MusicBeatState
 		tab_group_song.add(check_use_hit);
 		tab_group_song.add(saveButton);
 		tab_group_song.add(reloadSong);
-		tab_group_song.add(stageDropdown);
-		tab_group_song.add(modifierDropdown);
 		tab_group_song.add(reloadSongJson);
 		tab_group_song.add(loadAutosaveBtn);
 		tab_group_song.add(stepperBPM);
+		tab_group_song.add(stepperBPMInfo);
 		tab_group_song.add(stepperSpeed);
-		tab_group_song.add(player1DropDown);
+		tab_group_song.add(stepperSpeedInfo);
+		tab_group_song.add(modifierDropdown);
+		tab_group_song.add(modInfo);
+		tab_group_song.add(stageDropdown);
+		tab_group_song.add(stageInfo);
 		tab_group_song.add(player2DropDown);
+		tab_group_song.add(player2Info);
+		tab_group_song.add(player1DropDown);
+		tab_group_song.add(player1Info);
 
 		UI_box.addGroup(tab_group_song);
 		UI_box.scrollFactor.set();
@@ -394,9 +440,9 @@ class ChartingState extends MusicBeatState
 			copySection(Std.int(stepperCopy.value));
 		});
 
-		var clearSectionButton:FlxButton = new FlxButton(10, 150, "Clear", clearSection);
+		var clearSectionButton:FlxButton = new FlxButton(10, 150, "Clear Chart", clearSection);
 
-		var swapSection:FlxButton = new FlxButton(10, 170, "Swap section", function()
+		var swapSection:FlxButton = new FlxButton(10, 170, "Swap Section", function()
 		{
 			for (i in 0..._song.notes[curSection].sectionNotes.length)
 			{
@@ -841,12 +887,12 @@ class ChartingState extends MusicBeatState
 			{
 				UI_box.selected_tab -= 1;
 				if (UI_box.selected_tab < 0)
-					UI_box.selected_tab = 2;
+					UI_box.selected_tab = 3;
 			}
 			else
 			{
 				UI_box.selected_tab += 1;
-				if (UI_box.selected_tab >= 3)
+				if (UI_box.selected_tab > 3)
 					UI_box.selected_tab = 0;
 			}
 		}
@@ -949,17 +995,22 @@ class ChartingState extends MusicBeatState
 			changeSection(curSection - shiftThing);
 
 
-		bpmTxt.text = bpmTxt.text = Std.string(FlxMath.roundDecimal(Conductor.songPosition / 1000, 2))
-			+ " / "
-			+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2))
-			+ "\nSection: "
-			+ curSection
-			+ "\nStep: "
-			+ curStep
-			+ "\nBeat: "
-			+ curBeat
-			+ "\nSnap: 1/"
-			+ quantization + "\n(Press left/right to switch)";
+		timeTxt.text = timeTxt.text = Std.string(
+			"Song Time: " + FlxMath.roundDecimal(Conductor.songPosition / 1000, 2)) + " / "	+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2)) + "\n";
+
+		songInfoTxt.text = songInfoTxt.text =
+			"Section: " + curSection +
+			"\nStep: " + curStep +
+			"\nBeat: " + curBeat +
+			"\nSnap: 1/" + quantization + "\n";
+
+		controlsTxt.text = controlsTxt.text =
+			"Press W or S to\nmove between sections.\n\n" +
+			"Press Left or Right to\nchange the note snapping to\nchart. (Default is 1/16)\n\n" +
+			"Press and Hold Shift\n to remove snapping.\n\n" +
+			"Press Left/Right Click to\n place a note (or remove \na note if one is already\n placed) on the charting grid.\n\n" +
+			"Press Tab to switch between sections.\n";
+
 		super.update(elapsed);
 	}
 
