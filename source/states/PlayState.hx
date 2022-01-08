@@ -1877,7 +1877,12 @@ class PlayState extends MusicBeatState
 		{
 			inst.pause();
 			vocals.pause();
-			FlxG.switchState(new ChartingState(charterPos==0?inst.time:charterPos));
+			if(currentOptions.oldCharter){
+				FlxG.switchState(new OldChartingState(charterPos==0?inst.time:charterPos));
+			}else{
+				FlxG.switchState(new ChartingState(charterPos==0?inst.time:charterPos));
+			}
+
 
 			#if desktop
 			DiscordClient.changePresence("Chart Editor", null, null, true);

@@ -136,6 +136,7 @@ class Options
 	public var cacheUsedImages:Bool = false;
 
 	// preference
+	public var oldCharter:Bool = false;
 	public var showMem:Bool = true;
 	public var showMemPeak:Bool = true;
 	public var showFPS:Bool = false;
