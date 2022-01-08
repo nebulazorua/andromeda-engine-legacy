@@ -60,14 +60,14 @@ class EaseEvent extends ModEvent {
   public var easeFunction:EaseFunction;
   public var endStep:Float = 0;
   public var length:Float = 0;
-  public var startPercent:Float = 0;
-  public function new(step:Float,endStep:Float,modName:String,target:Float,ease:EaseFunction,player:Int=-1,modMgr:ModManager){
+  public var startPercent:Null<Float> = 0;
+  public function new(step:Float,endStep:Float,modName:String,target:Float,ease:EaseFunction,player:Int=-1,modMgr:ModManager, ?startVal:Float){
     super(step,modName,target,player,modMgr);
     this.endStep=endStep;
     this.easeFunction=ease;
     this.length = endStep-step;
 
-    this.startPercent = getCurrentPercent();
+    this.startPercent = startVal;//getCurrentPercent();
   }
 
   function ease(t:Float,b:Float,c:Float,d:Float){ // elapsed, begin, change (ending-beginning), duration
@@ -77,6 +77,9 @@ class EaseEvent extends ModEvent {
 
   override function run(curStep:Float){
     if(curStep>=step && curStep<=endStep){
+      if(this.startPercent==null){
+        this.startPercent = mod.getPercent(player) * 100;
+      }
       var passed = curStep-step;
       var change = endPercent-startPercent;
       mod.setPercent(

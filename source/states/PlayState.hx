@@ -1092,7 +1092,6 @@ class PlayState extends MusicBeatState
 		modManager = new ModManager(this);
 		modManager.registerModifiers();
 
-
 		if(!modManager.exists("reverse")){
 			var y = upscrollOffset;
 			if(scrollSpeed<0)
@@ -1110,6 +1109,8 @@ class PlayState extends MusicBeatState
 		Conductor.rawSongPos = startPos;
 		Conductor.rawSongPos -= Conductor.crochet * 5;
 		Conductor.songPosition=Conductor.rawSongPos;
+		updateCurStep();
+		updateBeat();
 
 		if(startPos>0)canScore=false;
 
@@ -1120,7 +1121,11 @@ class PlayState extends MusicBeatState
 			setupLuaSystem();
 		#end
 
+
+
 		var swagCounter:Int = 0;
+
+
 
 		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
@@ -1566,6 +1571,7 @@ class PlayState extends MusicBeatState
 			if (!isStoryMode)
 			{
 				babyArrow.desiredY -= 10;
+				babyArrow.y = babyArrow.desiredY;
 				babyArrow.alpha = 0;
 				FlxTween.tween(babyArrow,{desiredY: babyArrow.desiredY + 10, alpha:1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			}
@@ -1590,7 +1596,7 @@ class PlayState extends MusicBeatState
 		if(judgeMan.judgementCounter.get("miss")>0){
 			fcType='';
 		}else{
-			if(judgeMan.judgementCounter.get("bad")+judgeMan.judgementCounter.get("shit")>=noteCounter.get("taps")/2)
+			if(judgeMan.judgementCounter.get("bad")+judgeMan.judgementCounter.get("shit")>=noteCounter.get("taps")/2 && noteCounter.get("taps")>0)
 				fcType = ' (WTFC)';
 			else if(judgeMan.judgementCounter.get("bad")>0 || judgeMan.judgementCounter.get("shit")>0)
 				fcType += '(FC)';

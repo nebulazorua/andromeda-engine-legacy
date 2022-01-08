@@ -34,13 +34,6 @@ class Modifier {
   }
 
   public function getPercent(player:Int):Float{
-    if(player<0){
-      var average:Float = 0;
-      for(perc in percents){
-        average = average + perc;
-      }
-      return average/percents.length;
-    }
     return percents[player];
   }
 

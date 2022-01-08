@@ -1729,6 +1729,37 @@ class LuaModMgr extends LuaClass {
 
   private static var queueEaseC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(queueEase);
 
+  private static function queueEaseL(l:StatePointer):Int{
+    // 1 = self
+    // 2 = step
+    // 3 = len
+    // 4 = modName
+    // 5 = percent
+    // 6 = easing style
+    // 7 = player
+    var step = LuaL.checknumber(state,2);
+    var len = LuaL.checknumber(state,3);
+    var modN = LuaL.checkstring(state,4);
+    var perc = LuaL.checknumber(state,5);
+    var ease = LuaL.checkstring(state,6);
+    var player:Int = -1;
+
+    if(Lua.isnumber(state,7))
+      player = Std.int(Lua.tonumber(state,7));
+
+    Lua.getfield(state,1,"className");
+    var className = Lua.tostring(state,-1);
+    var mgr = PlayState.currentPState.luaObjects[className];
+    try{
+      mgr.queueEaseL(step,len,modN,perc,ease,player);
+    }catch(e){
+      trace(e.stack,e.message);
+    }
+    return 0;
+  }
+
+  private static var queueEaseLC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(queueEaseL);
+
   private static function queueSet(l:StatePointer):Int{
     // 1 = self
     // 2 = step
@@ -1751,6 +1782,56 @@ class LuaModMgr extends LuaClass {
   }
   private static var queueSetC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(queueSet);
 
+  private static function set(l:StatePointer):Int{
+    // 1 = self
+    // 2 = modName
+    // 3 = percent
+    // 4 = player
+    var modN = LuaL.checkstring(state,2);
+    var perc = LuaL.checknumber(state,3);
+    var player:Int = -1;
+
+    if(Lua.isnumber(state,4))
+      player = Std.int(Lua.tonumber(state,4));
+
+    Lua.getfield(state,1,"className");
+    var className = Lua.tostring(state,-1);
+    var mgr = PlayState.currentPState.luaObjects[className];
+    mgr.set(modN,perc,player);
+    return 0;
+  }
+  private static var setC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(set);
+
+  private static function get(l:StatePointer):Int{
+    // 1 = self
+    // 2 = modName
+    // 3 = player
+    var modN = LuaL.checkstring(state,2);
+    var player:Int = -1;
+
+    if(Lua.isnumber(state,3))
+      player = Std.int(Lua.tonumber(state,3));
+
+    Lua.getfield(state,1,"className");
+    var className = Lua.tostring(state,-1);
+    var mgr = PlayState.currentPState.luaObjects[className];
+    Lua.pushnumber(state,mgr.getModPercent(modN,player));
+    return 1;
+  }
+  private static var getC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(set);
+
+  private static function addBlank(l:StatePointer):Int{
+    // 1 = self
+    // 2 = mod name
+    var modN = LuaL.checkstring(state,2);
+
+    Lua.getfield(state,1,"className");
+    var className = Lua.tostring(state,-1);
+    var mgr = PlayState.currentPState.luaObjects[className];
+    mgr.defineBlankMod(modN);
+    return 0;
+  }
+  private static var addBlankC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addBlank);
 
 
   public function new(mgr:ModManager,?name="modMgr",?addToGlobal=true){
@@ -1768,6 +1849,39 @@ class LuaModMgr extends LuaClass {
         },
         setter:function(l:State){
           LuaL.error(l,"className is read-only.");
+          return 0;
+        }
+      },
+      "set"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,setC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"set is read-only.");
+          return 0;
+        }
+      },
+      "get"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,getC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"get is read-only.");
+          return 0;
+        }
+      },
+      "define"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,addBlankC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"define is read-only.");
           return 0;
         }
       },
@@ -1790,6 +1904,17 @@ class LuaModMgr extends LuaClass {
         },
         setter:function(l:State){
           LuaL.error(l,"queueEase is read-only.");
+          return 0;
+        }
+      },
+      "queueEaseL"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,queueEaseLC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"queueEaseL is read-only.");
           return 0;
         }
       },
