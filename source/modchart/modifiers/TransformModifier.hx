@@ -64,7 +64,7 @@ class TransformModifier extends Modifier { // this'll be transformX in ModManage
   // TODO: overhaul modifier system some time
 
 
-  override function getNotePos(note:Note, pos:FlxPoint, data:Int, player:Int){
+  /*override function getNotePos(note:Note, pos:FlxPoint, data:Int, player:Int){
     pos.x += getPercent(player)*100;
     pos.y += getSubmodPercent("transformY",player)*100;
     note.z += getSubmodPercent('transformZ',player)*100;
@@ -75,7 +75,7 @@ class TransformModifier extends Modifier { // this'll be transformX in ModManage
     note.z += getSubmodPercent('transform${data}Z',player)*100;
 
     return pos;
-  }
+  }*/
 
   override function getSubmods(){
     var subMods:Array<String> = ["transformY","transformZ","rotateX","rotateY","rotateZ"];
