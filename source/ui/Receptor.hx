@@ -21,7 +21,7 @@ class Receptor extends FNFSprite {
   public static var dynamicColouring:Bool=false;  // if this is true, then it'll tint to the hit note's dominant colour when it hits a note
   // (DOESNT WORK RN!)
 
-
+  public var playerNum:Int=0;
   public var baseAngle:Float = 0;
   public var desiredAngle:Float = 0;
   public var noteScale:Float = .7;

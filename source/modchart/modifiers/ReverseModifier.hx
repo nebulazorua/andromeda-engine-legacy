@@ -14,7 +14,7 @@ class ReverseModifier extends Modifier {
     var kNum = receptors.length;
     var percent:Float = 0;
     if(suffix==''){
-      percent += getPercent(player);
+      percent += getPercent(player) + getSubmodPercent("reverse" + Std.string(dir),player);
     }else{
       percent += getSubmodPercent("reverse" + suffix,player);
     }
@@ -80,6 +80,13 @@ class ReverseModifier extends Modifier {
   }
 
   override function getSubmods(){
-    return ["cross","split","alternate","reverseScroll","crossScroll","splitScroll","alternateScroll", "centered"];
+    var subMods:Array<String> = ["cross","split","alternate","reverseScroll","crossScroll","splitScroll","alternateScroll", "centered"];
+
+    var receptors = modMgr.receptors[0];
+    var kNum = receptors.length;
+    for(recep in receptors){
+      subMods.push('reverse${recep.direction}');
+    }
+    return subMods;
   }
 }

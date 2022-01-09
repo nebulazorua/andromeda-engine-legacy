@@ -351,6 +351,7 @@ class ChartingState extends MusicBeatState
 		{
 			_song.player1 = characters[Std.parseInt(character)];
 		});
+		player1DropDown.dropDirection = FlxUIDropDownMenuDropDirection.Down;
 		player1DropDown.selectedLabel = _song.player1;
 
 		var player2Info = new FlxText(160, 125, 'Player 2');
@@ -359,7 +360,7 @@ class ChartingState extends MusicBeatState
 		{
 			_song.player2 = characters[Std.parseInt(character)];
 		});
-
+		player2DropDown.dropDirection = FlxUIDropDownMenuDropDirection.Down;
 		player2DropDown.selectedLabel = _song.player2;
 
 		var stageInfo = new FlxText(10, 165, 'Stage');
@@ -368,7 +369,7 @@ class ChartingState extends MusicBeatState
 		{
 			_song.stage = Stage.stageNames[Std.parseInt(stageName)];
 		});
-
+		stageDropdown.dropDirection = FlxUIDropDownMenuDropDirection.Down;
 		stageDropdown.selectedLabel = _song.stage;
 
 		// TODO: noteskin.noteModifiers or some shit
@@ -380,7 +381,7 @@ class ChartingState extends MusicBeatState
 		{
 			_song.noteModifier = modifiers[Std.parseInt(mod)];
 		});
-
+		modifierDropdown.dropDirection = FlxUIDropDownMenuDropDirection.Down;
 		modifierDropdown.selectedLabel = _song.noteModifier;
 
 		var tab_group_song = new FlxUI(null, UI_box);
@@ -524,6 +525,7 @@ class ChartingState extends MusicBeatState
 				updateGrid();
 			}
 		});
+		noteType.dropDirection = FlxUIDropDownMenuDropDirection.Down;
 		noteType.selectedLabel = EngineData.noteTypes[0];
 
 		placingType = new FlxUIDropDownMenu(150, 125, FlxUIDropDownMenu.makeStrIdLabelArray(EngineData.noteTypes, true), function(type:String){
@@ -541,7 +543,7 @@ class ChartingState extends MusicBeatState
 			dummyArrow.alpha=.5;
 			dummyArrowLayer.add(dummyArrow);
 		});
-
+		placingType.dropDirection = FlxUIDropDownMenuDropDirection.Down;
 		placingType.selectedLabel = EngineData.noteTypes[0];
 
 		var applyLength:FlxButton = new FlxButton(100, 10, 'Apply');

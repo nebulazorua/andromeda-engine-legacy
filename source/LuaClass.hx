@@ -1815,10 +1815,11 @@ class LuaModMgr extends LuaClass {
     Lua.getfield(state,1,"className");
     var className = Lua.tostring(state,-1);
     var mgr = PlayState.currentPState.luaObjects[className];
+    trace(mgr.getModPercent(modN,player),modN,player);
     Lua.pushnumber(state,mgr.getModPercent(modN,player));
     return 1;
   }
-  private static var getC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(set);
+  private static var getC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(get);
 
   private static function addBlank(l:StatePointer):Int{
     // 1 = self
@@ -1829,6 +1830,7 @@ class LuaModMgr extends LuaClass {
     var className = Lua.tostring(state,-1);
     var mgr = PlayState.currentPState.luaObjects[className];
     mgr.defineBlankMod(modN);
+    trace(modN);
     return 0;
   }
   private static var addBlankC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addBlank);

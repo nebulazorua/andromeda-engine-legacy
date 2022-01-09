@@ -62,6 +62,7 @@ class Note extends NoteGraphic
 	public var tooLate:Bool = false;
 	public var wasGoodHit:Bool = false;
 	public var prevNote:Note;
+	public var nextNote:Note;
 	public var hit:Bool = false;
 	public var rating:String = "sick";
 	public var lastSustainPiece = false;
@@ -133,7 +134,7 @@ class Note extends NoteGraphic
 			behaviour = Json.parse(Paths.noteSkinText("behaviorData.json",'skins',skin,modifier,type));
 			Note.behaviours.set(type,behaviour);
 		}
-		
+
 		super(strumTime,modifier,skin,graphicType,behaviour);
 
 
@@ -225,6 +226,10 @@ class Note extends NoteGraphic
 				prevNote.updateHitbox();
 			}
 			scaleDefault.set(scale.x,scale.y);
+		}
+
+		if(prevNote!=null){
+			prevNote.nextNote = this;
 		}
 	}
 

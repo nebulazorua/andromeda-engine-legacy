@@ -51,6 +51,8 @@ class ModManager {
     defineMod("invert",new InvertModifier(this));
     defineMod("tornado",new TornadoModifier(this));
     defineMod("drunk",new DrunkModifier(this));
+    defineMod("confusion",new ConfusionModifier(this));
+    defineMod("beat",new BeatModifier(this));
     var gameCams:Array<FlxCamera> = [state.camGame];
     var hudCams:Array<FlxCamera> = [state.camHUD];
     if(state.currentOptions.ratingInHUD){
@@ -128,7 +130,7 @@ class ModManager {
   }
 
   public function defineBlankMod(modName:String){
-    defineMod(modName, new Modifier(this));
+    defineMod(modName, new Modifier(this), false);
   }
 
   public function get(modName:String):Dynamic{
@@ -231,7 +233,7 @@ class ModManager {
     }
   }
 
-  public function queueEase(step:Float, endStep:Float, modName:String, percent:Float, style:String, player:Int=-1){
+  public function queueEase(step:Float, endStep:Float, modName:String, percent:Float, style:String, player:Int=-1, ?startVal:Float){
     if(player==-1){
       queueEase(step, endStep, modName, percent, style, 0);
       queueEase(step, endStep, modName, percent, style, 1);
@@ -248,14 +250,15 @@ class ModManager {
             percent,
             easeFunc,
             player,
-            this
+            this,
+            startVal
           )
         );
       }
     }
   }
 
-  public function queueEaseL(step:Float, length:Float, modName:String, percent:Float, style:String, player:Int=-1){
+  public function queueEaseL(step:Float, length:Float, modName:String, percent:Float, style:String, player:Int=-1, ?startVal:Float){
     if(player==-1){
       queueEaseL(step, length, modName, percent, style, 0);
       queueEaseL(step, length, modName, percent, style, 1);
@@ -273,7 +276,8 @@ class ModManager {
             percent,
             easeFunc,
             player,
-            this
+            this,
+            startVal
           )
         );
       }

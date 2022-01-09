@@ -1086,8 +1086,8 @@ class PlayState extends MusicBeatState
 
 		inCutscene = false;
 
-		generateStaticArrows(0);
-		generateStaticArrows(1);
+		generateStaticArrows(0, 1);
+		generateStaticArrows(1, 0);
 
 		modManager = new ModManager(this);
 		modManager.registerModifiers();
@@ -1504,7 +1504,7 @@ class PlayState extends MusicBeatState
 	// https://github.com/Quaver/Quaver
 	// ADAPTED FROM QUAVER!!!
 
-	private function generateStaticArrows(player:Int):Void
+	private function generateStaticArrows(player:Int, pN:Int):Void
 	{
 		for (i in 0...4)
 		{
@@ -1512,6 +1512,7 @@ class PlayState extends MusicBeatState
 			var clrs = ["purple","blue","green","red"];
 
 			var babyArrow:Receptor = new Receptor(0, center.y, i, currentOptions.noteSkin, noteModifier, Note.noteBehaviour);
+			babyArrow.playerNum = pN;
 			if(player==1)
 				noteSplashes.add(babyArrow.noteSplash);
 
@@ -2213,8 +2214,6 @@ class PlayState extends MusicBeatState
 					daNote.y = notePos.y;
 					daNote.scale.copyFrom(scale);
 					daNote.updateHitbox();
-					scale.put();
-					notePos.put();
 
 					var shitGotHit = (daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit);
 					var shit = strumLine.y + Note.swagWidth/2;
@@ -2237,7 +2236,25 @@ class PlayState extends MusicBeatState
 
 							daNote.clipRect=clipRect;
 						}
+
+					//	var nextPos = getPos(Conductor.songPosition - (daNote.strumTime + Conductor.stepCrochet), daNote.noteData, daNote.mustPress?1:0);
+
+						// TODO: rewrite modifier shit
+						var strumTime = daNote.strumTime;
+						daNote.strumTime+=Conductor.stepCrochet;
+						var nextPos = modManager.getNotePos(daNote);
+						daNote.strumTime=strumTime;
+						var curPos = notePos;
+
+						var diffX = (curPos.x - nextPos.x)*100;
+						var diffY = (curPos.y - nextPos.y)*100;
+						daNote.angle = ((Math.atan2(diffY, diffX)) * 180/Math.PI ); // gets the angle in degrees instead of radians
+						// idk if its better to use FlxAngle.tODegrees or do this
+						// i think its the same anyway lol
+
 					}
+					scale.put();
+					notePos.put();
 
 					if (daNote.y > FlxG.height)
 					{
