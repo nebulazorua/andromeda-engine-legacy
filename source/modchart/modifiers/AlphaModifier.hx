@@ -68,7 +68,7 @@ class AlphaModifier extends Modifier {
     var alpha = getAlpha(yPos,player,note);
     var distFromHalf = Math.abs(alpha-0.5);
     var glow = CoolUtil.scale(distFromHalf,0,0.5,1.3,0);
-    var alphaMod = 1 - getSubmodPercent("alpha",player) * getSubmodPercent("noteAlpha",player);
+    var alphaMod = 1 - getSubmodPercent("alpha",player) * (1-getSubmodPercent("noteAlpha",player));
     note.desiredAlpha = ((alpha>=0.5?1:0)*alphaMod);
 
     if(glow!=0){
@@ -77,8 +77,10 @@ class AlphaModifier extends Modifier {
   }
 
   override function updateReceptor(pos:FlxPoint, scale:FlxPoint, receptor:Receptor){
-    var alpha = 1 - getSubmodPercent("alpha",receptor.playerNum) * getSubmodPercent("receptorAlpha",receptor.playerNum);
-
+    var alpha = 1 - getSubmodPercent("alpha",receptor.playerNum);
+    if(getSubmodPercent("dark",receptor.playerNum)!=0 || getSubmodPercent('dark${receptor.direction}',receptor.playerNum)!=0){
+      alpha = alpha*(1-getSubmodPercent("dark",receptor.playerNum))*(1-getSubmodPercent('dark${receptor.direction}',receptor.playerNum));
+    }
     receptor.alpha = alpha;
 
   }
@@ -88,7 +90,7 @@ class AlphaModifier extends Modifier {
   }
 
   override function getSubmods(){
-    var subMods:Array<String> = ["receptorAlpha", "noteAlpha", "alpha", "hidden","hiddenOffset","sudden","suddenOffset","blink","randomVanish"];
+    var subMods:Array<String> = ["noteAlpha", "alpha", "hidden","hiddenOffset","sudden","suddenOffset","blink","randomVanish","dark"];
     return subMods;
   }
 }

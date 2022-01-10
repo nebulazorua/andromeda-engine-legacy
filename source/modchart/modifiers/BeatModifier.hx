@@ -5,10 +5,10 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
 
 class BeatModifier extends Modifier {
-  override function getNotePos(note:Note, pos:FlxPoint, data:Int, player:Int){
+  override function getPos(pos:FlxPoint, data:Int, player:Int, obj:FNFSprite){
     if(getPercent(player)==0)return pos;
-    var accelTime:Float = 0.2;
-    var totalTime:Float = 0.5;
+    var accelTime:Float = 0.3;
+    var totalTime:Float = 0.7;
 
     var beat = modMgr.state.curDecBeat + accelTime;
     var evenBeat = beat%2!=0;
@@ -29,7 +29,7 @@ class BeatModifier extends Modifier {
     }
     if(evenBeat)amount*=-1;
 
-    var shift = 20*amount*FlxMath.fastSin(pos.y / 15 + Math.PI/2);
+    var shift = 40*amount*FlxMath.fastSin((pos.y / 30) + Math.PI/2);
     pos.x += getPercent(player)*shift;
     return pos;
   }
