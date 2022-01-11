@@ -277,6 +277,8 @@ class PlayState extends MusicBeatState
 			lua.setGlobalVar("curDecStep",0);
 			lua.setGlobalVar("songPosition",Conductor.songPosition);
 			lua.setGlobalVar("bpm",Conductor.bpm);
+			lua.setGlobalVar("crochet",Conductor.crochet);
+			lua.setGlobalVar("stepCrochet",Conductor.stepCrochet);
 			lua.setGlobalVar("XY","XY");
 			lua.setGlobalVar("X","X");
 			lua.setGlobalVar("Y","Y");
@@ -3299,6 +3301,8 @@ class PlayState extends MusicBeatState
 				FlxG.log.add('CHANGED BPM!');
 				if(luaModchartExists && lua!=null){
 					lua.setGlobalVar("bpm",Conductor.bpm);
+					lua.setGlobalVar("crochet",Conductor.crochet);
+					lua.setGlobalVar("stepCrochet",Conductor.stepCrochet);
 				}
 			}
 			// else
