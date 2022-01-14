@@ -2334,7 +2334,7 @@ class PlayState extends MusicBeatState
 							}
 
 							if(luaModchartExists && lua!=null){
-								lua.call("dadNoteHit",[Math.abs(daNote.noteData),daNote.strumTime,Conductor.songPosition,anim]); // TODO: Note lua class???
+								lua.call("dadNoteHit",[Math.abs(daNote.noteData),daNote.strumTime,Conductor.songPosition, anim, daNote.isSustainNote]); // TODO: Note lua class???
 							}
 						if(opponent.animation.curAnim!=null){
 							var canHold = daNote.isSustainNote && opponent.animation.getByName(anim+"Hold")!=null;
@@ -2904,6 +2904,7 @@ class PlayState extends MusicBeatState
 	}
 
 	private function keyPress(event:KeyboardEvent){
+		if(paused)return;
 		#if !NO_BOTPLAY
 		if(event.keyCode == FlxKey.F6){
 			ScoreUtils.botPlay = !ScoreUtils.botPlay;
@@ -2920,6 +2921,7 @@ class PlayState extends MusicBeatState
 	}
 
 	private function keyRelease(event:KeyboardEvent){
+		if(paused)return;
 		if(ScoreUtils.botPlay)return;
 		var direction = bindData.indexOf(event.keyCode);
 		if(direction!=-1 && pressedKeys[direction]){
