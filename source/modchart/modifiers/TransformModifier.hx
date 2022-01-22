@@ -36,46 +36,11 @@ class TransformModifier extends Modifier { // this'll be transformX in ModManage
     return pos;
   }
 
-  /*override function getPos(pos:FlxPoint, data:Int, player:Int, obj:FNFSprite){
-    // thank u schmovin
-    var rX = getSubmodPercent("rotateX",player)*100;
-    var rY = getSubmodPercent("rotateY",player)*100;
-    var rZ = getSubmodPercent("rotateZ",player)*100;
-
-    var receptor = modMgr.receptors[player][data];
-
-    var origin = new FlxPoint(receptor.defaultX,0);
-    if(obj is Note){
-      origin.y = receptor.y;
-    }
-    var diffPoint = pos.subtractPoint(origin);
-    var zScale = FlxG.height;
-    var diff = new Vector3(diffPoint.x,diffPoint.y,obj.z);
-    diff.z *= zScale;
-
-    var newV3 = rotateV3(diff,rX,rY,rZ);
-    newV3.z /= zScale;
-    pos = origin.add(newV3.x,newV3.y);
-    obj.z = newV3.z;
-
-    return pos;
-  }*/
-
-  // TODO: overhaul modifier system some time
-
-
-  /*override function getNotePos(note:Note, pos:FlxPoint, data:Int, player:Int){
-    pos.x += getPercent(player)*100;
-    pos.y += getSubmodPercent("transformY",player)*100;
+  override function getNotePos(note:Note, pos:FlxPoint, data:Int, player:Int){
     note.z += getSubmodPercent('transformZ',player)*100;
-
-    pos.x += getSubmodPercent('transform${data}X',player)*100;
-    pos.y += getSubmodPercent('transform${data}Y',player)*100;
-
-    note.z += getSubmodPercent('transform${data}Z',player)*100;
-
+    note.z += getSubmodPercent('transform${note.noteData}Z',player)*100;
     return pos;
-  }*/
+  }
 
   override function getSubmods(){
     var subMods:Array<String> = ["transformY","transformZ","rotateX","rotateY","rotateZ"];

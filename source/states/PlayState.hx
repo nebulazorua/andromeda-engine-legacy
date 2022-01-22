@@ -1486,6 +1486,11 @@ class PlayState extends MusicBeatState
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.zIndex, Obj2.zIndex);
 	}
 
+	function sortByZ(wat:Int, Obj1:FNFSprite, Obj2:FNFSprite):Int
+	{
+		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.z, Obj2.z);
+	}
+
 	// ADAPTED FROM QUAVER!!!
 	// https://github.com/Quaver/Quaver
 	// https://github.com/Quaver/Quaver
@@ -2409,6 +2414,10 @@ class PlayState extends MusicBeatState
 			}
 
 		});
+
+		if(currentOptions.allowOrderSorting){
+			strumLineNotes.sort(sortByZ);
+		}
 
 		if (!inCutscene){
 			if(ScoreUtils.botPlay)

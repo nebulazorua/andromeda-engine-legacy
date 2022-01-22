@@ -8,13 +8,13 @@ class ConfusionModifier extends Modifier {
   override function updateNote(pos:FlxPoint, scale:FlxPoint, note:Note){
     var player = note.mustPress==true?0:1;
     if(!note.isSustainNote){
-      note.modAngle = getPercent(player)*100 + getSubmodPercent('note${note.noteData}Angle',player);
+      note.modAngle = (getPercent(player) + getSubmodPercent('confusion${note.noteData}',player) + getSubmodPercent('note${note.noteData}Angle',player))*100;
     }
 
   }
 
   override function updateReceptor(pos:FlxPoint, scale:FlxPoint, receptor:Receptor){
-    receptor.desiredAngle = getPercent(receptor.playerNum)*100 + getSubmodPercent('receptor${receptor.direction}Angle',receptor.playerNum);
+    receptor.desiredAngle = (getPercent(receptor.playerNum) + getSubmodPercent('confusion${receptor.direction}',receptor.playerNum) + getSubmodPercent('receptor${receptor.direction}Angle',receptor.playerNum))*100;
   }
 
   override function getSubmods(){
@@ -25,6 +25,7 @@ class ConfusionModifier extends Modifier {
     for(recep in receptors){
       subMods.push('note${recep.direction}Angle');
       subMods.push('receptor${recep.direction}Angle');
+      subMods.push('confusion${recep.direction}');
     }
 
     return subMods;
