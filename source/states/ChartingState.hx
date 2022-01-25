@@ -198,7 +198,7 @@ class ChartingState extends MusicBeatState
 		songInfoTxt.scrollFactor.set();
 		add(songInfoTxt);
 
-		controlsTxt = new FlxText(40, 150, 0, "", 16);
+		controlsTxt = new FlxText(40, 170, 0, "", 16);
 		controlsTxt.setFormat('vcr.ttf', 16, FlxColor.WHITE, CENTER);
 		controlsTxt.setBorderStyle(OUTLINE, FlxColor.BLACK, 1.25, 1);
 		controlsTxt.scrollFactor.set();
@@ -250,6 +250,8 @@ class ChartingState extends MusicBeatState
 
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
+
+		changeSection(0);
 		while (curStep >= 16 * (curSection + 1))
 		{
 			trace(curStep);
@@ -263,6 +265,7 @@ class ChartingState extends MusicBeatState
 
 			changeSection(curSection + 1, false);
 		}
+
 
 		updateSectionUI();
 
@@ -827,10 +830,11 @@ class ChartingState extends MusicBeatState
 			&& FlxG.mouse.y < gridBG.y + (GRID_SIZE * _song.notes[curSection].lengthInSteps))
 		{
 			var time = getStrumTime(FlxG.mouse.y);
-			var beat = Conductor.getBeat(time);
+			var beat = Conductor.getBeat(time + sectionStartTime());
 			var snap = 4/quantization;
 			var x = Math.floor(FlxG.mouse.x / GRID_SIZE) * GRID_SIZE;
-			var y = getYfromStrum(Conductor.beatToSeconds(Math.floor(beat / snap) * snap));
+			var y = getYfromStrum(Conductor.beatToSeconds(Math.floor(beat / snap) * snap) - sectionStartTime());
+
 			if (FlxG.keys.pressed.SHIFT)
 				y = FlxG.mouse.y;
 

@@ -81,6 +81,7 @@ class OptionsState extends MusicBeatState
 				new ToggleOption("onlyScore","Minimal Information","Only shows your score below the hp bar"),
 				new ToggleOption("smoothHPBar","Smooth Healthbar","Makes the HP Bar smoother"),
 				new ToggleOption("fcBasedComboColor","FC Combo Colouring","Makes the combo's colour changes with type of FC you have"),
+				new ToggleOption("holdsBehindReceptors","Stepmania Clipping","Makes holds clip behind the receptors"),
 				new NoteskinOption("noteSkin","NoteSkin","The noteskin to use"),
 				new OptionCategory("Effects",[
 					new ToggleOption("picoCamshake","Train camera shake","Whether the train in week 3's background shakes the camera"),
@@ -89,7 +90,6 @@ class OptionsState extends MusicBeatState
 				]),
 			]),
 			new OptionCategory("Preferences",[
-				new ToggleOption("oldCharter","Use vanilla charter","Uses the vanilla charter instead of Andromeda's"),
 				new ToggleOption("useNotesplashes","Show NoteSplashes","Notesplashes showing up on sicks and above."),
 				new ToggleOption("camFollowsAnims","Directional Camera","Camera moving depending on a character's animations"),
 				new ToggleOption("ratingInHUD","Fixed Judgements","Fixes judgements, milliseconds and combo to the screen"),

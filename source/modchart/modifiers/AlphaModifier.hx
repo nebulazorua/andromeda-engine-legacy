@@ -71,9 +71,8 @@ class AlphaModifier extends Modifier {
     var alphaMod = 1 - getSubmodPercent("alpha",player) * (1-getSubmodPercent("noteAlpha",player));
     note.desiredAlpha = ((alpha>=0.5?1:0)*alphaMod);
 
-    if(glow!=0){
-      note.effect.setFlash(glow);
-    }
+    note.effect.setFlash(glow);
+
   }
 
   override function updateReceptor(pos:FlxPoint, scale:FlxPoint, receptor:Receptor){

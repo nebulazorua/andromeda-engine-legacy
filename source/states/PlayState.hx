@@ -481,12 +481,12 @@ class PlayState extends MusicBeatState
 		pauseHUD.bgColor.alpha = 0;
 
 		FlxG.cameras.reset(camGame);
-		if(!currentOptions.ratingInHUD)
-			FlxG.cameras.add(camRating);
+		FlxG.cameras.add(camRating);
+		if(currentOptions.holdsBehindReceptors)
+			FlxG.cameras.add(camSus);
 		FlxG.cameras.add(camReceptor);
-		if(currentOptions.ratingInHUD)
-			FlxG.cameras.add(camRating);
-		FlxG.cameras.add(camSus);
+		if(!currentOptions.holdsBehindReceptors)
+			FlxG.cameras.add(camSus);
 		FlxG.cameras.add(camNotes);
 
 		FlxG.cameras.add(camHUD);
@@ -1885,11 +1885,8 @@ class PlayState extends MusicBeatState
 		{
 			inst.pause();
 			vocals.pause();
-			if(currentOptions.oldCharter){
-				FlxG.switchState(new OldChartingState(charterPos==0?inst.time:charterPos));
-			}else{
-				FlxG.switchState(new ChartingState(charterPos==0?inst.time:charterPos));
-			}
+			FlxG.switchState(new ChartingState(charterPos==0?inst.time:charterPos));
+
 
 
 			#if desktop
@@ -2715,7 +2712,7 @@ class PlayState extends MusicBeatState
 			}
 			else
 			{
-				rating.setGraphicSize(Std.int(rating.width * daPixelZoom * .7));
+				rating.setGraphicSize(Std.int(rating.width * daPixelZoom * .8));
 			}
 
 			rating.updateHitbox();
@@ -3296,6 +3293,17 @@ class PlayState extends MusicBeatState
 				}
 			}
 		}
+
+		var lastChange = Conductor.getBPMFromStep(curStep);
+		if(lastChange.bpm != Conductor.bpm){
+			Conductor.changeBPM(lastChange.bpm);
+			FlxG.log.add('CHANGED BPM!');
+			if(luaModchartExists && lua!=null){
+				lua.setGlobalVar("bpm",Conductor.bpm);
+				lua.setGlobalVar("crochet",Conductor.crochet);
+				lua.setGlobalVar("stepCrochet",Conductor.stepCrochet);
+			}
+		}
 	}
 
 	override function beatHit()
@@ -3306,16 +3314,6 @@ class PlayState extends MusicBeatState
 
 		if (SONG.notes[Math.floor(curStep / 16)] != null)
 		{
-			if (SONG.notes[Math.floor(curStep / 16)].changeBPM)
-			{
-				Conductor.changeBPM(SONG.notes[Math.floor(curStep / 16)].bpm);
-				FlxG.log.add('CHANGED BPM!');
-				if(luaModchartExists && lua!=null){
-					lua.setGlobalVar("bpm",Conductor.bpm);
-					lua.setGlobalVar("crochet",Conductor.crochet);
-					lua.setGlobalVar("stepCrochet",Conductor.stepCrochet);
-				}
-			}
 			// else
 			// Conductor.changeBPM(SONG.bpm);
 

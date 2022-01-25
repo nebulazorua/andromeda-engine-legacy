@@ -121,6 +121,7 @@ class Options
 	public var judgeX:Float = 0;
 	public var judgeY:Float = 0;
 	public var fcBasedComboColor:Bool = false;
+	public var holdsBehindReceptors:Bool = false;
 
 	// performance
 	public var fps:Int = 120;
@@ -136,7 +137,6 @@ class Options
 	public var cacheUsedImages:Bool = false;
 
 	// preference
-	public var oldCharter:Bool = false;
 	public var showMem:Bool = true;
 	public var showMemPeak:Bool = true;
 	public var showFPS:Bool = false;
