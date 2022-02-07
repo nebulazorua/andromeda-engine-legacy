@@ -144,6 +144,8 @@ class PlayState extends MusicBeatState
 	public var luaObjects:Map<String, Dynamic>;
 	public var unnamedLuaSprites:Int=0;
 	public var unnamedLuaShaders:Int=0;
+	public var unnamedLuaObjects:Int=0;
+	public var defaultLuaClasses:Array<Dynamic>;
 	public var dadLua:LuaCharacter;
 	public var gfLua:LuaCharacter;
 	public var bfLua:LuaCharacter;
@@ -358,6 +360,28 @@ class PlayState extends MusicBeatState
 				};
 			});
 
+			Lua_helper.add_callback(lua.state,"newCamera", function(?x:Int=0, ?y:Int=0,?cameraName:String){
+				var cam = new FlxCamera(x,y);
+				cam.bgColor = FlxColor.TRANSPARENT;
+				var name = "UnnamedCamera"+unnamedLuaObjects;
+
+				if(cameraName!=null) name=cameraName;
+				else unnamedLuaObjects++;
+
+				var lCam = new LuaCam(cam, name);
+				var classIdx = Lua.gettop(lua.state)+1;
+				lCam.Register(lua.state);
+				Lua.pushvalue(lua.state,classIdx);
+				FlxG.cameras.add(cam);
+				trace('new camera named $name added!!');
+			});
+			/* (ILuvGemz, 2021-Feb-03 21:25 West Indonesian Time)
+			Lua_helper.add_callback(lua.state,"setCameraToSprite", function(?sprite:String, ?camera:String){
+				PlayState.currentPState.luaSprites.get(sprite).cameras = [PlayState.currentPState.luaObjects.get(camera)];
+				trace('set $sprite to the $camera camera');
+				return true;
+			});*/ //TODO: Find out why it throws "[MODCHART]"" C++ Exception everytime I wanna do this damn function
+
 			var dirs = ["left","down","up","right"];
 			for(dir in 0...playerStrums.length){
 				var receptor = playerStrums.members[dir];
@@ -388,7 +412,9 @@ class PlayState extends MusicBeatState
 
 			new LuaModMgr(modManager).Register(lua.state);
 
-			for(i in [luaModchart,window,bfLua,gfLua,dadLua,bfIcon,dadIcon,luaGameCam,luaHUDCam,luaNotesCam,luaSustainCam,luaReceptorCam])
+			defaultLuaClasses = [luaModchart,window,bfLua,gfLua,dadLua,bfIcon,dadIcon,luaGameCam,luaHUDCam,luaNotesCam,luaSustainCam,luaReceptorCam];
+
+			for(i in defaultLuaClasses)
 				i.Register(lua.state);
 
 
@@ -1085,6 +1111,10 @@ class PlayState extends MusicBeatState
 	{
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN,keyPress);
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP,keyRelease);
+
+		if(luaModchartExists && lua!=null){
+			lua.call("startCountdown",[]); // TODO: startCountdown lua class???
+		}
 
 		inCutscene = false;
 

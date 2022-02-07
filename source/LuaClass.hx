@@ -8,6 +8,7 @@ import llua.State;
 import llua.LuaL;
 import flixel.util.FlxAxes;
 import flixel.FlxSprite;
+import flixel.FlxG;
 import lime.app.Application;
 import openfl.Lib;
 import sys.io.File;
@@ -23,6 +24,10 @@ import haxe.DynamicAccess;
 import openfl.display.GraphicsShader;
 import states.*;
 import ui.*;
+import openfl.display.BlendMode;
+
+using StringTools;
+
 typedef LuaProperty = {
     var defaultValue:Any;
     var getter:(State,Any)->Int;
@@ -245,6 +250,30 @@ class LuaSprite extends LuaClass {
     "Y"=>Y,
     "YX"=>XY
   ];
+  private static var stringToBlend:Map<String,BlendMode> = [
+    'add'=>ADD,
+		'alpha'=>ALPHA,
+		'darken'=>DARKEN,
+		'difference'=>DIFFERENCE,
+		'erase'=>ERASE,
+		'hardlight'=>HARDLIGHT,
+		'invert'=>INVERT,
+		'layer'=>LAYER,
+		'lighten'=>LIGHTEN,
+		'multiply'=>MULTIPLY,
+		'overlay'=>OVERLAY,
+		'screen'=>SCREEN,
+		'shader'=>SHADER,
+		'subtract'=>SUBTRACT,
+    'normal'=> NORMAL
+  ];
+  /*private static var stringToCamera:Map<String,FlxCamera> = [
+    'gameCam' => FlxG.camera,
+    'HUDCam' => PlayState.currentPState.camHUD,
+    'notesCam' => PlayState.currentPState.camNotes,
+    'holdCam' => PlayState.currentPState.camSus,
+    'receptorCam' => PlayState.currentPState.camReceptor
+  ];*/
   public var sprite:FlxSprite;
   private function SetNumProperty(l:State){
       // 1 = self
@@ -307,6 +336,61 @@ class LuaSprite extends LuaClass {
   }
 
   private static var setScaleC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setScale);
+
+  private static function setBlendMode(l:StatePointer)
+  {
+    // 1 = self
+    // 2 = blendMode string
+    var blendMode = LuaL.checkstring(state, 2);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    if (stringToBlend[blendMode.toLowerCase().trim()] != null)
+    sprite.blend = stringToBlend[blendMode];
+    //trace('blend mode set to $blendMode');
+    /*
+    
+    switch(Lua.tostring(state,2).toLowerCase().trim)
+    {
+      case 'add':sprite.blend = ADD;
+			case 'alpha': sprite.blend = ALPHA;
+			case 'darken': sprite.blend = DARKEN;
+			case 'difference': sprite.blend = DIFFERENCE;
+			case 'erase': sprite.blend = ERASE;
+			case 'hardlight': sprite.blend =  HARDLIGHT;
+			case 'invert': sprite.blend = INVERT;
+			case 'layer': sprite.blend = LAYER;
+			case 'lighten': sprite.blend = LIGHTEN;
+			case 'multiply': sprite.blend = MULTIPLY;
+			case 'overlay': sprite.blend = OVERLAY;
+			case 'screen': sprite.blend = SCREEN;
+			case 'shader': sprite.blend = SHADER;
+			case 'subtract': sprite.blend = SUBTRACT;
+      default: sprite.blend = NORMAL;
+    }*/
+
+    return 0;
+  }
+
+  private static var setBlendModeC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setBlendMode);
+  /*
+  private static function setCamera(l:StatePointer){
+    // 1 = self
+    // 2 = cameras
+    var camera = LuaL.checkstring(state,2);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    var stCamera = PlayState.currentPState.luaObjects[camera];
+    
+    //else if (stringToCamera[camera] != null) stCamera = stringToCamera[camera]; else stCamera = sprite.cameras[0];
+      
+    sprite.cameras = [stCamera];
+    //trace('changed $spriteName\'s camera to $camera');
+    return 0;
+  }
+
+  private static var setCameraC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setCamera);*/
 
   private static function setScaleX(l:StatePointer):Int{
     // 1 = self
@@ -426,17 +510,17 @@ class LuaSprite extends LuaClass {
     var flipX:Bool = false;
     var flipY:Bool = false;
 
-    if(Lua.isnumber(state,4))
-      framerate = Lua.tonumber(state,4);
-
-    if(Lua.isboolean(state,5))
-      looped = Lua.toboolean(state,5);
+    if(Lua.isnumber(state,5))
+      framerate = Lua.tonumber(state,5);
 
     if(Lua.isboolean(state,6))
       looped = Lua.toboolean(state,6);
 
     if(Lua.isboolean(state,7))
-      flipY = Lua.toboolean(state,7);
+      flipX = Lua.toboolean(state,7);
+
+    if(Lua.isboolean(state,8))
+      flipY = Lua.toboolean(state,8);
 
     Lua.getfield(state,1,"spriteName");
     var spriteName = Lua.tostring(state,-1);
@@ -748,6 +832,17 @@ class LuaSprite extends LuaClass {
         },
         setter:function(l:State){
           LuaL.error(l,"setFrames is read-only.");
+          return 0;
+        }
+      },
+      "setBlendMode"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,setBlendModeC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"setBlendMode is read-only.");
           return 0;
         }
       },
@@ -1486,6 +1581,8 @@ class LuaShaderClass extends LuaClass {
     Lua.getfield(state,1,"className");
     var name = Lua.tostring(state,-1);
     var shader = PlayState.currentPState.luaObjects[name];
+    var parameter = Reflect.getProperty(shader,property);
+    Convert.toLua(state,Reflect.getProperty(parameter,"value"));
     //Convert.toLua(state,Reflect.getProperty(shader,property));
     return 1;
   }
@@ -1499,6 +1596,8 @@ class LuaShaderClass extends LuaClass {
     Lua.getfield(state,1,"className");
     var name = Lua.tostring(state,-1);
     var shader = PlayState.currentPState.luaObjects[name];
+    var parameter = Reflect.getProperty(shader,property);
+    Reflect.setProperty(parameter,"value",value);
     //Reflect.setProperty(shader,property,value);
 
     return 1;
