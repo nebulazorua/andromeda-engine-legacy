@@ -24,6 +24,7 @@ import haxe.DynamicAccess;
 import openfl.display.GraphicsShader;
 import states.*;
 import ui.*;
+import llua.Macro.*;
 import openfl.display.BlendMode;
 
 using StringTools;
@@ -349,7 +350,7 @@ class LuaSprite extends LuaClass {
     sprite.blend = stringToBlend[blendMode];
     //trace('blend mode set to $blendMode');
     /*
-    
+
     switch(Lua.tostring(state,2).toLowerCase().trim)
     {
       case 'add':sprite.blend = ADD;
@@ -373,24 +374,40 @@ class LuaSprite extends LuaClass {
   }
 
   private static var setBlendModeC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setBlendMode);
-  /*
-  private static function setCamera(l:StatePointer){
+
+  private static function setCameras(l:StatePointer){
     // 1 = self
-    // 2 = cameras
-    var camera = LuaL.checkstring(state,2);
-    Lua.getfield(state,1,"spriteName");
-    var spriteName = Lua.tostring(state,-1);
-    var sprite = PlayState.currentPState.luaSprites[spriteName];
-    var stCamera = PlayState.currentPState.luaObjects[camera];
-    
-    //else if (stringToCamera[camera] != null) stCamera = stringToCamera[camera]; else stCamera = sprite.cameras[0];
-      
-    sprite.cameras = [stCamera];
-    //trace('changed $spriteName\'s camera to $camera');
+    // 2 = array of cameras
+
+    try{
+
+      LuaL.checktable(state,2);
+      var cameras:Array<FlxCamera> = [];
+
+      Lua.pushnil(state);
+
+      while(Lua.next(state, -2) != 0) {
+        Lua.getfield(state,-1,"className");
+        var name = Lua.tostring(state,-1);
+        var cam = PlayState.currentPState.luaObjects[name];
+        if(cam!=null){
+          cameras.push(cam);
+        }
+        Lua.pop(state, 2); // pops the classname, aswell
+      }
+      Lua.pop(state,1); // pops the key, probably
+
+      Lua.getfield(state,1,"spriteName");
+      var spriteName = Lua.tostring(state,-1);
+      var sprite: FlxSprite = PlayState.currentPState.luaSprites[spriteName];
+      Reflect.setProperty(sprite,"cameras",cameras); // why is haxeflixel so fucking weird
+    }catch(e){
+      trace(e.stack,e.message);
+    }
     return 0;
   }
 
-  private static var setCameraC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setCamera);*/
+  private static var setCamerasC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setCameras);
 
   private static function setScaleX(l:StatePointer):Int{
     // 1 = self
@@ -901,6 +918,19 @@ class LuaSprite extends LuaClass {
           return 0;
         }
       },
+      "setCameras"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,setCamerasC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"setCameras is read-only.");
+          return 0;
+        }
+      },
+
+
       "scrollFactorX"=>{ // TODO: sprite.scrollFactor.x
         defaultValue:sprite.scrollFactor.x,
         getter:function(l:State,data:Any){

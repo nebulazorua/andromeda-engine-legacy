@@ -1915,7 +1915,7 @@ class PlayState extends MusicBeatState
 		{
 			inst.pause();
 			vocals.pause();
-			FlxG.switchState(new ChartingState(charterPos==0?inst.time:charterPos));
+			FlxG.switchState(new ChartingState(charterPos));
 
 
 
