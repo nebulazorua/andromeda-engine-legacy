@@ -375,12 +375,7 @@ class PlayState extends MusicBeatState
 				FlxG.cameras.add(cam);
 				trace('new camera named $name added!!');
 			});
-			/* (ILuvGemz, 2021-Feb-03 21:25 West Indonesian Time)
-			Lua_helper.add_callback(lua.state,"setCameraToSprite", function(?sprite:String, ?camera:String){
-				PlayState.currentPState.luaSprites.get(sprite).cameras = [PlayState.currentPState.luaObjects.get(camera)];
-				trace('set $sprite to the $camera camera');
-				return true;
-			});*/ //TODO: Find out why it throws "[MODCHART]"" C++ Exception everytime I wanna do this damn function
+
 
 			var dirs = ["left","down","up","right"];
 			for(dir in 0...playerStrums.length){
@@ -403,6 +398,7 @@ class PlayState extends MusicBeatState
 
 			var window = new LuaWindow();
 
+			var luaRenderedNotes = new LuaGroup<Note>(renderedNotes,"renderedNotes",true);
 			var luaGameCam = new LuaCam(FlxG.camera,"gameCam");
 			var luaHUDCam = new LuaCam(camHUD,"HUDCam");
 			var luaNotesCam = new LuaCam(camNotes,"notesCam");
@@ -412,7 +408,7 @@ class PlayState extends MusicBeatState
 
 			new LuaModMgr(modManager).Register(lua.state);
 
-			defaultLuaClasses = [luaModchart,window,bfLua,gfLua,dadLua,bfIcon,dadIcon,luaGameCam,luaHUDCam,luaNotesCam,luaSustainCam,luaReceptorCam];
+			defaultLuaClasses = [luaModchart,window,bfLua,gfLua,dadLua,bfIcon,dadIcon,luaGameCam,luaHUDCam,luaNotesCam,luaSustainCam,luaReceptorCam,luaRenderedNotes];
 
 			for(i in defaultLuaClasses)
 				i.Register(lua.state);
@@ -1112,10 +1108,6 @@ class PlayState extends MusicBeatState
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN,keyPress);
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP,keyRelease);
 
-		if(luaModchartExists && lua!=null){
-			lua.call("startCountdown",[]); // TODO: startCountdown lua class???
-		}
-
 		inCutscene = false;
 
 		generateStaticArrows(0, 1);
@@ -1152,6 +1144,10 @@ class PlayState extends MusicBeatState
 		if(currentOptions.loadModcharts)
 			setupLuaSystem();
 		#end
+
+		if(luaModchartExists && lua!=null){
+			lua.call("startCountdown",[]);
+		}
 
 
 
@@ -1401,7 +1397,6 @@ class PlayState extends MusicBeatState
 				var swagNote:Note = new Note(daStrumTime, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, false, getPosFromTime(daStrumTime));
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
-				swagNote.cameras = [camNotes];
 				if(!setupSplashes.contains(swagNote.graphicType) && gottaHitNote){
 					loadingSplash.setup(swagNote);
 					setupSplashes.push(swagNote.graphicType);
@@ -1440,7 +1435,7 @@ class PlayState extends MusicBeatState
 						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 						var sussy = daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet;
 						var sustainNote:Note = new Note(sussy, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, true, getPosFromTime(sussy));
-						sustainNote.cameras = [camSus];
+						//sustainNote.cameras = [camSus];
 						sustainNote.scrollFactor.set();
 						unspawnNotes.push(sustainNote);
 

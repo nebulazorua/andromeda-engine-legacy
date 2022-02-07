@@ -26,7 +26,9 @@ import states.*;
 import ui.*;
 import llua.Macro.*;
 import openfl.display.BlendMode;
-
+import flixel.util.FlxColor;
+import flixel.FlxBasic;
+import flixel.group.FlxGroup.FlxTypedGroup;
 using StringTools;
 
 typedef LuaProperty = {
@@ -37,6 +39,7 @@ typedef LuaProperty = {
 
 class LuaStorage {
   public static var objectProperties:Map<String,Map<String,LuaProperty>> = [];
+  public static var conversionShit:Map<Any,LuaClass> = [];
   public static var objects:Map<String,LuaClass> = [];
   public static var notes:Array<Note> = [];
   public static var noteIDs:Map<Note,String>=[];
@@ -242,6 +245,9 @@ class LuaWindow extends LuaClass {
     super.Register(l);
   }
 }
+
+// TODO: LuaSprite should 100% extend a LuaBasic class
+// which is just FlxBasic but for lua
 
 class LuaSprite extends LuaClass {
   private static var state:State;
@@ -690,6 +696,72 @@ class LuaSprite extends LuaClass {
 
   }
 
+  private static function tweenColor(l:StatePointer):Int{
+    // 1 = self
+    // 2 = startColour
+    // 3 = endColour
+    // 4 = time
+    // 5 = easing-style
+    var startColour:FlxColor = cast LuaL.checknumber(state,2);
+    var endColour:FlxColor = cast LuaL.checknumber(state,3);
+    var time = LuaL.checknumber(state,4);
+    var style = LuaL.checkstring(state,5);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    var luaObj = LuaStorage.objects[spriteName];
+    /*FlxTween.tween(sprite,properties,time,{
+      ease: Reflect.field(FlxEase,style),
+    });*/
+    FlxTween.color(sprite, time, startColour, endColour, {
+      ease: Reflect.field(FlxEase,style),
+    });
+    return 1;
+
+  }
+
+  private static function changeLayer(l:StatePointer):Int{
+    // 1 = self
+    // 2 = newLayer
+    var layer = LuaL.checkstring(state,2);
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    var stage = PlayState.currentPState.stage;
+    var layers:Array<String> = ["boyfriend","gf","dad"];
+    if(stage.members.contains(sprite)){
+      stage.remove(sprite);
+    }
+
+    if(stage.foreground.members.contains(sprite)){
+      stage.foreground.remove(sprite);
+    }
+
+    if(stage.overlay.members.contains(sprite)){
+      stage.overlay.remove(sprite);
+    }
+
+    for(shit in layers){
+      if(stage.layers.get(shit).members.contains(sprite)){
+        stage.layers.get(shit).remove(sprite);
+      }
+    }
+
+    switch(layer){
+      case 'dad' | 'boyfriend' | 'gf':
+        stage.layers.get(layer).add(sprite);
+      case 'foreground':
+        stage.foreground.add(sprite);
+      case 'overlay':
+        stage.overlay.add(sprite);
+      case 'stage':
+        stage.add(sprite);
+    }
+
+    return 0;
+
+  }
+
   private static var changeAnimFramerateC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(changeAnimFramerate);
   private static var animExistsC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(animExists);
   private static var addSpriteAnimByPrefixC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addSpriteAnimByPrefix);
@@ -700,6 +772,18 @@ class LuaSprite extends LuaClass {
   private static var setFramesC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setFrames);
   private static var playAnimSpriteC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(playAnimSprite);
   private static var tweenC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(tween);
+  private static var tweenColorC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(tweenColor);
+  private static var changeLayerC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(changeLayer);
+
+  function getClassnameByObj(obj: FlxBasic){
+    var objects = PlayState.currentPState.luaObjects;
+    for(key in objects.keys()){
+      if(objects.get(key)==obj){
+        return key;
+      }
+    }
+    return null;
+  }
 
   public function new(sprite:FlxSprite,name:String,?addToGlobal:Bool=true){
     super();
@@ -794,6 +878,28 @@ class LuaSprite extends LuaClass {
         },
         setter:function(l:State){
           LuaL.error(l,"tween is read-only.");
+          return 0;
+        }
+      },
+      "tweenColor"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,tweenColorC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"tweenColor is read-only.");
+          return 0;
+        }
+      },
+      "changeLayer"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,changeLayerC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"changeLayer is read-only.");
           return 0;
         }
       },
@@ -918,7 +1024,8 @@ class LuaSprite extends LuaClass {
           return 0;
         }
       },
-      "setCameras"=>{
+
+      /*"setCameras"=>{
         defaultValue:0,
         getter:function(l:State,data:Any){
           Lua.pushcfunction(l,setCamerasC);
@@ -926,6 +1033,78 @@ class LuaSprite extends LuaClass {
         },
         setter:function(l:State){
           LuaL.error(l,"setCameras is read-only.");
+          return 0;
+        }
+      },*/
+
+      "cameras"=>{
+        defaultValue: [],
+        getter: function(l:State, data:Any){
+          var classnames:Array<String> = [];
+          for(camera in sprite.cameras){
+            var luaClass = getClassnameByObj(camera);
+            if(luaClass!=null){
+              classnames.push(luaClass);
+            }
+          }
+          Lua.newtable(l);
+          var tableIdx = Lua.gettop(l);
+
+          Lua.getglobal(l, "cameras");
+          var idx:Int = 0;
+          for(name in classnames){
+            Lua.getfield(l, -1, name);
+            if(Lua.isnil(l,-1)==0){
+              idx++;
+              Lua.rawseti(l, tableIdx, idx);
+            }
+          }
+
+          Lua.pushvalue(l,tableIdx);
+
+          return 1;
+        },
+
+        setter: function(l:State){
+          Lua.pop(l,1); // remove the metatable from the end since its entirely un-needed
+          // 1 = self
+          // 2 = index 'cameras'
+          // 3 = array of cameras
+          try{
+
+            if(Lua.type(l,3)!=Lua.LUA_TTABLE){
+              LuaL.error(l,"invalid argument #3 (table expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+              return 0;
+            }
+            var cameras:Array<FlxCamera> = [];
+
+            // -1 = array
+            // -2 = index
+            // -3 = self
+
+            Lua.pushnil(l);
+
+            // -1 = nil
+            // -2 = array
+            // -3 = index
+            // -4 = self
+            while(Lua.next(l, -2) != 0) {
+              Lua.getfield(l,-1,"className");
+              var name = Lua.tostring(l,-1);
+              trace(name);
+              var cam = PlayState.currentPState.luaObjects[name];
+              if(cam!=null){
+                cameras.push(cam);
+              }
+              Lua.pop(l, 2); // pops the classname, aswell
+            }
+            Lua.pop(l,1); // pops the key, probably
+
+            Reflect.setProperty(sprite,"cameras",cameras); // why is haxeflixel so fucking weird
+          }catch(e){
+            trace(e.stack,e.message);
+          }
+
           return 0;
         }
       },
@@ -1079,6 +1258,22 @@ class LuaCam extends LuaClass {
     return 0;
   }
 
+  private static function setScale(l:StatePointer):Int{
+    // 1 = self
+    // 2 = X
+    // 3 = Y
+    var scaleX:String = LuaL.checkstring(state,2);
+    var scaleY:Float = LuaL.checknumber(state,3);
+    Lua.getfield(state,1,"className");
+    var objName = Lua.tostring(state,-1);
+    var cam = PlayState.currentPState.luaObjects[objName];
+
+    cam.setScale(scaleX,scaleY);
+
+
+    return 0;
+  }
+
   private static function addShaders(l:StatePointer):Int{
     // 1 = self
     // 2 = table of shaders
@@ -1096,6 +1291,7 @@ class LuaCam extends LuaClass {
   }
 
   private static var shakeC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(shake);
+  private static var setScaleC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setScale);
   private static var addShadersC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addShaders);
 
   public function new(cam:FlxCamera,name:String,?addToGlobal:Bool=true){
@@ -1172,28 +1368,41 @@ class LuaCam extends LuaClass {
           return 0;
         }
       },
-      "addShaders"=>{
+      "setScale"=>{
         defaultValue:0,
         getter:function(l:State,data:Any){
-          Lua.pushcfunction(l,addShadersC);
+          Lua.pushcfunction(l,setScaleC);
           return 1;
         },
         setter:function(l:State){
-          LuaL.error(l,"addShaders is read-only.");
+          LuaL.error(l,"setScale is read-only.");
           return 0;
         }
-      },
+      }
     ];
   }
   override function Register(l:State){
     state=l;
+    var classIdx = Lua.gettop(l)+1;
     super.Register(l);
+    Lua.getglobal(l,"cameras");
+    if(Lua.isnil(l,-1)==1){
+      Lua.pop(l,1);
+      Lua.newtable(l);
+      Lua.setglobal(l,"cameras");
+    }
+    var tableIdx = Lua.gettop(l);
+
+    Lua.pushstring(l, className);
+    Lua.pushvalue(l, classIdx);
+    Lua.settable(l, tableIdx);
   }
 }
 
 class LuaNote extends LuaSprite {
   private static var state:State;
   public var id:String='0';
+
 
   override function Register(l:State){
     state=l;
@@ -1315,6 +1524,202 @@ class LuaNote extends LuaSprite {
       }
     });
 
+
+  }
+}
+
+class LuaGroup<T:FlxBasic> extends LuaClass {
+  private static var state:State;
+  public var group:FlxTypedGroup<T>;
+  private function SetNumProperty(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TNUMBER){
+        LuaL.error(l,"invalid argument #3 (number expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      Reflect.setProperty(group,Lua.tostring(l,2),Lua.tonumber(l,3));
+      return 0;
+  }
+
+  private function GetNumProperty(l:State,data:Any){
+      // 1 = self
+      // 2 = key
+      // 3 = metatable
+      Lua.pushnumber(l,Reflect.getProperty(group,Lua.tostring(l,2)));
+      return 1;
+  }
+
+  private function SetBoolProperty(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TBOOLEAN){
+        LuaL.error(l,"invalid argument #3 (boolean expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      Reflect.setProperty(group,Lua.tostring(l,2),Lua.toboolean(l,3));
+      return 0;
+  }
+
+  private function GetBoolProperty(l:State,data:Any){
+      // 1 = self
+      // 2 = key
+      // 3 = metatable
+      Lua.pushboolean(l,Reflect.getProperty(group,Lua.tostring(l,2)));
+      return 1;
+  }
+
+  private function GetStringProperty(l:State,data:Any){
+      // 1 = self
+      // 2 = key
+      // 3 = metatable
+      Lua.pushstring(l,Reflect.getProperty(group,Lua.tostring(l,2)));
+      return 1;
+  }
+
+  function getClassnameByObj(obj: FlxBasic){
+    var objects = PlayState.currentPState.luaObjects;
+    for(key in objects.keys()){
+      if(objects.get(key)==obj){
+        return key;
+      }
+    }
+    return null;
+  }
+
+  override function Register(l:State){
+    state=l;
+    super.Register(l);
+  }
+
+  public function new(group:FlxTypedGroup<T>,name:String,?addToGlobal:Bool=true){
+    super();
+    className=name;
+    this.addToGlobal=addToGlobal;
+    this.group=group;
+    PlayState.currentPState.luaObjects[name]=group;
+    LuaStorage.objects[name]=this;
+
+    properties = [
+      "className"=>{
+        defaultValue:name,
+        getter:function(l:State,data:Any){
+          Lua.pushstring(l,name);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"className is read-only.");
+          return 0;
+        }
+      },
+      "length"=>{
+        defaultValue:group.length,
+        getter:GetNumProperty,
+        setter:function(l:State){
+          LuaL.error(l,"length is read-only.");
+          return 0;
+        }
+      },
+      "maxSize"=>{
+        defaultValue:group.maxSize,
+        getter:GetNumProperty,
+        setter:SetNumProperty
+      },
+      "alive"=>{
+        defaultValue:group.alive,
+        getter:GetBoolProperty,
+        setter:SetBoolProperty
+      },
+      "active"=>{
+        defaultValue:group.active,
+        getter:GetBoolProperty,
+        setter:SetBoolProperty
+      },
+      "exists"=>{
+        defaultValue:group.exists,
+        getter:GetBoolProperty,
+        setter:SetBoolProperty
+      },
+      "visible"=>{
+        defaultValue:group.visible,
+        getter:GetBoolProperty,
+        setter:SetBoolProperty
+      },
+      "cameras"=>{
+        defaultValue: [],
+        getter: function(l:State, data:Any){
+          var classnames:Array<String> = [];
+          for(camera in group.cameras){
+            var luaClass = getClassnameByObj(camera);
+            if(luaClass!=null){
+              classnames.push(luaClass);
+            }
+          }
+          Lua.newtable(l);
+          var tableIdx = Lua.gettop(l);
+
+          Lua.getglobal(l, "cameras");
+          var idx:Int = 0;
+          for(name in classnames){
+            Lua.getfield(l, -1, name);
+            if(Lua.isnil(l,-1)==0){
+              idx++;
+              Lua.rawseti(l, tableIdx, idx);
+            }
+          }
+
+          Lua.pushvalue(l,tableIdx);
+
+          return 1;
+        },
+
+        setter: function(l:State){
+          Lua.pop(l,1); // remove the metatable from the end since its entirely un-needed
+          // 1 = self
+          // 2 = index 'cameras'
+          // 3 = array of cameras
+          try{
+
+            if(Lua.type(l,3)!=Lua.LUA_TTABLE){
+              LuaL.error(l,"invalid argument #3 (table expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+              return 0;
+            }
+            var cameras:Array<FlxCamera> = [];
+
+            // -1 = array
+            // -2 = index
+            // -3 = self
+
+            Lua.pushnil(l);
+
+            // -1 = nil
+            // -2 = array
+            // -3 = index
+            // -4 = self
+            while(Lua.next(l, -2) != 0) {
+              Lua.getfield(l,-1,"className");
+              var name = Lua.tostring(l,-1);
+              var cam = PlayState.currentPState.luaObjects[name];
+              if(cam!=null){
+                cameras.push(cam);
+              }
+              Lua.pop(l, 2); // pops the classname, aswell
+            }
+            Lua.pop(l,1); // pops the key, probably
+
+            Reflect.setProperty(group,"cameras",cameras); // why is haxeflixel so fucking weird
+          }catch(e){
+            trace(e.stack,e.message);
+          }
+
+          return 0;
+        }
+      },
+    ];
 
   }
 }
