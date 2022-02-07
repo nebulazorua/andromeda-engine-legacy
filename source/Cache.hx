@@ -13,6 +13,7 @@ import sys.FileSystem;
 import flixel.util.FlxDestroyUtil;
 import openfl.media.Sound;
 import flixel.FlxBasic;
+import openfl.system.System;
 
 class Cache {
   public static var offsetData = new Map<String,String>();
@@ -70,6 +71,7 @@ class Cache {
         }
       }
       trace('destroyed ${l}');
+      System.gc();
     }
   }
 

@@ -1091,7 +1091,6 @@ class LuaSprite extends LuaClass {
             while(Lua.next(l, -2) != 0) {
               Lua.getfield(l,-1,"className");
               var name = Lua.tostring(l,-1);
-              trace(name);
               var cam = PlayState.currentPState.luaObjects[name];
               if(cam!=null){
                 cameras.push(cam);
