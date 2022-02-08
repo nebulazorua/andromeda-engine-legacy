@@ -54,6 +54,7 @@ class Note extends NoteGraphic
 	public var manualXOffset:Float = 0;
 	public var manualYOffset:Float = 0;
 	public var mustPress:Bool = false;
+	public var shitId:Float = 0;
 	public var noteData:Int = 0;
 	public var canBeHit:Bool = false;
 	public var isSustainNote:Bool = false;

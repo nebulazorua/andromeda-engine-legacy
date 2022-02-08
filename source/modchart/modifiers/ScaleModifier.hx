@@ -3,6 +3,7 @@ import ui.*;
 import modchart.*;
 import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
+import math.*;
 
 class ScaleModifier extends Modifier {
   inline function lerp(a:Float,b:Float,c:Float){

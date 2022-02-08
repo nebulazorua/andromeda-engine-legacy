@@ -11,6 +11,7 @@ import flixel.math.FlxPoint;
 import flixel.FlxCamera;
 import haxe.Exception;
 import states.*;
+import math.*;
 import ui.*;
 // TODO: modifier priority system
 class ModManager {
@@ -180,13 +181,23 @@ class ModManager {
     }
   }
 
-  public function getNotePos(note:Note):FlxPoint{
-    var pos = FlxPoint.get(state.getXPosition(note),state.getYPosition(note,1));
-    note.z = 0;
+  public function getPath(diff:Float, vDiff:Float, column:Int, player:Int, sprite:FNFSprite):Vector3{
+    var pos = new Vector3(state.getXPosition(diff, column, player), vDiff, 0);
     for(mod in mods){
-      pos = mod.getPos(pos, note.noteData, note.mustPress==true?0:1, note);
-      pos = mod.getNotePos(note, pos, note.noteData, note.mustPress==true?0:1);
+      pos = mod.getPath(vDiff, pos, column, player, sprite, diff);
     }
+
+    return pos;
+  }
+
+
+  public function getNotePos(note:Note):Vector3{
+    var diff =  Conductor.songPosition - note.strumTime;
+    var vDiff = (note.initialPos-Conductor.currentTrackPos);
+    var pos = getPath(diff, vDiff, note.noteData, note.mustPress==true?0:1, note); //FlxPoint.get(state.getXPosition(diff, note.noteData, note.mustPress==true?0:1),vDiff);
+
+    pos.x += note.manualXOffset;
+    pos.y -= note.manualYOffset;
 
     return pos;
   }
@@ -200,20 +211,15 @@ class ModManager {
     return scale;
   }
 
-  public function updateNote(note:Note, scale:FlxPoint, pos:FlxPoint){
+  public function updateNote(note:Note, scale:FlxPoint, pos:Vector3){
     for(mod in mods){
       mod.updateNote(pos, scale, note);
     }
   }
 
 
-  public function getReceptorPos(rec:Receptor, player:Int=0):FlxPoint{
-    var pos = FlxPoint.get(0,0);
-    rec.z = 0;
-    for(mod in mods){
-      pos = mod.getPos(pos, rec.direction, player, rec);
-      pos = mod.getReceptorPos(rec, pos, rec.direction, player);
-    }
+  public function getReceptorPos(rec:Receptor, player:Int=0):Vector3{
+    var pos = getPath(0, 0, rec.direction, player, rec); //FlxPoint.get(state.getXPosition(0, rec.direction, player),0);
 
     return pos;
   }
@@ -227,7 +233,7 @@ class ModManager {
     return scale;
   }
 
-  public function updateReceptor(rec:Receptor, scale:FlxPoint, pos:FlxPoint){
+  public function updateReceptor(rec:Receptor, scale:FlxPoint, pos:Vector3){
     for(mod in mods){
       mod.updateReceptor(pos, scale, rec);
     }

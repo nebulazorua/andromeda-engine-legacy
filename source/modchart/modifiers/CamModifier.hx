@@ -4,6 +4,7 @@ import modchart.*;
 import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
 import flixel.FlxCamera;
+import math.*;
 
 class CamModifier extends Modifier {
   var prefix:String = "game";

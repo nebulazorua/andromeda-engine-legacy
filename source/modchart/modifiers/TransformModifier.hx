@@ -5,6 +5,7 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
 import flixel.FlxG;
 import math.Vector3;
+import math.*;
 
 class TransformModifier extends Modifier { // this'll be transformX in ModManager
   inline function lerp(a:Float,b:Float,c:Float){
@@ -23,7 +24,7 @@ class TransformModifier extends Modifier { // this'll be transformX in ModManage
 
   }
 
-  override function getReceptorPos(receptor:Receptor, pos:FlxPoint, data:Int, player:Int){
+  /*override function getReceptorPos(receptor:Receptor, pos:Vector3, data:Int, player:Int){
     pos.x += getPercent(player)*100;
     pos.y += getSubmodPercent("transformY",player)*100;
     receptor.z += getSubmodPercent('transformZ',player)*100;
@@ -36,9 +37,21 @@ class TransformModifier extends Modifier { // this'll be transformX in ModManage
     return pos;
   }
 
-  override function getNotePos(note:Note, pos:FlxPoint, data:Int, player:Int){
+  override function getNotePos(note:Note, pos:Vector3, data:Int, player:Int){
     note.z += getSubmodPercent('transformZ',player)*100;
     note.z += getSubmodPercent('transform${note.noteData}Z',player)*100;
+    return pos;
+  }*/
+
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
+    pos.x += getPercent(player)*100;
+    pos.y += getSubmodPercent("transformY",player)*100;
+    pos.z += getSubmodPercent('transformZ',player)*100;
+
+    pos.x += getSubmodPercent('transform${data}X',player)*100;
+    pos.y += getSubmodPercent('transform${data}Y',player)*100;
+    pos.z += getSubmodPercent('transform${data}Z',player)*100;
+
     return pos;
   }
 

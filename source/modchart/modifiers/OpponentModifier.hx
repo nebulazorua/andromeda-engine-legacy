@@ -3,15 +3,18 @@ import ui.*;
 import modchart.*;
 import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
+import math.*;
 
 class OpponentModifier extends Modifier {
-  override function getReceptorPos(receptor:Receptor, pos:FlxPoint, data:Int, player:Int){
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
     if(getPercent(player)==0)return pos;
     var nPlayer = Std.int(CoolUtil.scale(player,0,1,1,0));
-    var receptors = modMgr.receptors[nPlayer];
 
-    var current = receptor;
-    var next = receptors[data];
+    var oppReceptors = modMgr.receptors[nPlayer];
+    var plrReceptors = modMgr.receptors[player];
+
+    var current = plrReceptors[data];
+    var next = oppReceptors[data];
     var distX = next.defaultX-current.defaultX;
     var distY = next.defaultY-current.defaultY;
 

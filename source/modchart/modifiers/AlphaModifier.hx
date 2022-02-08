@@ -3,6 +3,7 @@ import ui.*;
 import modchart.*;
 import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
+import math.*;
 
 class AlphaModifier extends Modifier {
   public static var fadeDistY = 120;
@@ -28,7 +29,7 @@ class AlphaModifier extends Modifier {
   }
 
   function getAlpha(yPos:Float,player:Int,note:Note){
-    var distFromCenter = yPos - modMgr.state.center.y;
+    var distFromCenter = yPos;
     var alpha:Float = 0;
 
     var time = Conductor.songPosition/1000;
@@ -60,9 +61,9 @@ class AlphaModifier extends Modifier {
     return CoolUtil.clamp(alpha+1,0,1);
   }
 
-  override function updateNote(pos:FlxPoint, scale:FlxPoint, note:Note){
+  override function updateNote(pos:Vector3, scale:FlxPoint, note:Note){
     var player = note.mustPress==true?0:1;
-    var yPos:Float = modMgr.state.getYPosition(note,1,false)+modMgr.state.upscrollOffset;
+    var yPos:Float = (note.initialPos-Conductor.currentTrackPos)+modMgr.state.upscrollOffset;
 
 
     var alpha = getAlpha(yPos,player,note);
@@ -75,7 +76,7 @@ class AlphaModifier extends Modifier {
 
   }
 
-  override function updateReceptor(pos:FlxPoint, scale:FlxPoint, receptor:Receptor){
+  override function updateReceptor(pos:Vector3, scale:FlxPoint, receptor:Receptor){
     var alpha = 1 - getSubmodPercent("alpha",receptor.playerNum);
     if(getSubmodPercent("dark",receptor.playerNum)!=0 || getSubmodPercent('dark${receptor.direction}',receptor.playerNum)!=0){
       alpha = alpha*(1-getSubmodPercent("dark",receptor.playerNum))*(1-getSubmodPercent('dark${receptor.direction}',receptor.playerNum));

@@ -6,7 +6,7 @@ import math.Vector3;
 import flixel.math.FlxMath;
 import flixel.FlxG;
 using StringTools;
-
+import math.*;
 // NOTE: THIS SHOULDNT HAVE ITS PERCENTAGE MODIFIED
 // THIS IS JUST HERE TO ALLOW OTHER MODIFIERS TO HAVE PERSPECTIVE
 
@@ -31,9 +31,12 @@ class PerspectiveModifier extends Modifier {
   }
 
 
-  public function getVector(curZ:Float,pos:FlxPoint):Vector3{
+  public function getVector(curZ:Float,pos:Vector3):Vector3{
+    var halfOffset = new Vector3(FlxG.width/2, FlxG.height/2);
+    pos = pos.subtract(halfOffset);
     var oX = pos.x;
     var oY = pos.y;
+
 
     // should I be using a matrix?
     // .. nah im sure itll be fine just doing this manually
@@ -51,27 +54,34 @@ class PerspectiveModifier extends Modifier {
     var a = (near+far)/(near-far);
     var b = 2*near*far/(near-far);
     var z = (a*shit+b);
-    var returnedVector = new Vector3(x/z,y/z,z);
+    var returnedVector = new Vector3(x/z,y/z,z).add(halfOffset);
 
     return returnedVector;
   }
 
-  override function getReceptorPos(receptor:Receptor, pos:FlxPoint, data:Int, player:Int){ // maybe replace FlxPoint with a Vector3?
+  /*override function getReceptorPos(receptor:Receptor, pos:Vector3, data:Int, player:Int){ // maybe replace FlxPoint with a Vector3?
     // HI 4MBR0S3 IM SORRY :(( I GENUINELY FUCKIN FORGOT TO CREDIT PLEASEDONTHATEMEILOVEYOURSTUFF:(
     var vec = getVector(receptor.z,pos);
     pos.x=vec.x;
     pos.y=vec.y;
 
     return pos;
+  }*/
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
+    var vec = getVector(pos.z,pos);
+    pos.x=vec.x;
+    pos.y=vec.y;
+
+    return pos;
   }
 
-  override function updateReceptor(pos:FlxPoint, scale:FlxPoint, receptor:Receptor){
+  override function updateReceptor(pos:Vector3, scale:FlxPoint, receptor:Receptor){
     var vec = getVector(receptor.z,pos);
 
     scale.scale(1/vec.z);
   }
 
-  override function updateNote(pos:FlxPoint, scale:FlxPoint, note:Note){
+  override function updateNote(pos:Vector3, scale:FlxPoint, note:Note){
     var vec = getVector(note.z,pos);
 
     if(note.isSustainNote){

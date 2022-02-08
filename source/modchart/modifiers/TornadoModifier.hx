@@ -4,12 +4,25 @@ import modchart.*;
 import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
 import flixel.FlxG;
+import math.*;
 
 class TornadoModifier extends Modifier {
-  override function getNotePos(note:Note, pos:FlxPoint, data:Int, player:Int){
+  //override function getNotePos(note:Note, pos:Vector3, data:Int, player:Int){
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
     if(getPercent(player)==0)return pos;
 
-    var width = 3;
+    var receptors = modMgr.receptors[player];
+    var len = receptors.length;
+    // thank you 4mbr0s3
+    var playerColumn = data % receptors.length;
+    var columnPhaseShift = playerColumn * Math.PI / 3;
+    var phaseShift =visualDiff / 135;
+    var returnReceptorToZeroOffsetX = (-Math.cos(-columnPhaseShift) + 1) / 2 * Note.swagWidth * 3;
+    var offsetX = (-Math.cos(phaseShift - columnPhaseShift) + 1) / 2 * Note.swagWidth * 3 - returnReceptorToZeroOffsetX;
+    var outPos = pos.clone();
+    return outPos.add(new Vector3(offsetX * getPercent(player)));
+
+    /*var width = 2;
     var receptors = modMgr.receptors[player];
     var len = receptors.length;
 
@@ -35,8 +48,8 @@ class TornadoModifier extends Modifier {
     var adjustedOffset = CoolUtil.scale(FlxMath.fastCos(rads),-1,1,min,max);
     var z = CoolUtil.scale(FlxMath.fastSin(rads),0,1,0,0.1);
     pos.x += (adjustedOffset-offset)*getPercent(player);
-    note.z += z;
+    pos.z += z;
 
-    return pos;
+    return pos;*/
   }
 }

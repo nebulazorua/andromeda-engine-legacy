@@ -31,7 +31,8 @@ class Receptor extends FNFSprite {
   public var defaultY:Float = 0;
   public var incomingNoteAlpha:Float = 1;
   public var direction:Int= 0 ;
-  public var point:Null<FlxPoint>;
+  public var xOffset:Float = 0;
+  public var yOffset:Float = 0;
   public var scaleDefault:Null<FlxPoint>;
   public var noteSplash:NoteSplash;
 
@@ -106,8 +107,6 @@ class Receptor extends FNFSprite {
   }
 
   override function destroy(){
-    if(point!=null)
-      point.put();
     super.destroy();
   }
 
@@ -120,8 +119,8 @@ class Receptor extends FNFSprite {
   override function update(elapsed:Float){
     angle = baseAngle+desiredAngle;
 
-    x = desiredX + point.x;
-    y = desiredY + point.y;
+    x = desiredX + xOffset;
+    y = desiredY + yOffset;
 
     super.update(elapsed);
   }

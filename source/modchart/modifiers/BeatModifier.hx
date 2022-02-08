@@ -3,9 +3,10 @@ import ui.*;
 import modchart.*;
 import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
+import math.*;
 
 class BeatModifier extends Modifier {
-  override function getPos(pos:FlxPoint, data:Int, player:Int, obj:FNFSprite){
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
     if(getPercent(player)==0)return pos;
     var accelTime:Float = 0.3;
     var totalTime:Float = 0.7;

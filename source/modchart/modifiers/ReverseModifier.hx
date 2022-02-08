@@ -4,6 +4,7 @@ import modchart.*;
 import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
 using StringTools;
+import math.*;
 
 class ReverseModifier extends Modifier {
 
@@ -48,7 +49,7 @@ class ReverseModifier extends Modifier {
     return getReversePercent(dir,player);
   }
 
-  override function getReceptorPos(receptor:Receptor, pos:FlxPoint, data:Int, player:Int){
+  /*override function getReceptorPos(receptor:Receptor, pos:Vector3, data:Int, player:Int){
     var perc = getReversePercent(data,player,false);
 
     var shift = CoolUtil.scale(perc,0,1,modMgr.state.upscrollOffset,modMgr.state.downscrollOffset);
@@ -58,7 +59,7 @@ class ReverseModifier extends Modifier {
     return pos;
   }
 
-  override function getNotePos(note:Note, pos:FlxPoint, data:Int, player:Int){
+  override function getNotePos(note:Note, pos:Vector3, data:Int, player:Int){
     var perc = getScrollReversePerc(data,player);
     var state = modMgr.state;
 
@@ -68,9 +69,19 @@ class ReverseModifier extends Modifier {
     pos.y = CoolUtil.scale(perc,0,1,upscrollY,downscrollY);
 
     return pos;
+  }*/
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
+    var perc = getReversePercent(data,player);
+    var shift = CoolUtil.scale(perc,0,1,modMgr.state.upscrollOffset,modMgr.state.downscrollOffset);
+    var mult = CoolUtil.scale(perc,0,1,1,-1);
+    shift = CoolUtil.scale(getSubmodPercent("centered",player),0,1,shift,modMgr.state.center.y);
+
+    pos.y = shift + (visualDiff * mult);
+
+    return pos;
   }
 
-  override function updateNote(pos:FlxPoint, scale:FlxPoint, note:Note){
+  override function updateNote(pos:Vector3, scale:FlxPoint, note:Note){
     var perc = getScrollReversePerc(note.noteData,note.mustPress==true?0:1);
     if(perc>.5 && note.isSustainNote){
       note.flipY=true;

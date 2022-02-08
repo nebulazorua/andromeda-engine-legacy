@@ -60,6 +60,7 @@ import Controls.Control;
 import openfl.media.Sound;
 import openfl.display.GraphicsShader;
 import sys.io.File;
+
 #if cpp
 import vm.lua.LuaVM;
 import vm.lua.Exception;
@@ -79,6 +80,7 @@ using flixel.util.FlxSpriteUtil;
 
 class PlayState extends MusicBeatState
 {
+
 	public static var noteCounter:Map<String,Int> = [];
 	public static var inst:FlxSound;
 
@@ -111,7 +113,6 @@ class PlayState extends MusicBeatState
 	public static var charterPos:Float = 0;
 
 	private var shownAccuracy:Float = 0;
-
 	private var renderedNotes:FlxTypedGroup<Note>;
 	private var noteSplashes:FlxTypedGroup<NoteSplash>;
 	private var playerNotes:Array<Note> = [];
@@ -879,8 +880,8 @@ class PlayState extends MusicBeatState
 
 		center = FlxPoint.get(centerP.x,centerP.y);
 
-		upscrollOffset = -center.y+50;
-		downscrollOffset = center.y-150;
+		upscrollOffset = 50;
+		downscrollOffset = FlxG.height-150;
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -1372,6 +1373,7 @@ class PlayState extends MusicBeatState
 
 		var lastBFNotes:Array<Note> = [null,null,null,null];
 		var lastDadNotes:Array<Note> = [null,null,null,null];
+
 		for (section in noteData)
 		{
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
@@ -1397,6 +1399,7 @@ class PlayState extends MusicBeatState
 				var swagNote:Note = new Note(daStrumTime, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, false, getPosFromTime(daStrumTime));
 				swagNote.sustainLength = songNotes[2];
 				swagNote.scrollFactor.set(0, 0);
+				swagNote.shitId = unspawnNotes.length;
 				if(!setupSplashes.contains(swagNote.graphicType) && gottaHitNote){
 					loadingSplash.setup(swagNote);
 					setupSplashes.push(swagNote.graphicType);
@@ -1435,9 +1438,10 @@ class PlayState extends MusicBeatState
 						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 						var sussy = daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet;
 						var sustainNote:Note = new Note(sussy, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, true, getPosFromTime(sussy));
-						//sustainNote.cameras = [camSus];
+						sustainNote.cameras = [camSus];
 						sustainNote.scrollFactor.set();
 						unspawnNotes.push(sustainNote);
+						sustainNote.shitId = unspawnNotes.length;
 
 						sustainNote.mustPress = gottaHitNote;
 						if(!gottaHitNote)sustainNote.causesMiss=false;
@@ -1543,7 +1547,7 @@ class PlayState extends MusicBeatState
 			var dirs = ["left","down","up","right"];
 			var clrs = ["purple","blue","green","red"];
 
-			var babyArrow:Receptor = new Receptor(0, center.y, i, currentOptions.noteSkin, noteModifier, Note.noteBehaviour);
+			var babyArrow:Receptor = new Receptor(0, 100, i, currentOptions.noteSkin, noteModifier, Note.noteBehaviour);
 			babyArrow.playerNum = pN;
 			if(player==1)
 				noteSplashes.add(babyArrow.noteSplash);
@@ -1599,14 +1603,13 @@ class PlayState extends MusicBeatState
 
 			babyArrow.desiredX = babyArrow.x;
 			babyArrow.desiredY = babyArrow.y;
-			babyArrow.point = FlxPoint.get(0,0);
+			//babyArrow.point = FlxPoint.get(0,0);
 
 			if (!isStoryMode)
 			{
-				babyArrow.desiredY -= 10;
-				babyArrow.y = babyArrow.desiredY;
+				babyArrow.yOffset -= 10;
 				babyArrow.alpha = 0;
-				FlxTween.tween(babyArrow,{desiredY: babyArrow.desiredY + 10, alpha:1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
+				FlxTween.tween(babyArrow,{yOffset: babyArrow.yOffset + 10, alpha:1}, 1, {ease: FlxEase.circOut, startDelay: 0.5 + (0.2 * i)});
 			}
 
 			strumLineNotes.add(babyArrow);
@@ -1795,32 +1798,26 @@ class PlayState extends MusicBeatState
 		Conductor.currentTrackPos = getPosFromTime(Conductor.currentVisPos);
 	}
 
-	public function getXPosition(note:Note, ?followReceptor=true):Float{
-		var hitPos = playerStrums.members[note.noteData];
+	public function getXPosition(diff:Float, direction:Int, player:Int):Float{
+		var x = FlxG.width/2 - Note.swagWidth/2; // centers them
 
-		if(!note.mustPress){
-			hitPos = dadStrums.members[note.noteData];
+		if(!currentOptions.middleScroll){
+			switch(player){
+				// player 0 (aka BF) should have his notes shifted right
+				// and player 1 (aka dad) should have his notes shifted left
+				case 0:
+					x += FlxG.width / 4;
+				case 1:
+					x -= FlxG.width / 4;
+			}
 		}
-		var offset = note.manualXOffset;
-		var desiredX = hitPos.desiredX;
-		if(followReceptor)desiredX+=hitPos.point.x;
+		x -= Note.swagWidth*2; // so that everything is aligned on the left side
+		x += Note.swagWidth * direction; // moves everything to be in position
+		x += 58; // because lol
 
-		return desiredX + offset;
+		return x; // return it
 	}
 
-	public function getYPosition(note:Note, ?mult, ?followReceptor=true):Float{
-		var hitPos = playerStrums.members[note.noteData];
-		if(mult==null)mult=scrollSpeed;
-
-		if(!note.mustPress){
-			hitPos = dadStrums.members[note.noteData];
-		}
-
-		var desiredY = hitPos.desiredY;
-		if(followReceptor)desiredY+=hitPos.point.y;
-
-		return desiredY + ((note.initialPos-Conductor.currentTrackPos) * mult) - note.manualYOffset;
-	}
 
 	// ADAPTED FROM QUAVER!!!
 	// COOL GUYS FOR OPEN SOURCING
@@ -2099,12 +2096,12 @@ class PlayState extends MusicBeatState
 			var scale = modManager.getReceptorScale(spr,0);
 			modManager.updateReceptor(spr, scale, pos);
 
-			spr.point.x = pos.x;
-			spr.point.y = pos.y;
+			spr.desiredX = pos.x;
+			spr.desiredY = pos.y;
+			spr.z = pos.z;
 			spr.scale.set(scale.x,scale.y);
 
 			scale.put();
-			pos.put();
 		});
 
 		dadStrums.forEach( function(spr:Receptor)
@@ -2113,12 +2110,12 @@ class PlayState extends MusicBeatState
 			var scale = modManager.getReceptorScale(spr,1);
 			modManager.updateReceptor(spr, scale, pos);
 
-			spr.point.x = pos.x;
-			spr.point.y = pos.y;
+			spr.desiredX = pos.x;
+			spr.desiredY = pos.y;
+			spr.z = pos.z;
 			spr.scale.set(scale.x,scale.y);
 
 			scale.put();
-			pos.put();
 
 		});
 
@@ -2241,6 +2238,8 @@ class PlayState extends MusicBeatState
 
 					daNote.x = notePos.x;
 					daNote.y = notePos.y;
+
+					daNote.z = notePos.z;
 					daNote.scale.copyFrom(scale);
 					daNote.updateHitbox();
 
@@ -2268,22 +2267,30 @@ class PlayState extends MusicBeatState
 
 					//	var nextPos = getPos(Conductor.songPosition - (daNote.strumTime + Conductor.stepCrochet), daNote.noteData, daNote.mustPress?1:0);
 
-						// TODO: rewrite modifier shit
-						var strumTime = daNote.strumTime;
-						daNote.strumTime+=Conductor.stepCrochet;
-						var nextPos = modManager.getNotePos(daNote);
-						daNote.strumTime=strumTime;
-						var curPos = notePos;
+					/*
+						var diff = (Conductor.songPosition+1) - daNote.strumTime;
+						var vDiff = (daNote.initialPos)-getPosFromTime(Conductor.currentVisPos+1);
 
-						var diffX = (curPos.x - nextPos.x)*100;
-						var diffY = (curPos.y - nextPos.y)*100;
-						daNote.angle = ((Math.atan2(diffY, diffX)) * 180/Math.PI ); // gets the angle in degrees instead of radians
-						// idk if its better to use FlxAngle.tODegrees or do this
+						var nextPos = modManager.getPath(diff, vDiff, daNote.noteData, daNote.mustPress==true?0:1, daNote);
+
+						var diffX = (notePos.x - nextPos.x) * 100;
+						var diffY = (notePos.y - nextPos.y) * 100;
+						trace(diffX, diffY);
+						var rad = Math.atan2(diffY,diffX);
+						var deg = rad * (180 / Math.PI);
+						daNote.modAngle = deg; // gets the angle in degrees instead of radians
+						// idk if its better to use FlxAngle.toDegrees or do this
 						// i think its the same anyway lol
+						*/
 
+						// WHY DOES This
+						// NOT WORK??
+						// THIS WORKS FINE IN ANDROMEDA 2.0 AND IN HEX
+						// SO WHY NOT HERE????????
+						// god
+						
 					}
 					scale.put();
-					notePos.put();
 
 					if (daNote.y > FlxG.height)
 					{

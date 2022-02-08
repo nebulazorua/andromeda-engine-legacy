@@ -1,6 +1,7 @@
 package modchart;
 import flixel.math.FlxPoint;
 import ui.*;
+import math.*;
 
 class Modifier {
   public var modMgr:ModManager;
@@ -47,16 +48,18 @@ class Modifier {
     }
   }
 
-  public function updateNote(pos:FlxPoint, scale:FlxPoint, note:Note){}
-  public function updateReceptor(pos:FlxPoint, scale:FlxPoint, receptor:Receptor){}
+  public function updateNote(pos:Vector3, scale:FlxPoint, note:Note){}
+  public function updateReceptor(pos:Vector3, scale:FlxPoint, receptor:Receptor){}
 
   public function update(elapsed:Float){};
 
   public function getReceptorScale(receptor:Receptor, scale:FlxPoint, data:Int, player:Int)return scale;
   public function getNoteScale(note:Note, scale:FlxPoint, data:Int, player:Int)return scale;
 
-  public function getReceptorPos(receptor:Receptor, pos:FlxPoint, data:Int, player:Int)return pos;
-  public function getNotePos(note:Note,pos:FlxPoint, data:Int, player:Int)return pos;
+  //public function getReceptorPos(receptor:Receptor, pos:Vector3, data:Int, player:Int)return pos;
+  //public function getNotePos(note:Note,pos:Vector3, data:Int, player:Int)return pos;
+  //public function getPos(pos:Vector3, data:Int, player:Int, object:FNFSprite)return pos;
 
-  public function getPos(pos:FlxPoint, data:Int, player:Int, object:FNFSprite)return pos;
+  public function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float)return pos;
+
 }
