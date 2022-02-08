@@ -1583,18 +1583,7 @@ class PlayState extends MusicBeatState
 			}
 
 			babyArrow.playAnim('static');
-			babyArrow.screenCenter(X);
-			babyArrow.x -= Note.swagWidth;
-			babyArrow.x -= 54;
-			babyArrow.x += Note.swagWidth*i;
-			if(!currentOptions.middleScroll){
-				switch(player){
-					case 0:
-						babyArrow.x -= FlxG.width/2 - Note.swagWidth*2 - 100;
-					case 1:
-						babyArrow.x += FlxG.width/2 - Note.swagWidth*2 - 100;
-					}
-			}
+			babyArrow.x = getXPosition(0, i, pN);
 
 			newStrumLine.x = babyArrow.x;
 
@@ -1798,7 +1787,7 @@ class PlayState extends MusicBeatState
 		Conductor.currentTrackPos = getPosFromTime(Conductor.currentVisPos);
 	}
 
-	public function getXPosition(diff:Float, direction:Int, player:Int):Float{
+	/*public function getXPosition(diff:Float, direction:Int, player:Int):Float{
 		var x = FlxG.width/2 - Note.swagWidth/2; // centers them
 
 		if(!currentOptions.middleScroll){
@@ -1813,11 +1802,28 @@ class PlayState extends MusicBeatState
 		}
 		x -= Note.swagWidth*2; // so that everything is aligned on the left side
 		x += Note.swagWidth * direction; // moves everything to be in position
-		x += 58; // because lol
+		x += 56; // because lol
 
 		return x; // return it
-	}
+	}*/
+	// ^^ this is VERY slightly off
+	// so im just gonna take the code from andromeda 2.0 lmao
 
+	public function getXPosition(diff:Float, direction:Int, player:Int):Float{
+
+		var x:Float = (FlxG.width/2) - Note.swagWidth - 54 + Note.swagWidth*direction;
+		if(!currentOptions.middleScroll){
+			switch(player){
+				case 0:
+					x += FlxG.width/2 - Note.swagWidth*2 - 100;
+				case 1:
+					x -= FlxG.width/2 - Note.swagWidth*2 - 100;
+			}
+		}
+		x -= 56;
+
+		return x;
+	}
 
 	// ADAPTED FROM QUAVER!!!
 	// COOL GUYS FOR OPEN SOURCING
@@ -2288,7 +2294,7 @@ class PlayState extends MusicBeatState
 						// THIS WORKS FINE IN ANDROMEDA 2.0 AND IN HEX
 						// SO WHY NOT HERE????????
 						// god
-						
+
 					}
 					scale.put();
 
