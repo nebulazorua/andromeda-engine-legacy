@@ -15,7 +15,7 @@ class ScaleModifier extends Modifier {
 
     scale.x*=1-miniX;
     scale.y*=1-miniY;
-    var angle = sprite.angle;
+    var angle = sprite.baseAngle;
 
     var stretch = getSubmodPercent("stretch",player);
     var squish = getSubmodPercent("squish",player);
