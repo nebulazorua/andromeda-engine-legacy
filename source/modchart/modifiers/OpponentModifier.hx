@@ -10,16 +10,12 @@ class OpponentModifier extends Modifier {
     if(getPercent(player)==0)return pos;
     var nPlayer = Std.int(CoolUtil.scale(player,0,1,1,0));
 
-    var oppReceptors = modMgr.receptors[nPlayer];
-    var plrReceptors = modMgr.receptors[player];
+    var oppX = modMgr.state.getXPosition(timeDiff, data, nPlayer);
+    var plrX = modMgr.state.getXPosition(timeDiff, data, player);
 
-    var current = plrReceptors[data];
-    var next = oppReceptors[data];
-    var distX = next.defaultX-current.defaultX;
-    var distY = next.defaultY-current.defaultY;
+    var distX = oppX-plrX;
 
     pos.x = pos.x + distX * getPercent(player);
-    pos.y = pos.y + distY * getPercent(player);
 
     return pos;
   }

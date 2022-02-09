@@ -357,12 +357,12 @@ class PlayState extends MusicBeatState
 				if(drawBehind){
 					stage.add(sprite);
 				}else{
-					add(sprite);
+					stage.foreground.add(sprite);
 				};
 			});
 
 			Lua_helper.add_callback(lua.state,"newCamera", function(?x:Int=0, ?y:Int=0,?cameraName:String){
-				var cam = new FlxCamera(x,y);
+				var cam = new FNFCamera(x,y);
 				cam.bgColor = FlxColor.TRANSPARENT;
 				var name = "UnnamedCamera"+unnamedLuaObjects;
 
@@ -374,6 +374,7 @@ class PlayState extends MusicBeatState
 				lCam.Register(lua.state);
 				Lua.pushvalue(lua.state,classIdx);
 				FlxG.cameras.add(cam);
+
 				trace('new camera named $name added!!');
 			});
 
@@ -2450,9 +2451,8 @@ class PlayState extends MusicBeatState
 
 		});
 
-		if(currentOptions.allowOrderSorting){
-			strumLineNotes.sort(sortByZ);
-		}
+		strumLineNotes.sort(sortByZ);
+
 
 		if (!inCutscene){
 			if(ScoreUtils.botPlay)

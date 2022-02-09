@@ -30,7 +30,7 @@ class BeatModifier extends Modifier {
     }
     if(evenBeat)amount*=-1;
 
-    var shift = 40*amount*FlxMath.fastSin((pos.y / 30) + Math.PI/2);
+    var shift = 40*amount*FlxMath.fastSin((visualDiff / 30) + Math.PI/2);
     pos.x += getPercent(player)*shift;
     return pos;
   }

@@ -57,6 +57,7 @@ class ModManager {
     defineMod("beat",new BeatModifier(this));
     defineMod("rotateX",new RotateModifier(this));
     defineMod("centerrotateX",new RotateModifier(this,'center',new Vector3(FlxG.width/2 - Note.swagWidth / 2,FlxG.height/2 - Note.swagWidth / 2)));
+    defineMod("localrotateX",new LocalRotateModifier(this));
     var gameCams:Array<FlxCamera> = [state.camGame];
     var hudCams:Array<FlxCamera> = [state.camHUD];
     if(state.currentOptions.ratingInHUD){
