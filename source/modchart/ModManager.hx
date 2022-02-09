@@ -12,6 +12,7 @@ import flixel.FlxCamera;
 import haxe.Exception;
 import states.*;
 import math.*;
+import flixel.FlxG;
 import ui.*;
 // TODO: modifier priority system
 class ModManager {
@@ -54,6 +55,8 @@ class ModManager {
     defineMod("drunk",new DrunkModifier(this));
     defineMod("confusion",new ConfusionModifier(this));
     defineMod("beat",new BeatModifier(this));
+    defineMod("rotateX",new RotateModifier(this));
+    defineMod("centerrotateX",new RotateModifier(this,'center',new Vector3(FlxG.width/2 - Note.swagWidth / 2,FlxG.height/2 - Note.swagWidth / 2)));
     var gameCams:Array<FlxCamera> = [state.camGame];
     var hudCams:Array<FlxCamera> = [state.camHUD];
     if(state.currentOptions.ratingInHUD){
@@ -64,6 +67,7 @@ class ModManager {
     defineMod("gameCam",new CamModifier(this,"gameCam",gameCams ));
     defineMod("hudCam",new CamModifier(this,"hudCam",hudCams ));
     defineMod("noteCam",new CamModifier(this,"noteCam",[state.camNotes,state.camSus,state.camReceptor] ));
+
 
     defineMod("perspective",new PerspectiveModifier(this));
   }
@@ -244,23 +248,22 @@ class ModManager {
       queueEase(step, endStep, modName, percent, style, 0);
       queueEase(step, endStep, modName, percent, style, 1);
     }else{
-      if(state.curDecStep<step){
-        var easeFunc = Reflect.getProperty(FlxEase, style);
-        if(easeFunc==null)easeFunc=FlxEase.linear;
+      var easeFunc = Reflect.getProperty(FlxEase, style);
+      if(easeFunc==null)easeFunc=FlxEase.linear;
 
-        schedule[modName].push(
-          new EaseEvent(
-            step,
-            endStep,
-            modName,
-            percent,
-            easeFunc,
-            player,
-            this,
-            startVal
-          )
-        );
-      }
+      schedule[modName].push(
+        new EaseEvent(
+          step,
+          endStep,
+          modName,
+          percent,
+          easeFunc,
+          player,
+          this,
+          startVal
+        )
+      );
+
     }
   }
 
@@ -269,24 +272,22 @@ class ModManager {
       queueEaseL(step, length, modName, percent, style, 0);
       queueEaseL(step, length, modName, percent, style, 1);
     }else{
-      if(state.curDecStep<step){
-        var easeFunc = Reflect.getProperty(FlxEase, style);
-        if(easeFunc==null)easeFunc=FlxEase.linear;
-        var stepSex = Conductor.stepToSeconds(step);
+      var easeFunc = Reflect.getProperty(FlxEase, style);
+      if(easeFunc==null)easeFunc=FlxEase.linear;
+      var stepSex = Conductor.stepToSeconds(step);
 
-        schedule[modName].push(
-          new EaseEvent(
-            step,
-            Conductor.getStep(stepSex+(length*1000)),
-            modName,
-            percent,
-            easeFunc,
-            player,
-            this,
-            startVal
-          )
-        );
-      }
+      schedule[modName].push(
+        new EaseEvent(
+          step,
+          Conductor.getStep(stepSex+(length*1000)),
+          modName,
+          percent,
+          easeFunc,
+          player,
+          this,
+          startVal
+        )
+      );
     }
   }
 
@@ -295,17 +296,15 @@ class ModManager {
       queueSet(step, modName, percent, 0);
       queueSet(step, modName, percent, 1);
     }else{
-      if(state.curDecStep<step){
-        schedule[modName].push(
-          new SetEvent(
-            step,
-            modName,
-            percent,
-            player,
-            this
-          )
-        );
-      }
+      schedule[modName].push(
+        new SetEvent(
+          step,
+          modName,
+          percent,
+          player,
+          this
+        )
+      );
     }
   }
 

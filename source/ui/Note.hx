@@ -281,8 +281,26 @@ class Note extends NoteGraphic
 		}
 		else
 		{
-			if (strumTime <= Conductor.songPosition && !opponentMisses)
-				canBeHit = true;
+			var diff = strumTime-Conductor.songPosition;
+			if (diff<-Conductor.safeZoneOffset && !wasGoodHit)
+				tooLate=true;
+
+			if(!opponentMisses){
+
+				if(isSustainNote){
+					if (diff <= hitbox*.5)
+						canBeHit = true;
+					else
+						canBeHit = false;
+				}else{
+					if (diff<=0)
+						canBeHit = true;
+					else
+						canBeHit = false;
+				}
+			}else{
+				canBeHit=false;
+			}
 		}
 
 	}

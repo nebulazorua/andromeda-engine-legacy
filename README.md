@@ -23,7 +23,7 @@ Andromeda Engine includes but is not limited to:
 ## Credits / shoutouts
 - [Nebula the Zorua](https://twitter.com/Nebula_Zorua) - Most engine stuff
 - [TKTems](https://twitter.com/TKTems) - Menu stuff
-- [4mbr0s3 2](https://www.youtube.com/channel/UCez-Erpr0oqmC71vnDrM9yA) - Implementation concept for new modifier stuff and inspiration to even BOTHER working on it
+- [4mbr0s3 2](https://www.youtube.com/channel/UCez-Erpr0oqmC71vnDrM9yA) - Implementation concept for new modifier stuff and inspiration to even BOTHER working on it, also some code and math shit. Cool dude!!
 - [kevinresol](https://github.com/kevinresol) - Original hxvm-lua
 - [AndreiDudenko](https://github.com/AndreiRudenko) - Original linc_luajit
 - [Echolocated](https://twitter.com/CH_echolocated) - "Epic" judgement rating and spreading the word about the engine

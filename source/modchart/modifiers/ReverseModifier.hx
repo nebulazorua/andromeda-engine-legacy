@@ -49,27 +49,6 @@ class ReverseModifier extends Modifier {
     return getReversePercent(dir,player);
   }
 
-  /*override function getReceptorPos(receptor:Receptor, pos:Vector3, data:Int, player:Int){
-    var perc = getReversePercent(data,player,false);
-
-    var shift = CoolUtil.scale(perc,0,1,modMgr.state.upscrollOffset,modMgr.state.downscrollOffset);
-    shift = CoolUtil.scale(getSubmodPercent("centered",player),0,1,shift,receptor.offset.y);
-
-    pos.y = pos.y+shift;
-    return pos;
-  }
-
-  override function getNotePos(note:Note, pos:Vector3, data:Int, player:Int){
-    var perc = getScrollReversePerc(data,player);
-    var state = modMgr.state;
-
-    var downscrollY = state.getYPosition(note, -1);
-    var upscrollY = state.getYPosition(note, 1);
-
-    pos.y = CoolUtil.scale(perc,0,1,upscrollY,downscrollY);
-
-    return pos;
-  }*/
   override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
     var perc = getReversePercent(data,player);
     var shift = CoolUtil.scale(perc,0,1,modMgr.state.upscrollOffset,modMgr.state.downscrollOffset);

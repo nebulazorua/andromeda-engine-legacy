@@ -881,7 +881,7 @@ class PlayState extends MusicBeatState
 		center = FlxPoint.get(centerP.x,centerP.y);
 
 		upscrollOffset = 50;
-		downscrollOffset = FlxG.height-150;
+		downscrollOffset = FlxG.height-165;
 
 		// if (SONG.song == 'South')
 		// FlxG.camera.alpha = 0.7;
@@ -2147,7 +2147,7 @@ class PlayState extends MusicBeatState
 		if(!died){
 			if (health <= 0)
 			{
-				if(!currentOptions.noFail || (inCharter && startPos>0) ){
+				if(!currentOptions.noFail && !inCharter ){
 					died=true;
 					boyfriend.stunned = true;
 
@@ -2408,9 +2408,9 @@ class PlayState extends MusicBeatState
 					}
 
 					if(daNote!=null && daNote.alive){
-						if (daNote.tooLate || daNote.wasGoodHit && (isDownscroll && daNote.y>strumLine.y+daNote.height || !isDownscroll && daNote.y<strumLine.y-daNote.height))
+						if (daNote.tooLate || daNote.wasGoodHit && (isDownscroll && daNote.y>strumLine.y+daNote.height || !isDownscroll && daNote.y<strumLine.y-daNote.height || daNote.y < 0 || daNote.y > FlxG.height || daNote.strumTime - Conductor.songPosition < -300))
 						{
-							if (daNote.tooLate && daNote.causesMiss)
+							if (daNote.tooLate && daNote.causesMiss && daNote.mustPress)
 							{
 								//health -= 0.0475;
 								noteMiss(daNote.noteData);

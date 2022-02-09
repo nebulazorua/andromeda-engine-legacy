@@ -12,37 +12,6 @@ class TransformModifier extends Modifier { // this'll be transformX in ModManage
     return a+(b-a)*c;
   }
 
-  // thanks schmoovin'
-  function rotateV3(vec:Vector3,xA:Float,yA:Float,zA:Float):Vector3{
-    var rZ = CoolUtil.rotate(vec.x, vec.y, zA);
-		var oZ = new Vector3(rZ.x, rZ.y, vec.z);
-		var rX = CoolUtil.rotate(oZ.z, oZ.y, xA);
-		var oX = new Vector3(oZ.x, rX.y,rX.x);
-		var rY = CoolUtil.rotate(oX.x, oX.z, yA);
-
-		return new Vector3(rY.x, oX.y, rY.y);
-
-  }
-
-  /*override function getReceptorPos(receptor:Receptor, pos:Vector3, data:Int, player:Int){
-    pos.x += getPercent(player)*100;
-    pos.y += getSubmodPercent("transformY",player)*100;
-    receptor.z += getSubmodPercent('transformZ',player)*100;
-
-    pos.x += getSubmodPercent('transform${receptor.direction}X',player)*100;
-    pos.y += getSubmodPercent('transform${receptor.direction}Y',player)*100;
-
-    receptor.z += getSubmodPercent('transform${receptor.direction}Z',player)*100;
-
-    return pos;
-  }
-
-  override function getNotePos(note:Note, pos:Vector3, data:Int, player:Int){
-    note.z += getSubmodPercent('transformZ',player)*100;
-    note.z += getSubmodPercent('transform${note.noteData}Z',player)*100;
-    return pos;
-  }*/
-
   override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
     pos.x += getPercent(player)*100;
     pos.y += getSubmodPercent("transformY",player)*100;
@@ -56,7 +25,7 @@ class TransformModifier extends Modifier { // this'll be transformX in ModManage
   }
 
   override function getSubmods(){
-    var subMods:Array<String> = ["transformY","transformZ","rotateX","rotateY","rotateZ"];
+    var subMods:Array<String> = ["transformY","transformZ"];
 
     var receptors = modMgr.receptors[0];
     var kNum = receptors.length;

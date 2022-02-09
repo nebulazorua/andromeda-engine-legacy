@@ -269,6 +269,7 @@ class ChartingState extends MusicBeatState
 
 		updateSectionUI();
 
+		resetSection();
 
 	}
 
