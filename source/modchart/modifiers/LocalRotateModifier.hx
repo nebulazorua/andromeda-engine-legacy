@@ -27,7 +27,7 @@ class LocalRotateModifier extends Modifier { // this'll be rotateX in ModManager
 
   }
 
-  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, timeDiff:Float){
     var x:Float = (FlxG.width/2) - Note.swagWidth - 54 + Note.swagWidth*1.5;
 		if(!modMgr.state.currentOptions.middleScroll){
 			switch(player){

@@ -39,7 +39,7 @@ class RotateModifier extends Modifier { // this'll be rotateX in ModManager
 
   }
 
-  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, timeDiff:Float){
     var origin:Vector3 = new Vector3(modMgr.state.getXPosition(timeDiff, data, player), FlxG.height / 2 - Note.swagWidth / 2);
     if(daOrigin!=null)origin=daOrigin;
 

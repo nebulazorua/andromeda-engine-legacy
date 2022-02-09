@@ -8,7 +8,7 @@ import math.*;
 
 class TornadoModifier extends Modifier {
   //override function getNotePos(note:Note, pos:Vector3, data:Int, player:Int){
-  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, timeDiff:Float){
     if(getPercent(player)==0)return pos;
 
     var receptors = modMgr.receptors[player];

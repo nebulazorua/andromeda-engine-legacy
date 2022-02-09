@@ -186,10 +186,10 @@ class ModManager {
     }
   }
 
-  public function getPath(diff:Float, vDiff:Float, column:Int, player:Int, sprite:FNFSprite):Vector3{
+  public function getPath(diff:Float, vDiff:Float, column:Int, player:Int):Vector3{
     var pos = new Vector3(state.getXPosition(diff, column, player), vDiff, 0);
     for(mod in mods){
-      pos = mod.getPath(vDiff, pos, column, player, sprite, diff);
+      pos = mod.getPath(vDiff, pos, column, player, diff);
     }
 
     return pos;
@@ -199,7 +199,7 @@ class ModManager {
   public function getNotePos(note:Note):Vector3{
     var diff =  Conductor.songPosition - note.strumTime;
     var vDiff = (note.initialPos-Conductor.currentTrackPos);
-    var pos = getPath(diff, vDiff, note.noteData, note.mustPress==true?0:1, note); //FlxPoint.get(state.getXPosition(diff, note.noteData, note.mustPress==true?0:1),vDiff);
+    var pos = getPath(diff, vDiff, note.noteData, note.mustPress==true?0:1); //FlxPoint.get(state.getXPosition(diff, note.noteData, note.mustPress==true?0:1),vDiff);
 
     pos.x += note.manualXOffset;
     pos.y -= note.manualYOffset;
@@ -224,7 +224,7 @@ class ModManager {
 
 
   public function getReceptorPos(rec:Receptor, player:Int=0):Vector3{
-    var pos = getPath(0, 0, rec.direction, player, rec); //FlxPoint.get(state.getXPosition(0, rec.direction, player),0);
+    var pos = getPath(0, 0, rec.direction, player);
 
     return pos;
   }

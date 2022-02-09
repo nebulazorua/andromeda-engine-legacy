@@ -8,7 +8,7 @@ import math.*;
 
 class DrunkModifier extends Modifier {
 
-  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, timeDiff:Float){
     var drunkPerc = getPercent(player);
     var tipsyPerc = getSubmodPercent("tipsy",player);
     var bumpyPerc = getSubmodPercent("bumpy",player);
@@ -22,13 +22,11 @@ class DrunkModifier extends Modifier {
     }
 
     if(drunkPerc!=0){
-      pos.x += drunkPerc * (FlxMath.fastCos((time + data*.2 + pos.y*10/FlxG.height)*drunkSpeed) * Note.swagWidth*.5);
+      pos.x += drunkPerc * (FlxMath.fastCos((time + data*.2 + visualDiff*10/FlxG.height)*drunkSpeed) * Note.swagWidth*.5);
     }
 
-    if((sprite is Note)){
-      if(bumpyPerc!=0){
-        pos.z += (bumpyPerc * (.3 * FlxMath.fastSin((pos.y/24)*bumpySpeed)));
-      }
+    if(bumpyPerc!=0){
+      pos.z += (bumpyPerc * (.3 * FlxMath.fastSin((visualDiff/24)*bumpySpeed)));
     }
 
 

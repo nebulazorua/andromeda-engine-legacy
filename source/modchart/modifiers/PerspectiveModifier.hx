@@ -32,7 +32,7 @@ class PerspectiveModifier extends Modifier {
 
 
   public function getVector(curZ:Float,pos:Vector3):Vector3{
-    var halfOffset = new Vector3(FlxG.width/2 - Note.swagWidth / 2, FlxG.height/2 - Note.swagWidth / 2);
+    var halfOffset = new Vector3(FlxG.width/2, FlxG.height/2);
     pos = pos.subtract(halfOffset);
     var oX = pos.x;
     var oY = pos.y;
@@ -67,7 +67,7 @@ class PerspectiveModifier extends Modifier {
 
     return pos;
   }*/
-  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, timeDiff:Float){
     return getVector(pos.z,pos);
   }
 

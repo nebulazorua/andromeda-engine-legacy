@@ -6,7 +6,7 @@ import flixel.math.FlxMath;
 import math.*;
 
 class FlipModifier extends Modifier {
-  /*override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
+  /*override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, timeDiff:Float){
     if(getPercent(player)==0)return pos;
 
     var receptors = modMgr.receptors[player];
@@ -22,7 +22,7 @@ class FlipModifier extends Modifier {
     return pos;
   }*/
 
-  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, timeDiff:Float){
     if(getPercent(player)==0)return pos;
 
     var receptors = modMgr.receptors[player];

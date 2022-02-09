@@ -49,7 +49,7 @@ class ReverseModifier extends Modifier {
     return getReversePercent(dir,player);
   }
 
-  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, timeDiff:Float){
     var perc = getReversePercent(data,player);
     var shift = CoolUtil.scale(perc,0,1,modMgr.state.upscrollOffset,modMgr.state.downscrollOffset);
     var mult = CoolUtil.scale(perc,0,1,1,-1);
@@ -61,12 +61,12 @@ class ReverseModifier extends Modifier {
   }
 
   override function updateNote(pos:Vector3, scale:FlxPoint, note:Note){
-    var perc = getScrollReversePerc(note.noteData,note.mustPress==true?0:1);
+    /*var perc = getScrollReversePerc(note.noteData,note.mustPress==true?0:1);
     if(perc>.5 && note.isSustainNote){
       note.flipY=true;
     }else{
       note.flipY=false;
-    }
+    }*/
   }
 
   override function getSubmods(){

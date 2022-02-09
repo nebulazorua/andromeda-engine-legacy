@@ -60,6 +60,6 @@ class Modifier {
   //public function getNotePos(note:Note,pos:Vector3, data:Int, player:Int)return pos;
   //public function getPos(pos:Vector3, data:Int, player:Int, object:FNFSprite)return pos;
 
-  public function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float)return pos;
+  public function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, timeDiff:Float)return pos;
 
 }

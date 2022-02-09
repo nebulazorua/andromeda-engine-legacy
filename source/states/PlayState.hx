@@ -1943,7 +1943,7 @@ class PlayState extends MusicBeatState
 		}
 		#end
 
-		super.update(elapsed);
+
 		if (startingSong)
 		{
 			if (startedCountdown)
@@ -2250,6 +2250,27 @@ class PlayState extends MusicBeatState
 					daNote.scale.copyFrom(scale);
 					daNote.updateHitbox();
 
+					if(daNote.isSustainNote){
+							//var prevPos = modManager.getNotePos(daNote.prevNote);
+							//getPath(diff:Float, vDiff:Float, column:Int, player:Int, sprite:FNFSprite)
+							var futureSongPos = Conductor.songPosition + Conductor.stepCrochet;
+							var futureVisualPos = getPosFromTime(futureSongPos);
+
+							var diff =  futureSongPos - daNote.strumTime;
+					    var vDiff = (daNote.initialPos - futureVisualPos);
+							//  var pos = getPath(diff, vDiff, note.noteData, note.mustPress==true?0:1, note);
+
+							var nextPos = modManager.getPath(diff, vDiff, daNote.noteData, daNote.mustPress==true?0:1);
+							nextPos.x += daNote.manualXOffset;
+					    nextPos.y -= daNote.manualYOffset;
+
+							var diffX = (nextPos.x - notePos.x);
+							var diffY = (nextPos.y - notePos.y);
+							var rad = Math.atan2(diffY,diffX);
+							var deg = rad * (180 / Math.PI);
+							daNote.modAngle = deg + 90; // gets the angle in degrees instead of radians
+					}
+
 					var shitGotHit = (daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit);
 					var shit = strumLine.y + Note.swagWidth/2;
 					if(daNote.isSustainNote){
@@ -2271,30 +2292,6 @@ class PlayState extends MusicBeatState
 
 							daNote.clipRect=clipRect;
 						}
-
-					//	var nextPos = getPos(Conductor.songPosition - (daNote.strumTime + Conductor.stepCrochet), daNote.noteData, daNote.mustPress?1:0);
-
-					/*
-						var diff = (Conductor.songPosition+1) - daNote.strumTime;
-						var vDiff = (daNote.initialPos)-getPosFromTime(Conductor.currentVisPos+1);
-
-						var nextPos = modManager.getPath(diff, vDiff, daNote.noteData, daNote.mustPress==true?0:1, daNote);
-
-						var diffX = (notePos.x - nextPos.x) * 100;
-						var diffY = (notePos.y - nextPos.y) * 100;
-						trace(diffX, diffY);
-						var rad = Math.atan2(diffY,diffX);
-						var deg = rad * (180 / Math.PI);
-						daNote.modAngle = deg; // gets the angle in degrees instead of radians
-						// idk if its better to use FlxAngle.toDegrees or do this
-						// i think its the same anyway lol
-						*/
-
-						// WHY DOES This
-						// NOT WORK??
-						// THIS WORKS FINE IN ANDROMEDA 2.0 AND IN HEX
-						// SO WHY NOT HERE????????
-						// god
 
 					}
 					scale.put();
@@ -2441,6 +2438,7 @@ class PlayState extends MusicBeatState
 		if(lastHitDadNote==null || !lastHitDadNote.alive || !lastHitDadNote.exists ){
 			lastHitDadNote=null;
 		}
+		super.update(elapsed);
 		dadStrums.forEach(function(spr:Receptor)
 		{
 

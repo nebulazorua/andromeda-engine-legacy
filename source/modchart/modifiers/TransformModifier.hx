@@ -12,7 +12,7 @@ class TransformModifier extends Modifier { // this'll be transformX in ModManage
     return a+(b-a)*c;
   }
 
-  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, timeDiff:Float){
     pos.x += getPercent(player)*100;
     pos.y += getSubmodPercent("transformY",player)*100;
     pos.z += getSubmodPercent('transformZ',player)*100;

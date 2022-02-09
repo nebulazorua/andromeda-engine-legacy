@@ -6,7 +6,7 @@ import flixel.math.FlxMath;
 import math.*;
 
 class BeatModifier extends Modifier {
-  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, sprite: FNFSprite, timeDiff:Float){
+  override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, timeDiff:Float){
     if(getPercent(player)==0)return pos;
     var accelTime:Float = 0.3;
     var totalTime:Float = 0.7;
