@@ -1007,8 +1007,8 @@ class ChartingState extends MusicBeatState
 
 		songInfoTxt.text = songInfoTxt.text =
 			"Section: " + curSection +
-			"\nStep: " + curStep +
-			"\nBeat: " + curBeat +
+			"\nStep: " + CoolUtil.truncateFloat(curDecStep,2) +
+			"\nBeat: " + CoolUtil.truncateFloat(curDecBeat,2) +
 			"\nSnap: 1/" + quantization + "\n";
 
 		controlsTxt.text = controlsTxt.text =

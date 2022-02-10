@@ -24,6 +24,7 @@ Andromeda Engine includes but is not limited to:
 - [Nebula the Zorua](https://twitter.com/Nebula_Zorua) - Most engine stuff
 - [TKTems](https://twitter.com/TKTems) - Menu stuff
 - [4mbr0s3 2](https://www.youtube.com/channel/UCez-Erpr0oqmC71vnDrM9yA) - Implementation concept for new modifier stuff and inspiration to even BOTHER working on it, also some code and math shit. Cool dude!!
+- [FreestyleDev](https://twitter.com/Rapper_GF_Dev) - Music sync stuff
 - [kevinresol](https://github.com/kevinresol) - Original hxvm-lua
 - [AndreiDudenko](https://github.com/AndreiRudenko) - Original linc_luajit
 - [Echolocated](https://twitter.com/CH_echolocated) - "Epic" judgement rating and spreading the word about the engine
@@ -35,14 +36,14 @@ Andromeda Engine includes but is not limited to:
 - [SrPerez](https://twitter.com/NewSrPerez) - Some math to do with receptors in KE
 - [Kade Engine](https://github.com/KadeDev/Kade-Engine) - SrPerez's math for receptors, caching loading screen stuff
 - [bbpanzu](https://twitter.com/bbsub3) - Bringing issues to my attention & letting more people know about AE
+- [Wilde](https://twitter.com/0WildeRaze) - Keepin' me sane and letting more people know about AE. Love ya, honey!
+- [Lizzy](https://twitter.com/tc_lizzy) - Keepin' me sane
 - [Berdly the Antagonist](https://twitter.com/mylimit666) - Beat snap math
 - [Redsty Phoenix](https://twitter.com/RedstyP) - REALLY getting the word out
-- Codist - Dialogue format
-- [Yoshubs](https://twitter.com/yoshubs) - Cache dumping, inspiring me to optimize and improve input (and soon dialogue format).
+- [Yoshubs](https://twitter.com/yoshubs) - Cache dumping, inspiring me to optimize and improve input
 - [Shadow Mario](https://twitter.com/Shadow_Mario_) - Inspiration, Psych Engine character format
 - [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine) - Read Shadow Mario's credit
 - [gedehari](https://twitter.com/gedehari) - Inspiration
-- [Lizzy](https://twitter.com/tc_lizzy) - Keepin' me sane. Love ya, hunny!
 - [BigWIngs](https://www.shadertoy.com/user/BigWIngs) - Raymarcher shader (https://www.shadertoy.com/view/WtGXDD)
 - [ryk](https://www.shadertoy.com/user/ryk) - VCR Distortion shader (https://www.shadertoy.com/view/ldjGzV)
 - [Mattias](https://www.shadertoy.com/user/Mattias) - CRT shader in VCR Distortion (https://www.shadertoy.com/view/Ms23DR)

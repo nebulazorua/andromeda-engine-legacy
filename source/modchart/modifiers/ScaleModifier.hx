@@ -10,11 +10,11 @@ class ScaleModifier extends Modifier {
     return a+(b-a)*c;
   }
   function getScale(sprite:Dynamic, scale:FlxPoint, data:Int, player:Int){
-    var miniX = getPercent(player)+getSubmodPercent("miniX",player)+getSubmodPercent('mini${data}X',player)*100;
-    var miniY = getPercent(player)+getSubmodPercent("miniY",player)+getSubmodPercent('mini${data}Y',player)*100;
+    var miniX = getPercent(player)+getSubmodPercent("miniX",player)+getSubmodPercent('mini${data}X',player);
+    var miniY = getPercent(player)+getSubmodPercent("miniY",player)+getSubmodPercent('mini${data}Y',player);
 
-    scale.x*=1-miniX;
-    scale.y*=1-miniY;
+    scale.x*=1-miniX/100;
+    scale.y*=1-miniY/100;
     var angle = sprite.baseAngle;
 
     var stretch = getSubmodPercent("stretch",player);

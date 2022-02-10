@@ -141,7 +141,7 @@ class OptionsState extends MusicBeatState
 		#end
 		createDefault();
 		category=defCat;
-		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuBG"));
+		var menuBG:FlxSprite = new FlxSprite().loadGraphic(Paths.image("menuBGDesat"));
 
 		menuBG.color = 0xFFA271DE;
 		menuBG.setGraphicSize(Std.int(menuBG.width * 1.1));

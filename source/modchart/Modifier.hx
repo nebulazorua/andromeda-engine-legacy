@@ -18,9 +18,14 @@ class Modifier {
     return [];
   }
 
+  public function getMod(modName:String){
+    return modMgr.get(modName);
+  }
+
   public function getModPercent(modName:String, player:Int){
     return modMgr.getModPercent(modName,player);
   }
+
 
   public function getSubmodPercent(modName:String, player:Int){
     if(submods.exists(modName)){
