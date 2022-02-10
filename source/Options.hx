@@ -100,7 +100,7 @@ class Options
 	public var loadModcharts:Bool = true;
 	public var noFail:Bool = false;
 	public var useEpic:Bool = true;
-
+	public var attemptToAdjust:Bool = false;
 	// appearance
 	public var useNotesplashes:Bool = true;
 	public var allowNoteModifiers:Bool = true;
@@ -149,6 +149,7 @@ class Options
 	public var ghosttapSounds:Bool = false;
 	public var hitsoundVol:Float = 50;
 	public var ratingInHUD:Bool = false;
+	public var ratingOverNotes:Bool = false;
 	public var menuFlash:Bool = true;
 	public var freeplayPreview:Bool = false;
 	public var hitSound:Bool = false;

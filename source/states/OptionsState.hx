@@ -59,7 +59,8 @@ class OptionsState extends MusicBeatState
 				new OptionCategory("Advanced",[
 					#if !FORCED_JUDGE new JudgementsOption("judgementWindow","Judgements","The judgement windows to use"),
 					new ToggleOption("useEpic","Use Epics","Allows the 'Epic' judgement to be used"),#end
-					new ScrollOption("accuracySystem","Accuracy System","How accuracy is determined",0,2,["Basic","ITG","Wife3"])
+					new ScrollOption("accuracySystem","Accuracy System","How accuracy is determined",0,2,["Basic","Wife3","ITG"]),
+					new ToggleOption("attemptToAdjust", "Better Sync", "Attempts to sync the song position to the instrumental better by using the average offset between the\ninstrumental and the visual pos")
 				]),
 				new StateOption("Calibrate Offset",new SoundOffsetState()),
 				// TODO: make a better 'calibrate offset'
@@ -77,7 +78,6 @@ class OptionsState extends MusicBeatState
 				new ToggleOption("oldMenus","Vanilla Menus","Forces the vanilla menus to be used"),
 				new ToggleOption("oldTitle","Vanilla Title Screen","Forces the vanilla title to be used"),
 				new ToggleOption("healthBarColors","Healthbar Colours","Whether the healthbar colour changes with the character"),
-				new ToggleOption("persistentCombo","Combo doesnt fade","Combo stays on screen instead of fading out"),
 				new ToggleOption("onlyScore","Minimal Information","Only shows your score below the hp bar"),
 				new ToggleOption("smoothHPBar","Smooth Healthbar","Makes the HP Bar smoother"),
 				new ToggleOption("fcBasedComboColor","FC Combo Colouring","Makes the combo's colour changes with type of FC you have"),
@@ -93,7 +93,9 @@ class OptionsState extends MusicBeatState
 				new ToggleOption("useNotesplashes","Show NoteSplashes","Notesplashes showing up on sicks and above."),
 				new ToggleOption("camFollowsAnims","Directional Camera","Camera moving depending on a character's animations"),
 				new ToggleOption("ratingInHUD","Fixed Judgements","Fixes judgements, milliseconds and combo to the screen"),
+				new ToggleOption("ratingOverNotes","Judgements over notes","Places judgements, milliseconds and combo above the playfield"),
 				new ToggleOption("smJudges","Simply Judgements","Animates judgements like ITG's Simply Love theme"),
+				new ToggleOption("persistentCombo","Simply Combos","Animates combos like ITG's Simply Love theme"),
 				new ToggleOption("pauseHoldAnims","Holds pause anims", "Whether to pause animations on their first frame"),
 				new ToggleOption("menuFlash","Flashing in menus","Whether buttons and the background should flash in menus"),
 				new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),

@@ -505,13 +505,16 @@ class PlayState extends MusicBeatState
 		pauseHUD.bgColor.alpha = 0;
 
 		FlxG.cameras.reset(camGame);
-		FlxG.cameras.add(camRating);
+		if(!currentOptions.ratingOverNotes)
+			FlxG.cameras.add(camRating);
 		if(currentOptions.holdsBehindReceptors)
 			FlxG.cameras.add(camSus);
 		FlxG.cameras.add(camReceptor);
 		if(!currentOptions.holdsBehindReceptors)
 			FlxG.cameras.add(camSus);
 		FlxG.cameras.add(camNotes);
+		if(currentOptions.ratingOverNotes)
+			FlxG.cameras.add(camRating);
 
 		FlxG.cameras.add(camHUD);
 		FlxG.cameras.add(pauseHUD);
@@ -1645,6 +1648,11 @@ class PlayState extends MusicBeatState
 				inst.pause();
 				vocals.pause();
 			}
+			if (inst != null && !startingSong)
+			{
+				Conductor.rawSongPos = inst.time;
+				Conductor.songPosition = (Conductor.rawSongPos+currentOptions.noteOffset);
+			}
 
 			if (!startTimer.finished)
 				startTimer.active = false;
@@ -1657,10 +1665,9 @@ class PlayState extends MusicBeatState
 	{
 		if (paused)
 		{
-			if (inst != null && !startingSong)
-			{
-				resyncVocals();
-			}
+
+			inst.play();
+			vocals.play();
 
 			if (!startTimer.finished)
 				startTimer.active = true;
@@ -1956,12 +1963,12 @@ class PlayState extends MusicBeatState
 		}
 
 		if(inst.playing && !startingSong){
-			var delta = Math.abs(Conductor.rawSongPos/1000 - Conductor.lastSongPos);
+			var delta = Conductor.rawSongPos/1000 - Conductor.lastSongPos;
 			differences.push(delta);
 			if(differences.length>20)
 				differences.shift();
 			Conductor.lastSongPos = inst.time/1000;
-			if(delta>=0.05){
+			if(Math.abs(delta)>=0.05){
 				Conductor.rawSongPos = inst.time;
 			}
 
@@ -1972,7 +1979,25 @@ class PlayState extends MusicBeatState
 			}
 		}
 
-		Conductor.songPosition = Conductor.rawSongPos+currentOptions.noteOffset;
+		FlxG.watch.addQuick("curBeat", curBeat);
+		FlxG.watch.addQuick("curStep", curStep);
+		FlxG.watch.addQuick("curDecBeat", curDecBeat);
+		FlxG.watch.addQuick("curDecStep", curDecStep);
+
+		FlxG.watch.addQuick("rawSongPos", Conductor.rawSongPos);
+		FlxG.watch.addQuick("instTime", inst.time);
+
+		var avgDiff:Float = 0;
+		for(diff in differences)avgDiff+=diff;
+		avgDiff/=differences.length;
+		FlxG.watch.addQuick("avgDiff", avgDiff*1000);
+
+		var offset = currentOptions.noteOffset;
+		if(currentOptions.attemptToAdjust && avgDiff>0)
+			offset += Std.int(avgDiff*1000);
+
+		Conductor.songPosition = (Conductor.rawSongPos+offset);
+		FlxG.watch.addQuick("songPos", Conductor.songPosition);
 
 		try{
 			if(luaModchartExists && lua!=null){
@@ -2046,20 +2071,6 @@ class PlayState extends MusicBeatState
 			FlxG.camera.zoom = FlxMath.lerp(FlxG.camera.zoom,defaultCamZoom, Main.adjustFPS(0.05));
 			camHUD.zoom = FlxMath.lerp(camHUD.zoom,1, Main.adjustFPS(0.05));
 		}
-
-		FlxG.watch.addQuick("curBeat", curBeat);
-		FlxG.watch.addQuick("curStep", curStep);
-		FlxG.watch.addQuick("curDecBeat", curDecBeat);
-		FlxG.watch.addQuick("curDecStep", curDecStep);
-
-		FlxG.watch.addQuick("rawSongPos", Conductor.rawSongPos);
-		FlxG.watch.addQuick("songPos", Conductor.songPosition);
-		FlxG.watch.addQuick("instTime", inst.time);
-
-		var avgDiff:Float = 0;
-		for(diff in differences)avgDiff+=diff;
-		avgDiff/=differences.length;
-		FlxG.watch.addQuick("avgDiff", avgDiff*1000);
 
 		if (curSong == 'Fresh')
 		{
@@ -2674,7 +2685,7 @@ class PlayState extends MusicBeatState
 					numScore.y += currentOptions.judgeY;
 
 					add(numScore);
-					if(currentOptions.persistentCombo){
+					if(currentOptions.smJudges){
 						comboSprites.push(numScore);
 						if(prevComboNums[idx]!=i){
 							numScore.y -= 30;
