@@ -13,8 +13,8 @@ class ScaleModifier extends Modifier {
     var miniX = getPercent(player)+getSubmodPercent("miniX",player)+getSubmodPercent('mini${data}X',player);
     var miniY = getPercent(player)+getSubmodPercent("miniY",player)+getSubmodPercent('mini${data}Y',player);
 
-    scale.x*=1-miniX/100;
-    scale.y*=1-miniY/100;
+    scale.x*=1-miniX;
+    scale.y*=1-miniY;
     var angle = sprite.baseAngle;
 
     var stretch = getSubmodPercent("stretch",player);

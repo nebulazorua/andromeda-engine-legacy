@@ -1271,6 +1271,7 @@ class PlayState extends MusicBeatState
 		vocals.play();
 		inst.time = startPos;
 		vocals.time = startPos;
+		Conductor.rawSongPos = startPos;
 		if(FlxG.sound.music!=null){
 			FlxG.sound.music.stop();
 		}
@@ -1666,8 +1667,9 @@ class PlayState extends MusicBeatState
 		if (paused)
 		{
 
-			inst.play();
-			vocals.play();
+			if(!startingSong)
+				resyncVocals();
+
 
 			if (!startTimer.finished)
 				startTimer.active = true;
@@ -1917,6 +1919,8 @@ class PlayState extends MusicBeatState
 		{
 			inst.pause();
 			vocals.pause();
+			persistentUpdate = false;
+			persistentDraw = false;
 			FlxG.switchState(new ChartingState(charterPos));
 
 
@@ -1992,11 +1996,7 @@ class PlayState extends MusicBeatState
 		avgDiff/=differences.length;
 		FlxG.watch.addQuick("avgDiff", avgDiff*1000);
 
-		var offset = currentOptions.noteOffset;
-		if(currentOptions.attemptToAdjust && avgDiff>0)
-			offset += Std.int(avgDiff*1000);
-
-		Conductor.songPosition = (Conductor.rawSongPos+offset);
+		Conductor.songPosition = (Conductor.rawSongPos+currentOptions.noteOffset);
 		FlxG.watch.addQuick("songPos", Conductor.songPosition);
 
 		try{
