@@ -2253,7 +2253,7 @@ class PlayState extends MusicBeatState
 					if(daNote.isSustainNote){
 							//var prevPos = modManager.getNotePos(daNote.prevNote);
 							//getPath(diff:Float, vDiff:Float, column:Int, player:Int, sprite:FNFSprite)
-							var futureSongPos = Conductor.songPosition + Conductor.stepCrochet;
+							var futureSongPos = Conductor.songPosition + 75;
 							var futureVisualPos = getPosFromTime(futureSongPos);
 
 							var diff =  futureSongPos - daNote.strumTime;

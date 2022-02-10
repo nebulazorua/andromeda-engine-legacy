@@ -7,7 +7,7 @@ import flixel.FlxG;
 import math.Vector3;
 import math.*;
 
-class AccelModifier extends Modifier { // this'll be transformX in ModManager
+class AccelModifier extends Modifier { // this'll be boost in ModManager
   inline function lerp(a:Float,b:Float,c:Float){
     return a+(b-a)*c;
   }
