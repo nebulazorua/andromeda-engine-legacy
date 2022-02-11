@@ -1514,7 +1514,7 @@ class PlayState extends MusicBeatState
 		return FlxSort.byValues(FlxSort.DESCENDING, Obj1.strumTime, Obj2.strumTime);
 	}
 
-	function sortByOrder(wat:Int, Obj1:Note, Obj2:Note):Int
+	function sortByOrder(wat:Int, Obj1:FNFSprite, Obj2:FNFSprite):Int
 	{
 		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.zIndex, Obj2.zIndex);
 	}
@@ -2461,7 +2461,7 @@ class PlayState extends MusicBeatState
 
 		});
 
-		strumLineNotes.sort(sortByZ);
+		strumLineNotes.sort(sortByOrder);
 
 
 		if (!inCutscene){

@@ -34,6 +34,9 @@ class Receptor extends FNFSprite {
   public var xOffset:Float = 0;
   public var yOffset:Float = 0;
   public var zOffset:Float = 0;
+
+  public var desiredZIndex:Float = 0;
+
   public var scaleDefault:Null<FlxPoint>;
   public var noteSplash:NoteSplash;
 
@@ -126,8 +129,11 @@ class Receptor extends FNFSprite {
     if(animation.curAnim!=null && animation.curAnim.name=='confirm')animZOffset+=1;
     x = desiredX + xOffset;
     y = desiredY + yOffset;
-    z = desiredZ + zOffset + animZOffset;
+    z = desiredZ + zOffset;
 
+    zIndex=z + desiredZIndex + animZOffset ;
     super.update(elapsed);
+    zIndex = animZOffset;
+
   }
 }

@@ -75,7 +75,7 @@ class Note extends NoteGraphic
 	public var beingCharted:Bool=false;
 	public var initialPos:Float = 0;
 	public var desiredZIndex:Float = 0;
-	public var zIndex:Float = 0;
+
 	public var hitbox:Float = 166;
 
 	public var beat:Float = 0;
