@@ -33,11 +33,14 @@ class Receptor extends FNFSprite {
   public var direction:Int= 0 ;
   public var xOffset:Float = 0;
   public var yOffset:Float = 0;
+  public var zOffset:Float = 0;
   public var scaleDefault:Null<FlxPoint>;
   public var noteSplash:NoteSplash;
 
   public var desiredX:Float = 0;
   public var desiredY:Float = 0;
+  public var desiredZ:Float = 0;
+
 
   public function new(x:Float,y:Float,noteData:Int,skin:String='default',modifier:String='base',behaviour:NoteBehaviour,daScale:Float=.7){
     super(x,y);
@@ -119,8 +122,11 @@ class Receptor extends FNFSprite {
   override function update(elapsed:Float){
     angle = baseAngle+desiredAngle;
 
+    var animZOffset:Float = 0;
+    if(animation.curAnim!=null && animation.curAnim.name=='confirm')animZOffset+=1;
     x = desiredX + xOffset;
     y = desiredY + yOffset;
+    z = desiredZ + zOffset + animZOffset;
 
     super.update(elapsed);
   }

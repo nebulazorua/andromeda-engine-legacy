@@ -2117,7 +2117,7 @@ class PlayState extends MusicBeatState
 
 			spr.desiredX = pos.x;
 			spr.desiredY = pos.y;
-			spr.z = pos.z;
+			spr.desiredZ = pos.z;
 			spr.scale.set(scale.x,scale.y);
 
 			scale.put();
@@ -2131,7 +2131,7 @@ class PlayState extends MusicBeatState
 
 			spr.desiredX = pos.x;
 			spr.desiredY = pos.y;
-			spr.z = pos.z;
+			spr.desiredZ = pos.z;
 			spr.scale.set(scale.x,scale.y);
 
 			scale.put();
@@ -2204,7 +2204,7 @@ class PlayState extends MusicBeatState
 
 		while(unspawnNotes[0] != null)
 		{
-			if (Conductor.currentTrackPos-getPosFromTime(unspawnNotes[0].strumTime)>-3000)
+			if (Conductor.currentTrackPos-getPosFromTime(unspawnNotes[0].strumTime)>-4000)
 			{
 				var dunceNote:Note = unspawnNotes[0];
 

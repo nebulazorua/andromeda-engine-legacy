@@ -12,6 +12,7 @@ import flixel.FlxCamera;
 import haxe.Exception;
 import states.*;
 import math.*;
+import flixel.math.FlxMath;
 import flixel.FlxG;
 import ui.*;
 // TODO: modifier priority system
@@ -70,6 +71,20 @@ class ModManager {
     defineMod("hudCam",new CamModifier(this,"hudCam",hudCams ));
     defineMod("noteCam",new CamModifier(this,"noteCam",[state.camNotes,state.camSus,state.camReceptor] ));
 
+    /*var infPath:Array<Vector3>=[];
+
+    var r = 0;
+    while(r<360){
+      var rad = r*Math.PI / 180;
+      infPath.push(new Vector3(
+        FlxG.width/2 - Note.swagWidth/2 + (FlxMath.fastSin(rad))*600,
+        FlxG.height/2 - Note.swagWidth/2 + (FlxMath.fastSin(rad)*FlxMath.fastCos(rad))*600,
+        0
+      ));
+      r+=15;
+    }
+    defineMod("infinite",new PathModifier(this,infPath,2000));*/
+    // an example of PathModifier using a figure 8 pattern
 
     defineMod("perspective",new PerspectiveModifier(this));
   }

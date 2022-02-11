@@ -106,6 +106,23 @@ class Vector3
 	}
 
 	/**
+		Creates a new `Vector3` instance linearly interpolated between this Vector3 and the given goal by the given alpha
+		@param goal A `Vector3` instance to interpolate towards
+		@param alpha How far the interpolation is
+		@return A `Vector3 instance linearly interpolated`
+	**/
+
+	//https://gamedev.stackexchange.com/questions/18615/how-do-i-linearly-interpolate-between-two-vectors
+	public function lerp(goal:Vector3, alpha:Float):Vector3{
+		return new Vector3(
+			alpha*goal.x + x*(1-alpha),
+			alpha*goal.y + y*(1-alpha),
+			alpha*goal.z + z*(1-alpha)
+		);
+	}
+
+
+	/**
 		Copies the x, y and z component values of another `Vector3` instance
 		@param	sourceVector3	A `Vector3` instance to copy from
 	**/
