@@ -266,6 +266,15 @@ class ChartingState extends MusicBeatState
 			changeSection(curSection + 1, false);
 		}
 
+		while (curStep < 16 * curSection && curStep > 0)
+		{
+			trace(curStep);
+			trace((_song.notes[curSection].lengthInSteps) * (curSection - 1));
+			trace('DUMBSHIT');
+
+			changeSection(curSection - 1, false);
+		}
+
 
 		updateSectionUI();
 
@@ -737,6 +746,15 @@ class ChartingState extends MusicBeatState
 
 			changeSection(curSection + 1, false);
 		}
+
+		if(curStep < 16 * curSection && curStep > 0)
+			{
+				trace(curStep);
+				trace((_song.notes[curSection].lengthInSteps) * (curSection - 1));
+				trace('DUMBSHIT');
+	
+				changeSection(curSection - 1, false);
+			}
 
 
 		FlxG.watch.addQuick('daBeat', curBeat);
