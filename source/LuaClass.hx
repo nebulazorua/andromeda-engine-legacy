@@ -1398,6 +1398,31 @@ class LuaCam extends LuaClass {
   }
 }
 
+class LuaHPBar extends LuaSprite {
+  private static var state:State;
+
+  override function Register(l:State){
+    state=l;
+    super.Register(l);
+  }
+  public function new(bar:Healthbar,name:String,?addToGlobal:Bool=true){
+    super(bar,name,addToGlobal);
+
+    properties.set("smooth",{
+      defaultValue:bar.smooth,
+      getter:GetBoolProperty,
+      setter:SetBoolProperty
+    });
+    properties.set("value",{
+      defaultValue:bar.value,
+      getter:GetNumProperty,
+      setter:SetNumProperty
+    });
+
+
+  }
+}
+
 class LuaNote extends LuaSprite {
   private static var state:State;
   public var id:String='0';

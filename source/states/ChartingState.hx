@@ -747,14 +747,15 @@ class ChartingState extends MusicBeatState
 			changeSection(curSection + 1, false);
 		}
 
-		if(curStep < 16 * curSection && curStep > 0)
-			{
-				trace(curStep);
-				trace((_song.notes[curSection].lengthInSteps) * (curSection - 1));
-				trace('DUMBSHIT');
-	
-				changeSection(curSection - 1, false);
-			}
+		if(curStep < 16 * curSection && curStep > 0 && !FlxG.sound.music.playing) // the .playing thing is a hacky workaround for a bug because charter dum
+		// because like the song will never go backwards if its playing
+		{
+			trace(curStep);
+			trace((_song.notes[curSection].lengthInSteps) * (curSection - 1));
+			trace('DUMBSHIT');
+
+			changeSection(curSection - 1, false);
+		}
 
 
 		FlxG.watch.addQuick('daBeat', curBeat);

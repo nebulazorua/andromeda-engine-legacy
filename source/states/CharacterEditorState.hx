@@ -865,6 +865,7 @@ class CharacterEditorState extends MusicBeatState {
     idleCheckbox = new Checkbox(false);
     idleCheckbox.callback = function(state:Bool){
       curCharacter.beatDancer=state;
+      curCharacter.charData.beatDancer=state;
     }
     idleCheckbox.tracker = idleLabel;
     ui.add(idleLabel);

@@ -293,7 +293,12 @@ class PlayState extends MusicBeatState
 			});
 
 			Lua_helper.add_callback(lua.state,"playSound", function(sound:String,volume:Float=1,looped:Bool=false){
-				FlxG.sound.play(sound,volume,looped);
+				var path = 'assets/songs/${PlayState.SONG.song.toLowerCase()}/$sound.${Paths.SOUND_EXT}';
+				FlxG.sound.play(CoolUtil.getSound(path),volume,looped);
+			});
+
+			Lua_helper.add_callback(lua.state,"playInternalSound", function(sound:String,volume:Float=1,looped:Bool=false){
+				FlxG.sound.play(Paths.sound(sound),volume,looped);
 			});
 
 			Lua_helper.add_callback(lua.state,"setVar", function(variable:String,val:Any){
@@ -395,6 +400,7 @@ class PlayState extends MusicBeatState
 			gfLua = new LuaCharacter(gf,"gf",true);
 			dadLua = new LuaCharacter(dad,"dad",true);
 
+			var healthbar = new LuaHPBar(healthBar,"healthbar",true);
 			var bfIcon = new LuaSprite(healthBar.iconP1,"iconP1",true);
 			var dadIcon = new LuaSprite(healthBar.iconP2,"iconP2",true);
 

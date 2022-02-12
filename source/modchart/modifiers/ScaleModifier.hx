@@ -20,7 +20,7 @@ class ScaleModifier extends Modifier {
     var stretch = getSubmodPercent("stretch",player);
     var squish = getSubmodPercent("squish",player);
 
-    var stretchX =lerp(1,0.5,stretch); // use scale maybe? idfk man this works fine enough
+    var stretchX =lerp(1,0.5,stretch);
     var stretchY =lerp(1,2,stretch);
 
     var squishX =lerp(1,2,squish);
