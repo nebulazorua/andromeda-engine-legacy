@@ -298,7 +298,7 @@ class ModManager {
   public function queueEaseL(step:Float, length:Float, modName:String, percent:Float, style:String, player:Int=-1, ?startVal:Float){
     if(schedule[modName]==null){
       trace('$modName is not a valid mod!');
-      return
+      return;
     }
     if(player==-1){
       queueEaseL(step, length, modName, percent, style, 0);
