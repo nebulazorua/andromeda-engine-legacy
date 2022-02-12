@@ -40,7 +40,7 @@ class MusicBeatState extends FlxUIState
 		//trace(Type.getClassName(Type.getClass(lastState)), Type.getClassName(Type.getClass(this)));
 		//if(Type.getClassName(Type.getClass(lastState))!=Type.getClassName(Type.getClass(this))){
 			trace("clearing cache");
-			//Cache.wipe();
+			Cache.wipe();
 		//}
 		super.create();
 	}

@@ -78,7 +78,7 @@ class FadeTransitionSubstate extends TransitionSubstate
     curStatus=status;
     var yStart:Float = 0;
     var yEnd:Float = 0;
-    var duration:Float = .6;
+    var duration:Float = .48;
     var cam = cameras[0];
     var angle:Int = 90;
     var zoom:Float = FlxMath.bound(cam.zoom,0.001);
@@ -92,7 +92,7 @@ class FadeTransitionSubstate extends TransitionSubstate
       case IN:
       case OUT:
         angle=270;
-        duration = 1;
+        duration = .8;
       default:
         trace("bruh");
     }
@@ -106,6 +106,9 @@ class FadeTransitionSubstate extends TransitionSubstate
     gradientFill.scrollFactor.set();
     add(gradientFill);
     add(gradient);
+
+    if(EngineData.options.fastTransitions)
+      duration*=.4;
 
 
     FlxTween.tween(gradient,{y: yEnd}, duration,{

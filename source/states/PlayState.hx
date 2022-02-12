@@ -781,9 +781,12 @@ class PlayState extends MusicBeatState
 				focus='bf';
 			case 2:
 				focus='dad';
+			case 3:
+				focus = 'center';
 		}
 
 		if(currentOptions.noChars){
+			focus = 'center';
 			remove(gf);
 			remove(dad);
 			remove(boyfriend);
@@ -1238,6 +1241,7 @@ class PlayState extends MusicBeatState
 		var swagCounter:Int = 0;
 		startTimer.start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
+			lua.call("countdown",[swagCounter]);
 			dad.dance();
 			gf.dance();
 			boyfriend.dance();
@@ -2116,38 +2120,38 @@ class PlayState extends MusicBeatState
 				}
 			}
 
-			if(currentOptions.staticCam==3 || currentOptions.noChars){
+		var focusedChar:Null<Character>=null;
+		switch(focus){
+			case 'dad':
+				focusedChar=opponent;
+				camFollow.setPosition(dadMid.x + opponent.camOffset.x, dadMid.y + opponent.camOffset.y);
+			case 'bf':
+				focusedChar=boyfriend;
+				camFollow.setPosition(bfMid.x - stage.camOffset.x  + boyfriend.camOffset.x, bfMid.y - stage.camOffset.y + boyfriend.camOffset.y);
+			case 'gf':
+				focusedChar=gf;
+				camFollow.setPosition(gfMid.x + gf.camOffset.x, gfMid.y + gf.camOffset.y);
+			case 'center':
+				focusedChar = null;
 				var centerX = (stage.centerX==-1)?(((dadMid.x+ opponent.camOffset.x) + (bfMid.x- stage.camOffset.x))/2):stage.centerX;
 				var centerY = (stage.centerY==-1)?(((dadMid.y+ opponent.camOffset.y) + (bfMid.y- stage.camOffset.y))/2):stage.centerY;
 				camFollow.setPosition(centerX,centerY);
-			}else{
-				var focusedChar:Null<Character>=null;
-				switch(focus){
-					case 'dad':
-						focusedChar=opponent;
-						camFollow.setPosition(dadMid.x + opponent.camOffset.x, dadMid.y + opponent.camOffset.y);
-					case 'bf':
-						focusedChar=boyfriend;
-						camFollow.setPosition(bfMid.x - stage.camOffset.x  + boyfriend.camOffset.x, bfMid.y - stage.camOffset.y + boyfriend.camOffset.y);
-					case 'gf':
-						focusedChar=gf;
-						camFollow.setPosition(gfMid.x + gf.camOffset.x, gfMid.y + gf.camOffset.y);
-				}
-				if(currentOptions.camFollowsAnims){
-					if(focusedChar.animation.curAnim!=null){
-						switch (focusedChar.animation.curAnim.name){
-							case 'singUP' | 'singUP-alt' | 'singUPmiss':
-								camFollow.y -= 15 * focusedChar.camMovementMult;
-							case 'singDOWN' | 'singDOWN-alt' | 'singDOWNmiss':
-								camFollow.y += 15 * focusedChar.camMovementMult;
-							case 'singLEFT' | 'singLEFT-alt' | 'singLEFTmiss':
-								camFollow.x -= 15 * focusedChar.camMovementMult;
-							case 'singRIGHT' | 'singRIGHT-alt' | 'singRIGHTmiss':
-								camFollow.x += 15 * focusedChar.camMovementMult;
-						}
+			}
+			if(currentOptions.camFollowsAnims && focusedChar!=null){
+				if(focusedChar.animation.curAnim!=null){
+					switch (focusedChar.animation.curAnim.name){
+						case 'singUP' | 'singUP-alt' | 'singUPmiss':
+							camFollow.y -= 15 * focusedChar.camMovementMult;
+						case 'singDOWN' | 'singDOWN-alt' | 'singDOWNmiss':
+							camFollow.y += 15 * focusedChar.camMovementMult;
+						case 'singLEFT' | 'singLEFT-alt' | 'singLEFTmiss':
+							camFollow.x -= 15 * focusedChar.camMovementMult;
+						case 'singRIGHT' | 'singRIGHT-alt' | 'singRIGHTmiss':
+							camFollow.x += 15 * focusedChar.camMovementMult;
 					}
 				}
 			}
+
 		}
 
 		if (camZooming)
