@@ -1144,10 +1144,35 @@ class ChartingState extends MusicBeatState
 	function copySection(?sectionNum:Int = 1)
 	{
 		var daSec = FlxMath.maxInt(curSection, sectionNum);
+		var daBPM:Float = _song.bpm;
+			var offsetArray:Array<Float> = [];
+			var totalOffsets:Float = 0;
+			var copyOffsets:Float = 0;
 
-		for (note in _song.notes[daSec - sectionNum].sectionNotes)
-		{
-			var strum = note[0] + Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * sectionNum);
+		
+		if (daSec > 0){
+			for (i in 0...daSec)
+				{
+					if (_song.notes[i].changeBPM)
+					{
+						daBPM = _song.notes[i].bpm;
+					}
+					offsetArray.push((1000 * 60 / daBPM) * (_song.notes[i].lengthInSteps / 4));
+				}
+		for (i in 0...daSec)
+		totalOffsets += offsetArray[i];
+		for (i in 0...(daSec-sectionNum))
+		copyOffsets += offsetArray[i];}
+
+			for (note in _song.notes[daSec - sectionNum].sectionNotes)
+			{
+				var noteRatio = (note[0]-copyOffsets) / offsetArray[daSec-sectionNum];
+
+				var strum = totalOffsets + noteRatio * Conductor.crochet * 4; //Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * value);
+
+		//for (note in _song.notes[daSec - sectionNum].sectionNotes)
+		//{
+		//	var strum = note[0] + Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * sectionNum);
 
 			var copiedNote:Array<Dynamic> = [strum, note[1], note[2]];
 			_song.notes[daSec].sectionNotes.push(copiedNote);
