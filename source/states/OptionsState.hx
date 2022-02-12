@@ -59,8 +59,8 @@ class OptionsState extends MusicBeatState
 				new OptionCategory("Advanced",[
 					#if !FORCED_JUDGE new JudgementsOption("judgementWindow","Judgements","The judgement windows to use"),
 					new ToggleOption("useEpic","Use Epics","Allows the 'Epic' judgement to be used"),#end
-					new ScrollOption("accuracySystem","Accuracy System","How accuracy is determined",0,2,["Basic","Wife3","ITG"]),
-					new ToggleOption("attemptToAdjust", "Better Sync", "Attempts to sync the song position to the instrumental better by using the average offset between the\ninstrumental and the visual pos")
+					new ScrollOption("accuracySystem","Accuracy System","How accuracy is determined",0,2,["Basic","Stepmania","Wife3"]),
+					//new ToggleOption("attemptToAdjust", "Better Sync", "Attempts to sync the song position to the instrumental better by using the average offset between the\ninstrumental and the visual pos")
 				]),
 				new StateOption("Calibrate Offset",new SoundOffsetState()),
 				// TODO: make a better 'calibrate offset'
