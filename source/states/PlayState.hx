@@ -288,6 +288,39 @@ class PlayState extends MusicBeatState
 			lua.setGlobalVar("width",FlxG.width);
 			lua.setGlobalVar("height",FlxG.height);
 
+			lua.setGlobalVar("black",FlxColor.BLACK);
+			lua.setGlobalVar("white",FlxColor.WHITE);
+
+			var timerCount:Int = 0;
+			Lua_helper.add_callback(lua.state,"newTimer", function(time: Float){
+				// 1 = time
+				// 2 = callback
+
+				var name = 'timerCallbackNum${timerCount}';
+				Lua.pushvalue(lua.state,2);
+				Lua.setglobal(lua.state, name);
+
+				new FlxTimer().start(time, function(t:FlxTimer){
+					lua.call(name,[]);
+					
+				});
+
+				timerCount++;
+
+			});
+
+			Lua_helper.add_callback(lua.state,"colorFromString", function(str:String){
+				return Std.int(FlxColor.fromString(str));
+			});
+
+			Lua_helper.add_callback(lua.state,"doCountdown", function(?status:Int=3){
+				doCountdown(status);
+			});
+
+			Lua_helper.add_callback(lua.state,"addQuick", function(name:String, val:Dynamic){
+				FlxG.watch.addQuick(name, val);
+			});
+
 			Lua_helper.add_callback(lua.state,"log", function(string:String){
 				FlxG.log.add(string);
 			});
@@ -345,8 +378,8 @@ class PlayState extends MusicBeatState
 				opponents.push(char);
 				stage.layers.get("dad").add(char);
 			});
-
-			Lua_helper.add_callback(lua.state,"newSprite", function(?x:Int=0,?y:Int=0,?drawBehind:Bool=false,?spriteName:String){
+			// TODO: Deprecate and make a new one with better control (layerName, etc)
+			Lua_helper.add_callback(lua.state,"newSprite", function(?x:Int=0,?y:Int=0, ?drawBehind:Bool=false, ?autoAdd:Bool=false, ?spriteName:String){
 				var sprite = new FlxSprite(x,y);
 				var name = "UnnamedSprite"+unnamedLuaSprites;
 
@@ -361,8 +394,8 @@ class PlayState extends MusicBeatState
 				Lua.pushvalue(lua.state,classIdx);
 				if(drawBehind){
 					stage.add(sprite);
-				}else{
-					stage.foreground.add(sprite);
+				}else if(autoAdd){
+					add(sprite);
 				};
 			});
 
@@ -915,7 +948,7 @@ class PlayState extends MusicBeatState
 			totalNotes = ScoreUtils.GetMaxAccuracy(noteCounter);
 			shownAccuracy = 0;
 		}
-		
+
 		if(currentOptions.backTrans>0){
 			var overlay = new FlxSprite(0,0).makeGraphic(Std.int(FlxG.width*2),Std.int(FlxG.width*2),FlxColor.BLACK);
 			overlay.screenCenter(XY);
@@ -1122,6 +1155,7 @@ class PlayState extends MusicBeatState
 
 	function startCountdown():Void
 	{
+		var countdownStatus:Int = 3; // 3 = show entire countdown. 2 = only sounds, 1 = non-visual countdown, 0 = skip countdown
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_DOWN,keyPress);
 		FlxG.stage.addEventListener(KeyboardEvent.KEY_UP,keyRelease);
 
@@ -1132,6 +1166,13 @@ class PlayState extends MusicBeatState
 
 		modManager = new ModManager(this);
 		modManager.registerModifiers();
+
+		#if FORCE_LUA_MODCHARTS
+		setupLuaSystem();
+		#else
+		if(currentOptions.loadModcharts)
+			setupLuaSystem();
+		#end
 
 		if(!modManager.exists("reverse")){
 			var y = upscrollOffset;
@@ -1155,14 +1196,6 @@ class PlayState extends MusicBeatState
 
 		if(startPos>0)canScore=false;
 
-		#if FORCE_LUA_MODCHARTS
-		setupLuaSystem();
-		#else
-		if(currentOptions.loadModcharts)
-			setupLuaSystem();
-		#end
-
-		var countdownStatus:Int = 3; // 3 = show entire countdown. 2 = only sounds, 1 = non-visual countdown, 0 = skip countdown
 		if(luaModchartExists && lua!=null){
 			var luaStatus:Dynamic = lua.call("startCountdown",[]);
 			switch(luaStatus){
@@ -1174,15 +1207,24 @@ class PlayState extends MusicBeatState
 					countdownStatus = 1;
 				case 'skip' | 0:
 					countdownStatus = 0;
+				case 'stop' | -1:
+					countdownStatus = -1;
 				default:
 					countdownStatus = 3;
 			}
 		}
 
-
-
-		var swagCounter:Int = 0;
 		startTimer = new FlxTimer();
+
+		if(countdownStatus==-1)return;
+
+		doCountdown(countdownStatus);
+	}
+
+	function doCountdown(countdownStatus:Int=3){
+		if(startTimer==null)
+			startTimer = new FlxTimer();
+
 
 		if(countdownStatus==0){
 			Conductor.rawSongPos = startPos;
@@ -1192,6 +1234,8 @@ class PlayState extends MusicBeatState
 			return;
 		}
 
+
+		var swagCounter:Int = 0;
 		startTimer.start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
 			dad.dance();
@@ -1297,7 +1341,6 @@ class PlayState extends MusicBeatState
 			swagCounter += 1;
 		}, 5);
 	}
-
 	var previousFrameTime:Int = 0;
 	var lastReportedPlayheadPosition:Int = 0;
 	var songTime:Float = 0;
@@ -1315,6 +1358,10 @@ class PlayState extends MusicBeatState
 		inst.time = startPos;
 		vocals.time = startPos;
 		Conductor.rawSongPos = startPos;
+		Conductor.songPosition=Conductor.rawSongPos + currentOptions.noteOffset;
+		updateCurStep();
+		updateBeat();
+
 		if(FlxG.sound.music!=null){
 			FlxG.sound.music.stop();
 		}
