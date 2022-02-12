@@ -910,6 +910,12 @@ class PlayState extends MusicBeatState
 			destroyNote(note);
 		}
 
+		shownAccuracy = 100;
+		if(currentOptions.accuracySystem==1){ // ITG
+			totalNotes = ScoreUtils.GetMaxAccuracy(noteCounter);
+			shownAccuracy = 0;
+		}
+		
 		if(currentOptions.backTrans>0){
 			var overlay = new FlxSprite(0,0).makeGraphic(Std.int(FlxG.width*2),Std.int(FlxG.width*2),FlxColor.BLACK);
 			overlay.screenCenter(XY);
@@ -1143,7 +1149,7 @@ class PlayState extends MusicBeatState
 		startedCountdown = true;
 		Conductor.rawSongPos = startPos;
 		Conductor.rawSongPos -= Conductor.crochet * 5;
-		Conductor.songPosition=Conductor.rawSongPos;
+		Conductor.songPosition=Conductor.rawSongPos + currentOptions.noteOffset;
 		updateCurStep();
 		updateBeat();
 
@@ -1156,17 +1162,37 @@ class PlayState extends MusicBeatState
 			setupLuaSystem();
 		#end
 
+		var countdownStatus:Int = 3; // 3 = show entire countdown. 2 = only sounds, 1 = non-visual countdown, 0 = skip countdown
 		if(luaModchartExists && lua!=null){
-			lua.call("startCountdown",[]);
+			var luaStatus:Dynamic = lua.call("startCountdown",[]);
+			switch(luaStatus){
+				case 'all' | 3:
+					countdownStatus = 3;
+				case 'sound' | 2:
+					countdownStatus = 2;
+				case 'hidden' | 1:
+					countdownStatus = 1;
+				case 'skip' | 0:
+					countdownStatus = 0;
+				default:
+					countdownStatus = 3;
+			}
 		}
 
 
 
 		var swagCounter:Int = 0;
+		startTimer = new FlxTimer();
 
+		if(countdownStatus==0){
+			Conductor.rawSongPos = startPos;
+			Conductor.songPosition=Conductor.rawSongPos + currentOptions.noteOffset;
+			updateCurStep();
+			updateBeat();
+			return;
+		}
 
-
-		startTimer = new FlxTimer().start(Conductor.crochet / 1000, function(tmr:FlxTimer)
+		startTimer.start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
 			dad.dance();
 			gf.dance();
@@ -1190,71 +1216,82 @@ class PlayState extends MusicBeatState
 					if(value=='pixel')altSuffix = '-pixel';
 				}
 			}
+			if(countdownStatus>1){
+				switch (swagCounter)
 
-			switch (swagCounter)
+				{
+					case 0:
+						if(countdownStatus>=2)
+							FlxG.sound.play(Paths.sound('intro3${altSuffix}'), 0.6);
+					case 1:
+						if(countdownStatus>=3){
+							var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
+							ready.cameras=[camHUD];
+							ready.scrollFactor.set();
+							ready.updateHitbox();
 
-			{
-				case 0:
-					FlxG.sound.play(Paths.sound('intro3${altSuffix}'), 0.6);
-				case 1:
-					var ready:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[0]));
-					ready.cameras=[camHUD];
-					ready.scrollFactor.set();
-					ready.updateHitbox();
+							if (altSuffix=='-pixel')
+								ready.setGraphicSize(Std.int(ready.width * daPixelZoom));
 
-					if (altSuffix=='-pixel')
-						ready.setGraphicSize(Std.int(ready.width * daPixelZoom));
-
-					ready.screenCenter();
-					add(ready);
-					FlxTween.tween(ready, {y: ready.y += 100, alpha: 0}, Conductor.crochet / 1000, {
-						ease: FlxEase.cubeInOut,
-						onComplete: function(twn:FlxTween)
-						{
-							ready.destroy();
+							ready.screenCenter();
+							add(ready);
+							FlxTween.tween(ready, {y: ready.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+								ease: FlxEase.cubeInOut,
+								onComplete: function(twn:FlxTween)
+								{
+									ready.destroy();
+								}
+							});
 						}
-					});
-					FlxG.sound.play(Paths.sound('intro2${altSuffix}'), 0.6);
-				case 2:
-					var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
-					set.scrollFactor.set();
+						if(countdownStatus>=2)
+							FlxG.sound.play(Paths.sound('intro2${altSuffix}'), 0.6);
+					case 2:
+						if(countdownStatus>=3){
+							var set:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[1]));
+							set.scrollFactor.set();
 
-					if (altSuffix=='-pixel')
-						set.setGraphicSize(Std.int(set.width * daPixelZoom));
+							if (altSuffix=='-pixel')
+								set.setGraphicSize(Std.int(set.width * daPixelZoom));
 
-					set.cameras=[camHUD];
-					set.screenCenter();
-					add(set);
-					FlxTween.tween(set, {y: set.y += 100, alpha: 0}, Conductor.crochet / 1000, {
-						ease: FlxEase.cubeInOut,
-						onComplete: function(twn:FlxTween)
-						{
-							set.destroy();
+							set.cameras=[camHUD];
+							set.screenCenter();
+							add(set);
+							FlxTween.tween(set, {y: set.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+								ease: FlxEase.cubeInOut,
+								onComplete: function(twn:FlxTween)
+								{
+									set.destroy();
+								}
+							});
 						}
-					});
-					FlxG.sound.play(Paths.sound('intro1${altSuffix}'), 0.6);
-				case 3:
-					var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
-					go.scrollFactor.set();
+						if(countdownStatus>=2)
+							FlxG.sound.play(Paths.sound('intro1${altSuffix}'), 0.6);
+					case 3:
+						if(countdownStatus>=3){
+							var go:FlxSprite = new FlxSprite().loadGraphic(Paths.image(introAlts[2]));
+							go.scrollFactor.set();
 
-					if (altSuffix=='-pixel')
-						go.setGraphicSize(Std.int(go.width * daPixelZoom));
+							if (altSuffix=='-pixel')
+								go.setGraphicSize(Std.int(go.width * daPixelZoom));
 
-					go.cameras=[camHUD];
+							go.cameras=[camHUD];
 
-					go.updateHitbox();
+							go.updateHitbox();
 
-					go.screenCenter();
-					add(go);
-					FlxTween.tween(go, {y: go.y += 100, alpha: 0}, Conductor.crochet / 1000, {
-						ease: FlxEase.cubeInOut,
-						onComplete: function(twn:FlxTween)
-						{
-							go.destroy();
+							go.screenCenter();
+							add(go);
+							FlxTween.tween(go, {y: go.y += 100, alpha: 0}, Conductor.crochet / 1000, {
+								ease: FlxEase.cubeInOut,
+								onComplete: function(twn:FlxTween)
+								{
+									go.destroy();
+								}
+							});
 						}
-					});
-					FlxG.sound.play(Paths.sound('introGo${altSuffix}'), 0.6);
-				case 4:
+						if(countdownStatus>=2)
+							FlxG.sound.play(Paths.sound('introGo${altSuffix}'), 0.6);
+					case 4:
+				}
 			}
 
 			swagCounter += 1;
@@ -1496,12 +1533,6 @@ class PlayState extends MusicBeatState
 		// playerCounter += 1;
 
 		unspawnNotes.sort(sortByShit);
-		shownAccuracy = 100;
-		if(currentOptions.accuracySystem==1){ // ITG
-			totalNotes = ScoreUtils.GetMaxAccuracy(noteCounter);
-			accuracyName = 'Grade Points';
-			shownAccuracy = 0;
-		}
 
 
 
