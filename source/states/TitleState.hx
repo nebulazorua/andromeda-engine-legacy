@@ -26,8 +26,10 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import io.newgrounds.NG;
+import flixel.util.FlxGradient;
 import lime.app.Application;
 import openfl.Assets;
+import flixel.addons.transition.FlxTransitionSprite.TransitionStatus;
 import ui.*;
 using StringTools;
 

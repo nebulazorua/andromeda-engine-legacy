@@ -22,14 +22,10 @@ using StringTools;
 
 class InitState extends FlxUIState {
   public static function initTransition(){ // TRANS RIGHTS
-    var diamond:FlxGraphic = FlxGraphic.fromClass(GraphicTransTileDiamond);
-    diamond.persist = true;
-    diamond.destroyOnNoUse = false;
+    FlxTransitionableState.defaultTransIn = FadeTransitionSubstate;
+    FlxTransitionableState.defaultTransOut = FadeTransitionSubstate;
 
-    FlxTransitionableState.defaultTransIn = new TransitionData(FADE, FlxColor.BLACK, 1, new FlxPoint(0, -1), {asset: diamond, width: 32, height: 32},
-      new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
-    FlxTransitionableState.defaultTransOut = new TransitionData(FADE, FlxColor.BLACK, 0.7, new FlxPoint(0, 1),
-      {asset: diamond, width: 32, height: 32}, new FlxRect(-200, -200, FlxG.width * 1.4, FlxG.height * 1.4));
+
   }
 
   public static function getNoteskins(){
@@ -144,8 +140,6 @@ class InitState extends FlxUIState {
       nextState = new CachingState(nextState);
     }else{
       initTransition();
-      transIn = FlxTransitionableState.defaultTransIn;
-      transOut = FlxTransitionableState.defaultTransOut;
     }
 
     #if GOTO_CHAR_EDITOR

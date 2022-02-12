@@ -292,7 +292,7 @@ class PlayState extends MusicBeatState
 			lua.setGlobalVar("white",FlxColor.WHITE);
 
 			var timerCount:Int = 0;
-			Lua_helper.add_callback(lua.state,"newTimer", function(time: Float){
+			Lua_helper.add_callback(lua.state,"startTimer", function(time: Float){
 				// 1 = time
 				// 2 = callback
 
@@ -302,7 +302,7 @@ class PlayState extends MusicBeatState
 
 				new FlxTimer().start(time, function(t:FlxTimer){
 					lua.call(name,[]);
-					
+
 				});
 
 				timerCount++;
@@ -2629,9 +2629,6 @@ class PlayState extends MusicBeatState
 				{
 
 					FlxG.sound.playMusic(Paths.music('freakyMenu'));
-
-					transIn = FlxTransitionableState.defaultTransIn;
-					transOut = FlxTransitionableState.defaultTransOut;
 
 					FlxG.switchState(new StoryMenuState());
 

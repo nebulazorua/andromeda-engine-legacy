@@ -164,8 +164,6 @@ class CachingState extends FlxUIState {
     toLoad = images.length+sounds.length;
     if(toLoad<=0){
       InitState.initTransition();
-      transIn = FlxTransitionableState.defaultTransIn;
-      transOut = FlxTransitionableState.defaultTransOut;
       FlxG.switchState(finishState);
       return;
     }
@@ -266,8 +264,6 @@ class CachingState extends FlxUIState {
       new FlxTimer().start(5, function(tmr:FlxTimer)
       {
         InitState.initTransition();
-        transIn = FlxTransitionableState.defaultTransIn;
-        transOut = FlxTransitionableState.defaultTransOut;
         FlxG.switchState(finishState);
       });
     }
