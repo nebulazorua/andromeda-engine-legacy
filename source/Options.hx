@@ -122,6 +122,7 @@ class Options
 	public var judgeY:Float = 0;
 	public var fcBasedComboColor:Bool = false;
 	public var holdsBehindReceptors:Bool = false;
+	public var fastTransitions:Bool = false;
 
 	// performance
 	public var fps:Int = 120;

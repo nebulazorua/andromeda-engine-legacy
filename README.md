@@ -24,7 +24,7 @@ Andromeda Engine includes but is not limited to:
 - [Nebula the Zorua](https://twitter.com/Nebula_Zorua) - Most engine stuff
 - [TKTems](https://twitter.com/TKTems) - Menu stuff
 - [4mbr0s3 2](https://www.youtube.com/channel/UCez-Erpr0oqmC71vnDrM9yA) - Implementation concept for new modifier stuff and inspiration to even BOTHER working on it, also some code and math shit. Cool dude!!
-- [ILuvGemz](https://twitter.com/gemz_luv) - Lots of useful PRs and reporting and fixing bugs
+- [Zenokwei / ILuvGemz](https://twitter.com/gemz_luv) - Lots of useful PRs and reporting and fixing bugs
 - [FreestyleDev](https://twitter.com/Rapper_GF_Dev) - Music sync stuff
 - [kevinresol](https://github.com/kevinresol) - Original hxvm-lua
 - [AndreiDudenko](https://github.com/AndreiRudenko) - Original linc_luajit

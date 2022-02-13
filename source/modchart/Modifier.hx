@@ -53,8 +53,8 @@ class Modifier {
     }
   }
 
-  public function updateNote(pos:Vector3, scale:FlxPoint, note:Note){}
-  public function updateReceptor(pos:Vector3, scale:FlxPoint, receptor:Receptor){}
+  public function updateNote(note:Note, player:Int, pos:Vector3, scale:FlxPoint){}
+  public function updateReceptor(receptor:Receptor, player:Int, pos:Vector3, scale:FlxPoint){}
 
   public function update(elapsed:Float){};
 

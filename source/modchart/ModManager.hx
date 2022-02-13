@@ -61,7 +61,7 @@ class ModManager {
     defineMod("boost",new AccelModifier(this));
 
     defineMod("transformX",new TransformModifier(this));
-    /*var infPath:Array<Array<Vector3>>=[[],[],[],[] ];
+    var infPath:Array<Array<Vector3>>=[[],[],[],[] ];
 
     var r = 0;
     while(r<360){
@@ -73,13 +73,15 @@ class ModManager {
           0
         ));
       }
-      r+=10;
+      r+=30;
     }
-    defineMod("infinite",new PathModifier(this,infPath,2250));*/
+    defineMod("infinite",new PathModifier(this,infPath,2250));
+
+    defineMod("receptorScroll",new ReceptorScrollModifier(this));
     // an example of PathModifier using a figure 8 pattern
     // when creating a PathModifier, the 2nd argument is an array of arrays of Vector3
     // Array<Array<Vector3>> where the 1st (path[0]) element is the left's path and the 4th (path[3]) element is the right's path, and everything inbetween
-    // the 3rd argument is the ms it takes to go from the start of the path to the end. Higher numbers = slower speeds. 
+    // the 3rd argument is the ms it takes to go from the start of the path to the end. Higher numbers = slower speeds.
 
     var gameCams:Array<FlxCamera> = [state.camGame];
     var hudCams:Array<FlxCamera> = [state.camHUD];
@@ -238,9 +240,9 @@ class ModManager {
     return scale;
   }
 
-  public function updateNote(note:Note, scale:FlxPoint, pos:Vector3){
+  public function updateNote(note:Note, player:Int, scale:FlxPoint, pos:Vector3){
     for(mod in mods){
-      mod.updateNote(pos, scale, note);
+      mod.updateNote(note, player, pos, scale);
     }
   }
 
@@ -260,19 +262,23 @@ class ModManager {
     return scale;
   }
 
-  public function updateReceptor(rec:Receptor, scale:FlxPoint, pos:Vector3){
+  public function updateReceptor(rec:Receptor, player:Int, scale:FlxPoint, pos:Vector3){
     for(mod in mods){
-      mod.updateReceptor(pos, scale, rec);
+      mod.updateReceptor(rec, player, pos, scale);
     }
   }
 
-  public function queueEase(step:Float, endStep:Float, modName:String, percent:Float, style:String, player:Int=-1, ?startVal:Float){
+  public function queueEase(step:Float, endStep:Float, modName:String, percent:Float, style:String='linear', player:Int=-1, ?startVal:Float){
     if(player==-1){
       queueEase(step, endStep, modName, percent, style, 0);
       queueEase(step, endStep, modName, percent, style, 1);
     }else{
-      var easeFunc = Reflect.getProperty(FlxEase, style);
-      if(easeFunc==null)easeFunc=FlxEase.linear;
+      var easeFunc = FlxEase.linear;
+      try{
+        var newEase = Reflect.getProperty(FlxEase, style);
+        if(newEase!=null)easeFunc=newEase;
+      }
+
 
       schedule[modName].push(
         new EaseEvent(
@@ -291,6 +297,10 @@ class ModManager {
   }
 
   public function queueEaseL(step:Float, length:Float, modName:String, percent:Float, style:String, player:Int=-1, ?startVal:Float){
+    if(schedule[modName]==null){
+      trace('$modName is not a valid mod!');
+      return;
+    }
     if(player==-1){
       queueEaseL(step, length, modName, percent, style, 0);
       queueEaseL(step, length, modName, percent, style, 1);

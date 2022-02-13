@@ -37,12 +37,11 @@ class MusicBeatState extends FlxUIState
 
 	override function create()
 	{
-		if(lastState!=this){
+		//trace(Type.getClassName(Type.getClass(lastState)), Type.getClassName(Type.getClass(this)));
+		//if(Type.getClassName(Type.getClass(lastState))!=Type.getClassName(Type.getClass(this))){
 			trace("clearing cache");
 			Cache.wipe();
-		}
-		if (transIn != null)
-			trace('reg ' + transIn.region);
+		//}
 		super.create();
 	}
 

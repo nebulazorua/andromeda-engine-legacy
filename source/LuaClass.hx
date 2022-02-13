@@ -584,7 +584,8 @@ class LuaSprite extends LuaClass {
       return 0;
     }
     sprite.loadGraphic(data,animated,0,0,false,spriteName);
-    return 0;
+    Lua.pushvalue(state,1);
+    return 1;
   }
 
   private static function setFrames(l:StatePointer){
@@ -647,6 +648,35 @@ class LuaSprite extends LuaClass {
     Lua.pushnumber(state,sprite.x);
     Lua.pushnumber(state,sprite.y);
     return 2;
+  }
+
+  private static function makeGraphic(l:StatePointer):Int{
+    // 1 = self
+    // 2 = width
+    // 3 = height
+    // 4 = color
+    // 5 = unique
+    // 6 = key
+    var width:Int = Std.int(LuaL.checknumber(state,2));
+    var height:Int = Std.int(LuaL.checknumber(state,3));
+    var color:FlxColor = FlxColor.WHITE;
+    var unique:Bool = false;
+    var key:Null<String> = '';
+    if(Lua.isnumber(state,4))
+      color=FlxColor.fromInt(Std.int(Lua.tonumber(state,4)));
+    if(Lua.isboolean(state,5))
+      unique=Lua.toboolean(state,5);
+    if(Lua.isstring(state,6))
+      key=Lua.tostring(state,6);
+
+
+    Lua.getfield(state,1,"spriteName");
+    var spriteName = Lua.tostring(state,-1);
+    var sprite = PlayState.currentPState.luaSprites[spriteName];
+    sprite.makeGraphic(width,height,color,unique,key);
+
+    Lua.pushvalue(state,1);
+    return 1;
   }
 
   private static function playAnimSprite(l:StatePointer):Int{
@@ -713,7 +743,7 @@ class LuaSprite extends LuaClass {
     /*FlxTween.tween(sprite,properties,time,{
       ease: Reflect.field(FlxEase,style),
     });*/
-    FlxTween.color(sprite, time, startColour, endColour, {
+    FlxTween.color(sprite, time, FlxColor.fromInt(startColour), FlxColor.fromInt(endColour), {
       ease: Reflect.field(FlxEase,style),
     });
     return 1;
@@ -727,10 +757,15 @@ class LuaSprite extends LuaClass {
     Lua.getfield(state,1,"spriteName");
     var spriteName = Lua.tostring(state,-1);
     var sprite = PlayState.currentPState.luaSprites[spriteName];
-    var stage = PlayState.currentPState.stage;
+    var state = PlayState.currentPState;
+    var stage = state.stage;
     var layers:Array<String> = ["boyfriend","gf","dad"];
     if(stage.members.contains(sprite)){
       stage.remove(sprite);
+    }
+
+    if(state.members.contains(sprite)){
+      state.remove(sprite);
     }
 
     if(stage.foreground.members.contains(sprite)){
@@ -756,6 +791,8 @@ class LuaSprite extends LuaClass {
         stage.overlay.add(sprite);
       case 'stage':
         stage.add(sprite);
+      default:
+        state.add(sprite);
     }
 
     return 0;
@@ -771,6 +808,7 @@ class LuaSprite extends LuaClass {
   private static var loadGraphicC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(loadGraphic);
   private static var setFramesC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setFrames);
   private static var playAnimSpriteC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(playAnimSprite);
+  private static var makeGraphicC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(makeGraphic);
   private static var tweenC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(tween);
   private static var tweenColorC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(tweenColor);
   private static var changeLayerC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(changeLayer);
@@ -944,6 +982,17 @@ class LuaSprite extends LuaClass {
         },
         setter:function(l:State){
           LuaL.error(l,"loadGraphic is read-only.");
+          return 0;
+        }
+      },
+      "makeGraphic"=>{
+        defaultValue:0,
+        getter:function(l:State,data:Any){
+          Lua.pushcfunction(l,makeGraphicC);
+          return 1;
+        },
+        setter:function(l:State){
+          LuaL.error(l,"makeGraphic is read-only.");
           return 0;
         }
       },
@@ -2280,6 +2329,7 @@ class LuaModMgr extends LuaClass {
     try{
       mgr.queueEase(step,eStep,modN,perc,ease,player);
     }catch(e){
+      trace(step, eStep, modN, perc, ease, player);
       trace(e.stack,e.message);
     }
     return 0;

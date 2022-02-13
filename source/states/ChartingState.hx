@@ -1090,7 +1090,7 @@ class ChartingState extends MusicBeatState
 		vocals.pause();
 
 		// Basically old shit from changeSection???
-		FlxG.sound.music.time = sectionStartTime();
+		FlxG.sound.music.time = sectionStartTime()+1;
 
 		if (songBeginning)
 		{
@@ -1128,7 +1128,7 @@ class ChartingState extends MusicBeatState
 						daNum++;
 				}*/
 
-				FlxG.sound.music.time = sectionStartTime();
+				FlxG.sound.music.time = sectionStartTime()+1;
 				vocals.time = FlxG.sound.music.time;
 				updateCurStep();
 			}
@@ -1149,7 +1149,7 @@ class ChartingState extends MusicBeatState
 			var totalOffsets:Float = 0;
 			var copyOffsets:Float = 0;
 
-		
+
 		if (daSec > 0){
 			for (i in 0...daSec)
 				{

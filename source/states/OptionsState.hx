@@ -111,6 +111,7 @@ class OptionsState extends MusicBeatState
 				new ToggleOption("ghosttapSounds","Ghost-tap hit sounds","Play a click sound when you ghost-tap"),
 				new StepOption("hitsoundVol","Hit sound volume",10,0,100,"%","","What volume the hitsound should be",true),
 				new ToggleOption("freeplayPreview","Song preview in freeplay","Whether songs get played as you hover over them in Freeplay"),
+				new ToggleOption("fastTransitions","Fast Transitions","Makes transitions between states faster"),
 				new StateOption("Judgement Position",new JudgeCustomizationState()),
 			]),
 			new OptionCategory("Performance",[

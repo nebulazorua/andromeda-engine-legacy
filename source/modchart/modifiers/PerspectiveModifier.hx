@@ -71,11 +71,11 @@ class PerspectiveModifier extends Modifier {
     return getVector(pos.z,pos);
   }
 
-  override function updateReceptor(pos:Vector3, scale:FlxPoint, receptor:Receptor){
+  override function updateReceptor(receptor:Receptor, player:Int, pos:Vector3, scale:FlxPoint){
     scale.scale(1/pos.z);
   }
 
-  override function updateNote(pos:Vector3, scale:FlxPoint, note:Note){
+  override function updateNote(note:Note, player:Int, pos:Vector3, scale:FlxPoint){
     scale.scale(1/pos.z);
   }
 

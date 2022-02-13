@@ -56,9 +56,6 @@ class StoryMenuState extends MusicBeatState
 
 		weekUnlocked = EngineData.weeksUnlocked;
 
-		transIn = FlxTransitionableState.defaultTransIn;
-		transOut = FlxTransitionableState.defaultTransOut;
-
 		if (FlxG.sound.music != null)
 		{
 			if (!FlxG.sound.music.playing)
