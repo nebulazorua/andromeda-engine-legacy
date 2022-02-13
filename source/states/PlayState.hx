@@ -942,8 +942,14 @@ class PlayState extends MusicBeatState
 			}
 		}
 		for(note in removing){
-			unspawnNotes.remove(note);
-			destroyNote(note);
+			if(note.parentNote==null){
+				unspawnNotes.remove(note);
+				destroyNote(note);
+			}
+			for(tail in note.tail){
+				unspawnNotes.remove(tail);
+				destroyNote(tail);
+			}
 		}
 
 		shownAccuracy = 100;
@@ -1241,7 +1247,8 @@ class PlayState extends MusicBeatState
 		var swagCounter:Int = 0;
 		startTimer.start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
-			lua.call("countdown",[swagCounter]);
+			if(luaModchartExists && lua!=null)
+				lua.call("countdown",[swagCounter]);
 			dad.dance();
 			gf.dance();
 			boyfriend.dance();
@@ -1536,10 +1543,12 @@ class PlayState extends MusicBeatState
 						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 						var sussy = daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet;
 						var sustainNote:Note = new Note(sussy, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, true, getPosFromTime(sussy));
+						sustainNote.parentNote = swagNote;
 						sustainNote.cameras = [camSus];
 						sustainNote.scrollFactor.set();
 						unspawnNotes.push(sustainNote);
 						sustainNote.shitId = unspawnNotes.length;
+						swagNote.tail.push(sustainNote);
 
 						sustainNote.mustPress = gottaHitNote;
 						if(!gottaHitNote)sustainNote.causesMiss=false;

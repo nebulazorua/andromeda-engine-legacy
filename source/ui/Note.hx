@@ -17,6 +17,7 @@ import haxe.macro.Type;
 import lime.utils.Assets;
 import states.*;
 import Shaders;
+import flixel.group.FlxGroup.FlxTypedGroup;
 
 #if polymod
 import polymod.format.ParseRules.TargetSignatureElement;
@@ -83,6 +84,13 @@ class Note extends NoteGraphic
 	public static var behaviours:Map<String,NoteBehaviour>=[];
 	public static var swagWidth:Float = 160 * 0.7;
 	public var effect:NoteEffect;
+
+	// holds v2
+	public var parentNote:Note;
+	public var tail:Array<Note> = [];
+	public var holdTimer:Float = 0;
+
+	public var beingHeld:Bool = false;
 
 	public static var quants:Array<Int> = [
 		4, // quarter note
@@ -251,11 +259,6 @@ class Note extends NoteGraphic
 
 		zIndex+=desiredZIndex;
 
-		/*if(holdShader!=null){
-			holdShader.update(y);
-			//holdShader.setHeight(height);
-		}*/
-
 		if (mustPress)
 		{
 			var diff = strumTime-Conductor.songPosition;
@@ -276,7 +279,7 @@ class Note extends NoteGraphic
 
 
 
-			if (diff<-Conductor.safeZoneOffset && !wasGoodHit)
+			if (diff<-Conductor.safeZoneOffset && !wasGoodHit || parentNote!=null && parentNote.tooLate)
 				tooLate = true;
 		}
 		else
