@@ -86,10 +86,14 @@ class Note extends NoteGraphic
 	public var effect:NoteEffect;
 
 	// holds v2
-	public var parentNote:Note;
+	public var parent:Note;
 	public var tail:Array<Note> = [];
-	public var holdTimer:Float = 0;
+	public var unhitTail:Array<Note> = [];
+	public var tripTimer:Float = 1;
+	public var holdingTime:Float = 0;
+	public var segment:Float = 0;
 
+	public var causedMiss:Bool = false;
 	public var beingHeld:Bool = false;
 
 	public static var quants:Array<Int> = [
@@ -245,6 +249,7 @@ class Note extends NoteGraphic
 	override function update(elapsed:Float)
 	{
 		alpha = CoolUtil.scale(desiredAlpha,0,1,0,baseAlpha);
+		if(tooLate && !inCharter)alpha*=.3;
 		super.update(elapsed);
 
 		if(isSustainNote){
@@ -279,7 +284,7 @@ class Note extends NoteGraphic
 
 
 
-			if (diff<-Conductor.safeZoneOffset && !wasGoodHit || parentNote!=null && parentNote.tooLate)
+			if (diff<-Conductor.safeZoneOffset && !wasGoodHit)
 				tooLate = true;
 		}
 		else
@@ -291,7 +296,7 @@ class Note extends NoteGraphic
 			if(!opponentMisses){
 
 				if(isSustainNote){
-					if (diff <= hitbox*.5)
+					if (diff <= 0)
 						canBeHit = true;
 					else
 						canBeHit = false;

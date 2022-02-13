@@ -60,7 +60,7 @@ class ReverseModifier extends Modifier {
     return pos;
   }
 
-  override function updateNote(pos:Vector3, scale:FlxPoint, note:Note){
+  override function updateNote(note:Note, player:Int, pos:Vector3, scale:FlxPoint){
     /*var perc = getScrollReversePerc(note.noteData,note.mustPress==true?0:1);
     if(perc>.5 && note.isSustainNote){
       note.flipY=true;

@@ -73,10 +73,11 @@ class ModManager {
           0
         ));
       }
-      r+=10;
+      r+=30;
     }
     defineMod("infinite",new PathModifier(this,infPath,2250));
 
+    defineMod("receptorScroll",new ReceptorScrollModifier(this));
     // an example of PathModifier using a figure 8 pattern
     // when creating a PathModifier, the 2nd argument is an array of arrays of Vector3
     // Array<Array<Vector3>> where the 1st (path[0]) element is the left's path and the 4th (path[3]) element is the right's path, and everything inbetween
@@ -239,9 +240,9 @@ class ModManager {
     return scale;
   }
 
-  public function updateNote(note:Note, scale:FlxPoint, pos:Vector3){
+  public function updateNote(note:Note, player:Int, scale:FlxPoint, pos:Vector3){
     for(mod in mods){
-      mod.updateNote(pos, scale, note);
+      mod.updateNote(note, player, pos, scale);
     }
   }
 
@@ -261,9 +262,9 @@ class ModManager {
     return scale;
   }
 
-  public function updateReceptor(rec:Receptor, scale:FlxPoint, pos:Vector3){
+  public function updateReceptor(rec:Receptor, player:Int, scale:FlxPoint, pos:Vector3){
     for(mod in mods){
-      mod.updateReceptor(pos, scale, rec);
+      mod.updateReceptor(rec, player, pos, scale);
     }
   }
 

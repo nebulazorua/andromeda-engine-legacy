@@ -25,10 +25,6 @@ class FadeTransitionSubstate extends TransitionSubstate
   var gradientFill:FlxSprite;
   public function new(){
     super();
-    var cam = nextCamera!=null?nextCamera:(defaultCamera!=null?defaultCamera:FlxG.cameras.list[FlxG.cameras.list.length - 1]);
-    cameras = [cam];
-
-    nextCamera = null;
   }
 
   public override function destroy():Void
@@ -74,12 +70,15 @@ class FadeTransitionSubstate extends TransitionSubstate
 
 
   override public function start(status: TransitionStatus){
+    var cam = nextCamera!=null?nextCamera:(defaultCamera!=null?defaultCamera:FlxG.cameras.list[FlxG.cameras.list.length - 1]);
+    cameras = [cam];
+
+    nextCamera = null;
     trace('transitioning $status');
     curStatus=status;
     var yStart:Float = 0;
     var yEnd:Float = 0;
     var duration:Float = .48;
-    var cam = cameras[0];
     var angle:Int = 90;
     var zoom:Float = FlxMath.bound(cam.zoom,0.001);
     var width:Int = Math.ceil(cam.width/zoom);

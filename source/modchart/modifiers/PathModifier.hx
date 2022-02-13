@@ -24,6 +24,14 @@ class PathModifier extends Modifier {
     var dir:Int = 0;
     // ridiculous that haxe doesnt have a numeric for loop
 
+    // neb from the future here
+    //.. it fucking does
+    // I forgot about (for start...end)
+    // You just can't set the interval.
+    // how did i forget it fucking has a numeric for loop im gonna kms.
+
+    // TODO: rewrite this.
+
     while(dir<path.length){
       var idx = 0;
       totalDists[dir]=0;
@@ -69,6 +77,7 @@ class PathModifier extends Modifier {
 
     var idx:Int = 0;
     // STILL ridiculous
+    // no its not im just dumb
 
     while(idx<daPath.length){
       var cData = daPath[idx];

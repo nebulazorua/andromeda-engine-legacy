@@ -470,6 +470,14 @@ class PlayState extends MusicBeatState
 
 	override public function create()
 	{
+		camGame = new FNFCamera();
+		camRating = new FNFCamera();
+		camHUD = new FNFCamera();
+		camNotes = new FNFCamera();
+		camSus = new FNFCamera();
+		camReceptor = new FNFCamera();
+
+		FadeTransitionSubstate.nextCamera = camHUD;
 		super.create();
 
 		modchart = new ModChart(this);
@@ -529,12 +537,6 @@ class PlayState extends MusicBeatState
 		accuracy=1;
 
 		// var gameCam:FlxCamera = FlxG.camera;
-		camGame = new FNFCamera();
-		camRating = new FNFCamera();
-		camHUD = new FNFCamera();
-		camNotes = new FNFCamera();
-		camSus = new FNFCamera();
-		camReceptor = new FNFCamera();
 		camHUD.bgColor.alpha = 0;
 		camNotes.bgColor.alpha = 0;
 		camRating.bgColor.alpha = 0;
@@ -942,7 +944,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 		for(note in removing){
-			if(note.parentNote==null){
+			if(note.parent==null){
 				unspawnNotes.remove(note);
 				destroyNote(note);
 			}
@@ -1392,6 +1394,14 @@ class PlayState extends MusicBeatState
 		daNote.active = false;
 		daNote.visible = false;
 
+		if(daNote.parent!=null && daNote.parent.tail.contains(daNote)){
+			daNote.parent.tail.remove(daNote);
+		}
+
+		if(daNote.parent!=null && daNote.parent.unhitTail.contains(daNote)){
+			daNote.parent.unhitTail.remove(daNote);
+		}
+
 		daNote.kill();
 
 		renderedNotes.remove(daNote,true);
@@ -1543,12 +1553,14 @@ class PlayState extends MusicBeatState
 						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 						var sussy = daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet;
 						var sustainNote:Note = new Note(sussy, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, true, getPosFromTime(sussy));
-						sustainNote.parentNote = swagNote;
+						sustainNote.parent = swagNote;
 						sustainNote.cameras = [camSus];
 						sustainNote.scrollFactor.set();
 						unspawnNotes.push(sustainNote);
 						sustainNote.shitId = unspawnNotes.length;
+						sustainNote.segment = swagNote.tail.length;
 						swagNote.tail.push(sustainNote);
+						swagNote.unhitTail.push(sustainNote);
 
 						sustainNote.mustPress = gottaHitNote;
 						if(!gottaHitNote)sustainNote.causesMiss=false;
@@ -2210,7 +2222,7 @@ class PlayState extends MusicBeatState
 		{
 			var pos = modManager.getReceptorPos(spr,0);
 			var scale = modManager.getReceptorScale(spr,0);
-			modManager.updateReceptor(spr, scale, pos);
+			modManager.updateReceptor(spr, 0, scale, pos);
 
 			spr.desiredX = pos.x;
 			spr.desiredY = pos.y;
@@ -2224,7 +2236,7 @@ class PlayState extends MusicBeatState
 		{
 			var pos = modManager.getReceptorPos(spr,1);
 			var scale = modManager.getReceptorScale(spr,1);
-			modManager.updateReceptor(spr, scale, pos);
+			modManager.updateReceptor(spr, 1, scale, pos);
 
 			spr.desiredX = pos.x;
 			spr.desiredY = pos.y;
@@ -2301,7 +2313,7 @@ class PlayState extends MusicBeatState
 
 		while(unspawnNotes[0] != null)
 		{
-			if (Conductor.currentTrackPos-getPosFromTime(unspawnNotes[0].strumTime)>-4000)
+			if (Conductor.currentTrackPos-getPosFromTime(unspawnNotes[0].strumTime)>-3000)
 			{
 				var dunceNote:Note = unspawnNotes[0];
 
@@ -2332,6 +2344,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		var shouldResetDadReceptors:Bool = true; // lmao
 		if (generatedMusic)
 		{
 			if(startedCountdown){
@@ -2347,10 +2360,20 @@ class PlayState extends MusicBeatState
 					if(!daNote.mustPress){
 						strumLine = dadStrums.members[daNote.noteData];
 					}
+					var diff =  Conductor.songPosition - daNote.strumTime;
+			    var vDiff = (daNote.initialPos-Conductor.currentTrackPos);
+					if(daNote.unhitTail.length>0 && daNote.wasGoodHit){
+						diff=0;
+						vDiff=0;
+					}
 
-					var notePos = modManager.getNotePos(daNote);
+			    var notePos = modManager.getPath(diff, vDiff, daNote.noteData, daNote.mustPress==true?0:1);
+
+					notePos.x += daNote.manualXOffset;
+					notePos.y -= daNote.manualYOffset;
+
 					var scale = modManager.getNoteScale(daNote);
-					modManager.updateNote(daNote, scale, notePos);
+					modManager.updateNote(daNote, daNote.mustPress?0:1, scale, notePos);
 
 					daNote.x = notePos.x;
 					daNote.y = notePos.y;
@@ -2380,7 +2403,7 @@ class PlayState extends MusicBeatState
 							daNote.modAngle = deg + 90; // gets the angle in degrees instead of radians
 					}
 
-					var shitGotHit = (daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit);
+					var shitGotHit = (daNote.parent==null || daNote.parent.wasGoodHit) && (daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit);
 					var shit = strumLine.y + Note.swagWidth/2;
 					if(daNote.isSustainNote){
 						if(shitGotHit){
@@ -2404,30 +2427,69 @@ class PlayState extends MusicBeatState
 
 					}
 					scale.put();
+					var visibility:Bool=true;
 
 					if (daNote.y > FlxG.height)
 					{
-						daNote.visible = false;
+						visibility = false;
 					}
 					else
 					{
 						if((daNote.mustPress || !daNote.mustPress && !currentOptions.middleScroll)){
-							daNote.visible = true;
+							visibility = true;
 						}
 					}
 
 
 					if(!daNote.mustPress && currentOptions.middleScroll){
-						daNote.visible=false;
+						visibility=false;
 					}
 
-					if(daNote.isSustainNote ){
-						if(daNote.tooLate)
-							daNote.desiredAlpha = .3;
-					}else{
-						if(daNote.tooLate)
-							daNote.desiredAlpha = .3;
+					if(daNote.tail.length>0 && daNote.wasGoodHit){
+						visibility=false;
 					}
+
+					daNote.visible = visibility;
+
+					if(daNote.unhitTail.length > 0 && daNote.mustPress){ // NEW HOLD LOGIC
+						if(!daNote.tooLate && daNote.wasGoodHit){
+							var isHeld = pressedKeys[daNote.noteData];
+							var receptor = playerStrums.members[daNote.noteData];
+							if(isHeld && receptor.animation.curAnim.name!="confirm"){
+								receptor.playAnim("confirm");
+							}
+							daNote.holdingTime += elapsed*1000;
+
+							if(isHeld)
+								daNote.tripTimer = 1;
+							else
+								daNote.tripTimer -= elapsed/0.1; // maybe make the regrab timer an option
+								// idk lol
+
+							if(daNote.tripTimer<=0){
+								daNote.tripTimer=0;
+								trace("tripped hold");
+								daNote.tooLate=true;
+								daNote.wasGoodHit=false;
+								for(tail in daNote.tail){
+									if(!tail.wasGoodHit)
+										tail.tooLate=true;
+								}
+							}else{
+
+								for(tail in daNote.unhitTail){
+									if(tail.strumTime <= Conductor.songPosition && !tail.wasGoodHit && !tail.tooLate)
+										noteHit(tail);
+
+								}
+								boyfriend.holding=daNote.unhitTail.length>0;
+								if(daNote.unhitTail.length>0)
+									boyfriend.holdTimer=0;
+
+							}
+						}
+					}
+
 
 					if (!daNote.mustPress && daNote.canBeHit && !daNote.wasGoodHit)
 					{
@@ -2506,40 +2568,36 @@ class PlayState extends MusicBeatState
 						if (SONG.needsVoices)
 							vocals.volume = 1;
 						daNote.wasGoodHit=true;
+
 						lastHitDadNote=daNote;
-						if(!daNote.isSustainNote){
+						if(!daNote.isSustainNote && daNote.sustainLength==0){
 							destroyNote(daNote);
-						}else if(daNote.mustPress){
-							//susNoteLanes[daNote.noteData].remove(daNote);
+						}else if(daNote.isSustainNote){
+							if(daNote.parent.unhitTail.contains(daNote)){
+								daNote.parent.unhitTail.remove(daNote);
+							}
+						}
+
+						if(daNote.unhitTail.length>0){
+							shouldResetDadReceptors=false;
 						}
 					}
 
+
 					if(daNote!=null && daNote.alive){
-						if (daNote.tooLate || daNote.wasGoodHit && (isDownscroll && daNote.y>strumLine.y+daNote.height || !isDownscroll && daNote.y<strumLine.y-daNote.height || daNote.y < 0 || daNote.y > FlxG.height || daNote.strumTime - Conductor.songPosition < -300))
-						{
-							if (daNote.tooLate && daNote.causesMiss && daNote.mustPress)
-							{
-								//health -= 0.0475;
+						if(daNote.tooLate && daNote.mustPress && !daNote.isSustainNote && !daNote.causedMiss){
+							if(daNote.causesMiss){
+								daNote.causedMiss = true;
 								noteMiss(daNote.noteData);
-								if(!daNote.isSustainNote){
-									if(currentOptions.accuracySystem==2){
-										if(!daNote.isSustainNote){
-											totalNotes+=2;
-											hitNotes+=ScoreUtils.malewifeMissWeight;
-										}
-									}else{
-										hitNotes+=judgeMan.getJudgementAccuracy("miss");
-										if(currentOptions.accuracySystem!=1)
-											totalNotes++;
-									}
-								}
 
 								vocals.volume = 0;
 								updateAccuracy();
 							}
-							destroyNote(daNote);
 						}
 
+						if((isDownscroll && daNote.y>FlxG.height+daNote.height || !isDownscroll && daNote.y<-daNote.height || daNote.unhitTail.length==0 && daNote.sustainLength>0) && (daNote.tooLate || daNote.wasGoodHit)){
+							destroyNote(daNote);
+						}
 					}
 				});
 			}
@@ -2551,9 +2609,11 @@ class PlayState extends MusicBeatState
 		dadStrums.forEach(function(spr:Receptor)
 		{
 
-			if (spr.animation.finished && spr.animation.curAnim.name=='confirm' && (lastHitDadNote==null || !lastHitDadNote.isSustainNote || lastHitDadNote.animation.curAnim==null || lastHitDadNote.animation.curAnim.name.endsWith("end")))
-			{
-				spr.playAnim('static',true);
+			if(shouldResetDadReceptors){ // so when holding it wont awkwardly reset the anim
+				if (spr.animation.finished && spr.animation.curAnim.name=='confirm' && (lastHitDadNote==null || !lastHitDadNote.isSustainNote || lastHitDadNote.animation.curAnim==null || lastHitDadNote.animation.curAnim.name.endsWith("end")))
+				{
+					spr.playAnim('static',true);
+				}
 			}
 
 		});
@@ -2566,14 +2626,14 @@ class PlayState extends MusicBeatState
 				botplay();
 
 
-			if(pressedKeys.contains(true)){
+			/*if(pressedKeys.contains(true)){
 				for(idx in 0...pressedKeys.length){
 					var isHeld = pressedKeys[idx];
 					if(isHeld)
 						for(daNote in getHittableHolds(idx))
 							noteHit(daNote);
 				}
-			}
+			}*/
 		}
 
 		if(currentOptions.ratingInHUD){
@@ -3153,7 +3213,7 @@ class PlayState extends MusicBeatState
 	function getHittableHolds(?direction:Int=-1){
 		var sustains:Array<Note>=[];
 		for(note in getHittableNotes()){
-			if(note.isSustainNote){
+			if(note.isSustainNote && !note.parent.tooLate){
 				sustains.push(note);
 			}
 		}
@@ -3248,7 +3308,7 @@ class PlayState extends MusicBeatState
 			});
 			updateReceptors();
 
-			if (!note.isSustainNote)
+			if (!note.isSustainNote && note.tail.length==0)
 			{
 				note.kill();
 				if(note.mustPress){
@@ -3257,7 +3317,12 @@ class PlayState extends MusicBeatState
 				}
 				renderedNotes.remove(note, true);
 				note.destroy();
-			}else if(note.mustPress){
+			}else if(note.mustPress && note.isSustainNote){
+				if(note.parent!=null){
+					if(note.parent.unhitTail.contains(note)){
+						note.parent.unhitTail.remove(note);
+					}
+				}
 			//	susNoteLanes[note.noteData].remove(note);
 			}
 		}
