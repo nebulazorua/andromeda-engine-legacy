@@ -249,7 +249,7 @@ class Note extends NoteGraphic
 	override function update(elapsed:Float)
 	{
 		alpha = CoolUtil.scale(desiredAlpha,0,1,0,baseAlpha);
-		if(tooLate && !inCharter)alpha*=.3;
+		if(tooLate && !beingCharted)alpha*=.3;
 		super.update(elapsed);
 
 		if(isSustainNote){
