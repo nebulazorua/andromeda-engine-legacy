@@ -27,7 +27,7 @@ class NoteEffect {
 }
 
 
-class ColorSwap {
+class ColorSwapEffect {
   public var shader:ColorSwapShader = new ColorSwapShader();
   public var hasOutline(default, set):Bool = false;
   public var hue(default, set):Float = 0;
