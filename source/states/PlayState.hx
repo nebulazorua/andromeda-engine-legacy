@@ -1977,7 +1977,7 @@ class PlayState extends MusicBeatState
 			vcrDistortionHUD.update(elapsed);
 			vcrDistortionGame.update(elapsed);
 		}
-		modManager.update(elapsed);
+		//modManager.update(elapsed);
 		opponent = opponents.length>0?opponents[opponentIdx]:dad;
 
 		modchart.update(elapsed);
