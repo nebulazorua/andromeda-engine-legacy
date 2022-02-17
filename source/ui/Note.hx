@@ -18,11 +18,6 @@ import lime.utils.Assets;
 import states.*;
 import Shaders;
 import flixel.group.FlxGroup.FlxTypedGroup;
-
-#if polymod
-import polymod.format.ParseRules.TargetSignatureElement;
-#end
-
 using StringTools;
 
 typedef SkinManifest = {
