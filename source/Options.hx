@@ -130,6 +130,7 @@ class Options
 	public var noStage:Bool = false;
 	public var allowOrderSorting:Bool = true;
 	public var recycleComboJudges:Bool = false;
+	public var antialiasing:Bool = true;
 	public var shouldCache:Bool = false;
 	public var cacheCharacters:Bool = false;
 	public var cacheSongs:Bool = false;

@@ -11,6 +11,8 @@ import ui.*;
 import flixel.input.keyboard.FlxKey;
 import flixel.FlxState;
 import haxe.Timer;
+import flixel.FlxBasic;
+import flixel.FlxSprite;
 
 class MusicBeatState extends FlxUIState
 {
@@ -68,6 +70,15 @@ class MusicBeatState extends FlxUIState
 		}
 		#end
 
+		/*if(OptionUtils.options.antialiasing==false){
+			for(obj in members){
+				if((obj is FlxSprite)){
+					var sprite:FlxSprite=obj;
+					if(sprite.antialiasing)
+						sprite.antialiasing=false;
+				}
+			}
+		}*/
 		super.update(elapsed);
 	}
 
@@ -96,10 +107,21 @@ class MusicBeatState extends FlxUIState
 	{
 		//do literally nothing dumbass
 	}
+
 	override function switchTo(next:FlxState){
 		MusicBeatState.lastState=FlxG.state;
 		trace("i want " + Type.typeof(next) + " and am in " + Type.typeof(FlxG.state));
 		trace("last state is " + Type.typeof(MusicBeatState.lastState));
 		return super.switchTo(next);
+	}
+
+	override function add(obj:FlxBasic){
+		if(OptionUtils.options.antialiasing==false){
+			if((obj is FlxSprite)){
+				var sprite:FlxSprite = cast obj;
+				sprite.antialiasing=false;
+			}
+		}
+		return super.add(obj);
 	}
 }
