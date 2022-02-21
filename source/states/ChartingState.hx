@@ -165,7 +165,7 @@ class ChartingState extends MusicBeatState
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * _song.notes[curSection].lengthInSteps);
 		add(gridBG);
 
-		eventRow = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE, GRID_SIZE * 16);
+		eventRow = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.notes[curSection].lengthInSteps);
 		eventRow.x -= GRID_SIZE*2;
 		add(eventRow);
 
@@ -855,7 +855,8 @@ class ChartingState extends MusicBeatState
 				case 'song_speed':
 					_song.speed = nums.value;
 				case 'section_length':
-					trace("point and laugh at this user"); // no
+					_song.notes[curSection].lengthInSteps = Std.int(nums.value);
+					updateGrid();
 			}
 		}
 
@@ -1313,21 +1314,6 @@ class ChartingState extends MusicBeatState
 			if (FlxG.keys.justPressed.DOWN)
 				Conductor.changeBPM(Conductor.bpm - 1); */
 
-		var shiftThing:Int = 1;
-		if (FlxG.keys.pressed.SHIFT)
-			shiftThing = 4;
-		if (FlxG.keys.justPressed.D){
-			for(i in 0...shiftThing){
-				if (_song.notes[curSection + i] == null)
-				{
-					addSection(daSig);
-				}
-			}
-			changeSection(curSection + shiftThing);
-		}
-		if (FlxG.keys.justPressed.A)
-			changeSection(curSection - shiftThing);
-
 
 		timeTxt.text = timeTxt.text = Std.string(
 			"Song Time: " + FlxMath.roundDecimal(Conductor.songPosition / 1000, 2)) + " / "	+ Std.string(FlxMath.roundDecimal(FlxG.sound.music.length / 1000, 2)) + "\n";
@@ -1618,11 +1604,15 @@ class ChartingState extends MusicBeatState
 
 		remove(gridBG);
 		remove(gridBlackLine);
+		remove(eventRow);
 		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * Conductor.timeSignature);
 		gridBlackLine.makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
+		eventRow = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE, GRID_SIZE * Conductor.timeSignature);
+		eventRow.x -= GRID_SIZE*2;
 		insert(members.indexOf(chartingBG)+1, gridBG);
 		insert(members.indexOf(rightIcon)+1, gridBlackLine);
-		
+		insert(members.indexOf(gridBG)+1, eventRow);
+
 		var idx:Int=0;
 		if(events!=null){
 			for(i in events){
@@ -1929,12 +1919,12 @@ class ChartingState extends MusicBeatState
 
 	function getEventTime(yPos:Float):Float
 	{
-		return FlxMath.remapToRange(yPos, eventRow.y, eventRow.y + eventRow.height, 0, 16 * Conductor.stepCrochet);
+		return FlxMath.remapToRange(yPos, eventRow.y, eventRow.y + eventRow.height, 0, Conductor.timeSignature * Conductor.stepCrochet);
 	}
 
 	function getYfromEvent(strumTime:Float):Float
 	{
-		return FlxMath.remapToRange(strumTime, 0, 16 * Conductor.stepCrochet, eventRow.y, eventRow.y + eventRow.height);
+		return FlxMath.remapToRange(strumTime, 0, Conductor.timeSignature * Conductor.stepCrochet, eventRow.y, eventRow.y + eventRow.height);
 	}
 
 	/*
