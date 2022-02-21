@@ -8,6 +8,7 @@ import flixel.FlxG;
 import Shaders;
 import flixel.math.FlxMath;
 import flixel.FlxSprite;
+import Options;
 
 class FNFCamera extends FlxCamera {
   public var scrollOffset:FlxPoint = FlxPoint.get();
@@ -26,6 +27,8 @@ class FNFCamera extends FlxCamera {
     super(X,Y,Width,Height,Zoom);
 
     raymarcherShader = new ShaderFilter(raymarcher.shader);
+    if(!OptionUtils.options.raymarcher)
+      useRaymarcher=false;
 
     if(useRaymarcher){
       _filters = [raymarcherShader];
