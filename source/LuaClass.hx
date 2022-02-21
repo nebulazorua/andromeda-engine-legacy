@@ -315,6 +315,24 @@ class LuaSprite extends LuaClass {
       return 0;
   }
 
+  private function SetAntialiasing(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TBOOLEAN){
+        LuaL.error(l,"invalid argument #3 (boolean expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      var value = Lua.toboolean(l,3);
+      if(OptionUtils.options.antialiasing==false)
+        value = false;
+
+      Reflect.setProperty(sprite,Lua.tostring(l,2),value);
+      return 0;
+  }
+
+
   private function GetBoolProperty(l:State,data:Any){
       // 1 = self
       // 2 = key
@@ -890,7 +908,7 @@ class LuaSprite extends LuaClass {
       "antialiasing"=>{
         defaultValue:sprite.antialiasing,
         getter:GetBoolProperty,
-        setter:SetBoolProperty
+        setter:SetAntialiasing
       },
       "active"=>{
         defaultValue:sprite.active,
@@ -1342,6 +1360,23 @@ class LuaCam extends LuaClass {
   private static var setScaleC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(setScale);
   private static var addShadersC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addShaders);
 
+  private function SetAntialiasing(l:State){
+      // 1 = self
+      // 2 = key
+      // 3 = value
+      // 4 = metatable
+      if(Lua.type(l,3)!=Lua.LUA_TBOOLEAN){
+        LuaL.error(l,"invalid argument #3 (boolean expected, got " + Lua.typename(l,Lua.type(l,3)) + ")");
+        return 0;
+      }
+      var value = Lua.toboolean(l,3);
+      if(OptionUtils.options.antialiasing==false)
+        value = false;
+
+      Reflect.setProperty(camera,Lua.tostring(l,2),value);
+      return 0;
+  }
+
   public function new(cam:FlxCamera,name:String,?addToGlobal:Bool=true){
     super();
     className=name;
@@ -1398,7 +1433,7 @@ class LuaCam extends LuaClass {
       "antialiasing"=>{
         defaultValue:cam.antialiasing,
         getter:GetBoolProperty,
-        setter:SetBoolProperty
+        setter:SetAntialiasing
       },
       "filtersEnabled"=>{
         defaultValue:cam.filtersEnabled,

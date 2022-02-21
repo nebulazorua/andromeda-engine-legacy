@@ -121,6 +121,7 @@ class OptionsState extends MusicBeatState
 				new ToggleOption("recycleComboJudges","Recycling","Instead of making a new sprite for each judgement and combo number, objects are reused when possible.\nMay cause layering issues."),
 				new ToggleOption("noChars","Hide characters","Hides characters ingame"),
 				new ToggleOption("noStage","Hide background","Hides stage ingame"),
+				new ToggleOption("antialiasing","Antialiasing","Toggles the ability for sprites to have antialiasing"),
 				new ToggleOption("allowOrderSorting","Sort notes by order","Allows notes to go infront and behind other notes. May cause FPS drops on very high note-density charts."),
 				new OptionCategory("Loading",[
 					new ToggleOption("shouldCache","Cache on startup","Whether the engine caches stuff when the game starts"),

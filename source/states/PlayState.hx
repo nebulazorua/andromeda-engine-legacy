@@ -2580,6 +2580,11 @@ class PlayState extends MusicBeatState
 						daNote.wasGoodHit=true;
 
 						lastHitDadNote=daNote;
+
+						if(daNote.parent!=null && daNote.parent.unhitTail.length>0)
+							shouldResetDadReceptors=false;
+
+
 						if(!daNote.isSustainNote && daNote.sustainLength==0){
 							destroyNote(daNote);
 						}else if(daNote.isSustainNote){
@@ -2588,9 +2593,7 @@ class PlayState extends MusicBeatState
 							}
 						}
 
-						if(daNote.unhitTail.length>0){
-							shouldResetDadReceptors=false;
-						}
+
 					}
 
 
@@ -2605,7 +2608,7 @@ class PlayState extends MusicBeatState
 							}
 						}
 
-						if((isDownscroll && daNote.y>FlxG.height+daNote.height || !isDownscroll && daNote.y<-daNote.height || daNote.unhitTail.length==0 && daNote.sustainLength>0) && (daNote.tooLate || daNote.wasGoodHit)){
+						if((isDownscroll && daNote.y>FlxG.height+daNote.height || !isDownscroll && daNote.y<-daNote.height || daNote.unhitTail.length==0 && daNote.sustainLength>0 || daNote.isSustainNote && daNote.strumTime - Conductor.songPosition < -250) && (daNote.tooLate || daNote.wasGoodHit)){
 							destroyNote(daNote);
 						}
 					}
@@ -2620,13 +2623,14 @@ class PlayState extends MusicBeatState
 		{
 
 			if(shouldResetDadReceptors){ // so when holding it wont awkwardly reset the anim
-				if (spr.animation.finished && spr.animation.curAnim.name=='confirm' && (lastHitDadNote==null || !lastHitDadNote.isSustainNote || lastHitDadNote.animation.curAnim==null || lastHitDadNote.animation.curAnim.name.endsWith("end")))
+				if (spr.animation.finished && spr.animation.curAnim.name=='confirm')
 				{
 					spr.playAnim('static',true);
 				}
 			}
 
 		});
+		FlxG.watch.addQuick("note count", renderedNotes.members.length);
 
 		strumLineNotes.sort(sortByOrder);
 
