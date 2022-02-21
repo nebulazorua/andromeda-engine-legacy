@@ -2,9 +2,189 @@ package;
 import flixel.system.debug.log.LogStyle;
 using StringTools;
 import JudgementManager;
+import flixel.tweens.FlxEase;
+
+enum EventArgType {
+  Checkbox;
+  Text;
+  Dropdown;
+  CharacterDropdown;
+  Number;
+  SteppedNumber;
+}
+
+typedef EventArg = {
+  var name:String;
+  var type:EventArgType;
+  @:optional var getDefaultValue:Void->Dynamic;
+  @:optional var defaultVal:Dynamic;
+
+
+  @:optional var dropdownValues:Array<String>; // only for 'Dropdown' EventArgType
+  @:optional var step:Float;  // only for 'SteppedNumber' EventArgType
+  @:optional var min:Float; // for 'SteppedNumber' and 'Number' EventArgType
+  @:optional var max:Float; // for 'SteppedNumber' and 'Number' EventArgType
+
+  @:optional var getDropdownValues:Void->Dynamic; // only for 'Dropdown' EventArgType
+  // used so you dont have to hardcode shit like CharacterDropdown is, and that only is because its used fairly often
+}
+
+typedef EventInfo = {
+  var name:String;
+  var arguments:Array<EventArg>;
+}
+
 class EngineData {
-  public static var LUAERROR:LogStyle = new LogStyle("[MODCHART] ", "FF8888", 12, false, false, false, null, true);
-  public static var characters:Array<String> = [];
+  // should there be a better way to create these? possibly
+  // but this works for now lmao
+  public static var events:Array<EventInfo> = [
+    {
+      name: "",
+      arguments: [
+
+      ]
+    },
+    {
+      name: "Change Character",
+      arguments: [
+        {
+          name: "Character",
+          type: EventArgType.Dropdown,
+          defaultVal: "bf",
+          dropdownValues: ["bf","dad","gf"]
+        },
+        {
+          name: "New Character",
+          type: EventArgType.CharacterDropdown
+        }
+      ]
+    },
+    {
+      name: "Play Anim",
+      arguments: [
+        {
+          name: "Character",
+          type: EventArgType.Dropdown,
+          defaultVal: "bf",
+          dropdownValues: ["bf","dad","gf"]
+        },
+        {
+          name: "Animation",
+          type: EventArgType.Text
+        },
+        {
+          name: "Duration in seconds",
+          type: EventArgType.SteppedNumber,
+          step: 0.05,
+          defaultVal: 1,
+        }
+      ]
+    },
+    {
+      name: "Scroll Velocity",
+      arguments: [
+        {
+          name: "Type",
+          type: EventArgType.Dropdown,
+          defaultVal: "mult",
+          dropdownValues: ["mult", "constant"]
+        },
+        {
+          name: "Value",
+          type: EventArgType.SteppedNumber,
+          step: 0.05,
+          defaultVal: 1,
+        }
+      ]
+    },
+    {
+      name: "Set Modifier",
+      arguments: [
+        {
+          name: "Modifier",
+          type: EventArgType.Text
+        },
+        {
+          name: "Value",
+          type: EventArgType.SteppedNumber,
+          step: 1,
+          defaultVal: 0,
+        },
+        {
+          name: "Player",
+          type: EventArgType.Dropdown,
+          defaultVal: "player",
+          dropdownValues: ["player","opponent","both"]
+        },
+      ]
+    },
+    //queueEase(step:Float, endStep:Float, modName:String, percent:Float, style:String='linear', player:Int=-1, ?startVal:Float)
+    {
+      name: "Ease Modifier",
+      // TODO: Function which lets you set how to show the event's length
+      arguments: [
+        {
+          name: "Modifier",
+          type: EventArgType.Text
+        },
+        {
+          name: "Value",
+          type: EventArgType.SteppedNumber,
+          step: 1,
+          defaultVal: 0,
+        },
+        {
+          name: "Length in steps",
+          type: EventArgType.SteppedNumber,
+          step: 1,
+          defaultVal: 4,
+        },
+        {
+          name: "Ease",
+          type: EventArgType.Dropdown,
+          defaultVal: "linear",
+          /*getDropdownValues: function(){
+            var vals:Array<String> = [];
+            for(field in Type.getInstanceFields(FlxEase)){
+              vals.push(field.toLowerCase());
+              trace(field);
+            }
+            return vals;
+          }*/ // idk why this doesnt work
+
+          getDropdownValues: function(){
+            var eases:Array<String> = ["sine","quad","cube","quart","quint","expo","circ","back","elastic","bounce","smoothStep","smootherStep"];
+            var vals:Array<String> = ["linear"];
+            for(func in eases){
+              vals.push('${func}Out');
+              vals.push('${func}InOut');
+              vals.push('${func}In');
+            }
+            return vals;
+          }
+        },
+        {
+          name: "Player",
+          type: EventArgType.Dropdown,
+          defaultVal: "player",
+          dropdownValues: ["player","opponent","both"]
+        },
+      ]
+    },
+    {
+      name: "Custom",
+      arguments: [
+        {
+          name: "Value 1",
+          type: EventArgType.Text
+        },
+        {
+          name: "Value 2",
+          type: EventArgType.Text
+        }
+      ]
+    },
+  ];
   public static var noteTypes:Array<String> = ["default","alt","mine"];
   public static var validJudgements:Array<String> = ["epic","sick","good","bad","shit","miss"];
   public static var defaultJudgementData:JudgementInfo = {
@@ -16,8 +196,6 @@ class EngineData {
     judgementWindows: {sick: 43, good: 85, bad: 126, shit: 166, miss: 180}
     // miss window acts as a sort of "antimash"
   };
-  public static var createThread=false;
-  public static var options:Options;
   public static var weeksUnlocked:Array<Bool>=[true,true,true,true,true,true];
   public static var mustUnlockWeeks:Bool=false; // TODO: make this work
   public static var weekData:Array<WeekData> = [
@@ -55,6 +233,12 @@ class EngineData {
       new SongData("Thorns","spirit",6),
     ]),
   ];
+
+  // DON'T EDIT BEYOND THIS POINT!
+  public static var LUAERROR:LogStyle = new LogStyle("[MODCHART] ", "FF8888", 12, false, false, false, null, true);
+  public static var characters:Array<String> = []; // DON'T EDIT!
+  public static var createThread=false; // DON'T EDIT!
+  public static var options:Options; // DON'T EDIT!
 }
 
 

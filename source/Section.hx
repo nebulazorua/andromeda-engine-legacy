@@ -2,6 +2,12 @@ package;
 
 import flixel.util.typeLimit.OneOfTwo;
 
+typedef Event = {
+	var name: String;
+	var time: Float;
+	var args: Array<Dynamic>;
+}
+
 typedef SwagSection =
 {
 	var sectionNotes:Array<Array<Dynamic>>;
@@ -11,6 +17,7 @@ typedef SwagSection =
 	var bpm:Int;
 	var changeBPM:Bool;
 	var altAnim:Bool;
+	@:optional var events:Array<Event>;
 }
 
 class Section

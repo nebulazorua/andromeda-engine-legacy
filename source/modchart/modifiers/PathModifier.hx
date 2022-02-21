@@ -73,7 +73,7 @@ class PathModifier extends Modifier {
     var progress  = (vDiff / -moveSpeed) * totalDists[data];
     var outPos = pos.clone();
     var daPath = pathData[data];
-    if(progress==0)return pos.lerp(daPath[0].position,getPercent(player));
+    if(progress<=0)return pos.lerp(daPath[0].position,getPercent(player));
 
     var idx:Int = 0;
     // STILL ridiculous

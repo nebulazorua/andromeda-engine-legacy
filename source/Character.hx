@@ -57,6 +57,7 @@ class Character extends FlxSprite
 	public var camOffset = FlxPoint.get(150,-100);
 	public var charData:CharJson;
 	public var dadVar:Float = 4;
+	public var noIdleTimer:Float = 0;
 	public var isIdling:Bool=false;
 	public var hasSprite:Bool=true;
 	public var camMovementMult:Float = 1;
@@ -394,6 +395,8 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
+		noIdleTimer -= elapsed*1000;
+		if(noIdleTimer<0)noIdleTimer=0;
 		if (!isPlayer)
 		{
 			if(animation.curAnim!=null){
@@ -440,7 +443,7 @@ class Character extends FlxSprite
 	 */
 	public function dance(?forced:Bool)
 	{
-		if (!disabledDance && animation.curAnim!=null)
+		if (!disabledDance && animation.curAnim!=null && noIdleTimer<=0)
 		{
 			if(forced==null)forced=beatDancer;
 

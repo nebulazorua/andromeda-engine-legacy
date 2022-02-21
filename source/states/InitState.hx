@@ -136,11 +136,11 @@ class InitState extends FlxUIState {
 
     //characters
     var nextState:FlxUIState = new TitleState();
-    if(currentOptions.shouldCache && canCache){
+    if(currentOptions.shouldCache && canCache)
       nextState = new CachingState(nextState);
-    }else{
+    else
       initTransition();
-    }
+
 
     #if GOTO_CHAR_EDITOR
     FlxG.switchState(new CharacterEditorState('bf',nextState));
