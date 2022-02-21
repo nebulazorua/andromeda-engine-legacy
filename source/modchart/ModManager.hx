@@ -27,6 +27,9 @@ class ModManager {
   public var receptors:Array<Array<Receptor>>=[[],[]];
   public function new(state:PlayState){
     this.state = state;
+  }
+
+  public function setReceptors(){
     var playerReceptors = state.playerStrums;
     var dadReceptors = state.dadStrums;
 
@@ -80,7 +83,7 @@ class ModManager {
     // when creating a PathModifier, the 2nd argument is an array of arrays of Vector3
     // Array<Array<Vector3>> where the 1st (path[0]) element is the left's path and the 4th (path[3]) element is the right's path, and everything inbetween
     // the 3rd argument is the ms it takes to go from the start of the path to the end. Higher numbers = slower speeds.
-    
+
     defineMod("receptorScroll",new ReceptorScrollModifier(this));
 
 

@@ -60,6 +60,7 @@ import Controls.Control;
 import openfl.media.Sound;
 import openfl.display.GraphicsShader;
 import sys.io.File;
+import Section.Event;
 
 #if cpp
 import vm.lua.LuaVM;
@@ -121,11 +122,13 @@ class PlayState extends MusicBeatState
 	private var strumLine:FlxSprite;
 	private var curSection:Int = 0;
 
+
 	private var camFollow:FlxObject;
 	public var currentOptions:Options;
 
 	private static var prevCamFollow:FlxObject;
 	private var lastHitDadNote:Note;
+	public var eventSchedule:Array<Event> = [];
 	public var strumLineNotes:FlxTypedGroup<Receptor>;
 	public var playerStrums:FlxTypedGroup<Receptor>;
 	public var dadStrums:FlxTypedGroup<Receptor>;
@@ -832,6 +835,10 @@ class PlayState extends MusicBeatState
 
 		// startCountdown();
 
+
+		modManager = new ModManager(this);
+		modManager.registerModifiers();
+
 		generateSong();
 
 		// add(strumLine);
@@ -863,9 +870,9 @@ class PlayState extends MusicBeatState
 		if(currentOptions.healthBarColors)
 			healthBar.setColors(dad.iconColor,boyfriend.iconColor);
 
-		if(currentOptions.downScroll){
+		if(currentOptions.downScroll)
 			healthBar.y = FlxG.height*.1;
-		}
+
 
 
 		scoreTxt = new FlxText(healthBar.bg.x + healthBar.bg.width / 2 - 150, healthBar.bg.y + 25, 0, "", 20);
@@ -941,19 +948,19 @@ class PlayState extends MusicBeatState
 
 		var removing:Array<Note>=[];
 		for(note in unspawnNotes){
-			if(note.strumTime<startPos){
+			if(note.strumTime<startPos && !note.isSustainNote){
 				removing.push(note);
 			}
 		}
 		for(note in removing){
-			if(note.parent==null){
-				unspawnNotes.remove(note);
-				destroyNote(note);
-			}
+			unspawnNotes.remove(note);
+
 			for(tail in note.tail){
 				unspawnNotes.remove(tail);
 				destroyNote(tail);
 			}
+			destroyNote(note);
+
 		}
 
 		shownAccuracy = 100;
@@ -969,6 +976,7 @@ class PlayState extends MusicBeatState
 			overlay.scrollFactor.set();
 			add(overlay);
 		}
+
 		if (isStoryMode)
 		{
 			switch (curSong.toLowerCase())
@@ -1030,39 +1038,102 @@ class PlayState extends MusicBeatState
 		return reg1.replace(reg2.replace(a,""),"");
 	}
 
-	public function swapCharacterByLuaName(spriteName:String,newCharacter:String){
-		var sprite = luaSprites[spriteName];
+	public function swapCharacter(who:String, newCharacter:String){
+		var sprite:Character = null;
+		switch(who){
+			case 'dad':
+				sprite=dad;
+			case 'bf' | 'boyfriend':
+				who='bf';
+				sprite=boyfriend;
+			case 'gf' | 'girlfriend':
+				who='gf';
+				sprite=gf;
+		}
 		if(sprite!=null){
 			var newSprite:Character;
 			var spriteX = sprite.x;
 			var spriteY = sprite.y;
+			var offX = sprite.posOffset.x;
+			var offY = sprite.posOffset.y;
+
+			var newX = spriteX - offX;
+			var newY = spriteY - offY;
+
 			var currAnim:String = "idle";
 			if(sprite.animation.curAnim!=null)
 				currAnim=sprite.animation.curAnim.name;
-			trace(currAnim);
 			remove(sprite);
 			// TODO: Make this BETTER!!!
-			if(spriteName=="bf"){
-				boyfriend = new Boyfriend(spriteX,spriteY,newCharacter,boyfriend.hasSprite);
+			if(who=="bf"){
+				boyfriend = new Boyfriend(newX,newY,newCharacter,boyfriend.hasSprite);
 				newSprite = boyfriend;
-				bfLua.sprite = boyfriend;
+				if(bfLua!=null)bfLua.sprite = boyfriend;
 				//iconP1.changeCharacter(newCharacter);
-			}else if(spriteName=="dad"){
+			}else if(who=="dad"){
 				var index = opponents.indexOf(dad);
 				if(index>=0)opponents.remove(dad);
-				dad = new Character(spriteX,spriteY,newCharacter, dad.isPlayer ,dad.hasSprite);
+				dad = new Character(newX,newY,newCharacter, dad.isPlayer ,dad.hasSprite);
 				newSprite = dad;
-				dadLua.sprite = dad;
+				if(dadLua!=null)dadLua.sprite = dad;
 				if(index>=0)opponents.insert(index,dad);
 
 				//iconP2.changeCharacter(newCharacter);
-			}else if(spriteName=="gf"){
-				gf = new Character(spriteX,spriteY,newCharacter, gf.isPlayer ,gf.hasSprite);
+			}else if(who=="gf"){
+				gf = new Character(newX,newY,newCharacter, gf.isPlayer ,gf.hasSprite);
 				newSprite = gf;
-				gfLua.sprite = gf;
+				if(gfLua!=null)gfLua.sprite = gf;
 			}else{
-				newSprite = new Character(spriteX,spriteY,newCharacter);
+				newSprite = new Character(newX,newY,newCharacter);
 			}
+
+			newSprite.x += newSprite.posOffset.x;
+			newSprite.y += newSprite.posOffset.y;
+			healthBar.setIcons(boyfriend.iconName,dad.iconName);
+			if(currentOptions.healthBarColors)
+				healthBar.setColors(dad.iconColor,boyfriend.iconColor);
+
+			add(newSprite);
+			if(currAnim!="idle" && !currAnim.startsWith("dance")){
+				newSprite.playAnim(currAnim,true);
+			}else if(currAnim=='idle' || currAnim.startsWith("dance")){
+				newSprite.dance();
+			}
+
+			return newSprite;
+
+		}
+		return null;
+	}
+	// shit bandaid solution
+
+	public function swapCharacterByLuaName(spriteName:String,newCharacter:String){
+		var sprite = luaSprites[spriteName];
+		if(spriteName == 'bf' || spriteName == 'gf' || spriteName =='dad'){
+			var newChar = swapCharacter(spriteName,newCharacter);
+			luaSprites[spriteName] = newChar;
+			return;
+		}
+		if(sprite!=null){
+			var newSprite:Character;
+			var spriteX = sprite.x;
+			var spriteY = sprite.y;
+			var offX = sprite.posOffset.x;
+			var offY = sprite.posOffset.y;
+
+			var newX = spriteX - offX;
+			var newY = spriteY - offY;
+
+			var currAnim:String = "idle";
+			if(sprite.animation.curAnim!=null)
+				currAnim=sprite.animation.curAnim.name;
+			remove(sprite);
+			// TODO: Make this BETTER!!!
+			newSprite = new Character(newX,newY,newCharacter);
+
+
+			newSprite.x += newSprite.posOffset.x;
+			newSprite.y += newSprite.posOffset.y;
 			healthBar.setIcons(boyfriend.iconName,dad.iconName);
 			if(currentOptions.healthBarColors)
 				healthBar.setColors(dad.iconColor,boyfriend.iconColor);
@@ -1177,8 +1248,7 @@ class PlayState extends MusicBeatState
 		generateStaticArrows(0, 1);
 		generateStaticArrows(1, 0);
 
-		modManager = new ModManager(this);
-		modManager.registerModifiers();
+		modManager.setReceptors();
 
 		#if FORCE_LUA_MODCHARTS
 		setupLuaSystem();
@@ -1396,24 +1466,65 @@ class PlayState extends MusicBeatState
 
 	var debugNum:Int = 0;
 
+	function eventInit(event: Event):Bool
+	{
+		switch(event.name){
+			case 'Change Character':
+				trace(event.args[1]);
+				var cache = new Character(-9000, -9000, event.args[1], event.args[0]=='bf');
+				cache.alpha=1/9999;
+				add(cache);
+				remove(cache);
+			case 'Set Modifier':
+				var step = Conductor.getStep(event.time);
+				var player:Int = 0;
+				switch(event.args[2]){
+					case 'player':
+						player = 0;
+					case 'opponent':
+						player = 1;
+					case 'both':
+						player = -1;
+				}
+				modManager.queueSet(step, event.args[0], event.args[1], player);
+				return false;
+			case 'Ease Modifier':
+				var step = Conductor.getStep(event.time);
+				var player:Int = 0;
+				switch(event.args[4]){
+					case 'player':
+						player = 0;
+					case 'opponent':
+						player = 1;
+					case 'both':
+						player = -1;
+				}
+				modManager.queueEase(step, step+event.args[2], event.args[0], event.args[1], event.args[3], player);
+				return false;
+			default:
+			// nothing
+		}
+		return true;
+	}
+
 	private function destroyNote(daNote:Note){
 		daNote.active = false;
 		daNote.visible = false;
 
-		if(daNote.parent!=null && daNote.parent.tail.contains(daNote)){
-			daNote.parent.tail.remove(daNote);
-		}
-
-		if(daNote.parent!=null && daNote.parent.unhitTail.contains(daNote)){
-			daNote.parent.unhitTail.remove(daNote);
-		}
-
 		daNote.kill();
 
 		renderedNotes.remove(daNote,true);
-		if(daNote.mustPress){
+		if(daNote.mustPress)
 			playerNotes.remove(daNote);
-		}
+
+
+		if(daNote.parent!=null && daNote.parent.tail.contains(daNote))
+			daNote.parent.tail.remove(daNote);
+
+
+		if(daNote.parent!=null && daNote.parent.unhitTail.contains(daNote))
+			daNote.parent.unhitTail.remove(daNote);
+
 		daNote.destroy();
 	}
 
@@ -1500,7 +1611,14 @@ class PlayState extends MusicBeatState
 		{
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
 			section.sectionNotes.sort((a,b)->Std.int(a[0]-b[0]));
+			if(section.events!=null){
+				section.events.sort((a,b)->Std.int(a.time-b.time));
+				for(event in section.events){
+					var shouldSchedule = eventInit(event);
+					if(shouldSchedule)eventSchedule.push(event);
+				}
 
+			}
 			for (songNotes in section.sectionNotes)
 			{
 				var daStrumTime:Float = songNotes[0];
@@ -1613,11 +1731,18 @@ class PlayState extends MusicBeatState
 
 		unspawnNotes.sort(sortByShit);
 
+		if(eventSchedule.length>1)
+			eventSchedule.sort(sortByEvents);
 
 
 		generatedMusic = true;
 
 		updateAccuracy();
+	}
+
+	function sortByEvents(Obj1:Event, Obj2:Event):Int
+	{
+		return FlxSort.byValues(FlxSort.ASCENDING, Obj1.time, Obj2.time);
 	}
 
 	function sortByShit(Obj1:Note, Obj2:Note):Int
@@ -1971,6 +2096,31 @@ class PlayState extends MusicBeatState
 				scoreTxt.text = 'Score: ${songScore} | ${accuracyName}: ${shownAccuracy}% | ${grade}';
 			}
 		}
+	}
+
+	function doEvent(event:Event) : Void {
+		var args = event.args;
+		switch (event.name){
+			case 'Change Character':
+				trace(args[0],args[1]);
+				swapCharacter(args[0],args[1]);
+			case 'Play Anim':
+				var char:Character = boyfriend;
+				switch (args[0]){
+					case 'gf':
+						char = gf;
+					case 'dad':
+						char=dad;
+				}
+				char.noIdleTimer = args[2]*1000;
+				char.playAnim(args[1],true);
+			case 'Custom':
+				FlxG.log.add('hit custom event. ${args[1]} ${args[2]}');
+		}
+
+		if(luaModchartExists && lua!=null)
+			lua.call("doEvent",[event.name, event.args]); // TODO: Note lua class???
+
 	}
 
 	var differences:Array<Float>=[];
@@ -2342,6 +2492,16 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		while(eventSchedule[0]!=null){
+			var event = eventSchedule[0];
+			if(Conductor.songPosition >= event.time){
+				doEvent(event);
+				eventSchedule.shift();
+			}else{
+				break;
+			}
+		}
+
 		var bfVar:Float=boyfriend.dadVar;
 
 		if(boyfriend.animation.curAnim!=null){
@@ -2355,21 +2515,30 @@ class PlayState extends MusicBeatState
 		}
 
 		var shouldResetDadReceptors:Bool = true; // lmao
+		var notesToKill:Array<Note>=[];
 		if (generatedMusic)
 		{
 			if(startedCountdown){
 				if(currentOptions.allowOrderSorting)
 					renderedNotes.sort(sortByOrder);
+
 				renderedNotes.forEachAlive(function(daNote:Note)
 				{
+					if(!daNote.active){
+						daNote.visible=false;
+						notesToKill.push(daNote);
+						return;
+					}
+
+
 					var revPerc:Float = modManager.get("reverse").getScrollReversePerc(daNote.noteData,daNote.mustPress==true?0:1);
 
 					var strumLine = playerStrums.members[daNote.noteData];
 					var isDownscroll = revPerc>.5;
 
-					if(!daNote.mustPress){
+					if(!daNote.mustPress)
 						strumLine = dadStrums.members[daNote.noteData];
-					}
+
 					var diff =  Conductor.songPosition - daNote.strumTime;
 			    var vDiff = (daNote.initialPos-Conductor.currentTrackPos);
 					if(daNote.unhitTail.length>0 && daNote.wasGoodHit){
@@ -2413,29 +2582,6 @@ class PlayState extends MusicBeatState
 							daNote.modAngle = deg + 90; // gets the angle in degrees instead of radians
 					}
 
-					var shitGotHit = (daNote.parent==null || daNote.parent.wasGoodHit) && (daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit);
-					var shit = strumLine.y + Note.swagWidth/2;
-					if(daNote.isSustainNote){
-						if(shitGotHit){
-							var dY:Float = daNote.frameHeight;
-							var dH:Float = strumLine.y+Note.swagWidth/2-daNote.y;
-							dH /= daNote.scale.y;
-							dY -= dH;
-
-							var uH:Float = daNote.frameHeight*2;
-							var uY:Float = strumLine.y+Note.swagWidth/2-daNote.y;
-
-							uY /= daNote.scale.y;
-							uH -= uY;
-
-							var clipRect = new FlxRect(0,0,daNote.width*2,0);
-							clipRect.y = CoolUtil.scale(revPerc,0,1,uY,dY);
-							clipRect.height = CoolUtil.scale(revPerc,0,1,uH,dH);
-
-							daNote.clipRect=clipRect;
-						}
-
-					}
 					scale.put();
 					var visibility:Bool=true;
 
@@ -2498,6 +2644,30 @@ class PlayState extends MusicBeatState
 
 							}
 						}
+					}
+
+					var shitGotHit = (daNote.parent!=null && daNote.parent.wasGoodHit) || (daNote.wasGoodHit || daNote.prevNote.wasGoodHit && !daNote.canBeHit);
+					var shit = strumLine.y + Note.swagWidth/2;
+					if(daNote.isSustainNote){
+						if(shitGotHit){
+							var dY:Float = daNote.frameHeight;
+							var dH:Float = strumLine.y+Note.swagWidth/2-daNote.y;
+							dH /= daNote.scale.y;
+							dY -= dH;
+
+							var uH:Float = daNote.frameHeight*2;
+							var uY:Float = strumLine.y+Note.swagWidth/2-daNote.y;
+
+							uY /= daNote.scale.y;
+							uH -= uY;
+
+							var clipRect = new FlxRect(0,0,daNote.width*2,0);
+							clipRect.y = CoolUtil.scale(revPerc,0,1,uY,dY);
+							clipRect.height = CoolUtil.scale(revPerc,0,1,uH,dH);
+
+							daNote.clipRect=clipRect;
+						}
+
 					}
 
 
@@ -2586,7 +2756,7 @@ class PlayState extends MusicBeatState
 
 
 						if(!daNote.isSustainNote && daNote.sustainLength==0){
-							destroyNote(daNote);
+							notesToKill.push(daNote);
 						}else if(daNote.isSustainNote){
 							if(daNote.parent.unhitTail.contains(daNote)){
 								daNote.parent.unhitTail.remove(daNote);
@@ -2608,17 +2778,25 @@ class PlayState extends MusicBeatState
 							}
 						}
 
-						if((isDownscroll && daNote.y>FlxG.height+daNote.height || !isDownscroll && daNote.y<-daNote.height || daNote.unhitTail.length==0 && daNote.sustainLength>0 || daNote.isSustainNote && daNote.strumTime - Conductor.songPosition < -250) && (daNote.tooLate || daNote.wasGoodHit)){
-							destroyNote(daNote);
+						if((isDownscroll && daNote.y>FlxG.height+daNote.height || !isDownscroll && daNote.y<-daNote.height || daNote.unhitTail.length==0 && daNote.sustainLength>0 || daNote.isSustainNote && daNote.strumTime - Conductor.songPosition < -350) && (daNote.tooLate || daNote.wasGoodHit)){
+							notesToKill.push(daNote);
 						}
 					}
 				});
 			}
 		}
+
 		if(lastHitDadNote==null || !lastHitDadNote.alive || !lastHitDadNote.exists ){
 			lastHitDadNote=null;
 		}
 		super.update(elapsed);
+
+		for(note in notesToKill){
+			if(note.active){
+				destroyNote(note);
+			}
+		}
+
 		dadStrums.forEach(function(spr:Receptor)
 		{
 
@@ -2855,12 +3033,11 @@ class PlayState extends MusicBeatState
 					add(numScore);
 					if(currentOptions.smJudges){
 						comboSprites.push(numScore);
-						if(prevComboNums[idx]!=i){
-							numScore.y -= 30;
-							FlxTween.tween(numScore, {y: numScore.y + 30}, 0.2, {
-								ease: FlxEase.circOut
-							});
-						}
+						numScore.y -= 30;
+						numScore.currentTween = FlxTween.tween(numScore, {y: numScore.y + 30}, 0.2, {
+							ease: FlxEase.circOut
+						});
+
 
 					}else{
 						numScore.currentTween = FlxTween.tween(numScore, {alpha: 0}, 0.2, {

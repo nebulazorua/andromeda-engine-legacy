@@ -496,6 +496,7 @@ class CharacterEditorState extends MusicBeatState {
       curCharacter.playAnim(animNames[Std.parseInt(anim)],true);
       refreshAnims();
 		});
+    animDropdown.dropDirection = FlxUIDropDownMenuDropDirection.Down;
 		animDropdown.selectedLabel = 'idle';
     ui.add(animLabel);
 
@@ -514,6 +515,7 @@ class CharacterEditorState extends MusicBeatState {
         ghost.visible=false;
       }
     });
+    ghostDropdown.dropDirection = FlxUIDropDownMenuDropDirection.Down;
     ghostDropdown.selectedLabel = '';
 
 
@@ -855,6 +857,7 @@ class CharacterEditorState extends MusicBeatState {
 			char = characters[Std.parseInt(character)];
       showCharacter();
 		});
+    charDropdown.dropDirection = FlxUIDropDownMenuDropDirection.Down;
     charDropdown.x = ui.getMidpoint().x - charDropdown.width/2;
 		charDropdown.selectedLabel = char;
 

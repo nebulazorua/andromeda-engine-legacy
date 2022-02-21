@@ -14,6 +14,7 @@ typedef VelocityChange = {
 		var multiplier:Float;
 }
 
+
 typedef SwagSong =
 {
 	var song:String;
@@ -27,6 +28,7 @@ typedef SwagSong =
 	var stage:String;
 	var validScore:Bool;
 	var noteModifier:String;
+
 	@:optional var sliderVelocities:Array<VelocityChange>;
 	@:optional var initialSpeed:Float;
 }
@@ -85,7 +87,7 @@ class Song
 			];
 		}
 		swagShit.validScore = true;
-		
+
 		return swagShit;
 	}
 }

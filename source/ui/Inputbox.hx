@@ -6,7 +6,7 @@ import flash.events.KeyboardEvent;
 import flash.errors.Error;
 
 class Inputbox extends FlxInputText {
-
+  public var loseFocusOnEnter:Bool=true;
   private override function filter(text:String):String
   {
     if (forceCase == FlxInputText.UPPER_CASE)
@@ -103,6 +103,11 @@ class Inputbox extends FlxInputText {
 			else if (key == 13)
 			{
 				onChange(FlxInputText.ENTER_ACTION);
+        if(loseFocusOnEnter){
+          hasFocus = false;
+          if (focusLost != null)
+            focusLost();
+        }
 			}
 			// Actually add some text
 			else
@@ -112,10 +117,9 @@ class Inputbox extends FlxInputText {
 					return;
 				}
         var char = String.fromCharCode(e.charCode);
-        if(e.shiftKey || Keyboard.capsLock){
+        if(e.shiftKey || Keyboard.capsLock)
           char = char.toUpperCase();
-        }
-        trace(Keyboard.capsLock);
+
 				var newText:String = filter(char);
 
 				if (newText.length > 0 && (maxLength == 0 || (text.length + newText.length) < maxLength))
@@ -127,5 +131,11 @@ class Inputbox extends FlxInputText {
 			}
 		}
 	}
+
+  override public function update(elapsed:Float):Void
+  {
+    super.update(elapsed);
+    if(visible==false)hasFocus=false;
+  }
 
 }

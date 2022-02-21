@@ -116,7 +116,6 @@ class Options
 	public var showCounters:Bool = true;
 	public var staticCam:Int = 0;
 	public var noteSkin:String = 'default';
-	public var persistentCombo:Bool = false;
 	public var smJudges:Bool = false;
 	public var judgeX:Float = 0;
 	public var judgeY:Float = 0;
