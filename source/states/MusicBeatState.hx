@@ -25,6 +25,8 @@ class MusicBeatState extends FlxUIState
 	public var curBeat:Int = 0;
 	public var curDecStep:Float=0;
 	public var curDecBeat:Float=0;
+	public var sectionNumber:Int = 0;
+	public var decSectionNumber:Float = 0;
 	public var canChangeVolume:Bool=true;
 
 	public var volumeDownKeys:Array<FlxKey> = [MINUS, NUMPADMINUS];
@@ -54,6 +56,7 @@ class MusicBeatState extends FlxUIState
 
 		updateCurStep();
 		updateBeat();
+		updateSection();
 
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
@@ -84,6 +87,17 @@ class MusicBeatState extends FlxUIState
 		var shit = (Conductor.songPosition - lastChange.songTime) / lastChange.stepCrochet;
 		curDecStep = lastChange.stepTime + shit;
 		curStep = lastChange.stepTime + Math.floor(shit);
+	}
+
+	private function updateSection():Void
+	{
+		var lastChange = Conductor.getTSFromSeconds(Conductor.songPosition);
+
+		var number = (Conductor.songPosition - lastChange.songTime) / (Conductor.getBPMFromSeconds(Conductor.songPosition).stepCrochet * lastChange.lengthInSteps);
+		decSectionNumber = lastChange.section + number;
+		sectionNumber = lastChange.section + Math.floor(number);
+		Conductor.calculate();
+
 	}
 
 	public function stepHit():Void

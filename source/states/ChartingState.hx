@@ -72,6 +72,7 @@ class ChartingState extends MusicBeatState
 	var curRenderedMarkers:FlxTypedGroup<FlxSprite>;
 
 	var gridBG:FlxSprite;
+	var gridBlackLine:FlxSprite;
 	var quantization:Int = 16;
 	var quantIdx = 3;
 	var quantizations:Array<Int> = [
@@ -100,6 +101,7 @@ class ChartingState extends MusicBeatState
 
 
 	var tempBpm:Int = 0;
+	var daSig = 16;
 
 	var vocals:FlxSound;
 
@@ -126,30 +128,6 @@ class ChartingState extends MusicBeatState
 		chartingBG.scrollFactor.set();
 		add(chartingBG);
 
-		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * 16);
-		add(gridBG);
-
-		leftIcon = new HealthIcon('bf');
-		rightIcon = new HealthIcon('dad');
-		leftIcon.scrollFactor.set(1, 1);
-		rightIcon.scrollFactor.set(1, 1);
-
-		leftIcon.setGraphicSize(0, 45);
-		rightIcon.setGraphicSize(0, 45);
-
-		add(leftIcon);
-		add(rightIcon);
-
-		leftIcon.setPosition(60, -50);
-		rightIcon.setPosition(220, -50);
-
-		var gridBlackLine:FlxSprite = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
-		add(gridBlackLine);
-
-		curRenderedNotes = new FlxTypedGroup<Note>();
-		curRenderedSustains = new FlxTypedGroup<Note>();
-		curRenderedMarkers = new FlxTypedGroup<FlxSprite>();
-
 		if (PlayState.SONG != null){
 			_song = PlayState.SONG;
 			velChanges=_song.sliderVelocities;
@@ -171,6 +149,30 @@ class ChartingState extends MusicBeatState
 			velChanges = [];
 		}
 
+		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * _song.notes[curSection].lengthInSteps);
+		add(gridBG);
+
+		leftIcon = new HealthIcon('bf');
+		rightIcon = new HealthIcon('dad');
+		leftIcon.scrollFactor.set(1, 1);
+		rightIcon.scrollFactor.set(1, 1);
+
+		leftIcon.setGraphicSize(0, 45);
+		rightIcon.setGraphicSize(0, 45);
+
+		add(leftIcon);
+		add(rightIcon);
+
+		leftIcon.setPosition(60, -50);
+		rightIcon.setPosition(220, -50);
+
+		gridBlackLine = new FlxSprite(gridBG.x + gridBG.width / 2).makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
+		add(gridBlackLine);
+
+		curRenderedNotes = new FlxTypedGroup<Note>();
+		curRenderedSustains = new FlxTypedGroup<Note>();
+		curRenderedMarkers = new FlxTypedGroup<FlxSprite>();
+
 		FlxG.mouse.visible = true;
 		FlxG.save.bind('funkin', 'ninjamuffin99');
 
@@ -184,7 +186,9 @@ class ChartingState extends MusicBeatState
 
 		loadSong(_song.song);
 		Conductor.changeBPM(_song.bpm);
+		Conductor.changeTimeSignature(_song.notes[curSection].lengthInSteps);
 		Conductor.mapBPMChanges(_song);
+		Conductor.mapTimeSigChanges(_song);
 
 		timeTxt = new FlxText(60, 50, 0, "", 16);
 		timeTxt.setFormat('vcr.ttf', 24, FlxColor.WHITE, CENTER);
@@ -248,28 +252,29 @@ class ChartingState extends MusicBeatState
 		updateCurStep();
 		updateBeat();
 
+
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
 
 		changeSection(0);
-		while (curStep >= 16 * (curSection + 1))
+		while (curStep >= sectionEndStep())//_song.notes[curSection].lengthInSteps * (curSection + 1))
 		{
 			trace(curStep);
-			trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
+			trace(sectionEndStep());
 			trace('DUMBSHIT');
 
 			if (_song.notes[curSection + 1] == null)
 			{
-				addSection();
+				addSection(_song.notes[curSection].lengthInSteps);
 			}
 
 			changeSection(curSection + 1, false);
 		}
 
-		while (curStep < 16 * curSection && curStep > 0)
+		while (curStep < sectionStartStep()/*_song.notes[curSection].lengthInSteps * curSection*/ && curStep > 0)
 		{
 			trace(curStep);
-			trace((_song.notes[curSection].lengthInSteps) * (curSection - 1));
+			trace(sectionStartStep());
 			trace('DUMBSHIT');
 
 			changeSection(curSection - 1, false);
@@ -431,6 +436,7 @@ class ChartingState extends MusicBeatState
 	var stepperLength:FlxUINumericStepper;
 	var check_mustHitSection:FlxUICheckBox;
 	var check_changeBPM:FlxUICheckBox;
+	var check_changeTimeSignature:FlxUICheckBox;
 	var stepperSectionBPM:FlxUINumericStepper;
 	var check_altAnim:FlxUICheckBox;
 
@@ -439,9 +445,18 @@ class ChartingState extends MusicBeatState
 		var tab_group_section = new FlxUI(null, UI_box);
 		tab_group_section.name = 'Section';
 
-		stepperLength = new FlxUINumericStepper(10, 10, 4, 0, 0, 999, 0);
+		stepperLength = new FlxUINumericStepper(10, 10, 0, 0, 0, 999, 0);
 		stepperLength.value = _song.notes[curSection].lengthInSteps;
 		stepperLength.name = "section_length";
+
+		check_changeTimeSignature = new FlxUICheckBox(85, 10, null, null, "Change Time Signature", 100);
+		check_changeTimeSignature.name = "change_timeSignature";
+		check_changeTimeSignature.callback = function()
+		{
+			stepperLength.stepSize = 0;
+			if (check_changeTimeSignature.checked)
+				stepperLength.stepSize = 4;
+		}
 
 		stepperSectionBPM = new FlxUINumericStepper(10, 80, 1, Conductor.bpm, 0, 999, 0);
 		stepperSectionBPM.value = Conductor.bpm;
@@ -479,6 +494,7 @@ class ChartingState extends MusicBeatState
 		check_changeBPM.name = 'check_changeBPM';
 
 		tab_group_section.add(stepperLength);
+		tab_group_section.add(check_changeTimeSignature);
 		tab_group_section.add(stepperSectionBPM);
 		tab_group_section.add(stepperCopy);
 		tab_group_section.add(check_mustHitSection);
@@ -631,6 +647,11 @@ class ChartingState extends MusicBeatState
 					_song.notes[curSection].changeBPM = check.checked;
 					Conductor.mapBPMChanges(_song);
 					FlxG.log.add('changed bpm shit');
+				case "Change Time Signature":
+					_song.notes[curSection].changeTS = check.checked;
+					Conductor.mapTimeSigChanges(_song);
+					updateGrid();
+					FlxG.log.add('changed time signature');
 				case "Alt Animation":
 					_song.notes[curSection].altAnim = check.checked;
 			}
@@ -690,6 +711,7 @@ class ChartingState extends MusicBeatState
 		if(section==null)section=curSection;
 
 		var daBPM:Int = _song.bpm;
+		var daTimeSig:Int = 16;
 		var daPos:Float = 0;
 		for (i in 0...section)
 		{
@@ -697,7 +719,10 @@ class ChartingState extends MusicBeatState
 			{
 				daBPM = _song.notes[i].bpm;
 			}
-			daPos += 4 * (1000 * 60 / daBPM);
+
+			if (_song.notes[i].changeTS)
+				daTimeSig = _song.notes[i].lengthInSteps;
+			daPos += (1000 * 60 / daBPM) * (daTimeSig / 4);
 		}
 		return daPos;
 	}
@@ -707,12 +732,37 @@ class ChartingState extends MusicBeatState
 		return sectionStartTime(section+1);
 	}
 
+	function sectionStartStep(?section:Int):Int
+	{
+		if(section==null)section=curSection;
+		
+		var daTimeSig:Int = 16;
+		var daStep:Int = 0;
+		for (i in 0...section)
+		{
+			if (_song.notes[i].changeTS)
+				daTimeSig = _song.notes[i].lengthInSteps;
+			daStep += daTimeSig;
+		}
+
+		return daStep;
+	}
+
+	function sectionEndStep(?section:Int):Int
+	{
+		if (section==null)section=curSection;
+		return sectionStartStep(section+1);
+	}
+
 	var lastMousePos:FlxPoint = FlxPoint.get();
 
 	override function update(elapsed:Float)
 	{
 		curStep = recalculateSteps();
 
+		for (i in 0...curSection+1)
+			if (_song.notes[i].changeTS && _song.notes[i].lengthInSteps != daSig) daSig = _song.notes[i].lengthInSteps;
+		
 		if(FlxG.keys.justPressed.RIGHT){
 			quantIdx+=1;
 			if(quantIdx>quantizations.length-1)
@@ -732,27 +782,27 @@ class ChartingState extends MusicBeatState
 		Conductor.songPosition = FlxG.sound.music.time;
 		_song.song = typingShit.text;
 
-		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
+		strumLine.y = getYfromStrum((Conductor.songPosition - sectionStartTime()) % (Conductor.stepCrochet * Conductor.timeSignature));
 
-		if (curStep >= 16 * (curSection + 1))
+		if (curStep >= sectionEndStep()) 
 		{
 			trace(curStep);
-			trace((_song.notes[curSection].lengthInSteps) * (curSection + 1));
+			trace(sectionEndStep());
 			trace('DUMBSHIT');
 
 			if (_song.notes[curSection + 1] == null)
 			{
-				addSection();
+				addSection(daSig);
 			}
 
 			changeSection(curSection + 1, false);
 		}
 
-		if(curStep < 16 * curSection && curStep > 0 && !FlxG.sound.music.playing) // the .playing thing is a hacky workaround for a bug because charter dum
+		if(curStep < sectionStartStep() && curStep > 0 && !FlxG.sound.music.playing) // the .playing thing is a hacky workaround for a bug because charter dum
 		// because like the song will never go backwards if its playing
 		{
 			trace(curStep);
-			trace((_song.notes[curSection].lengthInSteps) * (curSection - 1));
+			trace(sectionStartStep());
 			trace('DUMBSHIT');
 
 			changeSection(curSection - 1, false);
@@ -761,6 +811,7 @@ class ChartingState extends MusicBeatState
 
 		FlxG.watch.addQuick('daBeat', curBeat);
 		FlxG.watch.addQuick('daStep', curStep);
+		FlxG.watch.addQuick('daSection', curSection);
 
 		if (FlxG.mouse.justPressed || FlxG.mouse.justPressedRight)
 		{
@@ -1013,7 +1064,7 @@ class ChartingState extends MusicBeatState
 			for(i in 0...shiftThing){
 				if (_song.notes[curSection + i] == null)
 				{
-					addSection();
+					addSection(daSig);
 				}
 			}
 			changeSection(curSection + shiftThing);
@@ -1101,6 +1152,7 @@ class ChartingState extends MusicBeatState
 
 		vocals.time = FlxG.sound.music.time;
 		updateCurStep();
+		
 
 		updateGrid();
 		updateSectionUI();
@@ -1146,6 +1198,7 @@ class ChartingState extends MusicBeatState
 	{
 		var daSec = FlxMath.maxInt(curSection, sectionNum);
 		var daBPM:Float = _song.bpm;
+		var daTimeSig:Float = 16;
 			var offsetArray:Array<Float> = [];
 			var totalOffsets:Float = 0;
 			var copyOffsets:Float = 0;
@@ -1158,7 +1211,11 @@ class ChartingState extends MusicBeatState
 					{
 						daBPM = _song.notes[i].bpm;
 					}
-					offsetArray.push((1000 * 60 / daBPM) * (_song.notes[i].lengthInSteps / 4));
+					if (_song.notes[i].changeTS)
+					{
+						daTimeSig = _song.notes[i].lengthInSteps;
+					}
+					offsetArray.push((1000 * 60 / daBPM) * (daTimeSig / 4));
 				}
 		for (i in 0...daSec)
 		totalOffsets += offsetArray[i];
@@ -1193,6 +1250,7 @@ class ChartingState extends MusicBeatState
 		check_mustHitSection.checked = sec.mustHitSection;
 		check_altAnim.checked = sec.altAnim;
 		check_changeBPM.checked = sec.changeBPM;
+		check_changeTimeSignature.checked = sec.changeTS;
 		stepperSectionBPM.value = sec.bpm;
 
 		updateHeads();
@@ -1232,6 +1290,7 @@ class ChartingState extends MusicBeatState
 
 	function updateGrid():Void
 	{
+		
 		while (curRenderedNotes.members.length > 0)
 		{
 			curRenderedNotes.remove(curRenderedNotes.members[0], true);
@@ -1264,11 +1323,47 @@ class ChartingState extends MusicBeatState
 			Conductor.changeBPM(daBPM);
 		}
 
+		//get last timesignature
+		if (_song.notes[curSection].lengthInSteps != daSig && _song.notes[curSection].changeTS)
+		{
+			Conductor.changeTimeSignature(_song.notes[curSection].lengthInSteps);
+			Conductor.mapTimeSigChanges(_song);
+			for (i in curSection..._song.notes.length)
+				{
+					var lastTime = Conductor.getTSFromSeconds(sectionStartTime(i));
+					if (i >= lastTime.section)
+					_song.notes[i].lengthInSteps = lastTime.lengthInSteps;
+				}
+			FlxG.log.add('CHANGED TIME SIGNATURE!');
+		}
+		else
+		{
+			var daTimeSig:Int = 16;
+			for (i in 0...curSection)
+				if (daTimeSig != _song.notes[i].lengthInSteps)
+					daTimeSig = _song.notes[i].lengthInSteps;
+			Conductor.changeTimeSignature(daTimeSig);
+			Conductor.mapTimeSigChanges(_song);
+			for (i in curSection..._song.notes.length)
+				{
+					var lastTime = Conductor.getTSFromSeconds(sectionStartTime(i));
+					if (i >= lastTime.section)
+					_song.notes[i].lengthInSteps = lastTime.lengthInSteps;
+				}
+		}
+
+		remove(gridBG);
+		remove(gridBlackLine);
+		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * Conductor.timeSignature);
+		gridBlackLine.makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
+		insert(members.indexOf(chartingBG)+1, gridBG);
+		insert(members.indexOf(rightIcon)+1, gridBlackLine);
+
 		for(i in velChanges){
 			if(i.startTime>=sectionStartTime() && i.startTime<sectionEndTime()){
 				var marker = new FlxSprite(-50, 50).makeGraphic(64, 12);
 				marker.health = i.startTime;
-				marker.y = getYfromStrum((i.startTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
+				marker.y = getYfromStrum((i.startTime - sectionStartTime()) % (Conductor.stepCrochet * daSig));
 				curRenderedMarkers.add(marker);
 			}
 		}
@@ -1289,7 +1384,7 @@ class ChartingState extends MusicBeatState
  			oldNote=note;
 
  			note.x = Math.floor(daNoteInfo * GRID_SIZE);
- 			note.y = getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * _song.notes[curSection].lengthInSteps));
+ 			note.y = getYfromStrum((daStrumTime - sectionStartTime()) % (Conductor.stepCrochet * daSig));
 
  			curRenderedNotes.add(note);
 			if(!note.canHold)daSus=0;
@@ -1488,12 +1583,12 @@ class ChartingState extends MusicBeatState
 
 	function getStrumTime(yPos:Float):Float
 	{
-		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0, 16 * Conductor.stepCrochet);
+		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0,  Conductor.timeSignature * Conductor.stepCrochet);
 	}
 
 	function getYfromStrum(strumTime:Float):Float
 	{
-		return FlxMath.remapToRange(strumTime, 0, 16 * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
+		return FlxMath.remapToRange(strumTime, 0,  Conductor.timeSignature * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
 	}
 
 	/*

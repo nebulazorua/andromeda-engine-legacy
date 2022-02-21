@@ -585,6 +585,8 @@ class PlayState extends MusicBeatState
 
 		Conductor.mapBPMChanges(SONG);
 		Conductor.changeBPM(SONG.bpm);
+		Conductor.mapTimeSigChanges(SONG);
+		Conductor.changeTimeSignature(SONG.notes[0].lengthInSteps);
 
 
 
@@ -1204,6 +1206,7 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition=Conductor.rawSongPos + currentOptions.noteOffset;
 		updateCurStep();
 		updateBeat();
+		updateSection();
 
 		if(startPos>0)canScore=false;
 
@@ -1242,11 +1245,13 @@ class PlayState extends MusicBeatState
 			Conductor.songPosition=Conductor.rawSongPos + currentOptions.noteOffset;
 			updateCurStep();
 			updateBeat();
+			updateSection();
 			return;
 		}
 
 
 		var swagCounter:Int = 0;
+
 		startTimer.start(Conductor.crochet / 1000, function(tmr:FlxTimer)
 		{
 			if(luaModchartExists && lua!=null)
@@ -1374,6 +1379,7 @@ class PlayState extends MusicBeatState
 		Conductor.songPosition=Conductor.rawSongPos + currentOptions.noteOffset;
 		updateCurStep();
 		updateBeat();
+		updateSection();
 
 		if(FlxG.sound.music!=null){
 			FlxG.sound.music.stop();
@@ -1433,6 +1439,7 @@ class PlayState extends MusicBeatState
 
 		var songData = SONG;
 		Conductor.changeBPM(SONG.bpm);
+		Conductor.changeTimeSignature(SONG.notes[0].lengthInSteps);
 
 		curSong = SONG.song;
 
@@ -2096,6 +2103,9 @@ class PlayState extends MusicBeatState
 		FlxG.watch.addQuick("curStep", curStep);
 		FlxG.watch.addQuick("curDecBeat", curDecBeat);
 		FlxG.watch.addQuick("curDecStep", curDecStep);
+		FlxG.watch.addQuick("sectionNumber", sectionNumber);
+		FlxG.watch.addQuick("decSectionNumber", decSectionNumber);
+
 
 		FlxG.watch.addQuick("rawSongPos", Conductor.rawSongPos);
 		FlxG.watch.addQuick("instTime", inst.time);
@@ -2116,7 +2126,7 @@ class PlayState extends MusicBeatState
 		}catch(e:Any){
 			trace(e);
 		}
-		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
+		if (generatedMusic && PlayState.SONG.notes[sectionNumber] != null)
 		{
 			if (curBeat % 4 == 0)
 			{
@@ -2127,7 +2137,7 @@ class PlayState extends MusicBeatState
 			var dadMid = opponent.getMidpoint();
 			var gfMid = gf.getMidpoint();
 
-			if(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection){
+			if(PlayState.SONG.notes[sectionNumber].mustHitSection){
 				if(turn!='bf'){
 					turn='bf';
 					if(currentOptions.staticCam==0)
@@ -2504,9 +2514,9 @@ class PlayState extends MusicBeatState
 
 						var altAnim:String = "";
 
-						if (SONG.notes[Math.floor(curStep / 16)] != null)
+						if (SONG.notes[sectionNumber] != null)
 						{
-							if (SONG.notes[Math.floor(curStep / 16)].altAnim)
+							if (SONG.notes[sectionNumber].altAnim)
 								altAnim = '-alt';
 						}
 
@@ -3501,6 +3511,8 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		Conductor.section = sectionNumber;
+
 		var lastChange = Conductor.getBPMFromStep(curStep);
 		if(lastChange.bpm != Conductor.bpm){
 			Conductor.changeBPM(lastChange.bpm);
@@ -3511,6 +3523,11 @@ class PlayState extends MusicBeatState
 				lua.setGlobalVar("stepCrochet",Conductor.stepCrochet);
 			}
 		}
+		var lastTime = Conductor.getTSFromStep(curStep);
+		if (lastTime.lengthInSteps != Conductor.timeSignature){
+			Conductor.changeTimeSignature(lastTime.lengthInSteps);
+			FlxG.log.add('CHANGED TIME SIGNATURE!');
+		}
 	}
 
 	override function beatHit()
@@ -3519,7 +3536,7 @@ class PlayState extends MusicBeatState
 
 		stage.beatHit(curBeat);
 
-		if (SONG.notes[Math.floor(curStep / 16)] != null)
+		if (SONG.notes[sectionNumber] != null)
 		{
 			// else
 			// Conductor.changeBPM(SONG.bpm);

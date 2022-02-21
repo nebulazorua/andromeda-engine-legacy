@@ -15,13 +15,23 @@ typedef BPMChangeEvent =
 	@:optional var stepCrochet:Float;
 }
 
+typedef TSChangeEvent =
+{
+	var stepTime:Int;
+	var songTime:Float;
+	var lengthInSteps:Int;
+	@:optional var section:Int;
+}
+
 class Conductor
 {
 	public static var ROWS_PER_BEAT:Int = 48;
 	// its 48 in ITG but idk because FNF doesnt work w/ note rows
-	public static var ROWS_PER_MEASURE:Int = ROWS_PER_BEAT*4;
+	public static var timeSignature:Int = 16;
+	public static var ROWS_PER_MEASURE:Int = ROWS_PER_BEAT* Std.int((timeSignature / 4));
 
 	public static var bpm:Int = 100;
+	public static var section:Int = 0;
 	public static var crochet:Float = ((60 / bpm) * 1000); // beats in milliseconds
 	public static var stepCrochet:Float = crochet / 4; // steps in milliseconds
 	public static var rawSongPos:Float;
@@ -36,6 +46,7 @@ class Conductor
 	public static var safeZoneOffset:Float = 166;
 
 	public static var bpmChangeMap:Array<BPMChangeEvent> = [];
+	public static var timeSigChangeMap:Array<TSChangeEvent> = [];
 
 	inline public static function beatToNoteRow(beat:Float):Int{
     return Math.round(beat*Conductor.ROWS_PER_BEAT);
@@ -56,7 +67,7 @@ class Conductor
 	}
 
 	public static function calculate(){
-		Conductor.ROWS_PER_MEASURE = ROWS_PER_BEAT*4; // TODO: time signatures n all that shit
+		Conductor.ROWS_PER_MEASURE = ROWS_PER_BEAT* Std.int((timeSignature / 4)); // TODO: time signatures n all that shit
 	}
 
 	inline public static function calculateCrochet(bpm:Float){
@@ -100,6 +111,38 @@ class Conductor
 		return lastChange;
 	}
 
+	public static function getTSFromStep(step:Float){
+		var lastChange:TSChangeEvent = {
+			stepTime: 0,
+			songTime: 0,
+			lengthInSteps: timeSignature,
+			section: 0
+		}
+		for (i in 0...Conductor.timeSigChangeMap.length)
+		{
+			if (Conductor.timeSigChangeMap[i].stepTime<=step)
+				lastChange = Conductor.timeSigChangeMap[i];
+		}
+
+		return lastChange;
+	}
+
+	public static function getTSFromSeconds(time:Float){
+		var lastChange:TSChangeEvent = {
+			stepTime: 0,
+			songTime: 0,
+			lengthInSteps: timeSignature,
+			section: 0
+		}
+		for (i in 0...Conductor.timeSigChangeMap.length)
+		{
+			if (time >= Conductor.timeSigChangeMap[i].songTime)
+				lastChange = Conductor.timeSigChangeMap[i];
+		}
+
+		return lastChange;
+	}
+
 	public static function stepToSeconds(step:Float){
 		var lastChange = getBPMFromStep(step);
 		return step * lastChange.stepCrochet; // TODO: make less shit and take BPM into account PROPERLY
@@ -128,6 +171,11 @@ class Conductor
 
 	public static function getBeatRounded(time:Float):Int{
 		return Math.floor(getStepRounded(time)/4);
+	}
+
+	public static function getSection(time:Float){
+		var lastChange = getTSFromSeconds(time);
+		return lastChange.section + (time - lastChange.songTime) / (getBPMFromSeconds(time).stepCrochet * lastChange.lengthInSteps);
 	}
 
 	public function new()
@@ -168,5 +216,39 @@ class Conductor
 
 		crochet = calculateCrochet(bpm);
 		stepCrochet = crochet / 4;
+	}
+
+	public static function mapTimeSigChanges(song:SwagSong)
+	{
+		timeSigChangeMap = [];
+
+		var curTS:Int = 16;
+		var totalSteps:Int = 0;
+		var totalPos:Float = 0;
+		for (i in 0...song.notes.length)
+		{
+			if (song.notes[i].lengthInSteps != curTS && song.notes[i].changeTS)
+				{
+					curTS = song.notes[i].lengthInSteps;
+					var event:TSChangeEvent = {
+						stepTime: totalSteps,
+						songTime: totalPos,
+						lengthInSteps: curTS,
+						section: i
+					};
+					timeSigChangeMap.push(event);
+				}
+
+				var deltaSteps:Int = song.notes[i].lengthInSteps;
+			
+				totalSteps += deltaSteps;
+				totalPos = beatToSeconds(totalSteps/4);
+		}
+		trace('New Time Signature Map ' + timeSigChangeMap);
+	}
+
+	public static function changeTimeSignature(newTS:Int)
+	{
+		timeSignature = newTS;
 	}
 }
