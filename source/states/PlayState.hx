@@ -835,7 +835,6 @@ class PlayState extends MusicBeatState
 
 
 		modManager = new ModManager(this);
-		modManager.registerModifiers();
 
 		generateSong();
 
@@ -1247,6 +1246,7 @@ class PlayState extends MusicBeatState
 		generateStaticArrows(1, 0);
 
 		modManager.setReceptors();
+		modManager.registerModifiers();
 
 		#if FORCE_LUA_MODCHARTS
 		setupLuaSystem();
