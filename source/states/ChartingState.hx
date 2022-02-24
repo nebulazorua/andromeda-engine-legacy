@@ -1440,17 +1440,33 @@ class ChartingState extends MusicBeatState
 	{
 		var daSec = FlxMath.maxInt(curSection, sectionNum);
 		var daBPM:Float = _song.bpm;
-		var copySectionTime = sectionEndTime(-sectionNum)-sectionStartTime(-sectionNum);
+		var offsetArray:Array<Float> = [];
+		var totalOffsets:Float = 0;
+		var copyOffsets:Float = 0;
 
-			for (note in _song.notes[daSec - sectionNum].sectionNotes)
+
+	if (daSec > 0){
+		for (i in 0..._song.notes.length)
 			{
-				var noteRatio = (note[0]-sectionStartTime(-sectionNum)) / copySectionTime;
+				if (_song.notes[i].changeBPM)
+				{
+					daBPM = _song.notes[i].bpm;
+				}
+				offsetArray.push((1000 * 60 / daBPM) * (_song.notes[i].lengthInSteps / 4));
+			}
+	for (i in 0...daSec)
+	totalOffsets += offsetArray[i];
+	for (i in 0...(daSec-sectionNum))
+	copyOffsets += offsetArray[i];}
 
-				var holdRatio = (Conductor.crochet * 4) / copySectionTime;
+		for (note in _song.notes[daSec - sectionNum].sectionNotes)
+		{
+			var noteRatio = (note[0]-copyOffsets) / offsetArray[daSec-sectionNum];
 
-				var strum = sectionStartTime() + noteRatio * Conductor.crochet * 4; //Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * value);
-				var sus = note[2] * holdRatio;
+			var holdRatio = (Conductor.crochet * 4) / offsetArray[daSec-sectionNum];
 
+			var strum = totalOffsets + noteRatio * Conductor.crochet * 4; //Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * value);
+			var sus = note[2] * holdRatio;
 		//for (note in _song.notes[daSec - sectionNum].sectionNotes)
 		//{
 		//	var strum = note[0] + Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * sectionNum);
