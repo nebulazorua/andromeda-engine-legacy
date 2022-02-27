@@ -39,7 +39,7 @@ typedef LuaProperty = {
 
 class LuaStorage {
   public static var objectProperties:Map<String,Map<String,LuaProperty>> = [];
-  public static var conversionShit:Map<Any,LuaClass> = [];
+  //public static var conversionShit:Map<Any,LuaClass> = [];
   public static var objects:Map<String,LuaClass> = [];
   public static var notes:Array<Note> = [];
   public static var noteIDs:Map<Note,String>=[];
