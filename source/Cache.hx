@@ -14,6 +14,7 @@ import flixel.util.FlxDestroyUtil;
 import openfl.media.Sound;
 import flixel.FlxBasic;
 import openfl.system.System;
+import flixel.graphics.FlxGraphic;
 
 class Cache {
   public static var persistentImages:Array<FlxGraphic> = [];
@@ -63,7 +64,7 @@ class Cache {
       for (key in FlxG.bitmap._cache.keys())
       {
         var obj = FlxG.bitmap._cache.get(key);
-        if (obj != null && persistentImages.indexOf(obj)!=null)
+        if (obj != null && !persistentImages.contains(obj))
         {
           Assets.cache.removeBitmapData(key);
           FlxG.bitmap._cache.remove(key);
