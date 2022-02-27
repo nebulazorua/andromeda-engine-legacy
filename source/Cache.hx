@@ -53,7 +53,7 @@ class Cache {
     trace("CLEARED CACHE!");
   }
 
-  public static function clearImages(){
+  public static function clearImages(force:Bool=false){
     // CREDIT TO HAYA AND SHUBS
     // TRY OUT FOREVER ENGINE!
     // NO, LIKE, SERIOUSLY.
@@ -64,7 +64,7 @@ class Cache {
       for (key in FlxG.bitmap._cache.keys())
       {
         var obj = FlxG.bitmap._cache.get(key);
-        if (obj != null && !persistentImages.contains(obj))
+        if (obj != null && (!persistentImages.contains(obj) || force))
         {
           Assets.cache.removeBitmapData(key);
           FlxG.bitmap._cache.remove(key);
