@@ -16,6 +16,7 @@ import flixel.FlxBasic;
 import openfl.system.System;
 
 class Cache {
+  public static var persistentImages:Array<FlxGraphic> = [];
   public static var offsetData = new Map<String,String>();
   public static var animData = new Map<String,String>();
   public static var charFrames = new Map<String,FlxFramesCollection>();
@@ -62,7 +63,7 @@ class Cache {
       for (key in FlxG.bitmap._cache.keys())
       {
         var obj = FlxG.bitmap._cache.get(key);
-        if (obj != null)
+        if (obj != null && persistentImages.indexOf(obj)!=null)
         {
           Assets.cache.removeBitmapData(key);
           FlxG.bitmap._cache.remove(key);

@@ -198,6 +198,7 @@ class CachingState extends FlxUIState {
           var graphic = FlxG.bitmap.add(data,true,id);
           graphic.persist=true;
           graphic.destroyOnNoUse=false;
+          Cache.persistentImages.push(graphic);
           cache.set(id,graphic);
           trace("loaded " + msg);
           loaded++;
