@@ -84,6 +84,7 @@ class OptionsState extends MusicBeatState
 				new ToggleOption("holdsBehindReceptors","Stepmania Clipping","Makes holds clip behind the receptors"),
 				new NoteskinOption("noteSkin","NoteSkin","The noteskin to use"),
 				new OptionCategory("Effects",[
+					new ToggleOption("raymarcher","Raymarcher Shaders","Lets the camera have pitch and yaw. May cause lag"),
 					new ToggleOption("picoCamshake","Train camera shake","Whether the train in week 3's background shakes the camera"),
 					//new ToggleOption("senpaiShaders","Week 6 shaders","Is the CRT effect active in week 6"),
 					new ScrollOption("senpaiShaderStrength","Week 6 shaders","How strong the week 6 shaders are",0,2,["Off","CRT","All"])

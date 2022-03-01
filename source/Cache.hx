@@ -14,8 +14,10 @@ import flixel.util.FlxDestroyUtil;
 import openfl.media.Sound;
 import flixel.FlxBasic;
 import openfl.system.System;
+import flixel.graphics.FlxGraphic;
 
 class Cache {
+  public static var persistentImages:Array<FlxGraphic> = [];
   public static var offsetData = new Map<String,String>();
   public static var animData = new Map<String,String>();
   public static var charFrames = new Map<String,FlxFramesCollection>();
@@ -51,7 +53,7 @@ class Cache {
     trace("CLEARED CACHE!");
   }
 
-  public static function clearImages(){
+  public static function clearImages(force:Bool=false){
     // CREDIT TO HAYA AND SHUBS
     // TRY OUT FOREVER ENGINE!
     // NO, LIKE, SERIOUSLY.
@@ -62,7 +64,7 @@ class Cache {
       for (key in FlxG.bitmap._cache.keys())
       {
         var obj = FlxG.bitmap._cache.get(key);
-        if (obj != null)
+        if (obj != null && (!persistentImages.contains(obj) || force))
         {
           Assets.cache.removeBitmapData(key);
           FlxG.bitmap._cache.remove(key);

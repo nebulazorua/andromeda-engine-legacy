@@ -136,7 +136,7 @@ class Options
 	public var cacheSounds:Bool = false;
 	public var cachePreload:Bool = false;
 	public var cacheUsedImages:Bool = false;
-
+	public var raymarcher:Bool = true;
 	// preference
 	public var showMem:Bool = true;
 	public var showMemPeak:Bool = true;
