@@ -1463,9 +1463,9 @@ class ChartingState extends MusicBeatState
 		{
 			var noteRatio = (note[0]-copyOffsets) / offsetArray[daSec-sectionNum];
 
-			var holdRatio = (Conductor.crochet * 4) / offsetArray[daSec-sectionNum];
+			var holdRatio = (Conductor.stepCrochet * _song.notes[daSec-sectionNum].lengthInSteps) / offsetArray[daSec-sectionNum];
 
-			var strum = totalOffsets + noteRatio * Conductor.crochet * 4; //Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * value);
+			var strum = totalOffsets + noteRatio * Conductor.stepCrochet * _song.notes[daSec-sectionNum].lengthInSteps; //Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * value);
 			var sus = note[2] * holdRatio;
 		//for (note in _song.notes[daSec - sectionNum].sectionNotes)
 		//{
@@ -1903,22 +1903,22 @@ class ChartingState extends MusicBeatState
 
 	function getStrumTime(yPos:Float):Float
 	{
-		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0,  Conductor.timeSignature * Conductor.stepCrochet);
+		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0,  _song.notes[curSection].lengthInSteps * Conductor.stepCrochet);
 	}
 
 	function getYfromStrum(strumTime:Float):Float
 	{
-		return FlxMath.remapToRange(strumTime, 0,  Conductor.timeSignature * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
+		return FlxMath.remapToRange(strumTime, 0,  _song.notes[curSection].lengthInSteps * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
 	}
 
 	function getEventTime(yPos:Float):Float
 	{
-		return FlxMath.remapToRange(yPos, eventRow.y, eventRow.y + eventRow.height, 0, Conductor.timeSignature * Conductor.stepCrochet);
+		return FlxMath.remapToRange(yPos, eventRow.y, eventRow.y + eventRow.height, 0, _song.notes[curSection].lengthInSteps * Conductor.stepCrochet);
 	}
 
 	function getYfromEvent(strumTime:Float):Float
 	{
-		return FlxMath.remapToRange(strumTime, 0, Conductor.timeSignature * Conductor.stepCrochet, eventRow.y, eventRow.y + eventRow.height);
+		return FlxMath.remapToRange(strumTime, 0, _song.notes[curSection].lengthInSteps * Conductor.stepCrochet, eventRow.y, eventRow.y + eventRow.height);
 	}
 
 	/*
