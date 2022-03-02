@@ -28,7 +28,7 @@ class Conductor
 	public static var ROWS_PER_BEAT:Int = 48;
 	// its 48 in ITG but idk because FNF doesnt work w/ note rows
 	public static var timeSignature:Int = 16;
-	public static var ROWS_PER_MEASURE:Int = ROWS_PER_BEAT* Std.int((timeSignature / 4));
+	public static var ROWS_PER_MEASURE:Int = ROWS_PER_BEAT*4;
 
 	public static var bpm:Int = 100;
 	public static var section:Int = 0;
@@ -67,7 +67,7 @@ class Conductor
 	}
 
 	public static function calculate(){
-		Conductor.ROWS_PER_MEASURE = ROWS_PER_BEAT* Std.int((timeSignature / 4)); // TODO: time signatures n all that shit
+		Conductor.ROWS_PER_MEASURE = ROWS_PER_BEAT*4; // TODO: time signatures n all that shit
 	}
 
 	inline public static function calculateCrochet(bpm:Float){

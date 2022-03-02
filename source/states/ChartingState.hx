@@ -1599,9 +1599,9 @@ class ChartingState extends MusicBeatState
 		remove(gridBG);
 		remove(gridBlackLine);
 		remove(eventRow);
-		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * Conductor.timeSignature);
+		gridBG = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE * 8, GRID_SIZE * _song.notes[curSection].lengthInSteps);
 		gridBlackLine.makeGraphic(2, Std.int(gridBG.height), FlxColor.BLACK);
-		eventRow = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE, GRID_SIZE * Conductor.timeSignature);
+		eventRow = FlxGridOverlay.create(GRID_SIZE, GRID_SIZE, GRID_SIZE, GRID_SIZE * _song.notes[curSection].lengthInSteps);
 		eventRow.x -= GRID_SIZE*2;
 		insert(members.indexOf(chartingBG)+1, gridBG);
 		insert(members.indexOf(rightIcon)+1, gridBlackLine);
