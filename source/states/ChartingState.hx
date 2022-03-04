@@ -477,7 +477,7 @@ class ChartingState extends MusicBeatState
 		{
 			stepperLength.stepSize = 0;
 			if (check_changeTimeSignature.checked)
-				stepperLength.stepSize = 4;
+				{stepperLength.stepSize = 4; stepperLength.value = _song.notes[curSection].lengthInSteps;}
 		}
 
 		stepperSectionBPM = new FlxUINumericStepper(10, 80, 1, Conductor.bpm, 0, 999, 0);
