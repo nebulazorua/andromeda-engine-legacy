@@ -2512,7 +2512,7 @@ class PlayState extends MusicBeatState
 				if(currentOptions.allowOrderSorting)
 					renderedNotes.sort(sortByOrder);
 
-
+				preNoteLogic(elapsed);
 				renderedNotes.forEachAlive(function(daNote:Note)
 				{
 					if(!daNote.active){
@@ -2777,6 +2777,8 @@ class PlayState extends MusicBeatState
 						}
 					}
 				});
+
+				postNoteLogic(elapsed);
 			}
 		}
 
@@ -2808,8 +2810,6 @@ class PlayState extends MusicBeatState
 
 
 		if (!inCutscene){
-			if(ScoreUtils.botPlay)
-				botplay();
 
 
 			/*if(pressedKeys.contains(true)){
@@ -3024,13 +3024,23 @@ class PlayState extends MusicBeatState
 					numScore.x += currentOptions.judgeX;
 					numScore.y += currentOptions.judgeY;
 
+					var scaleX = numScore.scale.x;
+					var scaleY = numScore.scale.y;
+
 					add(numScore);
 					if(currentOptions.smJudges){
 						comboSprites.push(numScore);
-						numScore.y -= 30;
-						numScore.currentTween = FlxTween.tween(numScore, {y: numScore.y + 30}, 0.2, {
+						//
+						numScore.scale.x *= 1.25;
+						numScore.scale.y *= 0.75;
+						numScore.alpha = 0.6;
+						numScore.currentTween = FlxTween.tween(numScore, {"scale.x": scaleX, "scale.y": scaleY, alpha: 1}, 0.2, {
 							ease: FlxEase.circOut
 						});
+						/*numScore.y -= 30;
+						numScore.currentTween = FlxTween.tween(numScore, {y: numScore.y + 30}, 0.2, {
+							ease: FlxEase.circOut
+						});*/
 
 
 					}else{
@@ -3349,16 +3359,14 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	private function botplay(){
+	/*private function botplay(){
 		var holdArray:Array<Bool> = [false,false,false,false];
 		var controlArray:Array<Bool> = [false,false,false,false];
 		for(note in playerNotes){
-			if(note.mustPress && note.canBeHit && note.strumTime<=Conductor.songPosition+5){
+			if(note.mustPress && note.canBeHit && note.strumTime<=Conductor.songPosition+5 && !note.isSustainNote){
 				if(note.sustainLength>0 && botplayHoldMaxTimes[note.noteData]<note.sustainLength){
 					controlArray[note.noteData]=true;
 					botplayHoldTimes[note.noteData] = (note.sustainLength/1000)+.1;
-				}else if(note.isSustainNote && botplayHoldMaxTimes[note.noteData]==0){
-					holdArray[note.noteData] = true;
 				}
 				if(!note.isSustainNote){
 					controlArray[note.noteData]=true;
@@ -3385,6 +3393,55 @@ class PlayState extends MusicBeatState
 		}
 
 		updateReceptors();
+	}*/
+	private function preNoteLogic(elapsed: Float){
+		// put whatever code here idk
+
+		// botplay
+		if(ScoreUtils.botPlay){
+			for(dir in 0...botplayHoldTimes.length){
+				if(botplayHoldTimes[dir]>0)botplayHoldTimes[dir]-=elapsed*1000;
+				if(botplayHoldTimes[dir]<0)botplayHoldTimes[dir]=0;
+				var time = botplayHoldTimes[dir];
+				if(time>0){
+					if(!pressedKeys[dir]){
+						pressedKeys[dir]=true;
+						handleInput(dir);
+						updateReceptors();
+					}
+				}else{
+					if(pressedKeys[dir]){
+						pressedKeys[dir]=false;
+						updateReceptors();
+					}
+				}
+			}
+		}
+	}
+
+	private function postNoteLogic(elapsed: Float){
+		// put whatever code here idk
+
+		// botplay
+		if(ScoreUtils.botPlay){
+			for(dir in 0...botplayHoldTimes.length){
+				var notes = getHittableNotes(dir,true);
+				for(note in notes){
+					var diff = note.strumTime - Conductor.songPosition;
+					if(diff<=10 && !pressedKeys[dir] && note.causesMiss){
+						if(note.sustainLength==0)
+							botplayHoldTimes[dir] = 100;
+						else
+							botplayHoldTimes[dir] = note.sustainLength+100;
+
+
+						pressedKeys[dir]=true;
+						handleInput(dir);
+						updateReceptors();
+					}
+				}
+			}
+		}
 	}
 
 	function getHittableNotes(direction:Int=-1,excludeHolds:Bool=false){
