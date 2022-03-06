@@ -172,6 +172,107 @@ class EngineData {
       ]
     },
     {
+      name: "Camera Zoom",
+      arguments: [
+        {
+          name: "Zoom",
+          type: EventArgType.SteppedNumber,
+          step: 0.05,
+          min: 0,
+          defaultVal: 1,
+        }
+      ]
+    },
+    {
+      name: "Camera Zoom Bump",
+      arguments: [
+        {
+          name: "Game Zoom",
+          type: EventArgType.SteppedNumber,
+          step: 0.05,
+          min: 0,
+          defaultVal: 0.02,
+        },
+        {
+          name: "HUD Zoom",
+          type: EventArgType.SteppedNumber,
+          step: 0.05,
+          min: 0,
+          defaultVal: 0.02,
+        },
+      ]
+    },
+
+    {
+      name: "Set Cam Pos",
+      arguments: [
+        {
+          name: "X",
+          type: EventArgType.SteppedNumber,
+          step: 10,
+          defaultVal: 0,
+        },
+        {
+          name: "Y",
+          type: EventArgType.SteppedNumber,
+          step: 10,
+          defaultVal: 0,
+        }
+      ]
+    },
+
+    {
+      name: "Set Cam Focus",
+      arguments: [
+        {
+          name: "Player",
+          type: EventArgType.Dropdown,
+          defaultVal: "player",
+          dropdownValues: ["bf","dad","gf","center","none"]
+        },
+      ]
+    },
+
+
+    {
+      name: "Camera Offset",
+      arguments: [
+        {
+          name: "X",
+          type: EventArgType.SteppedNumber,
+          step: 10,
+          defaultVal: 0,
+        },
+        {
+          name: "Y",
+          type: EventArgType.SteppedNumber,
+          step: 10,
+          defaultVal: 0,
+        }
+      ]
+    },
+
+    {
+      name: "Camera Zoom Interval",
+      arguments: [
+        {
+          name: "Beat",
+          type: EventArgType.SteppedNumber,
+          step: 1,
+          defaultVal: 4,
+          min: 1,
+        },
+        {
+          name: "Zoom",
+          type: EventArgType.SteppedNumber,
+          step: 0.01,
+          min: 0,
+          defaultVal: 0.02,
+        }
+      ]
+    },
+
+    {
       name: "Custom",
       arguments: [
         {
