@@ -76,9 +76,9 @@ class ModManager {
           0
         ));
       }
-      r+=30;
+      r+=15;
     }
-    defineMod("infinite",new PathModifier(this,infPath,2250));
+    defineMod("infinite",new PathModifier(this,infPath,1850));
     // an example of PathModifier using a figure 8 pattern
     // when creating a PathModifier, the 2nd argument is an array of arrays of Vector3
     // Array<Array<Vector3>> where the 1st (path[0]) element is the left's path and the 4th (path[3]) element is the right's path, and everything inbetween

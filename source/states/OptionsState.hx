@@ -81,7 +81,7 @@ class OptionsState extends MusicBeatState
 				new ToggleOption("onlyScore","Minimal Information","Only shows your score below the hp bar"),
 				new ToggleOption("smoothHPBar","Smooth Healthbar","Makes the HP Bar smoother"),
 				new ToggleOption("fcBasedComboColor","FC Combo Colouring","Makes the combo's colour changes with type of FC you have"),
-				new ToggleOption("holdsBehindReceptors","Stepmania Clipping","Makes holds clip behind the receptors"),
+				new ToggleOption("holdsBehindReceptors","Holds Behinds Receptors","Makes holds layer behind the receptors, similar to other VSRGs"),
 				new NoteskinOption("noteSkin","NoteSkin","The noteskin to use"),
 				new OptionCategory("Effects",[
 					new ToggleOption("raymarcher","Raymarcher Shaders","Lets the camera have pitch and yaw. May cause lag"),

@@ -258,6 +258,7 @@ class Note extends NoteGraphic
 		}
 
 		zIndex+=desiredZIndex;
+		zIndex-=(mustPress==true?0:1);
 
 		if (mustPress)
 		{

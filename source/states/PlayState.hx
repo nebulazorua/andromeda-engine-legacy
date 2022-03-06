@@ -122,7 +122,7 @@ class PlayState extends MusicBeatState
 	private var strumLine:FlxSprite;
 	private var curSection:Int = 0;
 
-
+	public var noteSpawnTime:Float = 1000;
 	private var camFollow:FlxObject;
 	public var currentOptions:Options;
 
@@ -2246,7 +2246,7 @@ class PlayState extends MusicBeatState
 		FlxG.watch.addQuick("curStep", curStep);
 		FlxG.watch.addQuick("curDecBeat", curDecBeat);
 		FlxG.watch.addQuick("curDecStep", curDecStep);
-
+		FlxG.watch.addQuick("note spawn time", noteSpawnTime);
 		FlxG.watch.addQuick("rawSongPos", Conductor.rawSongPos);
 		FlxG.watch.addQuick("instTime", inst.time);
 
@@ -2463,7 +2463,7 @@ class PlayState extends MusicBeatState
 
 		while(unspawnNotes[0] != null)
 		{
-			if (Conductor.currentTrackPos-getPosFromTime(unspawnNotes[0].strumTime)>-3000)
+			if (Conductor.currentTrackPos-getPosFromTime(unspawnNotes[0].strumTime)>-noteSpawnTime)
 			{
 				var dunceNote:Note = unspawnNotes[0];
 
@@ -2511,6 +2511,7 @@ class PlayState extends MusicBeatState
 			if(startedCountdown){
 				if(currentOptions.allowOrderSorting)
 					renderedNotes.sort(sortByOrder);
+
 
 				renderedNotes.forEachAlive(function(daNote:Note)
 				{
@@ -2569,7 +2570,10 @@ class PlayState extends MusicBeatState
 							var diffY = (nextPos.y - notePos.y);
 							var rad = Math.atan2(diffY,diffX);
 							var deg = rad * (180 / Math.PI);
-							daNote.modAngle = deg + 90; // gets the angle in degrees instead of radians
+							if(deg!=0)
+								daNote.modAngle = deg + 90;
+							else
+								daNote.modAngle = 0;
 					}
 
 					scale.put();
@@ -3290,6 +3294,8 @@ class PlayState extends MusicBeatState
 				spr.playAnim("static");
 			}
 		});
+
+		strumLineNotes.sort(sortByOrder);
 	}
 
 	private function keyPress(event:KeyboardEvent){
