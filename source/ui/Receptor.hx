@@ -120,20 +120,29 @@ class Receptor extends FNFSprite {
     animation.play(anim,force);
     updateHitbox();
     offset.set((frameWidth/2)-(54*(.7/noteScale) ),(frameHeight/2)-(56*(.7/noteScale)));
+    updateZIndex();
+  }
+
+  public function getZIndex(){
+    var animZOffset:Float = 0;
+    if(animation.curAnim!=null && animation.curAnim.name=='confirm')animZOffset+=1;
+    return z + desiredZIndex + animZOffset - playerNum;
+  }
+
+  function updateZIndex(){
+    zIndex=getZIndex();
   }
 
   override function update(elapsed:Float){
     angle = baseAngle+desiredAngle;
 
-    var animZOffset:Float = 0;
-    if(animation.curAnim!=null && animation.curAnim.name=='confirm')animZOffset+=1;
+
     x = desiredX + xOffset;
     y = desiredY + yOffset;
     z = desiredZ + zOffset;
+    updateZIndex();
 
-    zIndex=z + desiredZIndex + animZOffset ;
     super.update(elapsed);
-    zIndex = animZOffset;
 
   }
 }

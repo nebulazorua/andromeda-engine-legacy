@@ -679,12 +679,12 @@ class ChartingState extends MusicBeatState
 		for(widget in argWidgets)
 			eventGroup.add(widget);
 
-		updateArgDropdown();
-		updateWidgets();
-
 		eventGroup.add(eventArgDropdown);
 		eventGroup.add(eventDropdown);
 		UI_box.addGroup(eventGroup);
+
+		updateArgDropdown();
+		updateWidgets();
 	}
 
 	var stepperSusLength:FlxUINumericStepper;

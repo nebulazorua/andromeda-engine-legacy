@@ -60,6 +60,10 @@ class PathModifier extends Modifier {
       }
       dir++;
     }
+
+    for(dir in 0...totalDists.length){
+      trace(dir, totalDists[dir]);
+    }
   }
 
 
