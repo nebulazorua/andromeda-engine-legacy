@@ -13,6 +13,7 @@ import flixel.FlxState;
 import haxe.Timer;
 import flixel.FlxBasic;
 import flixel.FlxSprite;
+import flixel.group.FlxGroup.FlxTypedGroup;
 
 class MusicBeatState extends FlxUIState
 {
@@ -130,12 +131,21 @@ class MusicBeatState extends FlxUIState
 	}
 
 	override function add(obj:FlxBasic){
-		if(OptionUtils.options.antialiasing==false){
-			if((obj is FlxSprite)){
-				var sprite:FlxSprite = cast obj;
-				sprite.antialiasing=false;
-			}
-		}
-		return super.add(obj);
-	}
+    if(OptionUtils.options.antialiasing==false){
+      if((obj is FlxSprite)){
+        var sprite:FlxSprite = cast obj;
+        sprite.antialiasing=false;
+      }else if((obj is FlxTypedGroup)){
+        var group:FlxTypedGroup<FlxSprite> = cast obj;
+        for(o in group.members){
+          if((o is FlxSprite)){
+            var sprite:FlxSprite = cast o;
+            sprite.antialiasing=false;
+          }
+        }
+      }
+    }
+    return super.add(obj);
+  }
+
 }

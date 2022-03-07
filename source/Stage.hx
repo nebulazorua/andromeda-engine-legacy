@@ -15,7 +15,7 @@ import flixel.system.FlxSound;
 import flixel.FlxObject;
 import flixel.FlxBasic;
 import states.*;
-
+import Options;
 import Shaders;
 
 class Stage extends FlxTypedGroup<FlxBasic> {
@@ -657,6 +657,24 @@ class Stage extends FlxTypedGroup<FlxBasic> {
     trainCars = 8;
     trainFinishing = false;
     startedMoving = false;
+  }
+
+  override function add(obj:FlxBasic){
+    if(OptionUtils.options.antialiasing==false){
+      if((obj is FlxSprite)){
+        var sprite:FlxSprite = cast obj;
+        sprite.antialiasing=false;
+      }else if((obj is FlxTypedGroup)){
+        var group:FlxTypedGroup<FlxSprite> = cast obj;
+        for(o in group.members){
+          if((o is FlxSprite)){
+            var sprite:FlxSprite = cast o;
+            sprite.antialiasing=false;
+          }
+        }
+      }
+    }
+    return super.add(obj);
   }
 
 }
