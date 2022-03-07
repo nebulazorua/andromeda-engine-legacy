@@ -16,6 +16,7 @@ import flixel.FlxGame;
 import flixel.FlxObject;
 import flixel.util.FlxSpriteUtil;
 import flixel.FlxSprite;
+import flixel.util.FlxAxes;
 import flixel.FlxState;
 import flixel.group.FlxSpriteGroup;
 import flixel.FlxSubState;
@@ -175,7 +176,7 @@ class PlayState extends MusicBeatState
 	private var camZooming:Bool = true;
 	private var curSong:String = "";
 
-	private var gfSpeed:Int = 1;
+	private var gfSpeed:Int = 4;
 	private var health:Float = 1;
 	private var previousHealth:Float = 1;
 	private var combo:Int = 0;
@@ -480,6 +481,15 @@ class PlayState extends MusicBeatState
 			}catch (e:Exception){
 				FlxG.log.advanced(e, EngineData.LUAERROR, true);
 			};
+
+			if(luaModchartExists && lua!=null){
+				Lua.getglobal(lua.state, "update");
+				if(Lua.isfunction(lua.state,-1)==true){
+					if(Main.getFPSCap()>180)
+						Main.setFPSCap(180);
+
+				}
+			}
 		}
 	}
 
@@ -880,7 +890,6 @@ class PlayState extends MusicBeatState
 		}
 
 		add(camFollow);
-
 		FlxG.camera.follow(camFollow, LOCKON, Main.adjustFPS(.03));
 		camRating.follow(camFollow,LOCKON,Main.adjustFPS(.03));
 		// FlxG.camera.setScrollBounds(0, FlxG.width, 0, FlxG.height);
@@ -1985,10 +1994,26 @@ class PlayState extends MusicBeatState
 			}
 		}
 		#end
-
+		
+		FlxG.camera.followLerp = Main.adjustFPS(.03);
+		camRating.followLerp = Main.adjustFPS(.03);
 		super.onFocus();
 	}
 
+	function pause(){
+		persistentUpdate = false;
+		persistentDraw = true;
+		paused = true;
+
+		// 1 / 1000 chance for Gitaroo Man easter egg
+		if (FlxG.random.bool(0.1))
+		{
+			// gitaroo man easter egg
+			FlxG.switchState(new GitarooPauseState());
+		}
+		else
+			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+	}
 	override public function onFocusLost():Void
 	{
 		#if desktop
@@ -1997,6 +2022,8 @@ class PlayState extends MusicBeatState
 			DiscordClient.changePresence(detailsPausedText + songData.displayName + " (" + storyDifficultyText + ")", grade + " | Acc: " + CoolUtil.truncateFloat(accuracy*100,2) + "%", iconRPC);
 		}
 		#end
+
+		pause();
 
 		super.onFocusLost();
 	}
@@ -2155,6 +2182,20 @@ class PlayState extends MusicBeatState
 			case 'Camera Zoom Interval':
 				zoomBeatingInterval = args[0];
 				zoomBeatingZoom = args[1];
+			case 'GF Speed':
+				gfSpeed = Math.floor(args[0]);
+			case 'Screen Shake':
+				var axes:FlxAxes = XY;
+				switch(args[2]){
+					case 'XY':
+						axes = XY;
+					case 'X':
+						axes = X;
+					case 'Y':
+						axes = Y;
+				}
+				FlxG.camera.shake(args[0],args[1],null,true,axes);
+				camHUD.shake(args[0],args[1],null,true,axes);
 			case 'Set Cam Pos':
 				focus = 'none';
 				camFollow.setPosition(args[0],args[1]);
@@ -2216,18 +2257,7 @@ class PlayState extends MusicBeatState
 		previousHealth=health;
 		if (controls.PAUSE && startedCountdown && canPause)
 		{
-			persistentUpdate = false;
-			persistentDraw = true;
-			paused = true;
-
-			// 1 / 1000 chance for Gitaroo Man easter egg
-			if (FlxG.random.bool(0.1))
-			{
-				// gitaroo man easter egg
-				FlxG.switchState(new GitarooPauseState());
-			}
-			else
-				openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+			pause();
 
 			#if desktop
 			DiscordClient.changePresence(detailsPausedText + songData.displayName + " (" + storyDifficultyText + ")", grade + " | Acc: " + CoolUtil.truncateFloat(accuracy*100,2) + "%", iconRPC);
@@ -2403,13 +2433,13 @@ class PlayState extends MusicBeatState
 			{
 				case 16:
 					camZooming = true;
-					gfSpeed = 2;
+					gfSpeed = 8;
 				case 48:
-					gfSpeed = 1;
+					gfSpeed = 4;
 				case 80:
-					gfSpeed = 2;
+					gfSpeed = 8;
 				case 112:
-					gfSpeed = 1;
+					gfSpeed = 4;
 				case 163:
 					// inst.stop();
 					// FlxG.switchState(new TitleState());
@@ -3817,6 +3847,9 @@ class PlayState extends MusicBeatState
 			}
 		}
 
+		if (curStep % gfSpeed == 0)
+			gf.dance();
+
 		var lastChange = Conductor.getBPMFromStep(curStep);
 		if(lastChange.bpm != Conductor.bpm){
 			Conductor.changeBPM(lastChange.bpm);
@@ -3873,10 +3906,6 @@ class PlayState extends MusicBeatState
 
 		healthBar.beatHit(curBeat);
 
-		if (curBeat % gfSpeed == 0)
-		{
-			gf.dance();
-		}
 
 		if(boyfriend.animation.curAnim!=null)
 			if (!boyfriend.animation.curAnim.name.startsWith("sing"))
@@ -3914,6 +3943,8 @@ class PlayState extends MusicBeatState
 			lua=null;
 		}
 		#end
+
+		Main.setFPSCap(OptionUtils.options.fps);
 		FlxG.stage.removeEventListener(KeyboardEvent.KEY_DOWN,keyPress);
 		FlxG.stage.removeEventListener(KeyboardEvent.KEY_UP,keyRelease);
 
