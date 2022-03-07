@@ -1,4 +1,8 @@
+
+### BEFORE PUTTING AN ISSUE IN, MAKE SURE YOU'RE ON HAXE 4.2.4!
+
 # Friday Night Funkin: Andromeda Engine
+
 
 "ANDROMEDA ENGINE IS GOATED" - bbpanzu
 
