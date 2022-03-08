@@ -150,9 +150,9 @@ class ChartingState extends MusicBeatState
 		gridLayer.add(eventRow);
 
 		if(check_sexPreview.checked){
-			var gridOverlay = new FlxSprite(gridBG.x, gridBG.height / 2).makeGraphic(Std.int(GRID_SIZE * 8), Std.int(GRID_SIZE * (height/2)), FlxColor.BLACK);
+			var gridOverlay = new FlxSprite(gridBG.x, gridBG.height * (_song.notes[curSection].lengthInSteps/height)).makeGraphic(Std.int(GRID_SIZE * 8), Std.int(GRID_SIZE * _song.notes[curSection+1].lengthInSteps), FlxColor.BLACK);
 			gridOverlay.alpha = 0.6;
-			var eventOverlay = new FlxSprite(eventRow.x, eventRow.height / 2).makeGraphic(Std.int(GRID_SIZE), Std.int(GRID_SIZE * (height/2)), FlxColor.BLACK);
+			var eventOverlay = new FlxSprite(eventRow.x, eventRow.height * (_song.notes[curSection].lengthInSteps/height)).makeGraphic(Std.int(GRID_SIZE), Std.int(GRID_SIZE * _song.notes[curSection+1].lengthInSteps), FlxColor.BLACK);
 			eventOverlay.alpha = 0.6;
 			gridLayer.add(gridOverlay);
 			gridLayer.add(eventOverlay);
@@ -166,6 +166,27 @@ class ChartingState extends MusicBeatState
 	{
 		super.create();
 		InitState.getCharacters();
+
+		if (PlayState.SONG != null){
+			_song = PlayState.SONG;
+			velChanges=_song.sliderVelocities;
+			_song.sliderVelocities=null;
+		}else
+		{
+			_song = {
+				song: 'Test',
+				notes: [],
+				bpm: 150,
+				needsVoices: true,
+				player1: 'bf',
+				player2: 'dad',
+				stage: "stage",
+				noteModifier: "base",
+				speed: 1,
+				validScore: false
+			};
+			velChanges = [];
+		}
 
 		// taken straight from story menu state lmao!
 		chartingBG = new FlxSprite(-80).loadGraphic(Paths.image('menuBGDesat'));
@@ -1707,6 +1728,10 @@ class ChartingState extends MusicBeatState
 				}
 		}
 
+		addGridBG();
+
+		/*
+
 		remove(gridBG);
 		remove(gridBlackLine);
 		remove(eventRow);
@@ -1717,6 +1742,7 @@ class ChartingState extends MusicBeatState
 		insert(members.indexOf(chartingBG)+1, gridBG);
 		insert(members.indexOf(rightIcon)+1, gridBlackLine);
 		insert(members.indexOf(gridBG)+1, eventRow);
+		*/
 
 		var idx:Int=0;
 		if(events!=null){
@@ -2029,22 +2055,22 @@ class ChartingState extends MusicBeatState
 
 	function getStrumTime(yPos:Float):Float
 	{
-		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + gridBG.height, 0,  _song.notes[curSection].lengthInSteps * Conductor.stepCrochet);
+		return FlxMath.remapToRange(yPos, gridBG.y, gridBG.y + (GRID_SIZE*_song.notes[curSection].lengthInSteps), 0,  _song.notes[curSection].lengthInSteps * Conductor.stepCrochet);
 	}
 
 	function getYfromStrum(strumTime:Float):Float
 	{
-		return FlxMath.remapToRange(strumTime, 0,  _song.notes[curSection].lengthInSteps * Conductor.stepCrochet, gridBG.y, gridBG.y + gridBG.height);
+		return FlxMath.remapToRange(strumTime, 0,  _song.notes[curSection].lengthInSteps * Conductor.stepCrochet, gridBG.y, gridBG.y + (GRID_SIZE*_song.notes[curSection].lengthInSteps));
 	}
 
 	function getEventTime(yPos:Float):Float
 	{
-		return FlxMath.remapToRange(yPos, eventRow.y, eventRow.y + eventRow.height, 0, _song.notes[curSection].lengthInSteps * Conductor.stepCrochet);
+		return FlxMath.remapToRange(yPos, eventRow.y, eventRow.y + (GRID_SIZE*_song.notes[curSection].lengthInSteps), 0, _song.notes[curSection].lengthInSteps * Conductor.stepCrochet);
 	}
 
 	function getYfromEvent(strumTime:Float):Float
 	{
-		return FlxMath.remapToRange(strumTime, 0, _song.notes[curSection].lengthInSteps * Conductor.stepCrochet, eventRow.y, eventRow.y + eventRow.height);
+		return FlxMath.remapToRange(strumTime, 0, _song.notes[curSection].lengthInSteps * Conductor.stepCrochet, eventRow.y, eventRow.y + (GRID_SIZE*_song.notes[curSection].lengthInSteps));
 	}
 
 	/*
