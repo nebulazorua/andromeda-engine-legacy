@@ -80,7 +80,7 @@ class PauseSubState extends MusicBeatSubstate
 
 
 		if(PlayState.inCharter)
-			menuItems.insert(3,"Exit to charter");
+			menuItems.insert(menuItems.length,"Exit to charter");
 
 
 

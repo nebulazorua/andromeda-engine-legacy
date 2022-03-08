@@ -222,6 +222,45 @@ class EngineData {
     },
 
     {
+      name: "Screen Shake",
+      arguments: [
+        {
+          name: "Intensity",
+          type: EventArgType.SteppedNumber,
+          step: 0.05,
+          defaultVal: 0.05,
+          min: 0
+        },
+        {
+          name: "Duration",
+          type: EventArgType.SteppedNumber,
+          step: 0.05,
+          defaultVal: 0.5,
+          min: 0
+        },
+        {
+          name: "Axes",
+          type: EventArgType.Dropdown,
+          defaultVal: "XY",
+          dropdownValues: ["XY","X","Y"]
+        }
+      ]
+    },
+
+    {
+      name: "GF Speed",
+      arguments: [
+        {
+          name: "Step",
+          type: EventArgType.SteppedNumber,
+          step: 1,
+          defaultVal: 4,
+          min: 0
+        }
+      ]
+    },
+
+    {
       name: "Set Cam Focus",
       arguments: [
         {

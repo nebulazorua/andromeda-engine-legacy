@@ -155,6 +155,11 @@ class Options
 	public var freeplayPreview:Bool = false;
 	public var hitSound:Bool = false;
 
+	// charter
+	public var bfHitsounds:Bool=false;
+	public var dadHitsounds:Bool=false;
+	public var sectionPreview:Bool=true;
+
 	public function loadOptions(){
 		OptionUtils.loadOptions(this);
 	}
