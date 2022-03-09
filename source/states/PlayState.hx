@@ -2007,7 +2007,7 @@ class PlayState extends MusicBeatState
 	}
 
 	function pause(){
-		if(subState==null && !paused)return;
+		if(subState==null || paused)return;
 		persistentUpdate = false;
 		persistentDraw = true;
 		paused = true;
