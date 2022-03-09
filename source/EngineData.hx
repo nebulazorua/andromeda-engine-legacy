@@ -266,7 +266,7 @@ class EngineData {
         {
           name: "Player",
           type: EventArgType.Dropdown,
-          defaultVal: "player",
+          defaultVal: "bf",
           dropdownValues: ["bf","dad","gf","center","none"]
         },
       ]

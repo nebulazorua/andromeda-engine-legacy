@@ -790,6 +790,7 @@ class PlayState extends MusicBeatState
 		stage.gf=gf;
 
 		dad = new Character(100, 100, SONG.player2, false, !currentOptions.noChars);
+		opponent=dad;
 		stage.dad=dad;
 		boyfriend = new Boyfriend(770, 450, SONG.player1, !currentOptions.noChars);
 		stage.boyfriend=boyfriend;
@@ -1011,6 +1012,11 @@ class PlayState extends MusicBeatState
 			overlay.scrollFactor.set();
 			add(overlay);
 		}
+
+		if(currentOptions.staticCam==0)
+			focus = 'dad';
+		updateCamFollow();
+
 
 		if (isStoryMode)
 		{
@@ -1994,7 +2000,7 @@ class PlayState extends MusicBeatState
 			}
 		}
 		#end
-		
+
 		FlxG.camera.followLerp = Main.adjustFPS(.03);
 		camRating.followLerp = Main.adjustFPS(.03);
 		super.onFocus();
@@ -2163,7 +2169,53 @@ class PlayState extends MusicBeatState
 			}
 		}
 	}
+	function updateCamFollow(){
+		var bfMid = boyfriend.getMidpoint();
+		var dadMid = opponent.getMidpoint();
+		var gfMid = gf.getMidpoint();
 
+		if(cameraLocked){
+			camFollow.setPosition(cameraLockX,cameraLockY);
+		}else{
+			var focusedChar:Null<Character>=null;
+			switch(focus){
+				case 'dad':
+					focusedChar=opponent;
+					camFollow.setPosition(dadMid.x + opponent.camOffset.x, dadMid.y + opponent.camOffset.y);
+				case 'bf':
+					focusedChar=boyfriend;
+					camFollow.setPosition(bfMid.x - stage.camOffset.x  + boyfriend.camOffset.x, bfMid.y - stage.camOffset.y + boyfriend.camOffset.y);
+				case 'gf':
+					focusedChar=gf;
+					camFollow.setPosition(gfMid.x + gf.camOffset.x, gfMid.y + gf.camOffset.y);
+				case 'center':
+					focusedChar = null;
+					var centerX = (stage.centerX==-1)?(((dadMid.x+ opponent.camOffset.x) + (bfMid.x- stage.camOffset.x + boyfriend.camOffset.x))/2):stage.centerX;
+					var centerY = (stage.centerY==-1)?(((dadMid.y+ opponent.camOffset.y) + (bfMid.y- stage.camOffset.y + boyfriend.camOffset.y))/2):stage.centerY;
+					camFollow.setPosition(centerX,centerY);
+				case 'none':
+
+			}
+			if(currentOptions.camFollowsAnims && focusedChar!=null){
+				if(focusedChar.animation.curAnim!=null){
+					switch (focusedChar.animation.curAnim.name){
+						case 'singUP' | 'singUP-alt' | 'singUPmiss':
+							camFollow.y -= 15 * focusedChar.camMovementMult;
+						case 'singDOWN' | 'singDOWN-alt' | 'singDOWNmiss':
+							camFollow.y += 15 * focusedChar.camMovementMult;
+						case 'singLEFT' | 'singLEFT-alt' | 'singLEFTmiss':
+							camFollow.x -= 15 * focusedChar.camMovementMult;
+						case 'singRIGHT' | 'singRIGHT-alt' | 'singRIGHTmiss':
+							camFollow.x += 15 * focusedChar.camMovementMult;
+					}
+				}
+			}
+		}
+		if(focus!='none'){
+			camFollow.x += camOffX;
+			camFollow.y += camOffY;
+		}
+	}
 	function doEvent(event:Event) : Void {
 		var args = event.args;
 		switch (event.name){
@@ -2201,6 +2253,7 @@ class PlayState extends MusicBeatState
 				camFollow.setPosition(args[0],args[1]);
 			case 'Set Cam Focus':
 				focus = args[0];
+				trace("set cam fuckus to " + args[0] + ' at ${Conductor.songPosition}');
 			case 'Camera Zoom':
 				defaultCamZoom = args[0];
 			case 'Camera Zoom Bump':
@@ -2357,69 +2410,6 @@ class PlayState extends MusicBeatState
 		}catch(e:Any){
 			trace(e);
 		}
-		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
-		{
-			var bfMid = boyfriend.getMidpoint();
-			var dadMid = opponent.getMidpoint();
-			var gfMid = gf.getMidpoint();
-
-			if(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection){
-				if(turn!='bf'){
-					turn='bf';
-
-					if(currentOptions.staticCam==0)
-						focus='bf';
-				}
-			}else{
-					if(turn!='dad'){
-						turn='dad';
-						if(currentOptions.staticCam==0)
-							focus='dad';
-				}
-			}
-
-			if(cameraLocked){
-				camFollow.setPosition(cameraLockX,cameraLockY);
-			}else{
-				var focusedChar:Null<Character>=null;
-				switch(focus){
-					case 'dad':
-						focusedChar=opponent;
-						camFollow.setPosition(dadMid.x + opponent.camOffset.x, dadMid.y + opponent.camOffset.y);
-					case 'bf':
-						focusedChar=boyfriend;
-						camFollow.setPosition(bfMid.x - stage.camOffset.x  + boyfriend.camOffset.x, bfMid.y - stage.camOffset.y + boyfriend.camOffset.y);
-					case 'gf':
-						focusedChar=gf;
-						camFollow.setPosition(gfMid.x + gf.camOffset.x, gfMid.y + gf.camOffset.y);
-					case 'center':
-						focusedChar = null;
-						var centerX = (stage.centerX==-1)?(((dadMid.x+ opponent.camOffset.x) + (bfMid.x- stage.camOffset.x))/2):stage.centerX;
-						var centerY = (stage.centerY==-1)?(((dadMid.y+ opponent.camOffset.y) + (bfMid.y- stage.camOffset.y))/2):stage.centerY;
-						camFollow.setPosition(centerX,centerY);
-					case 'none':
-
-				}
-				if(currentOptions.camFollowsAnims && focusedChar!=null){
-					if(focusedChar.animation.curAnim!=null){
-						switch (focusedChar.animation.curAnim.name){
-							case 'singUP' | 'singUP-alt' | 'singUPmiss':
-								camFollow.y -= 15 * focusedChar.camMovementMult;
-							case 'singDOWN' | 'singDOWN-alt' | 'singDOWNmiss':
-								camFollow.y += 15 * focusedChar.camMovementMult;
-							case 'singLEFT' | 'singLEFT-alt' | 'singLEFTmiss':
-								camFollow.x -= 15 * focusedChar.camMovementMult;
-							case 'singRIGHT' | 'singRIGHT-alt' | 'singRIGHTmiss':
-								camFollow.x += 15 * focusedChar.camMovementMult;
-						}
-					}
-				}
-			}
-			if(focus!='none'){
-				camFollow.x += camOffX;
-				camFollow.y += camOffY;
-			}
-		}
 
 		if (camZooming)
 		{
@@ -2573,16 +2563,6 @@ class PlayState extends MusicBeatState
 				var index:Int = unspawnNotes.indexOf(dunceNote);
 				unspawnNotes.splice(index, 1);
 
-			}else{
-				break;
-			}
-		}
-
-		while(eventSchedule[0]!=null){
-			var event = eventSchedule[0];
-			if(Conductor.songPosition >= event.time){
-				doEvent(event);
-				eventSchedule.shift();
 			}else{
 				break;
 			}
@@ -2888,6 +2868,18 @@ class PlayState extends MusicBeatState
 			lastHitDadNote=null;
 		}
 		super.update(elapsed);
+
+		while(eventSchedule[0]!=null){
+			var event = eventSchedule[0];
+			if(Conductor.songPosition >= event.time){
+				doEvent(event);
+				eventSchedule.shift();
+			}else{
+				break;
+			}
+		}
+
+		updateCamFollow();
 
 		for(note in notesToKill){
 			if(note.active){
@@ -3865,6 +3857,25 @@ class PlayState extends MusicBeatState
 	override function beatHit()
 	{
 		super.beatHit();
+
+		if (generatedMusic && PlayState.SONG.notes[Std.int(curStep / 16)] != null)
+		{
+			if(PlayState.SONG.notes[Std.int(curStep / 16)].mustHitSection){
+				if(turn!='bf'){
+					turn='bf';
+					trace('changed turn to $turn at ${Conductor.songPosition}');
+					if(currentOptions.staticCam==0)
+						focus='bf';
+				}
+			}else{
+					if(turn!='dad'){
+						turn='dad';
+						trace('changed turn to $turn at ${Conductor.songPosition}');
+						if(currentOptions.staticCam==0)
+							focus='dad';
+				}
+			}
+		}
 
 		stage.beatHit(curBeat);
 
