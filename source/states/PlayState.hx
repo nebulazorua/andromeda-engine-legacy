@@ -982,23 +982,6 @@ class PlayState extends MusicBeatState
 		// cameras = [FlxG.cameras.list[1]];
 		startingSong = true;
 
-		var removing:Array<Note>=[];
-		for(note in unspawnNotes){
-			if(note.strumTime<startPos && !note.isSustainNote){
-				removing.push(note);
-			}
-		}
-		for(note in removing){
-			unspawnNotes.remove(note);
-
-			for(tail in note.tail){
-				unspawnNotes.remove(tail);
-				destroyNote(tail);
-			}
-			destroyNote(note);
-
-		}
-
 		shownAccuracy = 100;
 		if(currentOptions.accuracySystem==1){ // ITG
 			totalNotes = ScoreUtils.GetMaxAccuracy(noteCounter);
@@ -1784,6 +1767,26 @@ class PlayState extends MusicBeatState
 		// playerCounter += 1;
 
 		unspawnNotes.sort(sortByShit);
+
+		var removing:Array<Note>=[];
+		for(note in unspawnNotes){
+			if(note.strumTime<startPos && !note.isSustainNote || note.isSustainNote && removing.contains(note.parent) && !removing.contains(note)){
+				removing.push(note);
+			}
+		}
+		for(note in removing){
+			unspawnNotes.remove(note);
+			if(note.tail.length>0){
+				for(tail in note.tail){
+					unspawnNotes.remove(tail);
+					destroyNote(tail);
+				}
+			}
+
+			destroyNote(note);
+
+		}
+
 
 		if(eventSchedule.length>1)
 			eventSchedule.sort(sortByEvents);

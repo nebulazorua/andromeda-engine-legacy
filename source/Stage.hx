@@ -507,8 +507,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         centerX = skyBG.getMidpoint().x+100;
         centerY = skyBG.getMidpoint().y-100;
       case 'blank':
-        centerX = 400;
-        centerY = 130;
+        
       default:
         defaultCamZoom = 1;
         curStage = 'stage';

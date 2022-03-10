@@ -46,7 +46,9 @@ class ModManager {
   public function registerModifiers(){
     // NOTE: the order matters!
     // it goes from first defined to last defined
-
+    defineBlankMod("waveTimeFactor");
+    set("waveTimeFactor", 100, 0);
+    set("waveTimeFactor", 100, 1);
     defineMod("reverse",new ReverseModifier(this)); // also cross, split, alternate, centered
     defineMod("stealth",new AlphaModifier(this));
     defineMod("opponentSwap",new OpponentModifier(this));
