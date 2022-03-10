@@ -1422,7 +1422,7 @@ class ChartingState extends MusicBeatState
 		{
 			var strum = note[0] + Conductor.stepCrochet * (_song.notes[sectionNum].lengthInSteps * diff);
 
-			var copiedNote:Array<Dynamic> = [strum, note[1], note[2]];
+			var copiedNote:Array<Dynamic> = [strum, note[1], note[2], note[3]];
 			var canCopy:Bool=true;
 			for(nD in _song.notes[curSection].sectionNotes){
 				if(nD[0]==copiedNote[0] && nD[1]==copiedNote[1]){
@@ -1469,7 +1469,7 @@ class ChartingState extends MusicBeatState
 			var strum = totalOffsets + noteRatio * Conductor.crochet * 4; //Conductor.stepCrochet * (_song.notes[daSec].lengthInSteps * value);
 			var sus = note[2] * holdRatio;
 
-			var copiedNote:Array<Dynamic> = [strum, note[1], sus];
+			var copiedNote:Array<Dynamic> = [strum, note[1], sus, note[3]];
 			var canCopy:Bool=true;
 			for(nD in _song.notes[daSec].sectionNotes){
 				if(nD[0]==copiedNote[0] && nD[1]==copiedNote[1]){
