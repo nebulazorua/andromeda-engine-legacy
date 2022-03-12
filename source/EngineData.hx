@@ -50,8 +50,8 @@ class EngineData {
         {
           name: "Character",
           type: EventArgType.Dropdown,
-          defaultVal: "bf",
-          dropdownValues: ["bf","dad","gf"]
+          defaultVal: "player",
+          dropdownValues: ["player","opponent","gf"]
         },
         {
           name: "New Character",
@@ -65,8 +65,8 @@ class EngineData {
         {
           name: "Character",
           type: EventArgType.Dropdown,
-          defaultVal: "bf",
-          dropdownValues: ["bf","dad","gf"]
+          defaultVal: "player",
+          dropdownValues: ["player","opponent","gf"]
         },
         {
           name: "Animation",
@@ -143,15 +143,6 @@ class EngineData {
           name: "Ease",
           type: EventArgType.Dropdown,
           defaultVal: "linear",
-          /*getDropdownValues: function(){
-            var vals:Array<String> = [];
-            for(field in Type.getInstanceFields(FlxEase)){
-              vals.push(field.toLowerCase());
-              trace(field);
-            }
-            return vals;
-          }*/ // idk why this doesnt work
-
           getDropdownValues: function(){
             var eases:Array<String> = ["sine","quad","cube","quart","quint","expo","circ","back","elastic","bounce","smoothStep","smootherStep"];
             var vals:Array<String> = ["linear"];
@@ -177,7 +168,7 @@ class EngineData {
         {
           name: "Zoom",
           type: EventArgType.SteppedNumber,
-          step: 0.05,
+          step: 0.01,
           min: 0,
           defaultVal: 1,
         }
@@ -189,14 +180,14 @@ class EngineData {
         {
           name: "Game Zoom",
           type: EventArgType.SteppedNumber,
-          step: 0.05,
+          step: 0.01,
           min: 0,
           defaultVal: 0.02,
         },
         {
           name: "HUD Zoom",
           type: EventArgType.SteppedNumber,
-          step: 0.05,
+          step: 0.01,
           min: 0,
           defaultVal: 0.02,
         },
@@ -209,13 +200,13 @@ class EngineData {
         {
           name: "X",
           type: EventArgType.SteppedNumber,
-          step: 10,
+          step: 5,
           defaultVal: 0,
         },
         {
           name: "Y",
           type: EventArgType.SteppedNumber,
-          step: 10,
+          step: 5,
           defaultVal: 0,
         }
       ]
@@ -227,14 +218,14 @@ class EngineData {
         {
           name: "Intensity",
           type: EventArgType.SteppedNumber,
-          step: 0.05,
-          defaultVal: 0.05,
+          step: 0.015,
+          defaultVal: 0.001,
           min: 0
         },
         {
           name: "Duration",
           type: EventArgType.SteppedNumber,
-          step: 0.05,
+          step: 0.01,
           defaultVal: 0.5,
           min: 0
         },
@@ -264,10 +255,10 @@ class EngineData {
       name: "Set Cam Focus",
       arguments: [
         {
-          name: "Player",
+          name: "Focus",
           type: EventArgType.Dropdown,
-          defaultVal: "bf",
-          dropdownValues: ["bf","dad","gf","center","none"]
+          defaultVal: "player",
+          dropdownValues: ["player","opponent","gf","center","none"]
         },
       ]
     },
@@ -279,13 +270,13 @@ class EngineData {
         {
           name: "X",
           type: EventArgType.SteppedNumber,
-          step: 10,
+          step: 5,
           defaultVal: 0,
         },
         {
           name: "Y",
           type: EventArgType.SteppedNumber,
-          step: 10,
+          step: 5,
           defaultVal: 0,
         }
       ]

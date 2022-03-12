@@ -33,12 +33,6 @@ class ReverseModifier extends Modifier {
       percent += getSubmodPercent("cross" + suffix,player);
     }
 
-    if(percent>2)
-      percent%=2;
-
-    if(percent>1)
-      percent=CoolUtil.scale(percent,1,2,1,0);
-
     if(modMgr.state.currentOptions.downScroll)
       percent = 1-percent;
 
