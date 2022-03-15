@@ -782,12 +782,19 @@ class ChartingState extends MusicBeatState
 
 		leftType = new FlxUIDropDownMenu(10, 70, FlxUIDropDownMenu.makeStrIdLabelArray(EngineData.noteTypes, true), function(type:String){
 			dummyArrowLayer.remove(dummyArrow);
-			var type = EngineData.noteTypes[Std.parseInt(type)];
-			var behaviour = type=='default'?Note.noteBehaviour:Note.behaviours.get(type);
+			var realType = EngineData.noteTypes[Std.parseInt(type)];
+			var type = realType=='alt'?'default':realType; // TODO: maybe NOT hardcode this lol
+			// prob just make a note w/ the type and then just like.. get the graphicType off of there
+			var modBehaviours = Note.behaviours.get(Note.defaultModifier);
+			if(modBehaviours==null)modBehaviours = new Map<String,Note.NoteBehaviour>();
+
+			var behaviour = type=='default'?Note.noteBehaviour:modBehaviours.get(type);
 			if(behaviour==null){
-				behaviour = Json.parse(Paths.noteSkinText("behaviorData.json",'skins',EngineData.options.noteSkin,PlayState.noteModifier,type));
-				Note.behaviours.set(type,behaviour);
+				behaviour = Json.parse(Paths.noteSkinText("behaviorData.json",'skins',EngineData.options.noteSkin,Note.defaultModifier,type));
+				modBehaviours.set(type,behaviour);
+				Note.behaviours.set(Note.defaultModifier,modBehaviours);
 			}
+
 			dummyArrow = new NoteGraphic(0,PlayState.noteModifier,EngineData.options.noteSkin,type,behaviour);
 			dummyArrow.setDir(0,false,false);
 			dummyArrow.setGraphicSize(GRID_SIZE,GRID_SIZE);

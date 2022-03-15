@@ -6,9 +6,6 @@ import flixel.math.FlxMath;
 import flixel.util.FlxColor;
 import flixel.graphics.frames.FlxFrame;
 import flash.display.BitmapData;
-#if polymod
-import polymod.format.ParseRules.TargetSignatureElement;
-#end
 import flixel.graphics.frames.FlxFramesCollection;
 import haxe.Json;
 import haxe.format.JsonParser;
@@ -26,7 +23,7 @@ class NoteGraphic extends FNFSprite
 	public var skin='default';
 	public var graphicType='';
 	public var behaviour:NoteBehaviour;
-	public static var noteframeCaches:Map<String,FlxFramesCollection>=[];
+	public static var noteframeCaches:Map<String,Map<String,FlxFramesCollection>>=[];
 	public static var swagWidth:Float = 160 * 0.7;
 	public var quantTexture:Int = 4;
 	public var noteAngles:Array<Float>=[0,0,0,0];
@@ -61,7 +58,7 @@ class NoteGraphic extends FNFSprite
 
 	// TODO: redo alot of this to have shit determined when you select the noteskin
 
-	public function new(strumTime:Float=0,?modifier:String='base',?skin:String='default',type:String='default', behaviour:NoteBehaviour)
+	public function new(strumTime:Float=0,?modifier:String='base',?skin:String='default', type:String='default', behaviour:NoteBehaviour)
 	{
 		super();
 		graphicType=type;
@@ -124,9 +121,13 @@ class NoteGraphic extends FNFSprite
 			default:
 				var setSize:Bool=false;
 				var args = behaviour.arguments.notes;
-				if(frames!=noteframeCaches.get(graphicType) || !noteframeCaches.exists(graphicType)){
-					frames = !noteframeCaches.exists(graphicType)?Paths.noteSkinAtlas(args.sheet, 'skins', skin, modifier, graphicType):noteframeCaches.get(graphicType);
-					noteframeCaches.set(graphicType,frames);
+				var cache = noteframeCaches.get(modifier);
+				if(cache==null)cache = new Map<String,FlxFramesCollection>();
+
+				if(frames!=cache.get(graphicType) || !cache.exists(graphicType)){
+					frames = !cache.exists(graphicType)?Paths.noteSkinAtlas(args.sheet, 'skins', skin, modifier, graphicType):cache.get(graphicType);
+					cache.set(graphicType,frames);
+					noteframeCaches.set(modifier,cache);
 					setSize=true;
 				}
 				var quantIdx = quantToIndex.get(quantTexture);

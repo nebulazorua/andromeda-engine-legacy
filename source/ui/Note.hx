@@ -18,6 +18,7 @@ import lime.utils.Assets;
 import states.*;
 import Shaders;
 import flixel.group.FlxGroup.FlxTypedGroup;
+
 using StringTools;
 
 typedef SkinManifest = {
@@ -75,8 +76,9 @@ class Note extends NoteGraphic
 	public var hitbox:Float = 166;
 
 	public var beat:Float = 0;
+	public static var defaultModifier:String = 'default';
 	public static var noteBehaviour:NoteBehaviour;
-	public static var behaviours:Map<String,NoteBehaviour>=[];
+	public static var behaviours:Map<String,Map<String,NoteBehaviour>>=[];
 	public static var swagWidth:Float = 160 * 0.7;
 	public var effect:NoteEffect;
 
@@ -126,6 +128,7 @@ class Note extends NoteGraphic
 	{
 		this.noteType=type;
 		hitbox = Conductor.safeZoneOffset;
+		var graphicType:String = type;
 		switch(noteType){
 			case 'alt':
 				trace("alt note");
@@ -136,16 +139,17 @@ class Note extends NoteGraphic
 				canHold=false;
 				hitbox = Conductor.safeZoneOffset*0.38; // should probably not scale but idk man
 		}
-		var graphicType:String = type;
-		var behaviour = type=='default'?Note.noteBehaviour:Note.behaviours.get(type);
+		var modBehaviours = Note.behaviours.get(graphicType);
+		if(modBehaviours==null)modBehaviours = new Map<String,NoteBehaviour>();
+		var behaviour = (modifier==Note.defaultModifier && type=='default')?Note.noteBehaviour:modBehaviours.get(graphicType);
 		if(behaviour==null){
-			behaviour = Json.parse(Paths.noteSkinText("behaviorData.json",'skins',skin,modifier,type));
-			Note.behaviours.set(type,behaviour);
+			behaviour = Json.parse(Paths.noteSkinText("behaviorData.json",'skins',skin,modifier,graphicType));
+			modBehaviours.set(type,behaviour);
+			Note.behaviours.set(modifier,modBehaviours);
 		}
+		//new(strumTime:Float=0,?modifier:String='base',?skin:String='default', type:String='default', behaviour:NoteBehaviour)
 
 		super(strumTime,modifier,skin,graphicType,behaviour);
-
-
 
 		if(!canHold && sustainNote){
 			visible=false;
