@@ -95,7 +95,7 @@ class OptionsState extends MusicBeatState
 				new ToggleOption("camFollowsAnims","Directional Camera","Camera moving depending on a character's animations"),
 				new ToggleOption("ratingInHUD","Fixed Judgements","Fixes judgements, milliseconds and combo to the screen"),
 				new ToggleOption("ratingOverNotes","Judgements over notes","Places judgements, milliseconds and combo above the playfield"),
-				new ToggleOption("smJudges","Simply Judgements","Animates judgements and combo like ITG's Simply Love theme"),
+				new ToggleOption("smJudges","Simple Judgements","Animates judgements and combo like conventional VSRGs"), // name from forever lmao
 				new ToggleOption("pauseHoldAnims","Holds pause anims", "Whether to pause animations on their first frame"),
 				new ToggleOption("menuFlash","Flashing in menus","Whether buttons and the background should flash in menus"),
 				new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),

@@ -173,7 +173,7 @@ class ModManager {
     return definedMods[modName];
   }
 
-  public function getModPercent(modName:String, player:Int){
+  public function getModPercent(modName:String, player:Int):Float{
     return get(modName).getPercent(player);
   }
 

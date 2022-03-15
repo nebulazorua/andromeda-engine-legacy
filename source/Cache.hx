@@ -49,7 +49,7 @@ class Cache {
     LuaStorage.noteIDs.clear();
     LuaStorage.noteMap.clear();
     NoteGraphic.noteframeCaches.clear();
-    NoteSplash.cache.clear();
+    NoteSplash.splashCache.clear();
     trace("CLEARED CACHE!");
   }
 

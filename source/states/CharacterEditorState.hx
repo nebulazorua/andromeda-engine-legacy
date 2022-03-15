@@ -105,6 +105,7 @@ class CharacterEditorState extends MusicBeatState {
     _file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
     _file = null;
     FlxG.log.notice("Successfully saved LEVEL DATA.");
+    refreshCharList();
   }
 
   function onSaveCancel(_):Void
@@ -113,6 +114,7 @@ class CharacterEditorState extends MusicBeatState {
     _file.removeEventListener(Event.CANCEL, onSaveCancel);
     _file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
     _file = null;
+    refreshCharList();
   }
 
   function onSaveError(_):Void
@@ -122,6 +124,7 @@ class CharacterEditorState extends MusicBeatState {
     _file.removeEventListener(IOErrorEvent.IO_ERROR, onSaveError);
     _file = null;
     FlxG.log.error("Problem saving Level data");
+    refreshCharList();
   }
 
   function showCharacter(resetVars:Bool=true){
@@ -247,6 +250,8 @@ class CharacterEditorState extends MusicBeatState {
 
   override function create(){
     super.create();
+    InitState.getCharacters();
+
     camHUD = new FlxCamera();
     camHUD.bgColor.alpha = 0;
     camGame = new FlxCamera();
@@ -310,7 +315,7 @@ class CharacterEditorState extends MusicBeatState {
   override function update(elapsed:Float){
     Conductor.songPosition = FlxG.sound.music.time;
     var shitFocused:Bool = false;
-    var boxes:Array<Inputbox> = [camXBox, camYBox, charXBox, charYBox, sheetBox, singDurBox, scaleBox, iconBox, nameBox, hpBox, redBox, blueBox, greenBox, offsetXBox, offsetYBox, nameBox, prefixBox, fpsBox];
+    var boxes:Array<Inputbox> = [camXBox, camYBox, charXBox, charYBox, sheetBox, singDurBox, scaleBox, iconBox, nameBox, hpBox, redBox, blueBox, greenBox, offsetXBox, offsetYBox, indiceBox, prefixBox, fpsBox];
     for(shit in boxes){
       if(shit.hasFocus){
         shitFocused=true;
@@ -353,6 +358,22 @@ class CharacterEditorState extends MusicBeatState {
   			camOffset.velocity.set();
   		}
 
+      if(FlxG.keys.justPressed.W){
+        var id = Std.parseInt(animDropdown.selectedId)-1;
+        if(id<0)id=animDropdown.list.length-1;
+        if(id>=animDropdown.list.length)id=0;
+        @:privateAccess
+        animDropdown.onClickItem(id);
+      }
+
+      if(FlxG.keys.justPressed.S){
+        var id = Std.parseInt(animDropdown.selectedId)+1;
+        if(id<0)id=animDropdown.list.length-1;
+        if(id>=animDropdown.list.length)id=0;
+        @:privateAccess
+        animDropdown.onClickItem(id);
+      }
+
       var offsetKeys:Array<Bool> = [
         FlxG.keys.justPressed.LEFT,
         FlxG.keys.justPressed.DOWN,
@@ -390,15 +411,15 @@ class CharacterEditorState extends MusicBeatState {
       }
 
 
-      if(FlxG.keys.justPressed.R){
+      if(FlxG.keys.justPressed.R)
         showCharacter();
-      }
-      if(FlxG.keys.justPressed.O){
+
+      if(FlxG.keys.justPressed.O)
         camOffset.setPosition(0,0);
-      }
-      if(FlxG.keys.justPressed.H){
+
+      if(FlxG.keys.justPressed.H)
         layering.visible=!layering.visible;
-      }
+
     }
 
     ghost.flipX = curCharacter.flipX;
@@ -427,6 +448,12 @@ class CharacterEditorState extends MusicBeatState {
       nameBox.text = anim.name;
       prefixBox.text = anim.prefix;
       fpsBox.text = Std.string(anim.fps);
+      if(anim.indices!=null){
+        var indices = anim.indices.toString();
+        indiceBox.text = indices.substring(1, indices.length-1);
+      }else{
+        indiceBox.text = '';
+      }
       loopCheckbox.changeState(anim.looped,false);
       offsetXBox.text = Std.string(anim.offsets[0]);
       offsetYBox.text = Std.string(anim.offsets[1]);
@@ -434,6 +461,7 @@ class CharacterEditorState extends MusicBeatState {
       nameBox.text = '';
       prefixBox.text = '';
       fpsBox.text = '';
+      indiceBox.text = '';
       offsetXBox.text = '0';
       offsetYBox.text = '0';
       loopCheckbox.changeState(false,false);
@@ -645,29 +673,33 @@ class CharacterEditorState extends MusicBeatState {
     ui.add(offYLabel);
     ui.add(offsetYBox);
 
+    var indiceLabel = new Alphabet(0,0,"Indices",false,false,.35);
+    indiceLabel.x = 270;
+    indiceLabel.y = 150;
+
+    indiceBox = new Inputbox(305 - (225 / 2), 265, 225, "", 14);
+    indiceBox.alignment = LEFT;
+    indiceBox.callback = function(text:String,action:String){
+      if(action=='enter'){
+        indiceBox.hasFocus=false;
+      }
+    }
+
+    ui.add(indiceLabel);
+    ui.add(indiceBox);
+
+
     delAnimButton = new FlxButton(220, 310, "Remove", function()
     {
-      var fps = Std.parseInt(fpsBox.text);
-      var offsetX = Std.parseFloat(offsetXBox.text);
-      var offsetY = Std.parseFloat(offsetYBox.text);
-      if(Math.isNaN(fps)){
-        fps=24;
-      }
-      if(Math.isNaN(offsetX)){
-        offsetX=0;
-      }
-      if(Math.isNaN(offsetY)){
-        offsetY=0;
-      }
-
       var name = nameBox.text;
       var idx:Int=0;
       var curPlaying = curCharacter.animation.curAnim.name;
       for(anim in curCharacter.charData.anims){
+
         if(anim.name==name){
-          if(curCharacter.animation.getByName(anim.name)!=null){
+          if(curCharacter.animation.getByName(anim.name)!=null)
             curCharacter.animation.remove(anim.name);
-          }
+
           curCharacter.charData.anims.remove(anim);
           break;
         }
@@ -696,6 +728,17 @@ class CharacterEditorState extends MusicBeatState {
         offsetY=0;
       }
 
+      var indices:Array<Int> = [];
+      for(shit in indiceBox.text.trim().split(",")){
+        if(shit!=null){
+          var idx:Null<Int> = Std.parseInt(shit);
+          if(idx!=null && !Math.isNaN(idx) && idx>-1)
+            indices.push(idx);
+
+          trace(idx, shit);
+        }
+
+      }
       var newAnim:Character.AnimShit = {
         prefix: prefixBox.text,
         name: nameBox.text,
@@ -703,12 +746,14 @@ class CharacterEditorState extends MusicBeatState {
         looped: loopCheckbox.state,
         offsets: [offsetX,offsetY]
       }
+      if(indices.length>0)newAnim.indices=indices;
+      trace(indices.length);
       var idx:Int=0;
       var curAnim = curCharacter.animation.curAnim;
       var curPlaying = '';
-      if(curAnim!=null){
+      if(curAnim!=null)
         curPlaying=curAnim.name;
-      }
+
       for(anim in curCharacter.charData.anims){
         if(anim.name==newAnim.name){
           if(curCharacter.animation.getByName(anim.name)!=null){
@@ -719,7 +764,10 @@ class CharacterEditorState extends MusicBeatState {
         }
         idx++;
       }
-      curCharacter.animation.addByPrefix(newAnim.name,newAnim.prefix,newAnim.fps,newAnim.looped);
+      if(indices.length>0)
+        curCharacter.animation.addByIndices(newAnim.name,newAnim.prefix,newAnim.indices, "", newAnim.fps,newAnim.looped);
+      else
+        curCharacter.animation.addByPrefix(newAnim.name,newAnim.prefix,newAnim.fps,newAnim.looped);
       curCharacter.animOffsets.set(newAnim.name,newAnim.offsets);
       curCharacter.charData.anims.insert(idx, newAnim);
       curCharacter.playAnim(newAnim.name,true);
@@ -844,6 +892,15 @@ class CharacterEditorState extends MusicBeatState {
     ui.add(blueLabel);
     ui.add(blueBox);
 
+  }
+
+  function refreshCharList(){
+    InitState.getCharacters();
+
+    var selectedLabel = charDropdown.selectedLabel;
+    var characters:Array<String> = EngineData.characters;
+    charDropdown.setData(FlxUIDropDownMenu.makeStrIdLabelArray(characters, true));
+    charDropdown.selectedLabel = selectedLabel;
   }
 
   function populateCharUI(ui:UIGroup){
@@ -1120,7 +1177,6 @@ class CharacterEditorState extends MusicBeatState {
     saveButton = new FlxButton(100, 485, "Save", function()
     {
       save(Json.stringify(curCharacter.charData,"\t"),'${curCharacter.curCharacter}${playerCheckbox.state==true?"-player":""}.json');
-      InitState.getCharacters();
     });
     saveButton.x = ui.getMidpoint().x - saveButton.width/2;
 

@@ -184,6 +184,8 @@ class PlayState extends MusicBeatState
 	private var highestCombo:Int = 0;
 	private var healthBar:Healthbar;
 
+	var canToggleBotplay:Bool = #if NO_BOTPLAY false #else true #end;
+
 	private var generatedMusic:Bool = false;
 	private var startingSong:Bool = false;
 
@@ -284,7 +286,10 @@ class PlayState extends MusicBeatState
 	var detailsPausedText:String = "";
 	#end
 
+	var forceDisableModchart:Bool=false;
+
 	function setupLuaSystem(){
+		if(forceDisableModchart)return;
 		if(luaModchartExists){
 			lua = new LuaVM();
 			lua.setGlobalVar("storyDifficulty",storyDifficulty);
@@ -496,7 +501,6 @@ class PlayState extends MusicBeatState
 				// value = -1
 				if(Lua.isfunction(lua.state, -1) && Lua.isstring(lua.state,-2)){
 					var name:String = Lua.tostring(lua.state,-2);
-					trace('func $name');
 					luaFuncs.push(name);
 				}
         Lua.pop(lua.state, 1);
@@ -537,6 +541,16 @@ class PlayState extends MusicBeatState
 			currentOptions.noFail=false;
 		#end
 
+		if(inCharter){
+			if(currentOptions.chartingBotplay)currentOptions.botPlay=true;
+			if(!currentOptions.chartingDetails){
+				currentOptions.noChars=true;
+				currentOptions.noStage=true;
+			}
+			forceDisableModchart=currentOptions.chartingNoModshart;
+		}
+
+		if(currentOptions.botPlay)canToggleBotplay=true;
 
 		ScoreUtils.ghostTapping = currentOptions.ghosttapping;
 		ScoreUtils.botPlay = currentOptions.botPlay;
@@ -1288,12 +1302,16 @@ class PlayState extends MusicBeatState
 		modManager.setReceptors();
 		modManager.registerModifiers();
 
-		#if FORCE_LUA_MODCHARTS
-		setupLuaSystem();
-		#else
-		if(currentOptions.loadModcharts)
+		if(!forceDisableModchart){
+			#if FORCE_LUA_MODCHARTS
 			setupLuaSystem();
-		#end
+			#else
+			if(currentOptions.loadModcharts)
+				setupLuaSystem();
+			#end
+		}else{
+			luaModchartExists=false;
+		}
 
 		if(!modManager.exists("reverse")){
 			var y = upscrollOffset;
@@ -2357,7 +2375,7 @@ class PlayState extends MusicBeatState
 			vocals.pause();
 			persistentUpdate = false;
 			persistentDraw = false;
-			FlxG.switchState(new ChartingState(charterPos));
+			FlxG.switchState(new ChartingState());
 
 
 
@@ -2903,7 +2921,7 @@ class PlayState extends MusicBeatState
 
 		FlxG.camera.followLerp = Main.adjustFPS(.03);
 		camRating.followLerp = Main.adjustFPS(.03);
-		
+
 		super.update(elapsed);
 
 		while(eventSchedule[0]!=null){
@@ -3006,7 +3024,7 @@ class PlayState extends MusicBeatState
 		if(inCharter){
 			inst.pause();
 			vocals.pause();
-			FlxG.switchState(new ChartingState(charterPos));
+			FlxG.switchState(new ChartingState());
 		}else{
 			if (isStoryMode)
 			{
@@ -3441,11 +3459,9 @@ class PlayState extends MusicBeatState
 
 	private function keyPress(event:KeyboardEvent){
 		if(paused)return;
-		#if !NO_BOTPLAY
-		if(event.keyCode == FlxKey.F6){
+		if(event.keyCode == FlxKey.F6 && canToggleBotplay)
 			ScoreUtils.botPlay = !ScoreUtils.botPlay;
-		}
-		#end
+
 		if(ScoreUtils.botPlay)return;
 		var direction = bindData.indexOf(event.keyCode);
 		if(direction!=-1 && !pressedKeys[direction]){
@@ -3769,9 +3785,9 @@ class PlayState extends MusicBeatState
 			callLua("goodNoteHit",[note.noteData,note.strumTime,Conductor.songPosition,note.isSustainNote]); // TODO: Note lua class???
 		}
 
-		if(!note.isSustainNote){
+		if(!note.isSustainNote)
 			health += judgeMan.getJudgementHealth(judgement);
-		}
+
 
 		if(health>2)
 			health=2;
@@ -3974,7 +3990,7 @@ class PlayState extends MusicBeatState
 	public static function setStoryWeek(data:WeekData,difficulty:Int){
 		PlayState.inCharter=false;
 		PlayState.startPos = 0;
-		PlayState.charterPos = 0;
+		ChartingState.lastSection = 0;
 		storyPlaylist = data.getCharts();
 		weekData = data;
 
@@ -3987,11 +4003,13 @@ class PlayState extends MusicBeatState
 
 		PlayState.songData=data.songs[0];
 	}
-
+	// eight equals equals equals D
 	public function gotoNextStory(){
 		PlayState.inCharter=false;
 		PlayState.startPos = 0;
-		PlayState.charterPos = 0;
+		ChartingState.lastSection = 0;
+		if(8==D)
+			trace("cock penis!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 
 		storyPlaylist.remove(storyPlaylist[0]);
 		if(storyPlaylist.length>0){
@@ -4013,7 +4031,7 @@ class PlayState extends MusicBeatState
 	public static function setFreeplaySong(songData:SongData,difficulty:Int){
 		PlayState.inCharter=false;
 		PlayState.startPos = 0;
-		PlayState.charterPos = 0;
+		ChartingState.lastSection = 0;
 		PlayState.songData=songData;
 		SONG = Song.loadFromJson(songData.formatDifficulty(difficulty), songData.chartName.toLowerCase());
 		weekData = new WeekData("Freeplay",songData.weekNum,'dad',[songData],'bf','gf',songData.loadingPath);

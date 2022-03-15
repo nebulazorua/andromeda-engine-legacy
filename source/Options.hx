@@ -159,6 +159,9 @@ class Options
 	public var bfHitsounds:Bool=false;
 	public var dadHitsounds:Bool=false;
 	public var sectionPreview:Bool=true;
+	public var chartingBotplay:Bool=false;
+	public var chartingDetails:Bool=true;
+	public var chartingNoModshart:Bool = false;
 
 	public function loadOptions(){
 		OptionUtils.loadOptions(this);

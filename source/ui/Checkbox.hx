@@ -10,6 +10,9 @@ class Checkbox extends FlxSprite
 	public var callback:Bool->Void;
 	public var canClick:Bool=true;
 
+	public var trackOffX:Float = -60;
+	public var trackOffY = 75;
+//setPosition(tracker.x - 60, tracker.y + 75);
 
 	public function new(state:Bool){
 		super();
@@ -58,7 +61,11 @@ class Checkbox extends FlxSprite
 	override function update(elapsed:Float){
 		super.update(elapsed);
 		if(tracker!=null){
-			setPosition(tracker.x - 60, tracker.y + 75);
+			/*
+			x = tracker.x - 140;
+			y = tracker.y - 45;
+			*/
+			setPosition(tracker.x + trackOffX, tracker.y + trackOffY);
 		}
 
 		if(canClick){

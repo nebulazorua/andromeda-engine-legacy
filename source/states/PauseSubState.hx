@@ -133,7 +133,7 @@ class PauseSubState extends MusicBeatSubstate
 				case "Set Start Position":
 					PlayState.startPos = Conductor.rawSongPos;
 				case "Exit to charter":
-					FlxG.switchState(new ChartingState(PlayState.charterPos==0?Conductor.rawSongPos:PlayState.charterPos));
+					FlxG.switchState(new ChartingState());
 				case "Exit to menu":
 
 					if(PlayState.isStoryMode)
