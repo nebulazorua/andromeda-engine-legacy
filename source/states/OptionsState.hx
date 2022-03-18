@@ -72,21 +72,17 @@ class OptionsState extends MusicBeatState
 				new ToggleOption("showCounters","Show judgement counters","Whether judgement counters get shown on the side"),
 				new ToggleOption("downScroll","Downscroll","Arrows come from the top down instead of the bottom up."),
 				new ToggleOption("middleScroll","Centered Notes","Places your notes in the center of the screen and hides the opponent's. \"Middlescroll\""),
-				new ToggleOption("allowNoteModifiers","Allow note modifiers","Whether note modifiers (e.g pixel notes in week 6) get used"),
 				new StepOption("backTrans","BG Darkness",10,0,100,"%","","How dark the background is",true),
 				new ScrollOption("staticCam","Camera Focus","Who the camera should focus on",0,OptionUtils.camFocuses.length-1,OptionUtils.camFocuses),
 				new ToggleOption("oldMenus","Vanilla Menus","Forces the vanilla menus to be used"),
 				new ToggleOption("oldTitle","Vanilla Title Screen","Forces the vanilla title to be used"),
-				new ToggleOption("healthBarColors","Healthbar Colours","Whether the healthbar colour changes with the character"),
 				new ToggleOption("onlyScore","Minimal Information","Only shows your score below the hp bar"),
 				new ToggleOption("smoothHPBar","Smooth Healthbar","Makes the HP Bar smoother"),
-				new ToggleOption("fcBasedComboColor","FC Combo Colouring","Makes the combo's colour changes with type of FC you have"),
 				new ToggleOption("holdsBehindReceptors","Holds Behinds Receptors","Makes holds layer behind the receptors, similar to other VSRGs"),
 				new NoteskinOption("noteSkin","NoteSkin","The noteskin to use"),
 				new OptionCategory("Effects",[
 					new ToggleOption("raymarcher","Raymarcher Shaders","Lets the camera have pitch and yaw. May cause lag"),
 					new ToggleOption("picoCamshake","Train camera shake","Whether the train in week 3's background shakes the camera"),
-					//new ToggleOption("senpaiShaders","Week 6 shaders","Is the CRT effect active in week 6"),
 					new ScrollOption("senpaiShaderStrength","Week 6 shaders","How strong the week 6 shaders are",0,2,["Off","CRT","All"])
 				]),
 			]),
@@ -96,23 +92,23 @@ class OptionsState extends MusicBeatState
 				new ToggleOption("ratingInHUD","Fixed Judgements","Fixes judgements, milliseconds and combo to the screen"),
 				new ToggleOption("ratingOverNotes","Judgements over notes","Places judgements, milliseconds and combo above the playfield"),
 				new ToggleOption("smJudges","Simple Judgements","Animates judgements and combo like conventional VSRGs"), // name from forever lmao
-				new ToggleOption("pauseHoldAnims","Holds pause anims", "Whether to pause animations on their first frame"),
 				new ToggleOption("menuFlash","Flashing in menus","Whether buttons and the background should flash in menus"),
-				new ToggleOption("hitSound","Hit sounds","Play a click sound when you hit a note"),
-				new ToggleOption("showFPS","Show FPS","Shows your FPS in the top left",function(state:Bool){
-					ui.FPSMem.showFPS=state;
-				}),
-				new ToggleOption("showMem","Show Memory","Shows memory usage in the top left",function(state:Bool){
-					ui.FPSMem.showMem=state;
-				}),
-				new ToggleOption("showMemPeak","Show Memory Peak","Shows peak memory usage in the top left",function(state:Bool){
-					ui.FPSMem.showMemPeak=state;
-				}),
-				new ToggleOption("ghosttapSounds","Ghost-tap hit sounds","Play a click sound when you ghost-tap"),
-				new StepOption("hitsoundVol","Hit sound volume",10,0,100,"%","","What volume the hitsound should be",true),
+				new ScrollOption("hitsoundType","Hit sounds","When to play a click sound", 0, 3, ["Off", "All", "Ghost-tapping", "Notes"]),
+				new StepOption("hitsoundVol","Hit sound volume",10,0,100,"%","","What volume the hit sound should be",true),
 				new ToggleOption("freeplayPreview","Song preview in freeplay","Whether songs get played as you hover over them in Freeplay"),
 				new ToggleOption("fastTransitions","Fast Transitions","Makes transitions between states faster"),
 				new StateOption("Judgement Position",new JudgeCustomizationState()),
+				new OptionCategory("Debug",[
+					new ToggleOption("showFPS","Show FPS","Shows your FPS in the top left",function(state:Bool){
+						ui.FPSMem.showFPS=state;
+					}),
+					new ToggleOption("showMem","Show Memory","Shows memory usage in the top left",function(state:Bool){
+						ui.FPSMem.showMem=state;
+					}),
+					new ToggleOption("showMemPeak","Show Memory Peak","Shows peak memory usage in the top left",function(state:Bool){
+						ui.FPSMem.showMemPeak=state;
+					})
+				])
 			]),
 			new OptionCategory("Performance",[
 				new StepOption("fps","FPS Cap",30,30,360,"","","The FPS the game tries to run at",true,function(value:Float,step:Float){

@@ -52,9 +52,11 @@ class Character extends FlxSprite
 	public var disabledDance:Bool = false;
 	public var iconColor:FlxColor = 0xFF31B0D1;
 	public var iconName:String = '';
+	public var isSinging:Bool = false;
 	public var holdTimer:Float = 0;
 	public var posOffset = FlxPoint.get(0,0);
 	public var camOffset = FlxPoint.get(150,-100);
+	public var hasIdleEnd:Bool = false; // just so that it wont keep checking shit it doesnt HAVE to
 	public var charData:CharJson;
 	public var dadVar:Float = 4;
 	public var noIdleTimer:Float = 0;
@@ -216,6 +218,7 @@ class Character extends FlxSprite
 				}else{
 					animation.addByIndices(name,prefix,anim.indices,"",fps,loop);
 				}
+				if(name=='idleEnd')hasIdleEnd=true;
 				addOffset(name,offset[0],offset[1]);
 			}
 
@@ -395,22 +398,20 @@ class Character extends FlxSprite
 
 	override function update(elapsed:Float)
 	{
+		if(hasIdleEnd && !debugMode){
+			if(animation.curAnim.name=='idle' && animation.curAnim.finished)
+				playAnim("idleEnd",true);
+
+		}
+
 		noIdleTimer -= elapsed*1000;
 		if(noIdleTimer<0)noIdleTimer=0;
 		if (!isPlayer)
 		{
 			if(animation.curAnim!=null){
-				if(animation.getByName('${animation.curAnim.name}Hold')!=null){
-					animation.paused=false;
-					if(animation.curAnim.name.startsWith("sing") && !animation.curAnim.name.endsWith("Hold") && animation.curAnim.finished){
-						playAnim(animation.curAnim.name + "Hold",true);
-					}
-				}
-
-				if (animation.curAnim.name.startsWith('sing'))
-				{
+				if (isSinging)
 					holdTimer += elapsed;
-				}
+
 
 				if(!debugMode){
 					if (holdTimer >= Conductor.stepCrochet * dadVar * 0.001)
@@ -431,9 +432,24 @@ class Character extends FlxSprite
 		}
 
 		super.update(elapsed);
-		if(animation.curAnim!=null)
-			if(holding)
-				animation.curAnim.curFrame=0;
+		if(!debugMode){
+			if(animation.curAnim!=null){
+				var name = animation.curAnim.name;
+				if(name.startsWith("hold")){
+					if(name.endsWith("Start") && animation.curAnim.finished){
+						var newName = name.substring(0,name.length-5);
+						var singName = "sing" + name.substring(3, name.length-5);
+						if(animation.getByName(newName)!=null){
+							playAnim(newName,true);
+						}else{
+							playAnim(singName,true);
+						}
+					}
+				}else if(holding){
+					animation.curAnim.curFrame=0;
+				}
+			}
+		}
 	}
 
 	private var danced:Bool = false;
@@ -500,8 +516,8 @@ class Character extends FlxSprite
 				}
 			}
 
-			isIdling=idleAnims.indexOf(AnimName)!=-1;
-
+			isIdling = idleAnims.indexOf(AnimName)!=-1;
+			isSinging = AnimName.startsWith("sing") || AnimName.startsWith("hold");
 		}
 	}
 

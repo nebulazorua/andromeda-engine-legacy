@@ -103,7 +103,6 @@ class Options
 	public var attemptToAdjust:Bool = false;
 	// appearance
 	public var useNotesplashes:Bool = true;
-	public var allowNoteModifiers:Bool = true;
 	public var backTrans:Float = 0;
 	public var downScroll:Bool = false;
 	public var middleScroll:Bool = false;
@@ -111,7 +110,6 @@ class Options
 	public var senpaiShaderStrength:Int = 2;
 	public var oldMenus:Bool = false;
 	public var oldTitle:Bool = false;
-	public var healthBarColors:Bool = true;
 	public var camFollowsAnims:Bool = false;
 	public var showCounters:Bool = true;
 	public var staticCam:Int = 0;
@@ -119,7 +117,6 @@ class Options
 	public var smJudges:Bool = false;
 	public var judgeX:Float = 0;
 	public var judgeY:Float = 0;
-	public var fcBasedComboColor:Bool = false;
 	public var holdsBehindReceptors:Bool = false;
 	public var fastTransitions:Bool = false;
 
@@ -138,22 +135,20 @@ class Options
 	public var cacheUsedImages:Bool = false;
 	public var raymarcher:Bool = true;
 	// preference
+	public var hitsoundType:Int = 0;
 	public var showMem:Bool = true;
 	public var showMemPeak:Bool = true;
 	public var showFPS:Bool = false;
-	public var pauseHoldAnims:Bool = true;
 	public var showMS:Bool = false;
 	public var onlyScore:Bool = false;
 	public var smoothHPBar:Bool = false;
 	public var showComboCounter:Bool = true;
 	public var showRatings:Bool = true;
-	public var ghosttapSounds:Bool = false;
 	public var hitsoundVol:Float = 50;
 	public var ratingInHUD:Bool = false;
 	public var ratingOverNotes:Bool = false;
 	public var menuFlash:Bool = true;
 	public var freeplayPreview:Bool = false;
-	public var hitSound:Bool = false;
 
 	// charter
 	public var bfHitsounds:Bool=false;
