@@ -3561,7 +3561,7 @@ class PlayState extends MusicBeatState
 						if(note.sustainLength==0)
 							botplayHoldTimes[dir] = 100;
 						else
-							botplayHoldTimes[dir] = note.sustainLength+100;
+							botplayHoldTimes[dir] = note.sustainLength;
 
 
 						pressedKeys[dir]=true;
@@ -3671,6 +3671,7 @@ class PlayState extends MusicBeatState
 			}
 			var judge = judgeMan.determine(diff);
 
+			if(!note.isSustainNote && note.sustainLength==0)boyfriend.holding=false;
 			note.wasGoodHit=true;
 			playerStrums.forEach(function(spr:Receptor)
 			{
