@@ -40,24 +40,32 @@
           "prefix": "green0",
           "longPrefix": "green hold piece",
           "longEndPrefix": "green hold end",
+          "rollPrefix": "roll piece",
+          "rollEndPrefix": "roll end",
           "angle": 0
         },
         "down":{
           "prefix": "blue0",
           "longPrefix": "blue hold piece",
           "longEndPrefix": "blue hold end",
+          "rollPrefix": "roll piece",
+          "rollEndPrefix": "roll end",
           "angle": 0
         },
         "left":{
           "prefix": "purple0",
           "longPrefix": "purple hold piece",
           "longEndPrefix": "pruple end hold",
+          "rollPrefix": "roll piece",
+          "rollEndPrefix": "roll end",
           "angle": 0
         },
         "right":{
           "prefix": "red0",
           "longPrefix": "red hold piece",
           "longEndPrefix": "red hold end",
+          "rollPrefix": "roll piece",
+          "rollEndPrefix": "roll end",
           "angle": 0
         }
 

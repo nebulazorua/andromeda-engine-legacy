@@ -146,18 +146,25 @@ class NoteGraphic extends FNFSprite
 						var prefix = Reflect.field(dirData,"prefix");
 						var longPrefix = Reflect.field(dirData,"longPrefix");
 						var longEndPrefix = Reflect.field(dirData,"longEndPrefix");
+						var rollPrefix = Reflect.field(dirData,"rollPrefix");
+						var rollEndPrefix = Reflect.field(dirData,"rollEndPrefix");
 						if(prefix==null)prefix=field.prefix;
 						if(longPrefix==null)longPrefix=field.longPrefix;
 						if(longEndPrefix==null)longEndPrefix=field.longEndPrefix;
+						if(rollPrefix==null)rollPrefix=field.rollPrefix;
+						if(rollEndPrefix==null)rollEndPrefix=field.rollEndPrefix;
 
 						if(prefix==null)prefix=Reflect.field(args,dirs[i]).prefix;
 						if(longPrefix==null)longPrefix=Reflect.field(args,dirs[i]).longPrefix;
 						if(longEndPrefix==null)longEndPrefix=Reflect.field(args,dirs[i]).longEndPrefix;
+						if(rollPrefix==null)rollPrefix=Reflect.field(args,dirs[i]).rollPrefix;
+						if(rollEndPrefix==null)rollEndPrefix=Reflect.field(args,dirs[i]).rollEndPrefix;
 
 						animation.addByPrefix('${colors[i]}Scroll', prefix);
 						animation.addByPrefix('${colors[i]}hold', longPrefix);
 						animation.addByPrefix('${colors[i]}holdend', longEndPrefix);
-
+						animation.addByPrefix('${colors[i]}roll', rollPrefix);
+						animation.addByPrefix('${colors[i]}rollend', rollEndPrefix);
 						noteAngles[i] = dirData.angle;
 					}
 				}else{
@@ -175,6 +182,16 @@ class NoteGraphic extends FNFSprite
 					animation.addByPrefix('redholdend', args.right.longEndPrefix);
 					animation.addByPrefix('blueholdend', args.down.longEndPrefix);
 					animation.addByPrefix('purpleholdend', args.left.longEndPrefix);
+
+					animation.addByPrefix('greenroll', args.up.rollPrefix);
+					animation.addByPrefix('redroll', args.right.rollPrefix);
+					animation.addByPrefix('blueroll', args.down.rollPrefix);
+					animation.addByPrefix('purpleroll', args.left.rollPrefix);
+
+					animation.addByPrefix('greenrollend', args.up.rollEndPrefix);
+					animation.addByPrefix('redrollend', args.right.rollEndPrefix);
+					animation.addByPrefix('bluerollend', args.down.rollEndPrefix);
+					animation.addByPrefix('purplerollend', args.left.rollEndPrefix);
 
 					noteAngles[0] = args.left.angle;
 					noteAngles[1] = args.down.angle;
@@ -196,18 +213,25 @@ class NoteGraphic extends FNFSprite
 		super.update(elapsed);
 	}
 
-	public function setDir(dir:Int=0,?sussy:Bool=false,?end:Bool=false){
+	public function setDir(dir:Int=0,?type:Int=0,?end:Bool=false){
 		var colors = ["purple","blue","green","red"];
 		var suffix='Scroll';
+		var sussy = type==1;
+		var roll = type==2;
 		if(sussy){
 			suffix='hold';
 			if(end)suffix+='end';
 		};
+		if(roll){
+			suffix='roll';
+			if(end)suffix+='end';
+		};
 		var quant = quantToGrid.get(quantTexture);
-		if(sussy && behaviour.actsLike=='pixel'){
+		if((sussy || roll) && behaviour.actsLike=='pixel'){
 			if(animation.curAnim!=null){
 				if(end && !animation.curAnim.name.endsWith("end")){
 					var args = behaviour.arguments.sustainEnd;
+					if(roll)args = behaviour.arguments.rollEnd;
 
 					loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier, graphicType),true,args.gridSizeX,args.gridSizeY);
 					// TODO: quantsz
@@ -215,22 +239,37 @@ class NoteGraphic extends FNFSprite
 						var index = Reflect.field(args,quantToIndex.get(quantTexture) );
 						var gridIndex=quantToGrid.get(quantTexture);
 						if(index!=null){
-							animation.add('purpleholdend', index);
-							animation.add('greenholdend', index);
-							animation.add('redholdend', index);
-							animation.add('blueholdend', index);
+							animation.add('purple${suffix}', index);
+							animation.add('green${suffix}', index);
+							animation.add('red${suffix}', index);
+							animation.add('blue${suffix}', index);
 						}else{
 							gridIndex+=9;
-							animation.add('purpleholdend', [gridIndex]);
-							animation.add('greenholdend', [gridIndex]);
-							animation.add('redholdend', [gridIndex]);
-							animation.add('blueholdend', [gridIndex]);
+							animation.add('purple${suffix}', [gridIndex]);
+							animation.add('green${suffix}', [gridIndex]);
+							animation.add('red${suffix}', [gridIndex]);
+							animation.add('blue${suffix}', [gridIndex]);
 						}
 					}else{
-						animation.add('purpleholdend', args.left);
-						animation.add('greenholdend', args.up);
-						animation.add('redholdend', args.right);
-						animation.add('blueholdend', args.down);
+						var offset:Int = args.offset;
+						var left:Array<Int> = [];
+						var up:Array<Int> = [];
+						var right:Array<Int> = [];
+						var down:Array<Int> = [];
+
+						var leftA:Array<Int> =args.left;
+						var upA:Array<Int> =args.up;
+						var rightA:Array<Int> =args.right;
+						var downA:Array<Int> = args.down;
+						for(i in args.left)left.push(i+offset);
+						for(i in args.up)up.push(i+offset);
+						for(i in args.right)right.push(i+offset);
+						for(i in args.down)down.push(i+offset);
+
+						animation.add('purple${suffix}', left);
+						animation.add('green${suffix}', up);
+						animation.add('red${suffix}', right);
+						animation.add('blue${suffix}', down);
 					}
 
 					setGraphicSize(Std.int(width * behaviour.scale));
@@ -238,6 +277,7 @@ class NoteGraphic extends FNFSprite
 					scaleDefault.set(scale.x,scale.y);
 				}else if(!end){
 					var args = behaviour.arguments.sustain;
+					if(roll)args = behaviour.arguments.roll;
 
 					loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier, graphicType),true,args.gridSizeX,args.gridSizeY);
 					// TODO: quants
@@ -245,28 +285,28 @@ class NoteGraphic extends FNFSprite
 						var index = Reflect.field(args,quantToIndex.get(quantTexture) );
 						var gridIndex=quantToGrid.get(quantTexture);
 						if(index!=null){
-							animation.add('purplehold', index);
-							animation.add('greenhold', index);
-							animation.add('redhold', index);
-							animation.add('bluehold', index);
+							animation.add('purple${suffix}', index);
+							animation.add('green${suffix}', index);
+							animation.add('red${suffix}', index);
+							animation.add('blue${suffix}', index);
 						}else{
-							animation.add('purplehold', [gridIndex]);
-							animation.add('greenhold', [gridIndex]);
-							animation.add('redhold', [gridIndex]);
-							animation.add('bluehold', [gridIndex]);
+							animation.add('purple${suffix}', [gridIndex]);
+							animation.add('green${suffix}', [gridIndex]);
+							animation.add('red${suffix}', [gridIndex]);
+							animation.add('blue${suffix}', [gridIndex]);
 						}
 					}else{
-						animation.add('purplehold', args.left);
-						animation.add('greenhold', args.up);
-						animation.add('redhold', args.right);
-						animation.add('bluehold', args.down);
+						animation.add('purple${suffix}', args.left);
+						animation.add('green${suffix}', args.up);
+						animation.add('red${suffix}', args.right);
+						animation.add('blue${suffix}', args.down);
 					}
 					setGraphicSize(Std.int(width * behaviour.scale));
 					updateHitbox();
 					scaleDefault.set(scale.x,scale.y);
 				}
 			}
-		}else if(behaviour.actsLike=='pixel' && !sussy){
+		}else if(behaviour.actsLike=='pixel' && !sussy && !roll){
 			loadGraphic(Paths.noteSkinImage(behaviour.arguments.note.sheet, 'skins', skin, modifier, graphicType),true,behaviour.arguments.note.gridSizeX,behaviour.arguments.note.gridSizeY);
 
 			if(behaviour.arguments.note.quant){
@@ -310,10 +350,11 @@ class NoteGraphic extends FNFSprite
 
 		if(colors[dir]!=null){
 			animation.play('${colors[dir]}${suffix}',true);
-			if(!sussy)
+			if(!sussy && !roll)
 				baseAngle = noteAngles[dir];
 			else
 				baseAngle = 0;
 		}
+		updateHitbox();
 	}
 }

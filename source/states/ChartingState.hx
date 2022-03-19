@@ -265,7 +265,7 @@ class ChartingState extends MusicBeatState
 		dummyArrowLayer = new FlxTypedGroup<NoteGraphic>();
 		add(dummyArrowLayer);
 		dummyArrow = new NoteGraphic(0,PlayState.noteModifier,EngineData.options.noteSkin,Note.noteBehaviour);
-		dummyArrow.setDir(0,false,false);
+		dummyArrow.setDir(0,0,false);
 		dummyArrow.setGraphicSize(GRID_SIZE,GRID_SIZE);
 		dummyArrow.updateHitbox();
 		dummyArrow.alpha=.5;
@@ -758,6 +758,9 @@ class ChartingState extends MusicBeatState
 
 	var leftType:FlxUIDropDownMenu;
 	var rightType:FlxUIDropDownMenu;
+	var selectedType:FlxUIDropDownMenu;
+
+	var check_isRoll:FlxUICheckBox;
 
 	function addNoteUI():Void
 	{
@@ -771,14 +774,36 @@ class ChartingState extends MusicBeatState
 		@:privateAccess
 		textboxes.push(stepperSusLength.text_field);
 
+		check_isRoll = new FlxUICheckBox(120, 20, null, null, "Roll", 100);
+		check_isRoll.checked = false;
+		check_isRoll.callback = function()
+		{
+			if(curSelectedNote!=null){
+				curSelectedNote[4] = check_isRoll.checked;
+				updateNoteUI();
+				updateGrid();
+			}
+		};
+
 		var leftInfo = new FlxText(10, 50, 'Left Click Type');
 		var rightInfo = new FlxText(150, 50, 'Right Click Type');
+		var selectedInfo = new FlxText(10, 100, "Selected Note's Type");
 
 		rightType = new FlxUIDropDownMenu(150, 70, FlxUIDropDownMenu.makeStrIdLabelArray(EngineData.noteTypes, true));
 		rightType.dropDirection = FlxUIDropDownMenuDropDirection.Down;
 		rightType.selectedLabel = EngineData.noteTypes[0];
 		dropdowns.push(rightType);
 
+		selectedType = new FlxUIDropDownMenu(10, 120, FlxUIDropDownMenu.makeStrIdLabelArray(EngineData.noteTypes, true), function(type:String){
+			if(curSelectedNote!=null){
+				curSelectedNote[3] = type;
+				updateNoteUI();
+				updateGrid();
+			}
+		});
+		selectedType.dropDirection = FlxUIDropDownMenuDropDirection.Down;
+		selectedType.selectedLabel = EngineData.noteTypes[0];
+		dropdowns.push(selectedType);
 
 		leftType = new FlxUIDropDownMenu(10, 70, FlxUIDropDownMenu.makeStrIdLabelArray(EngineData.noteTypes, true), function(type:String){
 			dummyArrowLayer.remove(dummyArrow);
@@ -796,7 +821,7 @@ class ChartingState extends MusicBeatState
 			}
 
 			dummyArrow = new NoteGraphic(0,PlayState.noteModifier,EngineData.options.noteSkin,type,behaviour);
-			dummyArrow.setDir(0,false,false);
+			dummyArrow.setDir(0,0,false);
 			dummyArrow.setGraphicSize(GRID_SIZE,GRID_SIZE);
 			dummyArrow.updateHitbox();
 			dummyArrow.alpha=.5;
@@ -808,9 +833,12 @@ class ChartingState extends MusicBeatState
 
 		tab_group_note.add(leftInfo);
 		tab_group_note.add(rightInfo);
+		tab_group_note.add(selectedInfo);
 		tab_group_note.add(leftType);
 		tab_group_note.add(rightType);
+		tab_group_note.add(selectedType);
 		tab_group_note.add(susInfo);
+		tab_group_note.add(check_isRoll);
 		tab_group_note.add(stepperSusLength);
 
 		UI_box.addGroup(tab_group_note);
@@ -1328,7 +1356,7 @@ class ChartingState extends MusicBeatState
 
 					dummyArrow.setTextures();
 				}
-				dummyArrow.setDir(Math.floor(FlxG.mouse.x / GRID_SIZE)%4,false,false);
+				dummyArrow.setDir(Math.floor(FlxG.mouse.x / GRID_SIZE)%4,0,false);
 				dummyArrow.setGraphicSize(GRID_SIZE,GRID_SIZE);
 				dummyArrow.updateHitbox();
 				dummyArrow.x = x;
@@ -1631,6 +1659,8 @@ class ChartingState extends MusicBeatState
 	{
 		if (curSelectedNote != null){
 			stepperSusLength.value = curSelectedNote[2];
+			selectedType.selectedLabel = EngineData.noteTypes[curSelectedNote[3]];
+			check_isRoll.checked = curSelectedNote[4];
 		}
 	}
 
@@ -1641,7 +1671,7 @@ class ChartingState extends MusicBeatState
 		var daStrumTime = i[0];
 		var daSus = i[2];
 
-		var note:Note = new Note(daStrumTime, daNoteInfo%4, EngineData.options.noteSkin, PlayState.noteModifier, EngineData.noteTypes[i[3]], null, false, 0, true);
+		var note:Note = new Note(daStrumTime, daNoteInfo%4, EngineData.options.noteSkin, PlayState.noteModifier, EngineData.noteTypes[i[3]], null, false, i[4]==true, 0, true);
 		note.wasGoodHit = daStrumTime<Conductor.songPosition;
 		note.rawNoteData = daNoteInfo;
 		note.mustPress = _song.notes[section].mustHitSection;
@@ -1663,7 +1693,7 @@ class ChartingState extends MusicBeatState
 		var oldNote:Note = baseNote;
 		for (susNote in 0...Math.floor(daSus))
 		{
-			var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteInfo % 4, EngineData.options.noteSkin, PlayState.noteModifier, EngineData.noteTypes[i[3]], oldNote, true,0,true);
+			var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteInfo % 4, EngineData.options.noteSkin, PlayState.noteModifier, EngineData.noteTypes[i[3]], oldNote, true, i[4]==true, 0, true);
 			sustainNote.rawNoteData = daNoteInfo;
 			sustainNote.setGraphicSize(GRID_SIZE, GRID_SIZE);
 			sustainNote.updateHitbox();
@@ -1739,7 +1769,7 @@ class ChartingState extends MusicBeatState
 		if(events!=null){
 			for(i in events){
 				var eventMarker = new NoteGraphic(i.time, PlayState.noteModifier, EngineData.options.noteSkin, Note.noteBehaviour);
-				eventMarker.setDir(1,false,false);
+				eventMarker.setDir(1,0,false);
 				eventMarker.setGraphicSize(GRID_SIZE,GRID_SIZE);
 				eventMarker.updateHitbox();
 				eventMarker.x = eventRow.x;
@@ -1820,7 +1850,7 @@ class ChartingState extends MusicBeatState
 					for(i in nextSex.events){
 						var eventMarker = new NoteGraphic(i.time, PlayState.noteModifier, EngineData.options.noteSkin, Note.noteBehaviour);
 						eventMarker.alpha = 0.7;
-						eventMarker.setDir(1,false,false);
+						eventMarker.setDir(1,0,false);
 						eventMarker.setGraphicSize(GRID_SIZE,GRID_SIZE);
 						eventMarker.updateHitbox();
 						eventMarker.x = eventRow.x;
@@ -1861,9 +1891,11 @@ class ChartingState extends MusicBeatState
 				lastMousePos.set(dummyArrow.x,dummyArrow.y);
 				if(FlxG.mouse.pressed)
 					recentNote = i;
+
 			}
 		}
 
+		updateNoteUI();
 		updateGrid();
 	}
 

@@ -1698,7 +1698,7 @@ class PlayState extends MusicBeatState
 				else
 					oldNote = null;
 
-				var swagNote:Note = new Note(daStrumTime, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, false, getPosFromTime(daStrumTime));
+				var swagNote:Note = new Note(daStrumTime, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, false, songNotes[4]==true, getPosFromTime(daStrumTime));
 				swagNote.sustainLength = Math.floor(songNotes[2] / Conductor.stepCrochet) * Conductor.stepCrochet;
 				swagNote.scrollFactor.set(0, 0);
 				swagNote.shitId = unspawnNotes.length;
@@ -1739,7 +1739,7 @@ class PlayState extends MusicBeatState
 					{
 						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 						var sussy = daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet;
-						var sustainNote:Note = new Note(sussy, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, true, getPosFromTime(sussy));
+						var sustainNote:Note = new Note(sussy, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, true, swagNote.isRoll, getPosFromTime(sussy));
 						sustainNote.parent = swagNote;
 						sustainNote.cameras = [camSus];
 						sustainNote.scrollFactor.set();
@@ -2740,9 +2740,7 @@ class PlayState extends MusicBeatState
 							if(isHeld && receptor.animation.curAnim.name!="confirm")
 								receptor.playAnim("confirm", true);
 
-
-							daNote.holdingTime += elapsed*1000;
-
+							daNote.holdingTime = Conductor.songPosition - daNote.strumTime;
 							var regrabTime:Float = 0.2;
 							if(daNote.isRoll)
 								regrabTime = 0.35;
@@ -2755,7 +2753,7 @@ class PlayState extends MusicBeatState
 
 							if(daNote.tripTimer<=0){
 								daNote.tripTimer=0;
-								trace("tripped hold");
+								trace("tripped hold / roll");
 								daNote.tooLate=true;
 								daNote.wasGoodHit=false;
 								for(tail in daNote.tail){
@@ -2767,11 +2765,18 @@ class PlayState extends MusicBeatState
 								for(tail in daNote.unhitTail){
 									if((tail.strumTime - 25) <= Conductor.songPosition && !tail.wasGoodHit && !tail.tooLate)
 										noteHit(tail);
-
 								}
-								if(!daNote.isRoll)boyfriend.holding=daNote.unhitTail.length>0;
+								boyfriend.holding=daNote.unhitTail.length>0 && !daNote.isRoll;
 								if(daNote.unhitTail.length>0)
 									boyfriend.holdTimer=0;
+
+								if(daNote.holdingTime >= daNote.sustainLength){
+									updateReceptors();
+									trace("finished hold / roll successfully");
+									boyfriend.holding=false;
+									// idk if I should add score when you finish a hold/roll
+									// maybe health tho? idk i'll think bout it
+								}
 
 							}
 						}
@@ -2954,13 +2959,9 @@ class PlayState extends MusicBeatState
 
 		dadStrums.forEach(function(spr:Receptor)
 		{
+			if (spr.animation.finished && spr.animation.curAnim.name=='confirm')
+				spr.playAnim('static',true);
 
-			if(shouldResetDadReceptors){ // so when holding it wont awkwardly reset the anim
-				if (spr.animation.finished && spr.animation.curAnim.name=='confirm')
-				{
-					spr.playAnim('static',true);
-				}
-			}
 
 		});
 		FlxG.watch.addQuick("note count", renderedNotes.members.length);
@@ -3452,15 +3453,15 @@ class PlayState extends MusicBeatState
 		curSection += 1;
 	}
 
-	function updateReceptors(){
-		playerStrums.forEach(function(spr:Receptor)
+	function updateReceptors(canReset:Bool=true){
+		playerStrums.forEach( function(spr:Receptor)
 		{
 			if(pressedKeys[spr.ID] && spr.animation.curAnim.name!="confirm" && spr.animation.curAnim.name!="pressed" )
 				spr.playAnim("pressed");
 
-			if(!pressedKeys[spr.ID]){
+			if(!pressedKeys[spr.ID] && canReset)
 				spr.playAnim("static");
-			}
+
 		});
 
 		strumLineNotes.sort(sortByOrder);
@@ -3483,12 +3484,14 @@ class PlayState extends MusicBeatState
 	}
 
 	private function keyRelease(event:KeyboardEvent){
-		if(paused)return;
 		if(ScoreUtils.botPlay)return;
 		var direction = bindData.indexOf(event.keyCode);
+		if(paused && (direction == -1 || !pressedKeys[direction]))return;
 		if(direction!=-1 && pressedKeys[direction]){
 			pressedKeys[direction]=false;
-			updateReceptors();
+			var hitting:Array<Note> = getHittableNotes(direction,false);
+			hitting.sort((a,b)->Std.int(a.strumTime-b.strumTime)); // SHOULD be in order?
+			updateReceptors(hitting[0]==null || !(hitting[0].wasGoodHit && hitting[0].isRoll));
 		}
 	}
 
@@ -3498,11 +3501,10 @@ class PlayState extends MusicBeatState
 			hitting.sort((a,b)->Std.int(a.strumTime-b.strumTime)); // SHOULD be in order?
 			// But just incase, we do this sort
 
-			// TODO: chord cohesion, maybe
 			if(hitting.length>0){
 				boyfriend.holdTimer=0;
 				var hitNote = hitting[0];
-				if(!hitNote.wasGoodHit) // because holds parent tap notes
+				if(!hitNote.wasGoodHit) // because parent tap notes
 					noteHit(hitNote);
 				else if(hitNote.wasGoodHit && hitNote.isRoll){
 					var receptor = playerStrums.members[hitNote.noteData];
@@ -3681,24 +3683,21 @@ class PlayState extends MusicBeatState
 				}
 
 			});
-			updateReceptors();
 
 			if (!note.isSustainNote && note.tail.length==0)
 			{
 				note.kill();
-				if(note.mustPress){
-					//noteLanes[note.noteData].remove(note);
+				if(note.mustPress)
 					playerNotes.remove(note);
-				}
+
 				renderedNotes.remove(note, true);
 				note.destroy();
 			}else if(note.mustPress && note.isSustainNote){
 				if(note.parent!=null){
-					if(note.parent.unhitTail.contains(note)){
+					if(note.parent.unhitTail.contains(note))
 						note.parent.unhitTail.remove(note);
-					}
+
 				}
-			//	susNoteLanes[note.noteData].remove(note);
 			}
 		}
 
@@ -3708,9 +3707,9 @@ class PlayState extends MusicBeatState
 		for(judge in counters.keys()){
 			var txt = counters.get(judge);
 			var name:String = JudgementManager.judgementDisplayNames.get(judge);
-			if(name==null){
+			if(name==null)
 				name = '${judge.substring(0,1).toUpperCase()}${judge.substring(1,judge.length)}';
-			}
+
 			txt.text = '${name}: ${judgeMan.judgementCounter.get(judge)}';
 			txt.x=0;
 		}
@@ -3721,9 +3720,9 @@ class PlayState extends MusicBeatState
 		judgeMan.judgementCounter.set("miss",judgeMan.judgementCounter.get("miss")+1);
 		updateJudgementCounters();
 		previousHealth=health;
-		if(luaModchartExists && lua!=null){
+		if(luaModchartExists && lua!=null)
 			callLua("hitMine",[note.noteData,note.strumTime,Conductor.songPosition,note.isSustainNote]);
-		}
+
 		if (combo > 5 && gf.animOffsets.exists('sad'))
 		{
 			gf.playAnim('sad');

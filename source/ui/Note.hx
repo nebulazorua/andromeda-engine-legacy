@@ -126,9 +126,10 @@ class Note extends NoteGraphic
 		return false;
 	}
 
-	public function new(strumTime:Float, noteData:Int, skin:String='default', modifier:String='base', type:String='default', ?prevNote:Note, ?sustainNote:Bool = false, ?initialPos:Float=0, ?beingCharted=false)
+	public function new(strumTime:Float, noteData:Int, skin:String='default', modifier:String='base', type:String='default', ?prevNote:Note, ?sustainNote:Bool = false, ?rollNote:Bool = false, ?initialPos:Float=0, ?beingCharted=false)
 	{
 		this.noteType=type;
+		isRoll = rollNote;
 		hitbox = Conductor.safeZoneOffset;
 		var graphicType:String = type;
 		switch(noteType){
@@ -160,6 +161,7 @@ class Note extends NoteGraphic
 			return;
 		}
 
+
 		this.beat = Conductor.getBeatInMeasure(strumTime);
 		this.initialPos=initialPos;
 		this.beingCharted=beingCharted;
@@ -169,6 +171,12 @@ class Note extends NoteGraphic
 
 		this.prevNote = prevNote;
 		isSustainNote = sustainNote;
+
+		var sustainType = 0;
+		if(isSustainNote){
+			sustainType=1;
+			if(isRoll)sustainType=2;
+		}
 
 		x += 50;
 		// MAKE SURE ITS DEFINITELY OFF SCREEN?
@@ -182,7 +190,7 @@ class Note extends NoteGraphic
 		var colors = ["purple","blue","green","red"];
 
 		x += swagWidth * noteData;
-		setDir(noteData,false,false);
+		setDir(noteData,0,false);
 
 		// trace(prevNote);
 
@@ -207,7 +215,7 @@ class Note extends NoteGraphic
 			lastSustainPiece=true;
 
 			manualXOffset = width/2;
-			setDir(noteData,true,true);
+			setDir(noteData,sustainType,true);
 			updateHitbox();
 
 
@@ -229,7 +237,7 @@ class Note extends NoteGraphic
 			{
 				prevNote.lastSustainPiece=false;
 				//prevNote.noteGraphic.animation.play('${colors[noteData]}hold');
-				prevNote.setDir(noteData,true,false);
+				prevNote.setDir(noteData,sustainType,false);
 				if(!beingCharted){
 					prevNote.scale.y *= (Conductor.stepCrochet / 100 * 1.5);
 					prevNote.scale.y *= PlayState.getFNFSpeed(strumTime);
@@ -251,7 +259,13 @@ class Note extends NoteGraphic
 	{
 		alpha = CoolUtil.scale(desiredAlpha,0,1,0,baseAlpha);
 		if(tooLate && !beingCharted)alpha*=.3;
+
 		super.update(elapsed);
+
+		if(isSustainNote && prevNote!=null && prevNote.isSustainNote){
+			if(prevNote!=null && animation!=null && animation.curAnim!=null && prevNote.animation!=null && prevNote.animation.curAnim!=null) // WHY DO I HAVE TO DO THIS, HAXEFLIXEL??
+				prevNote.animation.curAnim.curFrame = animation.curAnim.curFrame;
+		}
 
 		if(isSustainNote){
 			if(prevNote!=null && prevNote.isSustainNote){
@@ -265,6 +279,7 @@ class Note extends NoteGraphic
 
 		zIndex+=desiredZIndex;
 		zIndex-=(mustPress==true?0:1);
+
 
 		if (mustPress)
 		{
