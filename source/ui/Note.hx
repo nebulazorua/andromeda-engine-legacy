@@ -73,6 +73,8 @@ class Note extends NoteGraphic
 	public var initialPos:Float = 0;
 	public var desiredZIndex:Float = 0;
 
+	public var isRoll:Bool = false;
+
 	public var hitbox:Float = 166;
 
 	public var beat:Float = 0;
@@ -240,9 +242,9 @@ class Note extends NoteGraphic
 			scaleDefault.set(scale.x,scale.y);
 		}
 
-		if(prevNote!=null){
+		if(prevNote!=null)
 			prevNote.nextNote = this;
-		}
+
 	}
 
 	override function update(elapsed:Float)

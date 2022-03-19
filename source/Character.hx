@@ -406,6 +406,8 @@ class Character extends FlxSprite
 
 		noIdleTimer -= elapsed*1000;
 		if(noIdleTimer<0)noIdleTimer=0;
+		if(animation.curAnim!=null)
+			isSinging = animation.curAnim.name.startsWith("sing") || animation.curAnim.name.startsWith("hold");
 		if (!isPlayer)
 		{
 			if(animation.curAnim!=null){
@@ -517,7 +519,6 @@ class Character extends FlxSprite
 			}
 
 			isIdling = idleAnims.indexOf(AnimName)!=-1;
-			isSinging = AnimName.startsWith("sing") || AnimName.startsWith("hold");
 		}
 	}
 

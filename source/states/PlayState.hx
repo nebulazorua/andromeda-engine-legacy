@@ -173,7 +173,7 @@ class PlayState extends MusicBeatState
 	public static var noteModifier:String='base';
 	public static var uiModifier:String='base';
 	var pressedKeys:Array<Bool> = [false,false,false,false];
-
+	var justPressedKeys:Array<Bool> = [false,false,false,false];
 	private var camZooming:Bool = true;
 	private var curSong:String = "";
 
@@ -1699,7 +1699,7 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, false, getPosFromTime(daStrumTime));
-				swagNote.sustainLength = songNotes[2];
+				swagNote.sustainLength = Math.floor(songNotes[2] / Conductor.stepCrochet) * Conductor.stepCrochet;
 				swagNote.scrollFactor.set(0, 0);
 				swagNote.shitId = unspawnNotes.length;
 				if(!setupSplashes.contains(swagNote.graphicType) && gottaHitNote){
@@ -1744,6 +1744,7 @@ class PlayState extends MusicBeatState
 						sustainNote.cameras = [camSus];
 						sustainNote.scrollFactor.set();
 						unspawnNotes.push(sustainNote);
+						sustainNote.isRoll = swagNote.isRoll;
 						sustainNote.shitId = unspawnNotes.length;
 						sustainNote.segment = swagNote.tail.length;
 						swagNote.tail.push(sustainNote);
@@ -1766,7 +1767,9 @@ class PlayState extends MusicBeatState
 							sustainNote.defaultX = sustainNote.x;
 						}
 					}
-				}
+				}else
+					swagNote.isRoll=false;
+
 
 				swagNote.mustPress = gottaHitNote;
 
@@ -2257,6 +2260,9 @@ class PlayState extends MusicBeatState
 						shit=args[0];
 				}
 				swapCharacter(shit,args[1]);
+			case 'Hey':
+				boyfriend.playAnim("hey",true);
+				gf.playAnim("cheer",true);
 			case 'Play Anim':
 				var char:Character = boyfriend;
 				switch (args[0]){
@@ -2618,6 +2624,7 @@ class PlayState extends MusicBeatState
 		var bfVar:Float=boyfriend.dadVar;
 
 		if(boyfriend.animation.curAnim!=null){
+			FlxG.watch.addQuick("bf hold timer",boyfriend.holdTimer);
 			if (boyfriend.holdTimer > Conductor.stepCrochet * bfVar * 0.001 && !pressedKeys.contains(true) )
 			{
 				if (boyfriend.isSinging && !boyfriend.animation.curAnim.name.endsWith('miss'))
@@ -2625,6 +2632,7 @@ class PlayState extends MusicBeatState
 					boyfriend.dance();
 				}
 			}
+			FlxG.watch.addQuick("bf is singing",boyfriend.isSinging);
 		}
 
 		var shouldResetDadReceptors:Bool = true; // lmao
@@ -2655,7 +2663,7 @@ class PlayState extends MusicBeatState
 
 					var diff =  Conductor.songPosition - daNote.strumTime;
 			    var vDiff = (daNote.initialPos-Conductor.currentTrackPos);
-					if(daNote.unhitTail.length>0 && daNote.wasGoodHit){
+					if(daNote.holdingTime<daNote.sustainLength && daNote.wasGoodHit){
 						diff=0;
 						vDiff=0;
 					}
@@ -2718,25 +2726,31 @@ class PlayState extends MusicBeatState
 						visibility=false;
 					}
 
-					if(daNote.tail.length>0 && daNote.wasGoodHit){
+					if(daNote.sustainLength > 0 && daNote.wasGoodHit)
 						visibility=false;
-					}
+
 
 					daNote.visible = visibility;
 
-					if(daNote.unhitTail.length > 0 && daNote.mustPress){ // NEW HOLD LOGIC
+					if(daNote.holdingTime < daNote.sustainLength && daNote.mustPress){ // NEW HOLD LOGIC
 						if(!daNote.tooLate && daNote.wasGoodHit){
 							var isHeld = pressedKeys[daNote.noteData];
+							if(daNote.isRoll)isHeld = false;
 							var receptor = playerStrums.members[daNote.noteData];
-							if(isHeld && receptor.animation.curAnim.name!="confirm"){
-								receptor.playAnim("confirm");
-							}
+							if(isHeld && receptor.animation.curAnim.name!="confirm")
+								receptor.playAnim("confirm", true);
+
+
 							daNote.holdingTime += elapsed*1000;
+
+							var regrabTime:Float = 0.2;
+							if(daNote.isRoll)
+								regrabTime = 0.35;
 
 							if(isHeld)
 								daNote.tripTimer = 1;
 							else
-								daNote.tripTimer -= elapsed/0.1; // maybe make the regrab timer an option
+								daNote.tripTimer -= elapsed/regrabTime; // maybe make the regrab timer an option
 								// idk lol
 
 							if(daNote.tripTimer<=0){
@@ -2755,7 +2769,7 @@ class PlayState extends MusicBeatState
 										noteHit(tail);
 
 								}
-								boyfriend.holding=daNote.unhitTail.length>0;
+								if(!daNote.isRoll)boyfriend.holding=daNote.unhitTail.length>0;
 								if(daNote.unhitTail.length>0)
 									boyfriend.holdTimer=0;
 
@@ -2820,41 +2834,45 @@ class PlayState extends MusicBeatState
 						health -= modchart.opponentHPDrain;
 
 
-						var dirs = ["LEFT","DOWN","UP","RIGHT"];
+						/*var dirs = ["LEFT","DOWN","UP","RIGHT"];
 						var dir = "";
 						var anim = "";
 						dir = dirs[daNote.noteData];
 						anim = 'sing${dir}';
+						if(!daNote.isRoll){
+							if(daNote.tail.length>0 && !daNote.isSustainNote){
+								if(opponent.animation.getByName('hold${dir}Start')!=null)
+									anim = 'hold${dir}Start';
+								else if(opponent.animation.getByName('hold${dir}')!=null)
+									anim = 'hold${dir}';
+							}else if(daNote.isSustainNote){
+								if(opponent.animation.getByName('hold${dir}')!=null)
+									anim = 'hold${dir}';
+							}
 
-						if(daNote.tail.length>0 && !daNote.isSustainNote){
-							if(opponent.animation.getByName('hold${dir}Start')!=null)
-								anim = 'hold${dir}Start';
-							else if(opponent.animation.getByName('hold${dir}')!=null)
-								anim = 'hold${dir}';
-						}else if(daNote.isSustainNote){
-							if(opponent.animation.getByName('hold${dir}')!=null)
-								anim = 'hold${dir}';
-						}
-
-						if(daNote.isSustainEnd()){
-							if(opponent.animation.getByName('hold${dir}End')!=null)
-								anim = 'hold${dir}End';
+							if(daNote.isSustainEnd()){
+								if(opponent.animation.getByName('hold${dir}End')!=null)
+									anim = 'hold${dir}End';
+							}
 						}
 
 						if(opponent.animation.getByName(anim+altAnim)!=null)
-							anim += altAnim;
+							anim += altAnim;*/
 
 						if(luaModchartExists && lua!=null)
-							callLua("dadNoteHit",[Math.abs(daNote.noteData),daNote.strumTime,Conductor.songPosition, anim, daNote.isSustainNote]); // TODO: Note lua class???
+							callLua("dadNoteHit",[Math.abs(daNote.noteData), daNote.strumTime, Conductor.songPosition, daNote.isSustainNote]); // TODO: Note lua class???
 
-						if(opponent.animation.curAnim!=null && (!anim.startsWith("hold") || opponent.animation.curAnim.name!=anim))
-							opponent.playAnim(anim,true);
+						//if(opponent.animation.curAnim!=null && (!anim.startsWith("hold") || opponent.animation.curAnim.name!=anim))
+						//	opponent.playAnim(anim,true);
+						playAnimationNote(opponent, daNote, altAnim);
 
 
-						if(daNote.holdParent && !daNote.isSustainEnd())
-							opponent.holding = true;
-						else
-							opponent.holding = false;
+						if(!daNote.isRoll){
+							if(daNote.holdParent && !daNote.isSustainEnd())
+								opponent.holding = true;
+							else
+								opponent.holding = false;
+						}
 
 						opponent.holdTimer = 0;
 
@@ -2883,6 +2901,11 @@ class PlayState extends MusicBeatState
 					if(daNote!=null && daNote.alive){
 						if(daNote.tooLate && daNote.mustPress && !daNote.isSustainNote && !daNote.causedMiss){
 							if(daNote.causesMiss){
+								if(daNote.tail.length>0){
+									for(tail in daNote.tail)
+										tail.tooLate=true;
+
+								}
 								daNote.causedMiss = true;
 								noteMiss(daNote.noteData);
 
@@ -2891,7 +2914,7 @@ class PlayState extends MusicBeatState
 							}
 						}
 
-						if((isDownscroll && daNote.y>FlxG.height+daNote.height || !isDownscroll && daNote.y<-daNote.height || daNote.unhitTail.length==0 && daNote.sustainLength>0 || daNote.isSustainNote && daNote.strumTime - Conductor.songPosition < -350) && (daNote.tooLate || daNote.wasGoodHit))
+						if((isDownscroll && daNote.y>FlxG.height+daNote.height || !isDownscroll && daNote.y<-daNote.height || daNote.holdingTime>=daNote.sustainLength && daNote.sustainLength>0 || daNote.isSustainNote && daNote.strumTime - Conductor.songPosition < -350) && (daNote.tooLate || daNote.wasGoodHit))
 							notesToKill.push(daNote);
 
 					}
@@ -2909,6 +2932,7 @@ class PlayState extends MusicBeatState
 		camRating.followLerp = Main.adjustFPS(.02);
 
 		super.update(elapsed);
+		for(i in 0...justPressedKeys.length)justPressedKeys[i]=false;
 
 		while(eventSchedule[0]!=null){
 			var event = eventSchedule[0];
@@ -3450,6 +3474,7 @@ class PlayState extends MusicBeatState
 		if(ScoreUtils.botPlay)return;
 		var direction = bindData.indexOf(event.keyCode);
 		if(direction!=-1 && !pressedKeys[direction]){
+			justPressedKeys[direction]=true;
 			pressedKeys[direction]=true;
 			handleInput(direction);
 			updateReceptors();
@@ -3469,17 +3494,24 @@ class PlayState extends MusicBeatState
 
 	private function handleInput(direction:Int){
 		if(direction!=-1){
-			var hitting:Array<Note> = getHittableNotes(direction,true);
+			var hitting:Array<Note> = getHittableNotes(direction,false);
 			hitting.sort((a,b)->Std.int(a.strumTime-b.strumTime)); // SHOULD be in order?
 			// But just incase, we do this sort
 
 			// TODO: chord cohesion, maybe
 			if(hitting.length>0){
 				boyfriend.holdTimer=0;
-				for(hit in hitting){
-					noteHit(hit);
-					break;
+				var hitNote = hitting[0];
+				if(!hitNote.wasGoodHit) // because holds parent tap notes
+					noteHit(hitNote);
+				else if(hitNote.wasGoodHit && hitNote.isRoll){
+					var receptor = playerStrums.members[hitNote.noteData];
+					receptor.playAnim("confirm", true);
+					hitNote.tripTimer = 1;
+					playAnimationNote(boyfriend, hitNote, "");
 				}
+
+
 			}else{
 				if((currentOptions.hitsoundType==1 || currentOptions.hitsoundType==2))
 					FlxG.sound.play(Paths.sound('Ghost_Hit'),currentOptions.hitsoundVol/100);
@@ -3522,7 +3554,7 @@ class PlayState extends MusicBeatState
 		// botplay
 		if(ScoreUtils.botPlay){
 			for(dir in 0...botplayHoldTimes.length){
-				var notes = getHittableNotes(dir,true);
+				var notes = getHittableNotes(dir);
 				for(note in notes){
 					var diff = note.strumTime - Conductor.songPosition;
 					if(diff<=10 && note.causesMiss){
@@ -3544,9 +3576,9 @@ class PlayState extends MusicBeatState
 	function getHittableNotes(direction:Int=-1,excludeHolds:Bool=false){
 		var notes:Array<Note>=[];
 		for(note in playerNotes){
-			if(note.canBeHit && note.alive && !note.wasGoodHit && !note.tooLate && (direction==-1 || note.noteData==direction) && (!excludeHolds || !note.isSustainNote)){
+			if((note.canBeHit && note.alive && !note.wasGoodHit || note.sustainLength>0 && note.wasGoodHit) && !note.tooLate && (direction==-1 || note.noteData==direction) && (!excludeHolds || !note.isSustainNote))
 				notes.push(note);
-			}
+
 		}
 		return notes;
 	}
@@ -3642,10 +3674,11 @@ class PlayState extends MusicBeatState
 			note.wasGoodHit=true;
 			playerStrums.forEach(function(spr:Receptor)
 			{
-				if (Math.abs(note.noteData) == spr.ID)
-				{
-					spr.playNote(note,(currentOptions.useNotesplashes && !note.isSustainNote)?(judge=='sick' || judge=='epic'):false);
+				if (Math.abs(note.noteData) == spr.ID){
+					if(!note.isSustainNote || !note.isRoll )
+						spr.playNote(note,(currentOptions.useNotesplashes && !note.isSustainNote)?(judge=='sick' || judge=='epic'):false);
 				}
+
 			});
 			updateReceptors();
 
@@ -3712,6 +3745,42 @@ class PlayState extends MusicBeatState
 			boyfriend.playAnim('hurt', true);
 		else
 			showMiss(note.noteData);
+	}
+
+	function playAnimationNote(who:Character, daNote:Note, suffix:String=''){
+		var dirs = ["LEFT","DOWN","UP","RIGHT"];
+		var dir = "";
+		var anim = "";
+		dir = dirs[daNote.noteData];
+		anim = 'sing${dir}';
+
+		if(!daNote.isRoll){
+			if(daNote.tail.length>0 && !daNote.isSustainNote){
+				if(who.animation.getByName('hold${dir}Start')!=null)
+					anim = 'hold${dir}Start';
+				else if(who.animation.getByName('hold${dir}')!=null)
+					anim = 'hold${dir}';
+			}else if(daNote.isSustainNote){
+				if(who.animation.getByName('hold${dir}')!=null)
+					anim = 'hold${dir}';
+			}
+
+			if(daNote.isSustainEnd()){
+				if(who.animation.getByName('hold${dir}End')!=null)
+					anim = 'hold${dir}End';
+			}
+		}
+		if(daNote.noteType=='alt')suffix+='-alt';
+
+		if(who.animation.getByName(anim+suffix)!=null)
+			anim += suffix;
+
+		if(who.animation.curAnim!=null){
+			if(who.animation.curAnim!=null && (!anim.startsWith("hold") || who.animation.curAnim.name!=anim))
+				who.playAnim(anim,true);
+		}
+		who.holdTimer = 0;
+
 	}
 
 	function goodNoteHit(note:Note,noteDiff:Float,altAnim:Bool=false):Void
@@ -3787,32 +3856,13 @@ class PlayState extends MusicBeatState
 		dir = dirs[note.noteData];
 		anim = 'sing${dir}';
 
-		if(note.tail.length>0 && !note.isSustainNote){
-			if(boyfriend.animation.getByName('hold${dir}Start')!=null)
-				anim = 'hold${dir}Start';
-			else if(boyfriend.animation.getByName('hold${dir}')!=null)
-				anim = 'hold${dir}';
-		}else if(note.isSustainNote){
-			if(boyfriend.animation.getByName('hold${dir}')!=null)
-				anim = 'hold${dir}';
-		}
-
-		if(note.isSustainEnd()){
-			if(boyfriend.animation.getByName('hold${dir}End')!=null)
-				anim = 'hold${dir}End';
-		}
-
+		var suffix = '';
 		if(breaksCombo && !note.isSustainNote){
 			anim='sing${dir}miss';
 			boyfriend.playAnim(anim,true);
-		}else{
-			if(boyfriend.animation.getByName(anim+altAnim)!=null)
-				anim += altAnim;
-			if(boyfriend.animation.curAnim!=null){
-				if(boyfriend.animation.curAnim!=null && (!anim.startsWith("hold") || boyfriend.animation.curAnim.name!=anim))
-					boyfriend.playAnim(anim,true);
-			}
-		}
+		}else if(!note.isSustainNote || !note.isRoll)
+			playAnimationNote(boyfriend, note, suffix);
+
 
 
 
@@ -3931,10 +3981,10 @@ class PlayState extends MusicBeatState
 				boyfriend.dance();
 
 
-		if (curBeat % 8 == 7 && curSong == 'Bopeebo')
+		/*if (curBeat % 8 == 7 && curSong == 'Bopeebo')
 		{
 			boyfriend.playAnim('hey', true);
-		}
+		}*/
 
 		/*if (curBeat % 16 == 15 && SONG.song == 'Tutorial' && dad.curCharacter == 'gf' && curBeat > 16 && curBeat < 48)
 		{

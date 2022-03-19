@@ -3,10 +3,6 @@
 		0,
 		0
 	],
-	"camOffset": [
-		150,
-		0
-	],
 	"anims": [
 		{
 			"offsets": [
@@ -15,8 +11,8 @@
 			],
 			"fps": 24,
 			"prefix": "Mom Idle",
-			"name": "idle",
-			"looped": false
+			"looped": false,
+			"name": "idle"
 		},
 		{
 			"offsets": [
@@ -25,8 +21,8 @@
 			],
 			"fps": 24,
 			"prefix": "Mom Up Pose",
-			"name": "singUP",
-			"looped": false
+			"looped": false,
+			"name": "singUP"
 		},
 		{
 			"offsets": [
@@ -35,8 +31,8 @@
 			],
 			"fps": 24,
 			"prefix": "Mom Pose Left",
-			"name": "singRIGHT",
-			"looped": false
+			"looped": false,
+			"name": "singRIGHT"
 		},
 		{
 			"offsets": [
@@ -45,8 +41,8 @@
 			],
 			"fps": 24,
 			"prefix": "Mom Left Pose",
-			"name": "singLEFT",
-			"looped": false
+			"looped": false,
+			"name": "singLEFT"
 		},
 		{
 			"offsets": [
@@ -55,14 +51,169 @@
 			],
 			"fps": 24,
 			"prefix": "MOM DOWN POSE",
-			"name": "singDOWN",
-			"looped": false
+			"looped": false,
+			"name": "singDOWN"
+		},
+		{
+			"offsets": [
+				14,
+				71
+			],
+			"fps": 24,
+			"prefix": "Mom Up Pose",
+			"looped": true,
+			"name": "holdUP",
+			"indices": [
+				0,
+				1
+			]
+		},
+		{
+			"offsets": [
+				250,
+				-23
+			],
+			"fps": 24,
+			"prefix": "Mom Left Pose",
+			"looped": true,
+			"name": "holdLEFT",
+			"indices": [
+				0,
+				1
+			]
+		},
+		{
+			"offsets": [
+				10,
+				-60
+			],
+			"fps": 24,
+			"prefix": "Mom Pose Left",
+			"looped": true,
+			"name": "holdRIGHT",
+			"indices": [
+				0,
+				1
+			]
+		},
+		{
+			"offsets": [
+				20,
+				-160
+			],
+			"fps": 24,
+			"prefix": "MOM DOWN POSE",
+			"looped": true,
+			"name": "holdDOWN",
+			"indices": [
+				0,
+				1
+			]
+		},
+		{
+			"offsets": [
+				20,
+				-160
+			],
+			"fps": 24,
+			"prefix": "MOM DOWN POSE",
+			"looped": true,
+			"name": "holdDOWNEnd",
+			"indices": [
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8
+			]
+		},
+		{
+			"offsets": [
+				10,
+				-60
+			],
+			"fps": 24,
+			"prefix": "Mom Pose Left",
+			"looped": true,
+			"name": "holdRIGHTEnd",
+			"indices": [
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8
+			]
+		},
+		{
+			"offsets": [
+				250,
+				-23
+			],
+			"fps": 24,
+			"prefix": "Mom Left Pose",
+			"looped": true,
+			"name": "holdLEFTEnd",
+			"indices": [
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8
+			]
+		},
+		{
+			"offsets": [
+				14,
+				71
+			],
+			"fps": 24,
+			"prefix": "Mom Up Pose",
+			"looped": true,
+			"name": "holdUPEnd",
+			"indices": [
+				2,
+				3,
+				4,
+				5,
+				6,
+				7,
+				8
+			]
+		},
+		{
+			"indices": [
+				10,
+				11,
+				12,
+				13,
+				14
+			],
+			"prefix": "Mom Idle",
+			"offsets": [
+				0,
+				0
+			],
+			"fps": 24,
+			"name": "idleEnd",
+			"looped": true
 		}
 	],
 	"spritesheet": "momCar",
 	"singDur": 4,
+	"camOffset": [
+		150,
+		0
+	],
 	"flipX": false,
+	"antialiasing": true,
 	"iconName": "mom",
 	"beatDancer": false,
+	"format": "andromeda",
 	"healthColor": "0xFFD8558E"
 }

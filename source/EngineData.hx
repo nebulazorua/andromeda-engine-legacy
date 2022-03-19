@@ -60,6 +60,10 @@ class EngineData {
       ]
     },
     {
+      name: "Hey",
+      arguments: []
+    },
+    {
       name: "Play Anim",
       arguments: [
         {
