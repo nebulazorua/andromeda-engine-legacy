@@ -2624,7 +2624,6 @@ class PlayState extends MusicBeatState
 		var bfVar:Float=boyfriend.dadVar;
 
 		if(boyfriend.animation.curAnim!=null){
-			FlxG.watch.addQuick("bf hold timer",boyfriend.holdTimer);
 			if (boyfriend.holdTimer > Conductor.stepCrochet * bfVar * 0.001 && !pressedKeys.contains(true) )
 			{
 				if (boyfriend.isSinging && !boyfriend.animation.curAnim.name.endsWith('miss'))
@@ -2632,11 +2631,11 @@ class PlayState extends MusicBeatState
 					boyfriend.dance();
 				}
 			}
-			FlxG.watch.addQuick("bf is singing",boyfriend.isSinging);
 		}
 
 		var shouldResetDadReceptors:Bool = true; // lmao
 		var notesToKill:Array<Note>=[];
+		var sustainCount:Int = 0;
 		if (generatedMusic)
 		{
 			if(startedCountdown){
@@ -2652,6 +2651,8 @@ class PlayState extends MusicBeatState
 						return;
 					}
 
+					if(daNote.isSustainNote)sustainCount++;
+
 
 					var revPerc:Float = modManager.get("reverse").getScrollReversePerc(daNote.noteData,daNote.mustPress==true?0:1);
 
@@ -2663,7 +2664,7 @@ class PlayState extends MusicBeatState
 
 					var diff =  Conductor.songPosition - daNote.strumTime;
 			    var vDiff = (daNote.initialPos-Conductor.currentTrackPos);
-					if(daNote.holdingTime<daNote.sustainLength && daNote.wasGoodHit){
+					if(daNote.holdingTime<daNote.sustainLength && daNote.wasGoodHit && !daNote.tooLate){
 						diff=0;
 						vDiff=0;
 					}
@@ -2773,6 +2774,7 @@ class PlayState extends MusicBeatState
 								if(daNote.holdingTime >= daNote.sustainLength){
 									updateReceptors();
 									trace("finished hold / roll successfully");
+									daNote.holdingTime = daNote.sustainLength;
 									boyfriend.holding=false;
 									// idk if I should add score when you finish a hold/roll
 									// maybe health tho? idk i'll think bout it
@@ -2919,7 +2921,7 @@ class PlayState extends MusicBeatState
 							}
 						}
 
-						if((isDownscroll && daNote.y>FlxG.height+daNote.height || !isDownscroll && daNote.y<-daNote.height || daNote.holdingTime>=daNote.sustainLength && daNote.sustainLength>0 || daNote.isSustainNote && daNote.strumTime - Conductor.songPosition < -350) && (daNote.tooLate || daNote.wasGoodHit))
+						if((isDownscroll && daNote.y>FlxG.height+daNote.height || !isDownscroll && daNote.y<-daNote.height || (daNote.mustPress && daNote.holdingTime>=daNote.sustainLength || !daNote.mustPress && daNote.unhitTail.length==0 ) && daNote.sustainLength>0 || daNote.isSustainNote && daNote.strumTime - Conductor.songPosition < -350) && (daNote.tooLate || daNote.wasGoodHit))
 							notesToKill.push(daNote);
 
 					}
@@ -2952,8 +2954,7 @@ class PlayState extends MusicBeatState
 		updateCamFollow();
 
 		for(note in notesToKill){
-			if(note.active)
-				destroyNote(note);
+			destroyNote(note);
 
 		}
 
@@ -2965,7 +2966,7 @@ class PlayState extends MusicBeatState
 
 		});
 		FlxG.watch.addQuick("note count", renderedNotes.members.length);
-
+		FlxG.watch.addQuick("sus count", sustainCount);
 		strumLineNotes.sort(sortByOrder);
 
 
@@ -3810,7 +3811,6 @@ class PlayState extends MusicBeatState
 				var wifeScore = ScoreUtils.malewife(noteDiff,Conductor.safeZoneOffset/180);
 				totalNotes+=2;
 				hitNotes+=wifeScore;
-				trace(wifeScore, noteDiff, hitNotes, hitNotes/totalNotes);
 			}else{
 				if(currentOptions.accuracySystem!=1)
 					totalNotes++;
