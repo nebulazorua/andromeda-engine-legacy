@@ -3,9 +3,10 @@ package;
 import flixel.util.typeLimit.OneOfTwo;
 
 typedef Event = {
-	var name: String;
 	var time: Float;
-	var args: Array<Dynamic>;
+	@:optional var name: String; // old system
+	@:optional var args: Array<Dynamic>; // old system
+	@:optional var events: Array<Event>; // new system
 }
 
 typedef SwagSection =
