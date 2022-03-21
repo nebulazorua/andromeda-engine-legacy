@@ -405,7 +405,8 @@ class VCRDistortionEffect
     shader.noiseTex.input = noise;
   }
 
-  public function update(elapsed:Float):Void{
+  public function update(elapsed:Float):Void 
+  {
     shader.iTime.value[0] += elapsed;
     shader.iResolution.value = [Lib.current.stage.stageWidth,Lib.current.stage.stageHeight];
   }
