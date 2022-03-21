@@ -19,7 +19,12 @@ class NoteEffect {
   public function new(){
     shader.flash.value = [0];
   }
-
+  
+   public function update(elapsed:Float):Void
+    {
+        shader.flash.value[0] += elapsed;
+    }
+  
   public function setFlash(val: Float){
     shader.flash.value=[val];
   }
@@ -63,7 +68,13 @@ class ColorSwap {
     shader.sat.value = [sat];
     shader.val.value = [val];
     shader.awesomeOutline.value = [hasOutline];
-  }
+  } 
+  public function update(elapsed:Float):Void
+    {
+        shader.hue.value[hue] += elapsed; 
+        shader.sat.value[sat] += elapsed;  
+        shader.val.value[val] += elapsed; 
+    }
 }
 
 class NoteShader extends FlxShader
@@ -226,7 +237,12 @@ class RaymarchEffect {
   }
   public function setPitch(pitch:Float){
     shader.pitch.value[0]=pitch*rad;
-  }
+  } 
+  public function update(elapsed:Float):Void
+    {
+        shader.yaw.value[0] += elapsed; 
+        shader.pitch.value[0] += elapsed; 
+    }
 }
 
 class RaymarchShader extends FlxShader {
@@ -337,7 +353,11 @@ class BuildingEffect {
   public var shader:BuildingShader = new BuildingShader();
   public function new(){
     shader.alphaShit.value = [0];
-  }
+  } 
+  public function update(elapsed:Float):Void
+    {
+        shader.alphaShit.value[0] += elapsed;
+    }
   public function addAlpha(alpha:Float){
     shader.alphaShit.value[0]+=alpha;
   }
@@ -385,7 +405,7 @@ class VCRDistortionEffect
     shader.noiseTex.input = noise;
   }
 
-  public function update(elapsed:Float){
+  public function update(elapsed:Float):Void{
     shader.iTime.value[0] += elapsed;
     shader.iResolution.value = [Lib.current.stage.stageWidth,Lib.current.stage.stageHeight];
   }
