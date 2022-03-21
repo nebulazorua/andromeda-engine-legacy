@@ -2840,37 +2840,9 @@ class PlayState extends MusicBeatState
 
 						health -= modchart.opponentHPDrain;
 
-
-						/*var dirs = ["LEFT","DOWN","UP","RIGHT"];
-						var dir = "";
-						var anim = "";
-						dir = dirs[daNote.noteData];
-						anim = 'sing${dir}';
-						if(!daNote.isRoll){
-							if(daNote.tail.length>0 && !daNote.isSustainNote){
-								if(opponent.animation.getByName('hold${dir}Start')!=null)
-									anim = 'hold${dir}Start';
-								else if(opponent.animation.getByName('hold${dir}')!=null)
-									anim = 'hold${dir}';
-							}else if(daNote.isSustainNote){
-								if(opponent.animation.getByName('hold${dir}')!=null)
-									anim = 'hold${dir}';
-							}
-
-							if(daNote.isSustainEnd()){
-								if(opponent.animation.getByName('hold${dir}End')!=null)
-									anim = 'hold${dir}End';
-							}
-						}
-
-						if(opponent.animation.getByName(anim+altAnim)!=null)
-							anim += altAnim;*/
-
 						if(luaModchartExists && lua!=null)
 							callLua("dadNoteHit",[Math.abs(daNote.noteData), daNote.strumTime, Conductor.songPosition, daNote.isSustainNote]); // TODO: Note lua class???
 
-						//if(opponent.animation.curAnim!=null && (!anim.startsWith("hold") || opponent.animation.curAnim.name!=anim))
-						//	opponent.playAnim(anim,true);
 						playAnimationNote(opponent, daNote, altAnim);
 
 

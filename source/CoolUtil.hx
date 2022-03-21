@@ -14,9 +14,35 @@ import flixel.math.FlxPoint;
 import math.Vector3;
 using StringTools;
 
+
 class CoolUtil
 {
 	public static var difficultyArray:Array<String> = ['EASY', "NORMAL", "HARD"];
+	public static function square(angle:Float){
+		var fAngle = angle % (Math.PI * 2);
+
+		return fAngle >= Math.PI ? -1.0 : 1.0;
+	}
+	public static function triangle(angle:Float){
+		var fAngle:Float = angle % (Math.PI * 2.0);
+		if(fAngle < 0.0)
+		{
+			fAngle+= Math.PI * 2.0;
+		}
+		var result:Float = fAngle * (1 / Math.PI);
+		if(result < .5)
+		{
+			return result * 2.0;
+		}
+		else if(result < 1.5)
+		{
+			return 1.0 - ((result - .5) * 2.0);
+		}
+		else
+		{
+			return -4.0 + (result * 2.0);
+		}
+	}
 
 	public static function cacheSound(key:String,sound:Sound){
 		trace(key);

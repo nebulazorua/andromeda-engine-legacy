@@ -12,18 +12,24 @@ class DrunkModifier extends Modifier {
     var drunkPerc = getPercent(player);
     var tipsyPerc = getSubmodPercent("tipsy",player);
     var bumpyPerc = getSubmodPercent("bumpy",player);
-    var tipsySpeed = CoolUtil.scale(getSubmodPercent("tipsySpeed",player),0,1,1,2);
-    var drunkSpeed = CoolUtil.scale(getSubmodPercent("drunkSpeed",player),0,1,1,2);
     var bumpySpeed = CoolUtil.scale(getSubmodPercent("bumpySpeed",player),0,1,1,2);
     var timeFactor = getModPercent("waveTimeFactor", player);
 
     var time = (Conductor.songPosition/1000) * timeFactor;
     if(tipsyPerc!=0){
-      pos.y += tipsyPerc * (FlxMath.fastCos((time*1.2 + data*1.8)*tipsySpeed) * Note.swagWidth*.4);
+      var speed = getSubmodPercent("tipsySpeed",player);
+      var offset = getSubmodPercent("tipsyOffset",player);
+      pos.y += tipsyPerc * (FlxMath.fastCos((time*((speed*1.2)+1.2) + data*((offset * 1.8)+1.8))) * Note.swagWidth*.4);
     }
 
     if(drunkPerc!=0){
-      pos.x += drunkPerc * (FlxMath.fastCos((time + data*.2 + visualDiff*10/FlxG.height)*drunkSpeed) * Note.swagWidth*.5);
+      var speed = getSubmodPercent("drunkSpeed",player);
+      var period = getSubmodPercent("drunkPeriod",player);
+      var offset = getSubmodPercent("drunkOffset",player);
+
+      var angle = time * (1+speed) + data*( (offset*0.2) + 0.2)
+		    + visualDiff * ( (period*10) + 10) / FlxG.height;
+      pos.x += drunkPerc * (FlxMath.fastCos(angle) * Note.swagWidth * 0.5);
     }
 
     if(bumpyPerc!=0){
@@ -35,7 +41,16 @@ class DrunkModifier extends Modifier {
   }
 
   override function getSubmods(){
-    return ["tipsy", "bumpy", "drunkSpeed", "tipsySpeed", "bumpySpeed"];
+    return [
+      "tipsy",
+      "bumpy",
+      "drunkSpeed",
+      "drunkOffset",
+      "drunkPeriod",
+      "tipsySpeed",
+      "tipsyOffset",
+      "bumpySpeed"
+    ];
   }
 
 }

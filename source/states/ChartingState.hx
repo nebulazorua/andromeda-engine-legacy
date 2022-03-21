@@ -1493,6 +1493,7 @@ class ChartingState extends MusicBeatState
 				vocals.time = FlxG.sound.music.time;
 				updateCurStep();
 			}
+			if(_song.notes[curSection].events==null)_song.notes[curSection].events=[];
 
 			updateGrid();
 			updateSectionUI();
@@ -1571,8 +1572,8 @@ class ChartingState extends MusicBeatState
 			for (i in 0...(daSec-sectionNum))
 				copyOffsets += offsetArray[i];
 		}
-
-		for (note in _song.notes[daSec - sectionNum].sectionNotes)
+		var section = _song.notes[daSec - sectionNum];
+		for (note in section.sectionNotes)
 		{
 			var noteRatio = (note[0]-copyOffsets) / offsetArray[daSec-sectionNum];
 
@@ -1591,8 +1592,9 @@ class ChartingState extends MusicBeatState
 			}
 			if(canCopy)_song.notes[daSec].sectionNotes.push(copiedNote);
 		}
+		if(section.events==null)section.events=[];
 
-		for (event in _song.notes[daSec - sectionNum].events)
+		for (event in section.events)
 		{
 			var noteRatio = (event.time-copyOffsets) / offsetArray[daSec-sectionNum];
 
@@ -1917,6 +1919,7 @@ class ChartingState extends MusicBeatState
 	function selectEvent(event:NoteGraphic):Void
 	{
 		var idx=0;
+		if(_song.notes[curSection].events==null)_song.notes[curSection].events=[];
 		for (data in _song.notes[curSection].events)
 		{
 			if (event.ID==idx)
@@ -1937,6 +1940,7 @@ class ChartingState extends MusicBeatState
 	function deleteEvent(event:NoteGraphic):Void
 	{
 		var idx=0;
+		if(_song.notes[curSection].events==null)_song.notes[curSection].events=[];
 		for (data in _song.notes[curSection].events)
 		{
 			if (event.ID==idx)
@@ -1992,33 +1996,6 @@ class ChartingState extends MusicBeatState
 		}
 
 		updateGrid();
-	}
-
-	private function addScrollChange():Void
-	{
-		var snapTo:Float = strumLine.y;
-		//if(markerSnap.checked)
-	//		snapTo=FlxG.mouse.y;
-
-		var noteStrum = getStrumTime(Math.floor(snapTo / GRID_SIZE) * GRID_SIZE) + sectionStartTime();
-
-		if(FlxG.keys.pressed.CONTROL){
-			noteStrum = getStrumTime(snapTo) + sectionStartTime();
-		}
-		for(i in velChanges){
-			if(i.startTime==noteStrum){
-				return;
-			}
-		}
-		velChanges.push({
-			startTime:noteStrum,
-			multiplier:1,
-		});
-		curSelectedMarker=velChanges[velChanges.length-1];
-
-		updateGrid();
-		updateMarkerUI();
-		autosaveSong();
 	}
 
 	private function addEvent():Void

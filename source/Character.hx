@@ -146,7 +146,7 @@ class Character extends FlxSprite
 	}
 
 	public function setChar(newChar:String){
-		switch (curCharacter)
+		switch (newChar)
 		{
 			//case 'whatever':
 			// whatever hard-coded shit here

@@ -52,6 +52,10 @@ class ModManager {
     defineMod("reverse",new ReverseModifier(this)); // also cross, split, alternate, centered
     defineMod("stealth",new AlphaModifier(this));
     defineMod("opponentSwap",new OpponentModifier(this));
+    defineMod("zigzag",new ZigZagModifier(this));
+    defineMod("sawtooth",new SawtoothModifier(this));
+    defineMod("bounce",new BounceModifier(this));
+    defineMod("square",new SquareModifier(this));
     defineMod("scrollAngle",new AngleModifier(this));
     defineMod("mini",new ScaleModifier(this)); // also squish and stretch
     defineMod("flip",new FlipModifier(this));
@@ -64,7 +68,6 @@ class ModManager {
     defineMod("centerrotateX",new RotateModifier(this,'center',new Vector3(FlxG.width/2 - Note.swagWidth / 2,FlxG.height/2 - Note.swagWidth / 2)));
     defineMod("localrotateX",new LocalRotateModifier(this));
     defineMod("boost",new AccelModifier(this));
-
     defineMod("transformX",new TransformModifier(this));
     var infPath:Array<Array<Vector3>>=[[],[],[],[] ];
 
