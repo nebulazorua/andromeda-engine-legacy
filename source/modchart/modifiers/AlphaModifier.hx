@@ -67,7 +67,7 @@ class AlphaModifier extends Modifier {
 
 
     var alpha = getAlpha(yPos,player,note);
-    var glow = CoolUtil.scale(alpha, 1, 0.5, 1, 0);
+    var glow = CoolUtil.scale(alpha, 1, 0.5, 0, 1);
     var newAlpha = -CoolUtil.scale(alpha, 0.5, 0, 1, 0);
     if(newAlpha<0)newAlpha=0;
     if(newAlpha>1)newAlpha=1;
