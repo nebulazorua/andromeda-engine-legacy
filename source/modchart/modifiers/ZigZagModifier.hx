@@ -5,6 +5,7 @@ import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
 import math.*;
 
+//https://github.com/stepmania/stepmania/blob/984dc8668f1fedacf553f279a828acdebffc5625/src/ArrowEffects.cpp
 class ZigZagModifier extends Modifier {
 
   override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, timeDiff:Float){
