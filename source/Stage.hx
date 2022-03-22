@@ -128,6 +128,8 @@ class Stage extends FlxTypedGroup<FlxBasic> {
 
     lightningOffset = FlxG.random.int(8, 24);
 
+    boyfriend.noIdleTimer = 1000;
+    gf.noIdleTimer = 1000;
     boyfriend.playAnim('scared', true);
     gf.playAnim('scared', true);
   }
@@ -507,7 +509,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
         centerX = skyBG.getMidpoint().x+100;
         centerY = skyBG.getMidpoint().y-100;
       case 'blank':
-        
+
       default:
         defaultCamZoom = 1;
         curStage = 'stage';

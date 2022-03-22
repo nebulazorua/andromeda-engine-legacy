@@ -13,8 +13,10 @@ import Options;
 class FNFCamera extends FlxCamera {
   public var scrollOffset:FlxPoint = FlxPoint.get();
   public var offset:FlxPoint = FlxPoint.get();
+  public var angleOffset(default, set):Float = 0;
 
-  public var _scroll:FlxPoint = FlxPoint.get();
+  private var _scroll:FlxPoint = FlxPoint.get();
+
   public var yaw(default, set):Float = 0;
   public var pitch(default, set):Float = 0;
   public var filters( get, null ):Array<BitmapFilter> = [];
@@ -168,36 +170,23 @@ class FNFCamera extends FlxCamera {
   }
 
   public function set_yaw(val:Float){
-    /*if(val!=0){
-      if((_filters is Array) && !_filters.contains(raymarcherShader)){
-        _filters.push(raymarcherShader);
-      }else if(!(_filters is Array)){
-        _filters = [raymarcherShader];
-      }
-
-    }else if(val==0 && pitch==0){
-      if((_filters is Array) && _filters.contains(raymarcherShader)){
-        _filters.remove(raymarcherShader);
-      }
-    }*/
     raymarcher.setYaw(val);
     return yaw = val;
   }
 
   public function set_pitch(val:Float){
-    /*if(val!=0){
-      if((_filters is Array) && !_filters.contains(raymarcherShader)){
-        _filters.push(raymarcherShader);
-      }else if(!(_filters is Array)){
-        _filters = [raymarcherShader];
-      }
-    }else if(val==0 && yaw==0){
-      if((_filters is Array) && _filters.contains(raymarcherShader)){
-        _filters.remove(raymarcherShader);
-      }
-    }*/
     raymarcher.setPitch(val);
     return pitch = val;
+  }
+
+  override public function set_angle(val:Float){
+    flashSprite.rotation = val + angleOffset;
+    return angle = val;
+  }
+
+  public function set_angleOffset(val:Float){
+    flashSprite.rotation = angle + val;
+    return angleOffset = val;
   }
 
   public function get_filters(){
@@ -212,8 +201,6 @@ class FNFCamera extends FlxCamera {
       }else{
         _filters =[raymarcherShader];
       }
-
-      trace("added raymarcher");
     }
   }
 

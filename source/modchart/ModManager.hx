@@ -278,6 +278,7 @@ class ModManager {
   }
 
   public function queueEase(step:Float, endStep:Float, modName:String, percent:Float, style:String='linear', player:Int=-1, ?startVal:Float){
+    if(schedule[modName]==null)schedule[modName]=[];
     if(player==-1){
       queueEase(step, endStep, modName, percent, style, 0);
       queueEase(step, endStep, modName, percent, style, 1);

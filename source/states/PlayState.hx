@@ -597,6 +597,12 @@ class PlayState extends MusicBeatState
 		pauseHUD = new FNFCamera();
 		pauseHUD.bgColor.alpha = 0;
 
+		camNotes.height *= 2;
+		camSus.height *= 2;
+		camReceptor.height *= 2;
+
+		trace(camNotes.height);
+
 		FlxG.cameras.reset(camGame);
 		if(!currentOptions.ratingOverNotes)
 			FlxG.cameras.add(camRating);
@@ -1563,6 +1569,7 @@ class PlayState extends MusicBeatState
 					case 'both':
 						player = -1;
 				}
+				trace(step, step+event.args[2], event.args[0], event.args[1], event.args[3], player);
 				modManager.queueEase(step, step+event.args[2], event.args[0], event.args[1], event.args[3], player);
 				return false;
 			default:
@@ -2711,7 +2718,7 @@ class PlayState extends MusicBeatState
 					scale.put();
 					var visibility:Bool=true;
 
-					if (daNote.y > FlxG.height)
+					if (daNote.y > camNotes.height)
 					{
 						visibility = false;
 					}
