@@ -12,7 +12,7 @@ class ZigZagModifier extends Modifier {
     if(getPercent(player)==0)return pos;
     var offset = getSubmodPercent("zigzagOffset",player);
     var period = getSubmodPercent("zigzagPeriod",player);
-    var perc = getPercent(player)*100;
+    var perc = getPercent(player);
 
     var result:Float = CoolUtil.triangle( (Math.PI * (1/(period+1)) *
 		((visualDiff+(100*(offset )))/Note.swagWidth) ) );

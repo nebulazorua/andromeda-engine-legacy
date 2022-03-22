@@ -1302,6 +1302,13 @@ class PlayState extends MusicBeatState
 		modManager.setReceptors();
 		modManager.registerModifiers();
 
+		var idx = eventSchedule.length;
+		while(--idx > -1){
+			trace(idx);
+			var event = eventSchedule[idx];
+			var shouldKeep = eventPostInit(event);
+			if(!shouldKeep)eventSchedule.splice(idx,1);
+		}
 		if(!forceDisableModchart){
 			#if FORCE_LUA_MODCHARTS
 			setupLuaSystem();
@@ -1537,14 +1544,9 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	function eventInit(event: Event):Bool
+	function eventPostInit(event: Event):Bool
 	{
 		switch(event.name){
-			case 'Change Character':
-				var cache = new Character(-9000, -9000, event.args[1], event.args[0]=='bf');
-				cache.alpha=1/9999;
-				add(cache);
-				remove(cache);
 			case 'Set Modifier':
 				var step = Conductor.getStep(event.time);
 				var player:Int = 0;
@@ -1569,9 +1571,22 @@ class PlayState extends MusicBeatState
 					case 'both':
 						player = -1;
 				}
-				trace(step, step+event.args[2], event.args[0], event.args[1], event.args[3], player);
 				modManager.queueEase(step, step+event.args[2], event.args[0], event.args[1], event.args[3], player);
 				return false;
+			default:
+			// nothing
+		}
+		return true;
+	}
+
+	function eventInit(event: Event):Bool
+	{
+		switch(event.name){
+			case 'Change Character':
+				var cache = new Character(-9000, -9000, event.args[1], event.args[0]=='bf');
+				cache.alpha=1/9999;
+				add(cache);
+				remove(cache);
 			default:
 			// nothing
 		}

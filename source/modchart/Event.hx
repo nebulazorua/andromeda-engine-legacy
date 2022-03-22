@@ -77,9 +77,9 @@ class EaseEvent extends ModEvent {
 
   override function run(curStep:Float){
     if(curStep>=step && curStep<=endStep){
-      if(this.startPercent==null){
+      if(this.startPercent==null)
         this.startPercent = mod.getPercent(player) * 100;
-      }
+      
       var passed = curStep-step;
       var change = endPercent-startPercent;
       mod.setPercent(
