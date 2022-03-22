@@ -26,14 +26,19 @@ class ReverseModifier extends Modifier {
     if(dir>=first && dir<=last){
       percent += getSubmodPercent("cross" + suffix,player);
     }
-    percent %=2;
-    if(percent>1)percent=2-percent;
-    
+
     if(suffix==''){
       percent += getPercent(player) + getSubmodPercent("reverse" + Std.string(dir),player);
     }else{
       percent += getSubmodPercent("reverse" + suffix,player);
     }
+
+    if(getSubmodPercent("unboundedReverse",player)==0){
+      percent %=2;
+      if(percent>1)percent=2-percent;
+    }
+
+
 
 
     if(modMgr.state.currentOptions.downScroll)
@@ -67,7 +72,7 @@ class ReverseModifier extends Modifier {
   }
 
   override function getSubmods(){
-    var subMods:Array<String> = ["cross","split","alternate","reverseScroll","crossScroll","splitScroll","alternateScroll", "centered"];
+    var subMods:Array<String> = ["cross", "split", "alternate", "reverseScroll", "crossScroll", "splitScroll", "alternateScroll", "centered", "unboundedReverse"];
 
     var receptors = modMgr.receptors[0];
     var kNum = receptors.length;
