@@ -1721,7 +1721,7 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, false, songNotes[4]==true, getPosFromTime(daStrumTime));
-				swagNote.sustainLength = Math.floor(songNotes[2] / Conductor.stepCrochet) * Conductor.stepCrochet;
+				swagNote.sustainLength = Math.round(songNotes[2] / Conductor.stepCrochet) * Conductor.stepCrochet;
 				swagNote.scrollFactor.set(0, 0);
 				swagNote.shitId = unspawnNotes.length;
 				if(!setupSplashes.contains(swagNote.graphicType) && gottaHitNote){
@@ -1756,8 +1756,8 @@ class PlayState extends MusicBeatState
 
 				unspawnNotes.push(swagNote);
 
-				if(Math.floor(susLength)>0){
-					for (susNote in 0...Math.floor(susLength))
+				if(Math.round(susLength)>0){
+					for (susNote in 0...Math.round(susLength))
 					{
 						oldNote = unspawnNotes[Std.int(unspawnNotes.length - 1)];
 						var sussy = daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet;

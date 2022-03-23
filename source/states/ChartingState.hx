@@ -1,4 +1,4 @@
-package states;
+ package states;
 
 import Options;
 import Conductor.BPMChangeEvent;
@@ -1693,7 +1693,7 @@ class ChartingState extends MusicBeatState
 		var daStrumTime = i[0];
 		var sus:Array<Note> = [];
 		var oldNote:Note = baseNote;
-		for (susNote in 0...Math.floor(daSus))
+		for (susNote in 0...Math.round(daSus))
 		{
 			var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteInfo % 4, EngineData.options.noteSkin, PlayState.noteModifier, EngineData.noteTypes[i[3]], oldNote, true, i[4]==true, 0, true);
 			sustainNote.rawNoteData = daNoteInfo;

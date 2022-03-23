@@ -4,7 +4,7 @@ import modchart.*;
 import flixel.math.FlxPoint;
 import flixel.math.FlxMath;
 import math.*;
-
+import flixel.FlxG;
 class AlphaModifier extends Modifier {
   public static var fadeDistY = 120;
 
@@ -28,7 +28,7 @@ class AlphaModifier extends Modifier {
     return modMgr.state.center.y + fadeDistY * CoolUtil.scale(getHiddenSudden(player),0,1,0,0.25) + modMgr.state.center.y * getSubmodPercent("suddenOffset",player);
   }
 
-  function getAlpha(yPos:Float,player:Int,note:Note){
+  function getVisibility(yPos:Float,player:Int,note:Note){
     var distFromCenter = yPos;
     var alpha:Float = 0;
 
@@ -61,25 +61,31 @@ class AlphaModifier extends Modifier {
     return CoolUtil.clamp(alpha+1,0,1);
   }
 
+  function getGlow(visible:Float){
+    var glow = CoolUtil.scale(visible, 1, 0.5, 0, 1.3);
+    return glow>1?1:glow<0?0:glow;
+  }
+
+  function getAlpha(visible:Float){
+    var alpha = CoolUtil.scale(visible, 0.5, 0, 1, 0);
+    return alpha>1?1:alpha<0?0:alpha;
+  }
+
   override function updateNote(note:Note, player:Int, pos:Vector3, scale:FlxPoint){
     var player = note.mustPress==true?0:1;
     var yPos:Float = (note.initialPos-Conductor.currentTrackPos)+modMgr.state.upscrollOffset;
 
 
-    var alpha = getAlpha(yPos,player,note);
-    var glow = CoolUtil.scale(alpha, 1, 0.5, 0, 1);
-    var newAlpha = -CoolUtil.scale(alpha, 0.5, 0, 1, 0);
-    if(newAlpha<0)newAlpha=0;
-    if(newAlpha>1)newAlpha=1;
-
-    if(glow<0)glow=0;
-    if(glow>1)glow=1;
-
     var alphaMod = 1 - getSubmodPercent("alpha",player) * (1-getSubmodPercent("noteAlpha",player));
-    note.desiredAlpha = (alpha*alphaMod);
+    var alpha = getVisibility(yPos,player,note);
 
-    note.effect.setFlash(glow);
-
+    if(getSubmodPercent("useStealthGlow",player)==0){
+      note.desiredAlpha = getAlpha(alpha);
+      note.effect.setFlash(getGlow(alpha));
+    }else{
+      note.desiredAlpha = alpha;
+    }
+    note.desiredAlpha*=alphaMod;
   }
 
   override function updateReceptor(receptor:Receptor, player:Int, pos:Vector3, scale:FlxPoint){
@@ -92,11 +98,12 @@ class AlphaModifier extends Modifier {
   }
 
   override function update(elapsed:Float){
-
+    FlxG.watch.addQuick("hiddenStart", getHiddenStart(0));
+    FlxG.watch.addQuick("hiddenEnd", getHiddenEnd(0));
   }
 
   override function getSubmods(){
-    var subMods:Array<String> = ["noteAlpha", "alpha", "hidden","hiddenOffset","sudden","suddenOffset","blink","randomVanish","dark"];
+    var subMods:Array<String> = ["noteAlpha", "alpha", "hidden","hiddenOffset","sudden","suddenOffset","blink","randomVanish","dark","useStealthGlow"];
     return subMods;
   }
 }
