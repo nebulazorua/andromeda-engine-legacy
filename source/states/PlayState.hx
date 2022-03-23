@@ -597,12 +597,6 @@ class PlayState extends MusicBeatState
 		pauseHUD = new FNFCamera();
 		pauseHUD.bgColor.alpha = 0;
 
-		camNotes.height *= 2;
-		camSus.height *= 2;
-		camReceptor.height *= 2;
-
-		trace(camNotes.height);
-
 		FlxG.cameras.reset(camGame);
 		if(!currentOptions.ratingOverNotes)
 			FlxG.cameras.add(camRating);
