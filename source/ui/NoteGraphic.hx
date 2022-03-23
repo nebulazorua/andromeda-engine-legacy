@@ -91,10 +91,25 @@ class NoteGraphic extends FNFSprite
 						animation.add('blueScroll', [behaviour.arguments.note.down+4*quantToGrid.get(quantTexture)]);
 						animation.add('purpleScroll', [behaviour.arguments.note.left+4*quantToGrid.get(quantTexture)]);
 					}else{
-						animation.add('greenScroll', index.up);
-						animation.add('redScroll', index.right);
-						animation.add('blueScroll', index.down);
-						animation.add('purpleScroll', index.left);
+						var offset:Int = index.offset;
+						var left:Array<Int> = [];
+						var up:Array<Int> = [];
+						var right:Array<Int> = [];
+						var down:Array<Int> = [];
+
+						var leftA:Array<Int> =index.left;
+						var upA:Array<Int> =index.up;
+						var rightA:Array<Int> =index.right;
+						var downA:Array<Int> = index.down;
+						for(i in leftA)left.push(i+offset);
+						for(i in upA)up.push(i+offset);
+						for(i in rightA)right.push(i+offset);
+						for(i in downA)down.push(i+offset);
+						animation.add('purpleScroll', left);
+						animation.add('greenScroll', up);
+						animation.add('redScroll', right);
+						animation.add('blueScroll', down);
+
 					}
 				}else{
 					animation.add('greenScroll', behaviour.arguments.note.up );
@@ -236,13 +251,20 @@ class NoteGraphic extends FNFSprite
 					loadGraphic(Paths.noteSkinImage(args.sheet, 'skins', skin, modifier, graphicType),true,args.gridSizeX,args.gridSizeY);
 					// TODO: quantsz
 					if(args.quant){
-						var index = Reflect.field(args,quantToIndex.get(quantTexture) );
+						var index:Array<Int>  = Reflect.field(args,quantToIndex.get(quantTexture) );
 						var gridIndex=quantToGrid.get(quantTexture);
+
+						var offset:Int = args.offset;
+
+
 						if(index!=null){
-							animation.add('purple${suffix}', index);
-							animation.add('green${suffix}', index);
-							animation.add('red${suffix}', index);
-							animation.add('blue${suffix}', index);
+							var shit:Array<Int> = [];
+							for(i in index)shit.push(i+offset);
+
+							animation.add('purple${suffix}', shit);
+							animation.add('green${suffix}', shit);
+							animation.add('red${suffix}', shit);
+							animation.add('blue${suffix}', shit);
 						}else{
 							gridIndex+=9;
 							animation.add('purple${suffix}', [gridIndex]);
@@ -284,7 +306,9 @@ class NoteGraphic extends FNFSprite
 					if(args.quant){
 						var index = Reflect.field(args,quantToIndex.get(quantTexture) );
 						var gridIndex=quantToGrid.get(quantTexture);
+						var offset:Int = args.offset;
 						if(index!=null){
+
 							animation.add('purple${suffix}', index);
 							animation.add('green${suffix}', index);
 							animation.add('red${suffix}', index);
@@ -318,10 +342,24 @@ class NoteGraphic extends FNFSprite
 					animation.add('blueScroll', [behaviour.arguments.note.down+addition]);
 					animation.add('purpleScroll', [behaviour.arguments.note.left+addition]);
 				}else{
-					animation.add('greenScroll', index.up);
-					animation.add('redScroll', index.right);
-					animation.add('blueScroll', index.down);
-					animation.add('purpleScroll', index.left);
+					var offset:Int = index.offset;
+					var left:Array<Int> = [];
+					var up:Array<Int> = [];
+					var right:Array<Int> = [];
+					var down:Array<Int> = [];
+
+					var leftA:Array<Int> =index.left;
+					var upA:Array<Int> =index.up;
+					var rightA:Array<Int> =index.right;
+					var downA:Array<Int> = index.down;
+					for(i in leftA)left.push(i+offset);
+					for(i in upA)up.push(i+offset);
+					for(i in rightA)right.push(i+offset);
+					for(i in downA)down.push(i+offset);
+					animation.add('purpleScroll', left);
+					animation.add('greenScroll', up);
+					animation.add('redScroll', right);
+					animation.add('blueScroll', down);
 				}
 			}else{
 				animation.add('greenScroll', behaviour.arguments.note.up );

@@ -2707,14 +2707,11 @@ class PlayState extends MusicBeatState
 					daNote.updateHitbox();
 
 					if(daNote.isSustainNote){
-							//var prevPos = modManager.getNotePos(daNote.prevNote);
-							//getPath(diff:Float, vDiff:Float, column:Int, player:Int, sprite:FNFSprite)
 							var futureSongPos = Conductor.songPosition + 75;
 							var futureVisualPos = getPosFromTime(futureSongPos);
 
 							var diff =  futureSongPos - daNote.strumTime;
 					    var vDiff = (daNote.initialPos - futureVisualPos);
-							//  var pos = getPath(diff, vDiff, note.noteData, note.mustPress==true?0:1, note);
 
 							var nextPos = modManager.getPath(diff, vDiff, daNote.noteData, daNote.mustPress==true?0:1);
 							nextPos.x += daNote.manualXOffset;
