@@ -94,6 +94,7 @@ class Options
 	public var cMod:Float = 0;
 	public var xMod:Float = 1;
 	public var mMod:Float = 1;
+	public var fixHoldSegCount:Bool = true;
 	public var judgementWindow:String = 'ITG';
 	public var noteOffset:Int = 0;
 	public var botPlay:Bool = false;

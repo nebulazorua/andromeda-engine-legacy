@@ -644,7 +644,12 @@ class PlayState extends MusicBeatState
 			if(section.events!=null){
 				section.events.sort((a,b)->Std.int(a.time-b.time));
 				for(event in section.events){
-					eventPreInit(event);
+					if(event.events!=null){
+						for(ev in event.events)
+							eventPreInit(ev);
+
+					}else
+						eventPreInit(event);
 				}
 			}
 		}
@@ -1296,13 +1301,15 @@ class PlayState extends MusicBeatState
 		modManager.setReceptors();
 		modManager.registerModifiers();
 
-		var idx = eventSchedule.length;
-		while(--idx > -1){
-			trace(idx);
-			var event = eventSchedule[idx];
+		var toRemove:Array<Section.Event> = [];
+		for(event in eventSchedule){
 			var shouldKeep = eventPostInit(event);
-			if(!shouldKeep)eventSchedule.splice(idx,1);
+			trace(event);
+			if(!shouldKeep)toRemove.push(event);
 		}
+		for(shit in toRemove)
+			eventSchedule.remove(shit);
+
 		if(!forceDisableModchart){
 			#if FORCE_LUA_MODCHARTS
 			setupLuaSystem();
@@ -1693,8 +1700,24 @@ class PlayState extends MusicBeatState
 			if(section.events!=null){
 				section.events.sort((a,b)->Std.int(a.time-b.time));
 				for(event in section.events){
-					var shouldSchedule = eventInit(event);
-					if(shouldSchedule)eventSchedule.push(event);
+					if(event.events!=null){
+						var pushingEvents = [];
+						for(ev in event.events){
+							var shouldKeep = eventInit(ev);
+							if(shouldKeep){
+								pushingEvents.push({
+									time: event.time,
+									args: ev.args,
+									name: ev.name
+								});
+							}
+							for(e in pushingEvents)eventSchedule.push(e);
+							//if(shouldSchedule)eventSchedule.push(event);
+						}
+					}else{
+						var shouldSchedule = eventInit(event);
+						if(shouldSchedule)eventSchedule.push(event);
+					}
 				}
 			}
 			for (songNotes in section.sectionNotes)
@@ -2929,7 +2952,10 @@ class PlayState extends MusicBeatState
 		while(eventSchedule[0]!=null){
 			var event = eventSchedule[0];
 			if(Conductor.songPosition >= event.time){
-				doEvent(event);
+				if(event.events!=null && event.events.length>0){
+					for(e in event.events)doEvent(e);
+				}else if(event.events==null)
+					doEvent(event);
 				eventSchedule.shift();
 			}else{
 				break;

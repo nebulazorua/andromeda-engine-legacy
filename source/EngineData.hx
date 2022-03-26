@@ -16,6 +16,7 @@ enum EventArgType {
 typedef EventArg = {
   var name:String;
   var type:EventArgType;
+  @:optional var description:String;
   @:optional var getDefaultValue:Void->Dynamic;
   @:optional var defaultVal:Dynamic;
 
@@ -32,6 +33,7 @@ typedef EventArg = {
 typedef EventInfo = {
   var name:String;
   var arguments:Array<EventArg>;
+  @:optional var description:String;
 }
 
 class EngineData {
@@ -222,8 +224,8 @@ class EngineData {
         {
           name: "Intensity",
           type: EventArgType.SteppedNumber,
-          step: 0.015,
-          defaultVal: 0.001,
+          step: 0.01,
+          defaultVal: 0.01,
           min: 0
         },
         {

@@ -49,6 +49,7 @@ class OptionsState extends MusicBeatState
 				new ToggleOption("failForMissing","Sudden Death","FC or die"),
 				#if !NO_BOTPLAY new ToggleOption("botPlay","BotPlay","Let a bot play for you"), #end
 				#if !NO_FREEPLAY_MODS
+				new ToggleOption("fixHoldSegCount","Hold Segment Count Fix","Fixes a bug where holds are smaller than they should be.\nMay cause holds to be longer than they should in old charts."),
 				new OptionCategory("Freeplay Modifiers",[
 					new StepOption("cMod","Speed Constant",0.1,0,10,"","","A constant speed to override the scrollspeed. 0 for chart-dependant speed",true),
 					new StepOption("xMod","Speed Mult",0.1,0,2,"","x","A multiplier to a chart's scrollspeed",true),

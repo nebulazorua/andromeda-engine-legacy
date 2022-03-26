@@ -29,6 +29,7 @@ typedef SwagSong =
 	var validScore:Bool;
 	var noteModifier:String;
 
+	@:optional var format:String;
 	@:optional var sliderVelocities:Array<VelocityChange>;
 	@:optional var initialSpeed:Float;
 }
