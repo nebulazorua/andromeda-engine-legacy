@@ -28,9 +28,13 @@ class AlphaModifier extends Modifier {
     return modMgr.state.center.y + fadeDistY * CoolUtil.scale(getHiddenSudden(player),0,1,0,0.25) + modMgr.state.center.y * getSubmodPercent("suddenOffset",player);
   }
 
-  function getVisibility(yPos:Float,player:Int,note:Note){
+  function getVisibility(yPos:Float,player:Int,note:Note):Float{
     var distFromCenter = yPos;
     var alpha:Float = 0;
+
+    if(yPos<0 && getSubmodPercent("stealthPastReceptors", player)==0)
+      return 1.0;
+
 
     var time = Conductor.songPosition/1000;
 
@@ -44,9 +48,9 @@ class AlphaModifier extends Modifier {
       alpha += getSubmodPercent("sudden",player)*suddenAdjust;
     }
 
-    if(getPercent(player)!=0){
+    if(getPercent(player)!=0)
       alpha -= getPercent(player);
-    }
+
 
     if(getSubmodPercent("blink",player)!=0){
       var f = CoolUtil.quantize(FlxMath.fastSin(time*10),0.3333);
@@ -63,12 +67,12 @@ class AlphaModifier extends Modifier {
 
   function getGlow(visible:Float){
     var glow = CoolUtil.scale(visible, 1, 0.5, 0, 1.3);
-    return glow>1?1:glow<0?0:glow;
+    return CoolUtil.clamp(glow,0,1);
   }
 
   function getAlpha(visible:Float){
     var alpha = CoolUtil.scale(visible, 0.5, 0, 1, 0);
-    return alpha>1?1:alpha<0?0:alpha;
+    return CoolUtil.clamp(alpha,0,1);
   }
 
   override function updateNote(note:Note, player:Int, pos:Vector3, scale:FlxPoint){
@@ -103,7 +107,7 @@ class AlphaModifier extends Modifier {
   }
 
   override function getSubmods(){
-    var subMods:Array<String> = ["noteAlpha", "alpha", "hidden","hiddenOffset","sudden","suddenOffset","blink","randomVanish","dark","useStealthGlow"];
+    var subMods:Array<String> = ["noteAlpha", "alpha", "hidden","hiddenOffset","sudden","suddenOffset","blink","randomVanish","dark","useStealthGlow","stealthPastReceptors"];
     return subMods;
   }
 }

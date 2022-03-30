@@ -81,7 +81,7 @@ class NoteShader extends FlxShader
         vec4 col = flixel_texture2D(bitmap, openfl_TextureCoordv);
         vec4 newCol = col;
         if(flash!=0.0 && col.a>0.0)
-          newCol = mix(col,vec4(1.0,1.0,1.0,col.a),flash);
+          newCol = mix(col,vec4(1.0,1.0,1.0,col.a),flash) * col.a;
 
         gl_FragColor = newCol;
     }
@@ -381,7 +381,7 @@ class VCRDistortionEffect
     shader.noiseOn.value = [true];
     shader.glitchModifier.value = [1];
     shader.iResolution.value = [Lib.current.stage.stageWidth,Lib.current.stage.stageHeight];
-    var noise = Assets.getBitmapData(Paths.image("noise2"));
+    var noise = AssetManager.image('noise2').bitmap;
     shader.noiseTex.input = noise;
   }
 

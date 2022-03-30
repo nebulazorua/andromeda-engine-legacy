@@ -73,6 +73,9 @@ class Note extends NoteGraphic
 	public var initialPos:Float = 0;
 	public var desiredZIndex:Float = 0;
 
+	public var gcTime:Float = 200;
+	public var garbage:Bool = false;
+
 	public var isRoll:Bool = false;
 
 	public var hitbox:Float = 166;
@@ -131,6 +134,7 @@ class Note extends NoteGraphic
 		this.noteType=type;
 		isRoll = rollNote;
 		hitbox = Conductor.safeZoneOffset;
+		gcTime += hitbox;
 		var graphicType:String = type;
 		switch(noteType){
 			case 'alt':
@@ -141,6 +145,7 @@ class Note extends NoteGraphic
 				opponentMisses=true;
 				canHold=false;
 				hitbox = Conductor.safeZoneOffset*0.38; // should probably not scale but idk man
+				gcTime *= 0.38;
 		}
 		var modBehaviours = Note.behaviours.get(graphicType);
 		if(modBehaviours==null)modBehaviours = new Map<String,NoteBehaviour>();

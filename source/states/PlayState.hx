@@ -2766,6 +2766,13 @@ class PlayState extends MusicBeatState
 					if(daNote.sustainLength > 0 && daNote.wasGoodHit)
 						visibility=false;
 
+					if(daNote.garbage){
+						daNote.visible=false;
+						daNote.active=false;
+						notesToKill.push(daNote);
+						return;
+					}
+
 
 					daNote.visible = visibility;
 
@@ -2929,8 +2936,15 @@ class PlayState extends MusicBeatState
 							}
 						}
 
-						if((isDownscroll && daNote.y>FlxG.height+daNote.height || !isDownscroll && daNote.y<-daNote.height || (daNote.mustPress && daNote.holdingTime>=daNote.sustainLength || !daNote.mustPress && daNote.unhitTail.length==0 ) && daNote.sustainLength>0 || daNote.isSustainNote && daNote.strumTime - Conductor.songPosition < -350) && (daNote.tooLate || daNote.wasGoodHit))
+						if((
+							isDownscroll && daNote.y>FlxG.height+daNote.height ||
+							!isDownscroll && daNote.y<-daNote.height ||
+							(daNote.mustPress && daNote.holdingTime>=daNote.sustainLength || !daNote.mustPress && daNote.unhitTail.length==0 ) && daNote.sustainLength>0 ||
+							daNote.isSustainNote && daNote.strumTime - Conductor.songPosition < -350 ||
+							!daNote.isSustainNote && (daNote.sustainLength==0 || daNote.tooLate) && daNote.strumTime - Conductor.songPosition < -daNote.gcTime) && (daNote.tooLate || daNote.wasGoodHit))
 							notesToKill.push(daNote);
+
+					}
 
 					}
 				});

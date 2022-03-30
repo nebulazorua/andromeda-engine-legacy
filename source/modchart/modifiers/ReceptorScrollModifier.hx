@@ -45,5 +45,6 @@ class ReceptorScrollModifier extends Modifier {
       note.desiredAlpha *= .5;
       note.zIndex++;
     }
+    if(note.wasGoodHit && note.holdingTime>=note.sustainLength)note.garbage=true;
   }
 }
