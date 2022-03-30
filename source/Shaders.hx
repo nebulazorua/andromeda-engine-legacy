@@ -381,7 +381,7 @@ class VCRDistortionEffect
     shader.noiseOn.value = [true];
     shader.glitchModifier.value = [1];
     shader.iResolution.value = [Lib.current.stage.stageWidth,Lib.current.stage.stageHeight];
-    var noise = AssetManager.image('noise2').bitmap;
+    var noise = Assets.getBitmapData(Paths.image("noise2"));
     shader.noiseTex.input = noise;
   }
 

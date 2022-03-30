@@ -2945,8 +2945,6 @@ class PlayState extends MusicBeatState
 							notesToKill.push(daNote);
 
 					}
-
-					}
 				});
 
 				postNoteLogic(elapsed);
