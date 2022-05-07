@@ -587,8 +587,8 @@ class ChartingState extends MusicBeatState
 				var note = _song.notes[curSection].sectionNotes[i];
 				note[1] = (note[1] + 4) % 8;
 				_song.notes[curSection].sectionNotes[i] = note;
-				updateGrid();
 			}
+      updateGrid();
 		});
 
 		check_mustHitSection = new FlxUICheckBox(10, 30, null, null, "Must hit section", 100);
@@ -1532,7 +1532,6 @@ class ChartingState extends MusicBeatState
 
 	function resetSection(songBeginning:Bool = false):Void
 	{
-		updateGrid();
 
 		FlxG.sound.music.pause();
 		vocals.pause();
@@ -1553,28 +1552,33 @@ class ChartingState extends MusicBeatState
 		updateSectionUI();
 	}
 
-	function changeSection(sec:Int = 0, ?updateMusic:Bool = true):Void
+  function changeSection(newSec:Int = 0, ?updateMusic:Bool = true):Void
 	{
-		trace('changing section' + sec);
-
+		trace('changing section ' + newSec);
+    for(sec in curSection ... newSec){
+      if (_song.notes[sec] == null)
+      {
+        _song.notes[sec] = {
+    			lengthInSteps: 16,
+    			bpm: _song.bpm,
+    			changeBPM: false,
+    			mustHitSection: true,
+    			sectionNotes: [],
+    			typeOfSection: 0,
+    			altAnim: false,
+    			events: []
+    		};
+      }
+    }
+    var sec = newSec;
 		if (_song.notes[sec] != null)
 		{
 			curSection = sec;
-
-			updateGrid();
 
 			if (updateMusic)
 			{
 				FlxG.sound.music.pause();
 				vocals.pause();
-
-				/*var daNum:Int = 0;
-					var daLength:Float = 0;
-					while (daNum <= sec)
-					{
-						daLength += lengthBpmBullshit();
-						daNum++;
-				}*/
 
 				FlxG.sound.music.time = sectionStartTime();
 				vocals.time = FlxG.sound.music.time;
@@ -1582,12 +1586,13 @@ class ChartingState extends MusicBeatState
 			}
 			if(_song.notes[curSection].events==null)_song.notes[curSection].events=[];
 
-			updateGrid();
 			updateSectionUI();
 			for(i in curRenderedNotes){
 				i.wasGoodHit=false;
 			}
 		}
+
+    updateGrid();
 	}
 
 	function copySection(?sectionNum:Int = 0){
@@ -1789,7 +1794,9 @@ class ChartingState extends MusicBeatState
 		var daStrumTime = i[0];
 		var sus:Array<Note> = [];
 		var oldNote:Note = baseNote;
-		for (susNote in 0...Math.round(daSus))
+    var func = Math.round;
+    if(!OptionUtils.options.fixHoldSegCount)func=Math.floor;
+		for (susNote in 0...func(daSus))
 		{
 			var sustainNote:Note = new Note(daStrumTime + (Conductor.stepCrochet * susNote) + Conductor.stepCrochet, daNoteInfo % 4, EngineData.options.noteSkin, PlayState.noteModifier, EngineData.noteTypes[i[3]], oldNote, true, i[4]==true, 0, true);
 			sustainNote.rawNoteData = daNoteInfo;

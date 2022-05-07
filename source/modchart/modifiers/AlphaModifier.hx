@@ -101,11 +101,6 @@ class AlphaModifier extends Modifier {
 
   }
 
-  override function update(elapsed:Float){
-    FlxG.watch.addQuick("hiddenStart", getHiddenStart(0));
-    FlxG.watch.addQuick("hiddenEnd", getHiddenEnd(0));
-  }
-
   override function getSubmods(){
     var subMods:Array<String> = ["noteAlpha", "alpha", "hidden","hiddenOffset","sudden","suddenOffset","blink","randomVanish","dark","useStealthGlow","stealthPastReceptors"];
     return subMods;

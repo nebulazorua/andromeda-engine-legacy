@@ -21,16 +21,17 @@ class FNFCamera extends FlxCamera {
   public var pitch(default, set):Float = 0;
   public var filters( get, null ):Array<BitmapFilter> = [];
   public var useRaymarcher(default, set):Bool = true;
-
+  public var baseWidth:Float = FlxG.width;
+  public var baseHeight:Float = FlxG.height;
   var raymarcher:RaymarchEffect = new RaymarchEffect();
   var raymarcherShader:BitmapFilter;
 
   public function new(X:Int = 0, Y:Int = 0, Width:Int = 0, Height:Int = 0, Zoom:Float = 0){
     super(X,Y,Width,Height,Zoom);
-
-    raymarcherShader = new ShaderFilter(raymarcher.shader);
     if(!OptionUtils.options.raymarcher)
       useRaymarcher=false;
+    raymarcherShader = new ShaderFilter(raymarcher.shader);
+
 
     if(useRaymarcher){
       _filters = [raymarcherShader];

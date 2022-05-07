@@ -645,8 +645,14 @@ class PlayState extends MusicBeatState
 				section.events.sort((a,b)->Std.int(a.time-b.time));
 				for(event in section.events){
 					if(event.events!=null){
-						for(ev in event.events)
-							eventPreInit(ev);
+						for(ev in event.events){
+							var daEvent = {
+								time: event.time,
+								args: ev.args,
+								name: ev.name
+							};
+							eventPreInit(daEvent);
+						}
 
 					}else
 						eventPreInit(event);
@@ -1304,7 +1310,6 @@ class PlayState extends MusicBeatState
 		var toRemove:Array<Section.Event> = [];
 		for(event in eventSchedule){
 			var shouldKeep = eventPostInit(event);
-			trace(event);
 			if(!shouldKeep)toRemove.push(event);
 		}
 		for(shit in toRemove)
@@ -1692,7 +1697,8 @@ class PlayState extends MusicBeatState
 
 		var lastBFNotes:Array<Note> = [null,null,null,null];
 		var lastDadNotes:Array<Note> = [null,null,null,null];
-
+		var func = Math.round;
+		if(!currentOptions.fixHoldSegCount)func=Math.floor;
 		for (section in noteData)
 		{
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
@@ -1738,7 +1744,7 @@ class PlayState extends MusicBeatState
 					oldNote = null;
 
 				var swagNote:Note = new Note(daStrumTime, daNoteData, currentOptions.noteSkin, noteModifier, EngineData.noteTypes[songNotes[3]], oldNote, false, songNotes[4]==true, getPosFromTime(daStrumTime));
-				swagNote.sustainLength = Math.round(songNotes[2] / Conductor.stepCrochet) * Conductor.stepCrochet;
+				swagNote.sustainLength = func(songNotes[2] / Conductor.stepCrochet) * Conductor.stepCrochet;
 				swagNote.scrollFactor.set(0, 0);
 				swagNote.shitId = unspawnNotes.length;
 				if(!setupSplashes.contains(swagNote.graphicType) && gottaHitNote){
@@ -2482,7 +2488,6 @@ class PlayState extends MusicBeatState
 		FlxG.watch.addQuick("curStep", curStep);
 		FlxG.watch.addQuick("curDecBeat", curDecBeat);
 		FlxG.watch.addQuick("curDecStep", curDecStep);
-		FlxG.watch.addQuick("note spawn time", noteSpawnTime);
 		FlxG.watch.addQuick("rawSongPos", Conductor.rawSongPos);
 		FlxG.watch.addQuick("instTime", inst.time);
 
@@ -3133,7 +3138,7 @@ class PlayState extends MusicBeatState
 		}
 		var placement:String = Std.string(combo);
 		var ratingCameras = [camRating];
-		var coolText:FlxText = new FlxText(0, 0, 0, placement, 32);
+		var coolText:FlxObject = new FlxObject(0, 0);
 		coolText.screenCenter();
 		coolText.x = FlxG.width * 0.55;
 		if(currentOptions.ratingInHUD){
@@ -3253,7 +3258,7 @@ class PlayState extends MusicBeatState
 	{
 		var placement:String = Std.string(combo);
 
-		var coolText:FlxText = new FlxText(0, 0, 0, placement, 32);
+		var coolText:FlxObject = new FlxObject(0,0);
 		coolText.screenCenter();
 		coolText.x = FlxG.width * 0.55;
 
@@ -3702,7 +3707,7 @@ class PlayState extends MusicBeatState
 			playerStrums.forEach(function(spr:Receptor)
 			{
 				if (Math.abs(note.noteData) == spr.ID){
-					if(!note.isSustainNote || !note.isRoll )
+					if(!note.isSustainNote || pressedKeys[note.noteData])
 						spr.playNote(note,(currentOptions.useNotesplashes && !note.isSustainNote)?(judge=='sick' || judge=='epic'):false);
 				}
 

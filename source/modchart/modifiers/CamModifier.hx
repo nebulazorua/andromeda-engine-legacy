@@ -48,8 +48,8 @@ class CamModifier extends Modifier {
       cam.angleOffset = angleOffset;
       cam.offset.set(xOffset,yOffset);
       cam.scrollOffset.set(xScrollOffset,yScrollOffset);
-      cam.height = Math.floor(FlxG.height + (getSubmodPercent(prefix + "HeightOffset",0)*100));
-      cam.width = Math.floor(FlxG.width + (getSubmodPercent(prefix + "WidthOffset",0)*100));
+      camera.height = Math.floor(FlxG.height + (getSubmodPercent(prefix + "HeightOffset",0)*100));
+      camera.width = Math.floor(FlxG.width + (getSubmodPercent(prefix + "WidthOffset",0)*100));
     }
   }
 

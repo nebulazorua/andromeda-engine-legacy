@@ -87,7 +87,7 @@ class InitState extends FlxUIState {
     }
     #end
 
-    FlxGraphic.defaultPersist = currentOptions.cacheUsedImages;
+    FlxGraphic.defaultPersist = true;
 
 		if (FlxG.save.data.weekUnlocked != null)
 		{

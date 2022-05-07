@@ -126,9 +126,7 @@ class OptionsState extends MusicBeatState
 					new ToggleOption("cacheSongs","Cache songs","Whether the engine caches songs if it caches on startup"),
 					new ToggleOption("cacheSounds","Cache sounds","Whether the engine caches misc sounds if it caches on startup"),
 					new ToggleOption("cachePreload","Cache misc images","Whether the engine caches misc images if it caches on startup"),
-					new ToggleOption("cacheUsedImages","Persistent Images","Whether images should persist in memory",function(state:Bool){
-						FlxGraphic.defaultPersist = state;
-					}),
+					new ToggleOption("cacheUsedImages","Persistent Images","Whether images should persist in memory"),
 				]),
 			])
 		]);
