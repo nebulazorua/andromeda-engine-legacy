@@ -29,6 +29,8 @@ class CamModifier extends Modifier {
     submods.set(prefix + "AngleOffset",new Modifier(modMgr));
     submods.set(prefix + "HeightOffset",new Modifier(modMgr));
     submods.set(prefix + "WidthOffset",new Modifier(modMgr));
+    submods.set(prefix + "CastedHeightOffset",new Modifier(modMgr));
+    submods.set(prefix + "CastedWidthOffset",new Modifier(modMgr));
   }
 
   override function update(elapsed){
@@ -50,6 +52,9 @@ class CamModifier extends Modifier {
       cam.scrollOffset.set(xScrollOffset,yScrollOffset);
       camera.height = Math.floor(FlxG.height + (getSubmodPercent(prefix + "HeightOffset",0)*100));
       camera.width = Math.floor(FlxG.width + (getSubmodPercent(prefix + "WidthOffset",0)*100));
+
+      cam.height = Math.floor(cam.height + (getSubmodPercent(prefix + "CastedHeightOffset",0)*100)); // used by some things like detected
+      cam.width = Math.floor(cam.width + (getSubmodPercent(prefix + "CastedWidthOffset",0)*100));
     }
   }
 
