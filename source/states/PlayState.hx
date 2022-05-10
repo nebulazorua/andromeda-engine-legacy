@@ -1392,6 +1392,7 @@ class PlayState extends MusicBeatState
 		{
 			if(luaModchartExists && lua!=null)
 				callLua("countdown",[swagCounter]);
+				
 			dad.dance();
 			gf.dance();
 			boyfriend.dance();
@@ -2612,8 +2613,10 @@ class PlayState extends MusicBeatState
 
 					vocals.stop();
 					inst.stop();
+					var char:Null<String> = null;
+					if(boyfriend.animation.getByName("firstDeath")!=null && boyfriend.animation.getByName("deathLoop")!=null && boyfriend.animation.getByName("deathConfirm")!=null )char = boyfriend.curCharacter;
 
-					openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
+					openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, char));
 
 					// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 

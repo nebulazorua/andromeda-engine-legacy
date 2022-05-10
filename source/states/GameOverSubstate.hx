@@ -14,7 +14,7 @@ class GameOverSubstate extends MusicBeatSubstate
 
 	var stageSuffix:String = "";
 
-	public function new(x:Float, y:Float)
+	public function new(x:Float, y:Float, ?currentBf)
 	{
 		var daStage = PlayState.curStage;
 		var daBf:String = '';
@@ -28,6 +28,10 @@ class GameOverSubstate extends MusicBeatSubstate
 				daBf = 'bf-pixel-dead';
 			default:
 				daBf = 'bf';
+		}
+
+		if(currentBf!=null){
+			daBf = currentBf;
 		}
 
 		super();

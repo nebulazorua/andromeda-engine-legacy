@@ -678,10 +678,12 @@ class LuaSprite extends LuaClass {
     var width:Int = Std.int(LuaL.checknumber(state,2));
     var height:Int = Std.int(LuaL.checknumber(state,3));
     var color:FlxColor = FlxColor.WHITE;
-    var unique:Bool = false;
-    var key:Null<String> = '';
+    var unique:Null<Bool> = null;
+    var key:Null<String> = null;
     if(Lua.isnumber(state,4))
       color=FlxColor.fromInt(Std.int(Lua.tonumber(state,4)));
+    if(Lua.isstring(state,4))
+      color = FlxColor.fromString(Lua.tostring(state,4));
     if(Lua.isboolean(state,5))
       unique=Lua.toboolean(state,5);
     if(Lua.isstring(state,6))
@@ -1159,6 +1161,7 @@ class LuaSprite extends LuaClass {
               Lua.getfield(l,-1,"className");
               var name = Lua.tostring(l,-1);
               var cam = PlayState.currentPState.luaObjects[name];
+              trace(cam);
               if(cam!=null){
                 cameras.push(cam);
               }
