@@ -1002,8 +1002,10 @@ class ChartingState extends MusicBeatState
 					_song.notes[curSection].bpm = Std.int(nums.value);
 					updateGrid();
 				case 'note_susLength':
-					curSelectedNote[2] = nums.value;
-					updateGrid();
+          if(curSelectedNote[2]!=nums.value){
+  					curSelectedNote[2] = nums.value;
+  					updateGrid();
+          }
 				case 'song_bpm':
 					tempBpm = Std.int(nums.value);
 					Conductor.mapBPMChanges(_song);
@@ -1842,6 +1844,7 @@ class ChartingState extends MusicBeatState
 
 	function updateGrid():Void
 	{
+    trace("updating grid");
 		curRenderedMarkers.clear();
 
 		curRenderedNotes.clear();

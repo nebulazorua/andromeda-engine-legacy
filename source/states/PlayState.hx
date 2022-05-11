@@ -1392,7 +1392,7 @@ class PlayState extends MusicBeatState
 		{
 			if(luaModchartExists && lua!=null)
 				callLua("countdown",[swagCounter]);
-				
+
 			dad.dance();
 			gf.dance();
 			boyfriend.dance();
@@ -2088,12 +2088,14 @@ class PlayState extends MusicBeatState
 		paused = true;
 
 		// 1 / 1000 chance for Gitaroo Man easter egg
-		if (FlxG.random.bool(0.1))
+		#if release
+		?if (FlxG.random.bool(0.1))
 		{
 			// gitaroo man easter egg
 			FlxG.switchState(new GitarooPauseState());
 		}
 		else
+		#end
 			openSubState(new PauseSubState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 	}
 	override public function onFocusLost():Void
@@ -2616,7 +2618,7 @@ class PlayState extends MusicBeatState
 					var char:Null<String> = null;
 					if(boyfriend.animation.getByName("firstDeath")!=null && boyfriend.animation.getByName("deathLoop")!=null && boyfriend.animation.getByName("deathConfirm")!=null )char = boyfriend.curCharacter;
 
-					openSubState(new GameOverSubstate(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y, char));
+					openSubState(new GameOverSubstate(boyfriend.x, boyfriend.y, char));
 
 					// FlxG.switchState(new GameOverState(boyfriend.getScreenPosition().x, boyfriend.getScreenPosition().y));
 
@@ -3807,11 +3809,12 @@ class PlayState extends MusicBeatState
 		if(who.animation.getByName(anim+suffix)!=null)
 			anim += suffix;
 
+		who.holdTimer = 0;
 		if(who.animation.curAnim!=null){
 			if(who.animation.curAnim!=null && (!anim.startsWith("hold") || who.animation.curAnim.name!=anim))
 				who.playAnim(anim,true);
 		}
-		who.holdTimer = 0;
+
 
 	}
 
