@@ -1900,6 +1900,7 @@ class ChartingState extends MusicBeatState
 		var oldNote:Note;
 		for (i in sectionInfo)
 		{
+      if(i[1]<0)continue;
 			var note:Note = createNote(i);
 			oldNote=note;
 
@@ -1924,6 +1925,7 @@ class ChartingState extends MusicBeatState
 				var oldNote:Note;
 				for (i in nextSex.sectionNotes)
 				{
+          if(i[1]<0)continue;
 					var note:Note = createNote(i, curSection+1);
 					oldNote=note;
 					note.alpha = 0.7;

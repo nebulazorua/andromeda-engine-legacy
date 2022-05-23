@@ -131,6 +131,7 @@ class Note extends NoteGraphic
 
 	public function new(strumTime:Float, noteData:Int, skin:String='default', modifier:String='base', type:String='default', ?prevNote:Note, ?sustainNote:Bool = false, ?rollNote:Bool = false, ?initialPos:Float=0, ?beingCharted=false)
 	{
+
 		this.noteType=type;
 		isRoll = rollNote;
 		hitbox = Conductor.safeZoneOffset;
