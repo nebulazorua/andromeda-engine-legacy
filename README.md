@@ -40,7 +40,7 @@ Andromeda Engine includes but is not limited to:
 - [SrPerez](https://twitter.com/NewSrPerez) - Some math to do with receptors in KE
 - [Kade Engine](https://github.com/KadeDev/Kade-Engine) - SrPerez's math for receptors, caching loading screen stuff
 - [bbpanzu](https://twitter.com/bbsub3) - Bringing issues to my attention & letting more people know about AE
-- [Wilde](https://twitter.com/0WildeRaze) - Keepin' me sane and letting more people know about AE. Love ya, honey!
+- [Wilde](https://twitter.com/0WildeRaze) - Letting more people know about AE
 - [Lizzy](https://twitter.com/tc_lizzy) - Keepin' me sane
 - [Redsty Phoenix](https://twitter.com/RedstyP) - REALLY getting the word out
 - [Yoshubs](https://twitter.com/yoshubs) - Cache dumping, inspiring me to optimize and improve input
