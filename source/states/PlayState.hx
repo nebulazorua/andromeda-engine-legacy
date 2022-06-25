@@ -3805,7 +3805,8 @@ class PlayState extends MusicBeatState
 					anim = 'hold${dir}End';
 			}
 		}
-		if(daNote.noteType=='alt')suffix+='-alt';
+		//if(daNote.noteType=='alt')suffix+='-alt';
+		//Just in case, I will annotate this code for the future. -Human
 
 		if(who.animation.getByName(anim+suffix)!=null)
 			anim += suffix;
