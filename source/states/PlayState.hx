@@ -1535,6 +1535,7 @@ class PlayState extends MusicBeatState
 	function eventPreInit(event:Event){
 		switch(event.name){
 			case 'Scroll Velocity':
+				trace(event.time, event.args);
 				switch(event.args[0]){
 					case 'mult':
 						var multiplier:Float = event.args[1];
@@ -2940,7 +2941,7 @@ class PlayState extends MusicBeatState
 
 								}
 								daNote.causedMiss = true;
-								noteMiss(daNote.noteData);
+								noteMiss(daNote);
 
 								vocals.volume = 0;
 								updateAccuracy();
@@ -3645,14 +3646,14 @@ class PlayState extends MusicBeatState
 		}
 	}
 
-	function noteMiss(direction:Int = 1):Void
+	function doMiss(direction:Int = 1):Void
 	{
 		health += judgeMan.getJudgementHealth('miss');
 		judgeMan.judgementCounter.set("miss",judgeMan.judgementCounter.get("miss")+1);
 		updateJudgementCounters();
 		previousHealth=health;
 		if(luaModchartExists && lua!=null){
-			callLua("noteMiss",[direction]);
+			callLua("doMiss",[direction]);
 		}
 		if (combo > 5 && gf.animOffsets.exists('sad'))
 		{
@@ -3669,6 +3670,15 @@ class PlayState extends MusicBeatState
 		showMiss(direction);
 	}
 
+	function noteMiss(note:Note):Void
+	{
+		switch(note.noteType){
+			case 'mine':
+				trace("idk this shouldnt happen though!!");
+		}
+		doMiss(note.noteData);
+	}
+
 	function badNoteCheck()
 	{
 		// just double pasting this shit cuz fuk u
@@ -3683,13 +3693,13 @@ class PlayState extends MusicBeatState
 			hitNotes--;
 		}
 		if (leftP)
-			noteMiss(0);
+			doMiss(0);
 		if (downP)
-			noteMiss(1);
+			doMiss(1);
 		if (upP)
-			noteMiss(2);
+			doMiss(2);
 		if (rightP)
-			noteMiss(3);
+			doMiss(3);
 	}
 
 
@@ -3826,7 +3836,7 @@ class PlayState extends MusicBeatState
 		var breaksCombo = judgeMan.shouldComboBreak(judgement);
 
 		if(judgement=='miss'){
-			return noteMiss(note.noteData);
+			return noteMiss(note);
 		}
 
 		vocals.volume = 1;

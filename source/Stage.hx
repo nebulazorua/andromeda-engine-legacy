@@ -511,7 +511,7 @@ class Stage extends FlxTypedGroup<FlxBasic> {
       case 'blank':
 
       default:
-        defaultCamZoom = 1;
+        defaultCamZoom = 0.9;
         curStage = 'stage';
         var bg:FlxSprite = new FlxSprite(-600, -200).loadGraphic(Paths.image('stageback','shared'));
         bg.antialiasing = true;
