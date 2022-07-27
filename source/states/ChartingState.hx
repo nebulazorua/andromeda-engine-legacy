@@ -161,11 +161,20 @@ class ChartingState extends MusicBeatState
 		gridLayer.add(gridBlackLine);
 	}
 	var pauseHUD:FNFCamera;
-
+	var defaultCam:FNFCamera;
 	override function create()
 	{
-		super.create();
+		defaultCam = new FNFCamera();
+		pauseHUD = new FNFCamera();
+		pauseHUD.bgColor.alpha = 0;
+		FlxG.cameras.reset(defaultCam);
+		FlxG.cameras.add(pauseHUD);
+		FlxCamera.defaultCameras = [defaultCam];
+		cameras = [defaultCam];
+		trace(FlxG.camera == pauseHUD, FlxG.camera == defaultCam);
 		InitState.getCharacters();
+		super.create();
+
 
 		instance = this;
 
@@ -220,29 +229,29 @@ class ChartingState extends MusicBeatState
 				player2: 'dad',
 				stage: "stage",
 				noteModifier: "base",
-        format: "andromeda1",
+       			format: "andromeda1",
 				speed: 1,
 				validScore: false
 			};
 			velChanges = [];
 		}
 
-    for(section in _song.notes){
-      if(section.events==null)section.events=[]; // so shit doesnt BREAK
-
-      for(event in section.events){ // legacy events to new event system
-        if(event.events==null){
-          event.events = [
-            {
-              name: event.name,
-              args: event.args
-            }
-          ];
-          event.name=null;
-          event.args=null;
-        }
-      }
-    }
+		for(section in _song.notes){
+			if(section.events==null)section.events=[]; // so shit doesnt BREAK
+			section.lengthInSteps = 16; // same!
+			for(event in section.events){ // legacy events to new event system
+				if(event.events==null){
+					event.events = [
+						{
+							name: event.name,
+							args: event.args
+						}
+					];
+					event.name=null;
+					event.args=null;
+				}
+			}
+		}
 
 		FlxG.mouse.visible = true;
 		FlxG.save.bind('funkin', 'ninjamuffin99');
@@ -353,12 +362,6 @@ class ChartingState extends MusicBeatState
 		updateSectionUI();
 
 		resetSection();
-
-		var cam = FlxG.camera;
-		pauseHUD = new FNFCamera();
-		pauseHUD.bgColor.alpha = 0;
-		FlxG.cameras.add(pauseHUD);
-		FlxCamera.defaultCameras = [FlxG.camera];
 
 	}
 

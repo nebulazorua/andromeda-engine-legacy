@@ -2565,24 +2565,23 @@ class PlayState extends MusicBeatState
 			spr.desiredX = pos.x;
 			spr.desiredY = pos.y;
 			spr.desiredZ = pos.z;
-			spr.scale.set(scale.x,scale.y);
+			spr.scale.set(scale.x, scale.y);
 
 			scale.put();
 		});
 
 		dadStrums.forEach( function(spr:Receptor)
 		{
-			var pos = modManager.getReceptorPos(spr,1);
-			var scale = modManager.getReceptorScale(spr,1);
+			var pos = modManager.getReceptorPos(spr, 1);
+			var scale = modManager.getReceptorScale(spr, 1);
 			modManager.updateReceptor(spr, 1, scale, pos);
 
 			spr.desiredX = pos.x;
 			spr.desiredY = pos.y;
 			spr.desiredZ = pos.z;
-			spr.scale.set(scale.x,scale.y);
+			spr.scale.set(scale.x, scale.y);
 
 			scale.put();
-
 		});
 
 		// RESET = Quick Game Over Screen
@@ -2714,13 +2713,13 @@ class PlayState extends MusicBeatState
 						strumLine = dadStrums.members[daNote.noteData];
 
 					var diff =  Conductor.songPosition - daNote.strumTime;
-			    var vDiff = (daNote.initialPos-Conductor.currentTrackPos);
+			    	var vDiff = (daNote.initialPos-Conductor.currentTrackPos);
 					if(daNote.holdingTime<daNote.sustainLength && daNote.wasGoodHit && !daNote.tooLate){
 						diff=0;
 						vDiff=0;
 					}
 
-			    var notePos = modManager.getPath(diff, vDiff, daNote.noteData, daNote.mustPress==true?0:1);
+					var notePos = modManager.getPath(diff, vDiff, daNote.noteData, daNote.mustPress==true?0:1);
 
 					notePos.x += daNote.manualXOffset;
 					notePos.y -= daNote.manualYOffset;
@@ -2733,7 +2732,8 @@ class PlayState extends MusicBeatState
 
 					daNote.z = notePos.z;
 					daNote.scale.copyFrom(scale);
-					daNote.updateHitbox();
+					daNote.centerOrigin();
+					daNote.centerOffsets();
 
 					if(daNote.isSustainNote){
 							var futureSongPos = Conductor.songPosition + 75;
@@ -2744,7 +2744,7 @@ class PlayState extends MusicBeatState
 
 							var nextPos = modManager.getPath(diff, vDiff, daNote.noteData, daNote.mustPress==true?0:1);
 							nextPos.x += daNote.manualXOffset;
-					    nextPos.y -= daNote.manualYOffset;
+					    	nextPos.y -= daNote.manualYOffset;
 
 							var diffX = (nextPos.x - notePos.x);
 							var diffY = (nextPos.y - notePos.y);

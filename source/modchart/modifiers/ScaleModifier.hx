@@ -10,27 +10,31 @@ class ScaleModifier extends Modifier {
     return a+(b-a)*c;
   }
   function getScale(sprite:Dynamic, scale:FlxPoint, data:Int, player:Int){
-    var miniX = getPercent(player)+getSubmodPercent("miniX",player)+getSubmodPercent('mini${data}X',player);
-    var miniY = getPercent(player)+getSubmodPercent("miniY",player)+getSubmodPercent('mini${data}Y',player);
+		scale.x *= 1-getPercent(player);
+    if(!(sprite is Note) || !sprite.isSustainNote){
+			scale.y *= 1 - getPercent(player);
+      var miniX = getSubmodPercent("miniX",player)+getSubmodPercent('mini${data}X',player);
+      var miniY = getSubmodPercent("miniY",player)+getSubmodPercent('mini${data}Y',player);
 
-    scale.x*=1-miniX;
-    scale.y*=1-miniY;
-    var angle = sprite.baseAngle;
+      scale.x*=1-miniX;
+      scale.y*=1-miniY;
+      var angle = sprite.baseAngle;
 
-    var stretch = getSubmodPercent("stretch",player) + getSubmodPercent('stretch${data}',player);
-    var squish = getSubmodPercent("squish",player) + getSubmodPercent('squish${data}',player);
+      var stretch = getSubmodPercent("stretch",player) + getSubmodPercent('stretch${data}',player);
+      var squish = getSubmodPercent("squish",player) + getSubmodPercent('squish${data}',player);
 
-    var stretchX =lerp(1,0.5,stretch);
-    var stretchY =lerp(1,2,stretch);
+      var stretchX =lerp(1,0.5,stretch);
+      var stretchY =lerp(1,2,stretch);
 
-    var squishX =lerp(1,2,squish);
-    var squishY =lerp(1,0.5,squish);
+      var squishX =lerp(1,2,squish);
+      var squishY =lerp(1,0.5,squish);
+      
+      scale.x*=(Math.sin(angle*Math.PI/180)*squishY)+(Math.cos(angle*Math.PI/180)*squishX);
+      scale.x*=(Math.sin(angle*Math.PI/180)*stretchY)+(Math.cos(angle*Math.PI/180)*stretchX);
 
-    scale.x*=(Math.sin(angle*Math.PI/180)*squishY)+(Math.cos(angle*Math.PI/180)*squishX);
-    scale.x*=(Math.sin(angle*Math.PI/180)*stretchY)+(Math.cos(angle*Math.PI/180)*stretchX);
-
-    scale.y*=(Math.cos(angle*Math.PI/180)*stretchY)+(Math.sin(angle*Math.PI/180)*stretchX);
-    scale.y*=(Math.cos(angle*Math.PI/180)*squishY)+(Math.sin(angle*Math.PI/180)*squishX);
+      scale.y*=(Math.cos(angle*Math.PI/180)*stretchY)+(Math.sin(angle*Math.PI/180)*stretchX);
+      scale.y*=(Math.cos(angle*Math.PI/180)*squishY)+(Math.sin(angle*Math.PI/180)*squishX);
+    }
 
     return scale;
   }

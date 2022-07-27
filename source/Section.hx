@@ -14,7 +14,7 @@ typedef Event = {
 typedef SwagSection =
 {
 	var sectionNotes:Array<Array<Dynamic>>;
-	var lengthInSteps:Int;
+	@:optional var  lengthInSteps:Int;
 	var typeOfSection:Int;
 	var mustHitSection:Bool;
 	var bpm:Int;
@@ -38,6 +38,6 @@ class Section
 
 	public function new(lengthInSteps:Int = 16)
 	{
-		this.lengthInSteps = lengthInSteps;
+		
 	}
 }
