@@ -79,7 +79,7 @@ IF YOU WANT TO COMPILE THE GAME YOURSELF, CONTINUE READING!!!
 ### Installing the Required Programs
 
 First you need to install Haxe and HaxeFlixel. I'm too lazy to write and keep updated with that setup (which is pretty simple).
-1. [Install Haxe 4.2.4](https://haxe.org/download/version/4.2.4/)
+1. [Install Haxe 4.2.5](https://haxe.org/download/version/4.2.5/)
 2. [Install HaxeFlixel](https://haxeflixel.com/documentation/install-haxeflixel/) after downloading Haxe
 
 Other installations you'd need is the additional libraries, a fully updated list will be in `Project.xml` in the project root. Currently, these are all of the things you need to install:
