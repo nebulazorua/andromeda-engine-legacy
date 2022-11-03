@@ -1,4 +1,5 @@
 package modchart.modifiers;
+import states.PlayState;
 import ui.*;
 import modchart.*;
 import flixel.math.FlxPoint;
@@ -63,12 +64,13 @@ class ReverseModifier extends Modifier {
   }
 
   override function updateNote(note:Note, player:Int, pos:Vector3, scale:FlxPoint){
-    /*var perc = getScrollReversePerc(note.noteData,note.mustPress==true?0:1);
+    var perc = getScrollReversePerc(note.noteData,note.mustPress==true?0:1);
     if(perc>.5 && note.isSustainNote){
-      note.flipY=true;
-    }else{
-      note.flipY=false;
-    }*/
+      if(note.animation.curAnim.name.endsWith("holdend"))
+				pos.y += ((44*0.7) *(Conductor.stepCrochet / 100 * 1.5 * PlayState.SONG.speed)) - note.height;
+      
+    }
+
   }
 
   override function getSubmods(){

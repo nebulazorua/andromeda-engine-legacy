@@ -636,7 +636,7 @@ class PlayState extends MusicBeatState
 		songSpeed = speed;
 		for(vel in SONG.sliderVelocities)
 			sliderVelocities.push(vel);
-
+		
 		for (section in SONG.notes)
 		{
 			var coolSection:Int = Std.int(section.lengthInSteps / 4);
@@ -2184,6 +2184,12 @@ class PlayState extends MusicBeatState
 		Conductor.currentTrackPos = getPosFromTime(Conductor.currentVisPos);
 	}
 
+	// ADAPTED FROM QUAVER!!!
+	// COOL GUYS FOR OPEN SOURCING
+	// https://github.com/Quaver/Quaver
+	// https://github.com/Quaver/Quaver
+	// https://github.com/Quaver/Quaver
+
 	/*public function getXPosition(diff:Float, direction:Int, player:Int):Float{
 		var x = FlxG.width/2 - Note.swagWidth/2; // centers them
 
@@ -2206,27 +2212,23 @@ class PlayState extends MusicBeatState
 	// ^^ this is VERY slightly off
 	// so im just gonna take the code from andromeda 2.0 lmao
 
-	public function getXPosition(diff:Float, direction:Int, player:Int):Float{
-
-		var x:Float = (FlxG.width/2) - Note.swagWidth - 54 + Note.swagWidth*direction;
-		if(!currentOptions.middleScroll){
-			switch(player){
+	public function getXPosition(diff:Float, direction:Int, player:Int):Float
+	{
+		var x:Float = (FlxG.width / 2) - Note.swagWidth - 54 + Note.swagWidth * direction;
+		if (!currentOptions.middleScroll)
+		{
+			switch (player)
+			{
 				case 0:
-					x += FlxG.width/2 - Note.swagWidth*2 - 100;
+					x += FlxG.width / 2 - Note.swagWidth * 2 - 100;
 				case 1:
-					x -= FlxG.width/2 - Note.swagWidth*2 - 100;
+					x -= FlxG.width / 2 - Note.swagWidth * 2 - 100;
 			}
 		}
 		x -= 56;
 
 		return x;
 	}
-
-	// ADAPTED FROM QUAVER!!!
-	// COOL GUYS FOR OPEN SOURCING
-	// https://github.com/Quaver/Quaver
-	// https://github.com/Quaver/Quaver
-	// https://github.com/Quaver/Quaver
 
 	function updateScoreText(){
 		if(currentOptions.onlyScore){
@@ -2725,8 +2727,11 @@ class PlayState extends MusicBeatState
 					notePos.y -= daNote.manualYOffset;
 
 					var scale = modManager.getNoteScale(daNote);
+					var cX = notePos.x;
+					var cY = notePos.y;
 					modManager.updateNote(daNote, daNote.mustPress?0:1, scale, notePos);
-
+					var oX = notePos.x - cX;
+					var oY = notePos.y - cY;
 					daNote.x = notePos.x;
 					daNote.y = notePos.y;
 
@@ -2740,11 +2745,14 @@ class PlayState extends MusicBeatState
 							var futureVisualPos = getPosFromTime(futureSongPos);
 
 							var diff =  futureSongPos - daNote.strumTime;
-					    var vDiff = (daNote.initialPos - futureVisualPos);
+					    	var vDiff = (daNote.initialPos - futureVisualPos);
 
 							var nextPos = modManager.getPath(diff, vDiff, daNote.noteData, daNote.mustPress==true?0:1);
 							nextPos.x += daNote.manualXOffset;
 					    	nextPos.y -= daNote.manualYOffset;
+							
+							nextPos.x += oX;
+							nextPos.y += oY;
 
 							var diffX = (nextPos.x - notePos.x);
 							var diffY = (nextPos.y - notePos.y);
@@ -2865,7 +2873,6 @@ class PlayState extends MusicBeatState
 
 								daNote.clipRect=clipRect;
 							}
-
 						}
 					}
 

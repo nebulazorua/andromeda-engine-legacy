@@ -7,38 +7,43 @@ import flixel.FlxG;
 import math.*;
 
 class DrunkModifier extends Modifier {
-
   override function getPath(visualDiff:Float, pos:Vector3, data:Int, player:Int, timeDiff:Float){
     var drunkPerc = getPercent(player);
     var tipsyPerc = getSubmodPercent("tipsy",player);
-    var bumpyPerc = getSubmodPercent("bumpy",player);
-
-    var drunkAPerc = getSubmodPercent("drunkA",player);
-    var tipsyAPerc = getSubmodPercent("tipsyA",player);
-    var bumpyAPerc = getSubmodPercent("bumpyA",player);
-
-    var bumpySpeed = CoolUtil.scale(getSubmodPercent("bumpySpeed",player),0,1,1,2);
+		var bumpyPerc = getSubmodPercent("bumpy", player);
+		var tipZPerc = getSubmodPercent("tipZ", player);
     var timeFactor = getModPercent("waveTimeFactor", player);
 
     var time = (Conductor.songPosition/1000) * timeFactor;
-    if(tipsyPerc!=0 || tipsyAPerc != 0){
+    if(tipsyPerc!=0){
       var speed = getSubmodPercent("tipsySpeed",player);
       var offset = getSubmodPercent("tipsyOffset",player);
-      pos.y += (tipsyPerc + tipsyAPerc) * (FlxMath.fastCos((time*((speed*1.2)+1.2) + data*((offset * 1.8)+1.8))) * Note.swagWidth*.4);
+      pos.y += tipsyPerc * (FlxMath.fastCos((time*((speed*1.2)+1.2) + data*((offset * 1.8)+1.8))) * Note.swagWidth*.4);
     }
 
-    if(drunkPerc!=0 || drunkAPerc!=0){
+    if(drunkPerc!=0){
       var speed = getSubmodPercent("drunkSpeed",player);
       var period = getSubmodPercent("drunkPeriod",player);
       var offset = getSubmodPercent("drunkOffset",player);
 
       var angle = time * (1+speed) + data*( (offset*0.2) + 0.2)
 		    + visualDiff * ( (period*10) + 10) / FlxG.height;
-      pos.x += (drunkPerc + drunkAPerc) * (FlxMath.fastCos(angle) * Note.swagWidth * 0.5);
+      pos.x += drunkPerc * (FlxMath.fastCos(angle) * Note.swagWidth * 0.5);
     }
 
-    if(bumpyPerc!=0 || bumpyAPerc!=0){
-      pos.z += ((bumpyPerc + bumpyAPerc) * (.3 * FlxMath.fastSin((visualDiff/24)*bumpySpeed)));
+		if (tipZPerc != 0)
+		{
+			var speed = getSubmodPercent("tipZSpeed", player);
+			var offset = getSubmodPercent("tipZOffset", player);
+			pos.z += tipZPerc * (FlxMath.fastCos((time * ((speed * 1.2) + 1.2) + data * ((offset * 1.8) + 3.2))) * 0.15);
+		}
+
+
+    if(bumpyPerc!=0){
+			var period = getSubmodPercent("bumpyPeriod", player);
+			var offset = getSubmodPercent("bumpyOffset", player);
+			var angle = (visualDiff + (100.0 * offset)) / ((period * 16.0) + 16.0);
+			pos.z += (bumpyPerc * 40 * FlxMath.fastSin(angle))/250;
     }
 
 
@@ -49,15 +54,22 @@ class DrunkModifier extends Modifier {
     return [
       "tipsy",
       "bumpy",
-      "drunkA",
-      "tipsyA",
-      "bumpyA",
       "drunkSpeed",
       "drunkOffset",
       "drunkPeriod",
       "tipsySpeed",
       "tipsyOffset",
-      "bumpySpeed"
+      "bumpyOffset",
+      "bumpyPeriod",
+
+      "tipZ",
+			"tipZSpeed",
+			"tipZOffset",
+
+      "drunkZ",
+      "drunkZSpeed",
+      "drunkZOffset",
+      "drunkZPeriod"
     ];
   }
 
