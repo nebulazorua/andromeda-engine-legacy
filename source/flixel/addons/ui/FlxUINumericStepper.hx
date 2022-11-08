@@ -219,9 +219,10 @@ class FlxUINumericStepper extends FlxUIGroup implements IFlxUIWidget implements 
 			var fuit:FlxUIInputText = cast text_field;
 			fuit.lines = 1;
 			fuit.callback = _onInputTextEvent; // internal communication only
-      fuit.focusLost = function(){
-        fuit.callback(fuit.text,'enter');
-      }
+			fuit.focusLost = function()
+			{
+				fuit.callback(fuit.text, 'enter');
+			}
 			fuit.broadcastToFlxUI = false;
 		}
 
@@ -267,7 +268,7 @@ class FlxUINumericStepper extends FlxUIGroup implements IFlxUIWidget implements 
 
 	private function _onInputTextEvent(text:String, action:String):Void
 	{
-		if (text == "" && action=='enter')
+		if (text == "" && action == 'enter')
 		{
 			text = Std.string(min);
 		}
@@ -285,7 +286,7 @@ class FlxUINumericStepper extends FlxUIGroup implements IFlxUIWidget implements 
 		var justAddedDecimal = (numDecimals == 1 && text.indexOf(".") == text.length - 1);
 
 		// if I just added a decimal don't treat that as having changed the value just yet
-		if (action=='enter')
+		if (action == 'enter')
 		{
 			value = Std.parseFloat(text);
 			_doCallback(EDIT_EVENT);

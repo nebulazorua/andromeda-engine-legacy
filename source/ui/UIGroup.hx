@@ -21,16 +21,13 @@ import flixel.addons.ui.FlxUI9SliceSprite;
 /**
  * @author Lars Doucet
  */
-
- // Modified from FlxUITabMenu for Andromeda
-
+// Modified from FlxUITabMenu for Andromeda
 class UIGroup extends FlxUIGroup implements IResizable implements IFlxUIClickable implements IEventGetter
 {
 	public static inline var CLICK_EVENT:String = "menu_click";
 
 	public static inline var STACK_FRONT:String = "front"; // button goes in front of backing
 	public static inline var STACK_BACK:String = "back"; // buton goes behind backing
-
 
 	/**To make IEventGetter happy**/
 	public function getEvent(name:String, sender:IFlxUIWidget, data:Dynamic, ?params:Array<Dynamic>):Void
@@ -86,7 +83,6 @@ class UIGroup extends FlxUIGroup implements IResizable implements IFlxUIClickabl
 
 		_back = back_;
 		add(_back);
-
 	}
 
 	public override function destroy():Void
@@ -107,7 +103,6 @@ class UIGroup extends FlxUIGroup implements IResizable implements IFlxUIClickabl
 		{
 			ir = cast _back;
 			ir.resize(W, H);
-
 		}
 	}
 
@@ -131,6 +126,4 @@ class UIGroup extends FlxUIGroup implements IResizable implements IFlxUIClickabl
 
 	/***PRIVATE***/
 	private var _back:FlxSprite;
-
-
 }

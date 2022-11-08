@@ -1,6 +1,5 @@
 // THANK YOU SRPEREZ FOR SOME MATH THAT I DONT UNDERSTAND
 // (TAKEN FROM KE)
-
 package ui;
 
 import flixel.FlxG;
@@ -16,133 +15,139 @@ import flixel.util.FlxColor;
 import flixel.math.FlxPoint;
 
 // TODO: have the receptor manage its own notes n shit
+class Receptor extends FNFSprite
+{
+	public static var dynamicColouring:Bool = false; // if this is true, then it'll tint to the hit note's dominant colour when it hits a note
 
-class Receptor extends FNFSprite {
-  public static var dynamicColouring:Bool=false;  // if this is true, then it'll tint to the hit note's dominant colour when it hits a note
-  // (DOESNT WORK RN!)
+	// (DOESNT WORK RN!)
+	public var playerNum:Int = 0;
+	public var baseAngle:Float = 0;
+	public var desiredAngle:Float = 0;
+	public var noteScale:Float = .7;
+	public var skin:String = 'default';
+	public var incomingAngle:Float = 0;
+	public var defaultX:Float = 0;
+	public var defaultY:Float = 0;
+	public var incomingNoteAlpha:Float = 1;
+	public var direction:Int = 0;
+	public var xOffset:Float = 0;
+	public var yOffset:Float = 0;
+	public var zOffset:Float = 0;
 
-  public var playerNum:Int=0;
-  public var baseAngle:Float = 0;
-  public var desiredAngle:Float = 0;
-  public var noteScale:Float = .7;
-  public var skin:String= 'default';
-  public var incomingAngle:Float = 0;
-  public var defaultX:Float = 0;
-  public var defaultY:Float = 0;
-  public var incomingNoteAlpha:Float = 1;
-  public var direction:Int= 0 ;
-  public var xOffset:Float = 0;
-  public var yOffset:Float = 0;
-  public var zOffset:Float = 0;
+	public var desiredZIndex:Float = 0;
 
-  public var desiredZIndex:Float = 0;
+	public var scaleDefault:Null<FlxPoint>;
+	public var noteSplash:NoteSplash;
 
-  public var scaleDefault:Null<FlxPoint>;
-  public var noteSplash:NoteSplash;
+	public var desiredX:Float = 0;
+	public var desiredY:Float = 0;
+	public var desiredZ:Float = 0;
 
-  public var desiredX:Float = 0;
-  public var desiredY:Float = 0;
-  public var desiredZ:Float = 0;
+	public function new(x:Float, y:Float, noteData:Int, skin:String = 'default', modifier:String = 'base', behaviour:NoteBehaviour, daScale:Float = .7)
+	{
+		super(x, y);
+		desiredX = x;
+		desiredY = y;
 
+		noteSplash = new NoteSplash(x, y);
+		noteSplash.visible = false;
 
-  public function new(x:Float,y:Float,noteData:Int,skin:String='default',modifier:String='base',behaviour:NoteBehaviour,daScale:Float=.7){
-    super(x,y);
-    desiredX=x;
-    desiredY=y;
+		scaleDefault = FlxPoint.get();
 
-    noteSplash = new NoteSplash(x,y);
-    noteSplash.visible=false;
+		// colorSwap = new ColorSwap();
+		// shader=colorSwap.shader;
 
-    scaleDefault = FlxPoint.get();
+		direction = noteData;
+		noteScale = daScale;
+		this.skin = skin;
+		var dirs = ["left", "down", "up", "right"];
+		var clrs = ["purple", "blue", "green", "red"];
+		var dir = dirs[noteData];
 
-    //colorSwap = new ColorSwap();
-    //shader=colorSwap.shader;
+		switch (behaviour.actsLike)
+		{
+			case 'default':
+				frames = Paths.noteSkinAtlas(behaviour.arguments.receptors.sheet, 'skins', skin, modifier);
 
-    direction=noteData;
-    noteScale=daScale;
-    this.skin=skin;
-    var dirs = ["left","down","up","right"];
-    var clrs = ["purple","blue","green","red"];
-    var dir = dirs[noteData];
+				antialiasing = behaviour.antialiasing;
+				setGraphicSize(Std.int((width * behaviour.scale) * daScale / .7));
 
-    switch(behaviour.actsLike){
-      case 'default':
-        frames = Paths.noteSkinAtlas(behaviour.arguments.receptors.sheet, 'skins', skin, modifier);
+				var dir = dirs[noteData];
+				var recepData = Reflect.field(behaviour.arguments.receptors, dir);
+				animation.addByPrefix('static', recepData.prefix);
+				animation.addByPrefix('pressed', recepData.press, 24, false);
+				animation.addByPrefix('confirm', recepData.confirm, 24, false);
+				var ang:Null<Float> = recepData.angle;
+				if (ang == null)
+					baseAngle = 0;
+				else
+					baseAngle = ang;
 
-        antialiasing = behaviour.antialiasing;
-        setGraphicSize(Std.int((width * behaviour.scale) * daScale/.7));
+			case 'pixel':
+				loadGraphic(Paths.noteSkinImage(behaviour.arguments.receptor.sheet, 'skins', skin, modifier), true, behaviour.arguments.receptor.gridSizeX,
+					behaviour.arguments.receptor.gridSizeY);
+				trace(width, behaviour.arguments.receptor.sheet);
 
-        var dir = dirs[noteData];
-        var recepData = Reflect.field(behaviour.arguments.receptors,dir);
-        animation.addByPrefix('static', recepData.prefix);
-        animation.addByPrefix('pressed',recepData.press, 24, false);
-        animation.addByPrefix('confirm',recepData.confirm, 24, false);
-        var ang:Null<Float> = recepData.angle;
-        if(ang==null)
-          baseAngle = 0;
-        else
-          baseAngle = ang;
+				setGraphicSize(Std.int((width * behaviour.scale) * daScale / .7));
+				antialiasing = behaviour.antialiasing;
 
-      case 'pixel':
-        loadGraphic(Paths.noteSkinImage(behaviour.arguments.receptor.sheet, 'skins', skin, modifier),true,behaviour.arguments.receptor.gridSizeX,behaviour.arguments.receptor.gridSizeY);
-        trace(width,behaviour.arguments.receptor.sheet);
+				animation.add('static', Reflect.field(behaviour.arguments.receptor, '${dir}Idle'));
+				animation.add('pressed', Reflect.field(behaviour.arguments.receptor, '${dir}Pressed'), 12, false);
+				animation.add('confirm', Reflect.field(behaviour.arguments.receptor, '${dir}Confirm'), 24, false);
+				var ang:Null<Float> = Reflect.field(behaviour.arguments.receptor, '${dir}Angle');
 
-        setGraphicSize(Std.int((width * behaviour.scale) * daScale/.7));
-        antialiasing = behaviour.antialiasing;
+				if (ang == null)
+					baseAngle = 0;
+				else
+					baseAngle = ang;
+		}
+		updateHitbox();
 
-        animation.add('static', Reflect.field(behaviour.arguments.receptor,'${dir}Idle') );
-        animation.add('pressed', Reflect.field(behaviour.arguments.receptor,'${dir}Pressed'), 12, false);
-        animation.add('confirm', Reflect.field(behaviour.arguments.receptor,'${dir}Confirm'), 24, false);
-        var ang:Null<Float> = Reflect.field(behaviour.arguments.receptor,'${dir}Angle');
+		scaleDefault.set(scale.x, scale.y);
+	}
 
-        if(ang==null)
-          baseAngle = 0;
-        else
-          baseAngle = ang;
-    }
-    updateHitbox();
+	public function playNote(note:Note, doSplash:Bool = false)
+	{
+		playAnim("confirm", true);
+		if (doSplash)
+			noteSplash.setup(note, this);
+	}
 
-    scaleDefault.set(scale.x,scale.y);
-  }
+	override function destroy()
+	{
+		super.destroy();
+	}
 
-  public function playNote(note:Note,doSplash:Bool=false){
-    playAnim("confirm",true);
-    if(doSplash)
-      noteSplash.setup(note,this);
+	public function playAnim(anim:String, ?force:Bool = false)
+	{
+		animation.play(anim, force);
+		updateHitbox();
+		offset.set((frameWidth / 2) - (54 * (.7 / noteScale)), (frameHeight / 2) - (56 * (.7 / noteScale)));
+		updateZIndex();
+	}
 
-  }
+	public function getZIndex()
+	{
+		var animZOffset:Float = 0;
+		if (animation.curAnim != null && animation.curAnim.name == 'confirm')
+			animZOffset += 1;
+		return z + desiredZIndex + animZOffset - playerNum;
+	}
 
-  override function destroy(){
-    super.destroy();
-  }
+	function updateZIndex()
+	{
+		zIndex = getZIndex();
+	}
 
-  public function playAnim(anim:String,?force:Bool=false){
-    animation.play(anim,force);
-    updateHitbox();
-    offset.set((frameWidth/2)-(54*(.7/noteScale) ),(frameHeight/2)-(56*(.7/noteScale)));
-    updateZIndex();
-  }
+	override function update(elapsed:Float)
+	{
+		angle = baseAngle + desiredAngle;
 
-  public function getZIndex(){
-    var animZOffset:Float = 0;
-    if(animation.curAnim!=null && animation.curAnim.name=='confirm')animZOffset+=1;
-    return z + desiredZIndex + animZOffset - playerNum;
-  }
+		x = desiredX + xOffset;
+		y = desiredY + yOffset;
+		z = desiredZ + zOffset;
+		updateZIndex();
 
-  function updateZIndex(){
-    zIndex=getZIndex();
-  }
-
-  override function update(elapsed:Float){
-    angle = baseAngle+desiredAngle;
-
-
-    x = desiredX + xOffset;
-    y = desiredY + yOffset;
-    z = desiredZ + zOffset;
-    updateZIndex();
-
-    super.update(elapsed);
-
-  }
+		super.update(elapsed);
+	}
 }

@@ -39,6 +39,7 @@ import flixel.graphics.FlxGraphic;
 using flixel.util.FlxStringUtil;
 using flixel.util.FlxUnicodeUtil;
 using StringTools;
+
 #if flash
 import openfl.geom.Rectangle;
 #end
@@ -54,7 +55,8 @@ import openfl.utils.AssetType;
  */
 class FlxText extends FlxSprite
 {
-  var lastKey:String;
+	var lastKey:String;
+
 	/**
 	 * 2px gutter on both top and bottom
 	 */
@@ -238,9 +240,11 @@ class FlxText extends FlxSprite
 		_defaultFormat = null;
 		_formatAdjusted = null;
 		shadowOffset = FlxDestroyUtil.put(shadowOffset);
-    if(lastKey!=null)FlxG.bitmap.removeByKey(lastKey);
-    FlxG.bitmap.remove(graphic);
-    if(graphic!=null)graphic.destroy();
+		if (lastKey != null)
+			FlxG.bitmap.removeByKey(lastKey);
+		FlxG.bitmap.remove(graphic);
+		if (graphic != null)
+			graphic.destroy();
 		super.destroy();
 	}
 
@@ -817,17 +821,18 @@ class FlxText extends FlxSprite
 
 		if (oldWidth != newWidth || oldHeight != newHeight)
 		{
-      if(lastKey!=null){
-        FlxG.bitmap.removeByKey(lastKey);
-        graphic.destroy();
-      }
+			if (lastKey != null)
+			{
+				FlxG.bitmap.removeByKey(lastKey);
+				graphic.destroy();
+			}
 
 			height = newHeight;
-      // Need to generate a new buffer to store the text graphic
-			var key:String = FlxG.bitmap.getUniqueKey(textField.text.trim()==''?'text':textField.text);
-      lastKey = key;
+			// Need to generate a new buffer to store the text graphic
+			var key:String = FlxG.bitmap.getUniqueKey(textField.text.trim() == '' ? 'text' : textField.text);
+			lastKey = key;
 			makeGraphic(Std.int(newWidth), Std.int(newHeight), FlxColor.TRANSPARENT, false, key);
-      graphic.persist=false;
+			graphic.persist = false;
 			if (_hasBorderAlpha)
 				_borderPixels = graphic.bitmap.clone();
 			frameHeight = Std.int(height);

@@ -44,11 +44,11 @@ class Alphabet extends FlxSpriteGroup
 
 	var isBold:Bool = false;
 
-	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, fontScale:Float=1)
+	public function new(x:Float, y:Float, text:String = "", ?bold:Bool = false, typed:Bool = false, fontScale:Float = 1)
 	{
 		super(x, y);
 
-		this.fontScale=fontScale;
+		this.fontScale = fontScale;
 		_finalText = text;
 		this.text = text;
 		isBold = bold;
@@ -100,7 +100,7 @@ class Alphabet extends FlxSpriteGroup
 
 				if (lastWasSpace)
 				{
-					xPos += 40*fontScale;
+					xPos += 40 * fontScale;
 					lastWasSpace = false;
 				}
 
@@ -125,7 +125,6 @@ class Alphabet extends FlxSpriteGroup
 					{
 						letter.createLetter(character);
 					}
-
 				}
 
 				add(letter);
@@ -245,14 +244,16 @@ class Alphabet extends FlxSpriteGroup
 		}, splitWords.length);
 	}
 
-	public function calculateWantedXY(){
+	public function calculateWantedXY()
+	{
 		var scaledY = FlxMath.remapToRange(targetY, 0, 1, 0, 1.3);
-		switch (movementType){
+		switch (movementType)
+		{
 			case 'stairs':
 				wantedY = (scaledY * 120) + (FlxG.height * 0.48);
 				wantedX = (targetY * 20) + offsetX;
 			case 'list':
-				wantedY =  (scaledY * 120) + (FlxG.height * 0.48);
+				wantedY = (scaledY * 120) + (FlxG.height * 0.48);
 				wantedX = offsetX;
 			default:
 				wantedY = (scaledY * 120) + (FlxG.height * 0.48);
@@ -260,7 +261,8 @@ class Alphabet extends FlxSpriteGroup
 		}
 	}
 
-	public function gotoTargetPosition(){
+	public function gotoTargetPosition()
+	{
 		calculateWantedXY();
 		x = wantedX;
 		y = wantedY;
@@ -273,7 +275,6 @@ class Alphabet extends FlxSpriteGroup
 			calculateWantedXY();
 			x = FlxMath.lerp(x, wantedX, Main.adjustFPS(0.16));
 			y = FlxMath.lerp(y, wantedY, Main.adjustFPS(0.16));
-
 		}
 
 		super.update(elapsed);
@@ -290,10 +291,11 @@ class AlphaCharacter extends FlxSprite
 
 	public var row:Int = 0;
 	public var fontScale:Float = 1;
-	public function new(x:Float, y:Float, fontScale:Float=1)
+
+	public function new(x:Float, y:Float, fontScale:Float = 1)
 	{
 		super(x, y);
-		this.fontScale=fontScale;
+		this.fontScale = fontScale;
 		var tex = Paths.getSparrowAtlas('alphabet');
 		frames = tex;
 
@@ -304,7 +306,7 @@ class AlphaCharacter extends FlxSprite
 	{
 		animation.addByPrefix(letter, letter.toUpperCase() + " bold", 24);
 		animation.play(letter);
-		scale.set(fontScale,fontScale);
+		scale.set(fontScale, fontScale);
 		updateHitbox();
 	}
 
@@ -318,7 +320,7 @@ class AlphaCharacter extends FlxSprite
 
 		animation.addByPrefix(letter, letter + " " + letterCase, 24);
 		animation.play(letter);
-		scale.set(fontScale,fontScale);
+		scale.set(fontScale, fontScale);
 		updateHitbox();
 
 		FlxG.log.add('the row' + row);
@@ -331,7 +333,7 @@ class AlphaCharacter extends FlxSprite
 	{
 		animation.addByPrefix(letter, letter, 24);
 		animation.play(letter);
-		scale.set(fontScale,fontScale);
+		scale.set(fontScale, fontScale);
 
 		updateHitbox();
 	}
@@ -371,7 +373,7 @@ class AlphaCharacter extends FlxSprite
 				animation.addByPrefix(letter, letter, 24);
 				animation.play(letter);
 		}
-		scale.set(fontScale,fontScale);
+		scale.set(fontScale, fontScale);
 
 		updateHitbox();
 	}

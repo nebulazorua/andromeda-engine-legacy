@@ -25,8 +25,11 @@ import flixel.util.FlxColor;
 import flixel.ui.FlxButton;
 import haxe.Json;
 import flixel.ui.FlxSpriteButton;
+
 using StringTools;
+
 import ui.*;
+
 /**
 	*DEBUG MODE
  */
@@ -49,7 +52,8 @@ class OffsetEditorState extends FlxState
 	var player:FlxUICheckBox;
 	var _file:FileReference;
 	var ghostBF:Character;
-	private function save(data:String,name:String)
+
+	private function save(data:String, name:String)
 	{
 		if ((data != null) && (data.length > 0))
 		{
@@ -113,7 +117,7 @@ class OffsetEditorState extends FlxState
 		layeringbullshit = new FlxTypedGroup<FlxSprite>();
 		add(layeringbullshit);
 
-		UI_box = new FlxUITabMenu(null,[{name:"Character",label:"Character"}],false);
+		UI_box = new FlxUITabMenu(null, [{name: "Character", label: "Character"}], false);
 		UI_box.cameras = [camHUD];
 		UI_box.resize(300, 200);
 		UI_box.x = (FlxG.width / 2) + 250;
@@ -127,7 +131,7 @@ class OffsetEditorState extends FlxState
 
 		var cumfart = new FlxUIDropDownMenu(50, 50, FlxUIDropDownMenu.makeStrIdLabelArray(characters, true), function(character:String)
 		{
-			daAnim=characters[Std.parseInt(character)];
+			daAnim = characters[Std.parseInt(character)];
 			displayCharacter(daAnim);
 		});
 		cumfart.selectedLabel = daAnim;
@@ -136,31 +140,32 @@ class OffsetEditorState extends FlxState
 		player.checked = false;
 		player.callback = function()
 		{
-			isDad=!player.checked;
+			isDad = !player.checked;
 			displayCharacter(daAnim);
 		};
 
 		var saveButton:FlxButton = new FlxButton(100, 125, "Save Offsets", function()
 		{
 			var data:String = '';
-			for(anim in animList){
-				data+=anim+" "+char.animOffsets.get(anim)[0] + " "+char.animOffsets.get(anim)[1]+"\n";
+			for (anim in animList)
+			{
+				data += anim + " " + char.animOffsets.get(anim)[0] + " " + char.animOffsets.get(anim)[1] + "\n";
 			}
-			save(data,char.curCharacter + "Offsets.txt");
+			save(data, char.curCharacter + "Offsets.txt");
 		});
 
 		var saveJson:FlxButton = new FlxButton(100, 200, "Save Character", function()
 		{
-
 			var animData:Array<Character.AnimShit> = [];
-			for(anim in char.charData.anims){
-				anim.offsets = [char.animOffsets.get(anim.name)[0],char.animOffsets.get(anim.name)[1]];
+			for (anim in char.charData.anims)
+			{
+				anim.offsets = [char.animOffsets.get(anim.name)[0], char.animOffsets.get(anim.name)[1]];
 				animData.push(anim);
 			}
-			char.charData.anims=animData;
-			var data:String = Json.stringify(char.charData,"\t");
+			char.charData.anims = animData;
+			var data:String = Json.stringify(char.charData, "\t");
 
-			save(data,'${char.curCharacter}${isDad==false?"-player":""}.json');
+			save(data, '${char.curCharacter}${isDad == false ? "-player" : ""}.json');
 		});
 
 		characterTab.add(cumfart);
@@ -183,26 +188,25 @@ class OffsetEditorState extends FlxState
 		camGame.follow(camFollow);
 
 		displayCharacter(daAnim);
-
-
 	}
 
-	function displayCharacter(daAnim:String){
+	function displayCharacter(daAnim:String)
+	{
 		dumbTexts.forEach(function(text:FlxText)
 		{
-			dumbTexts.remove(text,true);
+			dumbTexts.remove(text, true);
 		});
 		dumbTexts.clear();
 
-		animList=[];
+		animList = [];
 
-		if(dad!=null)
+		if (dad != null)
 			layeringbullshit.remove(dad);
 
-		if(bf!=null)
+		if (bf != null)
 			layeringbullshit.remove(bf);
 
-		if(ghostBF!=null)
+		if (ghostBF != null)
 			layeringbullshit.remove(ghostBF);
 
 		ghostBF = new Character(0, 0, daAnim);
@@ -214,7 +218,6 @@ class OffsetEditorState extends FlxState
 
 		if (isDad)
 		{
-
 			dad = new Character(0, 0, daAnim);
 			dad.screenCenter();
 			dad.debugMode = true;
@@ -233,7 +236,6 @@ class OffsetEditorState extends FlxState
 		}
 
 		genBoyOffsets();
-
 	}
 
 	function genBoyOffsets(pushList:Bool = true):Void
@@ -263,7 +265,6 @@ class OffsetEditorState extends FlxState
 			dumbTexts.remove(text, true);
 		});
 		dumbTexts.clear();
-
 	}
 
 	override function update(elapsed:Float)

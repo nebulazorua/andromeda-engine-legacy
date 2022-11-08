@@ -10,16 +10,13 @@ class Highscore
 	public static var songScores:Map<String, Int> = new Map<String, Int>();
 	#end
 
-
 	public static function saveScore(song:String, score:Int = 0, ?diff:Int = 0):Void
 	{
 		var daSong:String = formatSong(song, diff);
 
-
 		#if !switch
-		//NGio.postScore(score, song);
+		// NGio.postScore(score, song);
 		#end
-
 
 		if (songScores.exists(daSong))
 		{
@@ -32,11 +29,9 @@ class Highscore
 
 	public static function saveWeekScore(week:Int = 1, score:Int = 0, ?diff:Int = 0):Void
 	{
-
 		#if !switch
-		//NGio.postScore(score, "Week " + week);
+		// NGio.postScore(score, "Week " + week);
 		#end
-
 
 		var daWeek:String = formatSong('week' + week, diff);
 
@@ -58,7 +53,6 @@ class Highscore
 		songScores.set(song, score);
 		FlxG.save.data.songScores = songScores;
 		FlxG.save.flush();
-
 	}
 
 	public static function formatSong(song:String, diff:Int):String
@@ -71,10 +65,9 @@ class Highscore
 			daSong += '-hard';
 
 		/*var judgeMan = new JudgementManager(JudgementManager.getDataByName(currentOptions.judgementWindow));
-		var judgementData = judgeMan.getJudgeId();*/
+			var judgementData = judgeMan.getJudgeId(); */
 
 		// TODO: make ^ this work so highscore shit is dependant on judge windows
-
 
 		return daSong;
 	}

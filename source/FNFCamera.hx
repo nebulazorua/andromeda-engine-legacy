@@ -10,44 +10,50 @@ import flixel.math.FlxMath;
 import flixel.FlxSprite;
 import Options;
 
-class FNFCamera extends FlxCamera {
-  public var scrollOffset:FlxPoint = FlxPoint.get();
-  public var offset:FlxPoint = FlxPoint.get();
-  public var angleOffset(default, set):Float = 0;
+class FNFCamera extends FlxCamera
+{
+	public var scrollOffset:FlxPoint = FlxPoint.get();
+	public var offset:FlxPoint = FlxPoint.get();
+	public var angleOffset(default, set):Float = 0;
 
-  private var _scroll:FlxPoint = FlxPoint.get();
+	private var _scroll:FlxPoint = FlxPoint.get();
 
-  public var yaw(default, set):Float = 0;
-  public var pitch(default, set):Float = 0;
-  public var filters( get, null ):Array<BitmapFilter> = [];
-  public var useRaymarcher(default, set):Bool = true;
-  public var baseWidth:Float = FlxG.width;
-  public var baseHeight:Float = FlxG.height;
-  var raymarcher:RaymarchEffect = new RaymarchEffect();
-  var raymarcherShader:BitmapFilter;
+	public var yaw(default, set):Float = 0;
+	public var pitch(default, set):Float = 0;
+	public var filters(get, null):Array<BitmapFilter> = [];
+	public var useRaymarcher(default, set):Bool = true;
+	public var baseWidth:Float = FlxG.width;
+	public var baseHeight:Float = FlxG.height;
 
-  public function new(X:Int = 0, Y:Int = 0, Width:Int = 0, Height:Int = 0, Zoom:Float = 0){
-    super(X,Y,Width,Height,Zoom);
-    if(!OptionUtils.options.raymarcher)
-      useRaymarcher=false;
-    raymarcherShader = new ShaderFilter(raymarcher.shader);
+	var raymarcher:RaymarchEffect = new RaymarchEffect();
+	var raymarcherShader:BitmapFilter;
 
+	public function new(X:Int = 0, Y:Int = 0, Width:Int = 0, Height:Int = 0, Zoom:Float = 0)
+	{
+		super(X, Y, Width, Height, Zoom);
+		if (!OptionUtils.options.raymarcher)
+			useRaymarcher = false;
+		raymarcherShader = new ShaderFilter(raymarcher.shader);
 
-    if(useRaymarcher){
-      _filters = [raymarcherShader];
-    }
-  }
+		if (useRaymarcher)
+		{
+			_filters = [raymarcherShader];
+		}
+	}
 
-  public function addFilter(filter:BitmapFilter){
-    _filters.push(filter);
-  }
+	public function addFilter(filter:BitmapFilter)
+	{
+		_filters.push(filter);
+	}
 
-  public function delFilter(filter:BitmapFilter){
-    _filters.remove(filter);
-  }
+	public function delFilter(filter:BitmapFilter)
+	{
+		_filters.remove(filter);
+	}
 
-  override function updateFollow(){
-    // Either follow the object closely,
+	override function updateFollow()
+	{
+		// Either follow the object closely,
 		// or double check our deadzone and update accordingly.
 		if (deadzone == null)
 		{
@@ -129,87 +135,105 @@ class FNFCamera extends FlxCamera {
 				_scroll.y += (_scrollTarget.y - _scroll.y) * followLerp * FlxG.updateFramerate / 60;
 			}
 		}
-  }
+	}
 
-  override function updateScroll(){
-    var zoom = this.zoom / FlxG.initialZoom;
+	override function updateScroll()
+	{
+		var zoom = this.zoom / FlxG.initialZoom;
 
-    var minX:Null<Float> = minScrollX == null ? null : minScrollX - (zoom - 1) * width / (2 * zoom);
-    var maxX:Null<Float> = maxScrollX == null ? null : maxScrollX + (zoom - 1) * width / (2 * zoom);
-    var minY:Null<Float> = minScrollY == null ? null : minScrollY - (zoom - 1) * height / (2 * zoom);
-    var maxY:Null<Float> = maxScrollY == null ? null : maxScrollY + (zoom - 1) * height / (2 * zoom);
+		var minX:Null<Float> = minScrollX == null ? null : minScrollX - (zoom - 1) * width / (2 * zoom);
+		var maxX:Null<Float> = maxScrollX == null ? null : maxScrollX + (zoom - 1) * width / (2 * zoom);
+		var minY:Null<Float> = minScrollY == null ? null : minScrollY - (zoom - 1) * height / (2 * zoom);
+		var maxY:Null<Float> = maxScrollY == null ? null : maxScrollY + (zoom - 1) * height / (2 * zoom);
 
-    // Make sure we didn't go outside the camera's bounds
-    _scroll.x = FlxMath.bound(_scroll.x, minX, (maxX != null) ? maxX - width : null);
-    _scroll.y = FlxMath.bound(_scroll.y, minY, (maxY != null) ? maxY - height : null);
+		// Make sure we didn't go outside the camera's bounds
+		_scroll.x = FlxMath.bound(_scroll.x, minX, (maxX != null) ? maxX - width : null);
+		_scroll.y = FlxMath.bound(_scroll.y, minY, (maxY != null) ? maxY - height : null);
 
-    scroll.x = _scroll.x;
-    scroll.y = _scroll.y;
+		scroll.x = _scroll.x;
+		scroll.y = _scroll.y;
 
-    scroll.addPoint(scrollOffset);
+		scroll.addPoint(scrollOffset);
+	}
 
-  }
+	override function update(elapsed)
+	{
+		super.update(elapsed);
+		flashSprite.x += offset.x;
+		flashSprite.y += offset.y;
+	}
 
-  override function update(elapsed){
-    super.update(elapsed);
-    flashSprite.x += offset.x;
-    flashSprite.y += offset.y;
+	public function set_useRaymarcher(val:Bool)
+	{
+		if ((_filters is Array))
+		{
+			if (!val && _filters.contains(raymarcherShader))
+			{
+				_filters.remove(raymarcherShader);
+			}
+			else if (val && !_filters.contains(raymarcherShader))
+			{
+				_filters.push(raymarcherShader);
+			}
+		}
+		else if (val)
+		{
+			_filters = [raymarcherShader];
+		}
+		return useRaymarcher = val;
+	}
 
-  }
+	public function set_yaw(val:Float)
+	{
+		raymarcher.setYaw(val);
+		return yaw = val;
+	}
 
-  public function set_useRaymarcher(val:Bool){
-    if((_filters is Array)){
-      if(!val && _filters.contains(raymarcherShader)){
-        _filters.remove(raymarcherShader);
-      }else if(val && !_filters.contains(raymarcherShader) ){
-        _filters.push(raymarcherShader);
-      }
-    }else if(val){
-      _filters = [raymarcherShader];
-    }
-    return useRaymarcher = val;
-  }
+	public function set_pitch(val:Float)
+	{
+		raymarcher.setPitch(val);
+		return pitch = val;
+	}
 
-  public function set_yaw(val:Float){
-    raymarcher.setYaw(val);
-    return yaw = val;
-  }
+	override public function set_angle(val:Float)
+	{
+		flashSprite.rotation = val + angleOffset;
+		return angle = val;
+	}
 
-  public function set_pitch(val:Float){
-    raymarcher.setPitch(val);
-    return pitch = val;
-  }
+	public function set_angleOffset(val:Float)
+	{
+		flashSprite.rotation = angle + val;
+		return angleOffset = val;
+	}
 
-  override public function set_angle(val:Float){
-    flashSprite.rotation = val + angleOffset;
-    return angle = val;
-  }
+	public function get_filters()
+	{
+		return _filters;
+	}
 
-  public function set_angleOffset(val:Float){
-    flashSprite.rotation = angle + val;
-    return angleOffset = val;
-  }
+	override function setFilters(filters:Array<BitmapFilter>)
+	{
+		super.setFilters(filters);
+		if (useRaymarcher)
+		{
+			if (_filters != null)
+			{
+				_filters.push(raymarcherShader);
+			}
+			else
+			{
+				_filters = [raymarcherShader];
+			}
+		}
+	}
 
-  public function get_filters(){
-    return _filters;
-  }
+	override function destroy()
+	{
+		offset.put();
+		scrollOffset.put();
+		_scroll.put();
 
-  override function setFilters(filters:Array<BitmapFilter>){
-    super.setFilters(filters);
-    if(useRaymarcher){
-      if(_filters != null){
-        _filters.push(raymarcherShader);
-      }else{
-        _filters =[raymarcherShader];
-      }
-    }
-  }
-
-  override function destroy(){
-    offset.put();
-    scrollOffset.put();
-    _scroll.put();
-
-    super.destroy();
-  }
+		super.destroy();
+	}
 }

@@ -1,4 +1,5 @@
 package;
+
 import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.addons.text.FlxTypeText;
@@ -14,10 +15,11 @@ import flixel.math.FlxPoint;
 import flixel.system.FlxSound;
 import flixel.FlxBasic;
 
-
-class Notefield extends FlxTypedGroup<FlxBasic> {
-  public function new(){
-    super();
-    // TODO: create receptors n shit here
-  }
+class Notefield extends FlxTypedGroup<FlxBasic>
+{
+	public function new()
+	{
+		super();
+		// TODO: create receptors n shit here
+	}
 }

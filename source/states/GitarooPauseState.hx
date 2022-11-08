@@ -4,6 +4,7 @@ import flixel.FlxG;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import ui.*;
+
 class GitarooPauseState extends MusicBeatState
 {
 	var replayButton:FlxSprite;
@@ -47,8 +48,6 @@ class GitarooPauseState extends MusicBeatState
 		add(cancelButton);
 
 		changeThing();
-
-
 	}
 
 	override function update(elapsed:Float)

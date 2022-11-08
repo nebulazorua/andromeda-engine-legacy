@@ -9,11 +9,11 @@ import flixel.util.typeLimit.OneOfTwo;
 
 using StringTools;
 
-typedef VelocityChange = {
-		var startTime:Float;
-		var multiplier:Float;
+typedef VelocityChange =
+{
+	var startTime:Float;
+	var multiplier:Float;
 }
-
 
 typedef SwagSong =
 {
@@ -28,7 +28,6 @@ typedef SwagSong =
 	var stage:String;
 	var validScore:Bool;
 	var noteModifier:String;
-
 	@:optional var format:String;
 	@:optional var sliderVelocities:Array<VelocityChange>;
 	@:optional var initialSpeed:Float;
@@ -44,7 +43,7 @@ class Song
 	public var noteModifier:String;
 	public var speed:Float = 1;
 	public var initialSpeed:Float = 1;
-	public var sliderVelocities:Array<VelocityChange>=[];
+	public var sliderVelocities:Array<VelocityChange> = [];
 	public var player1:String = 'bf';
 	public var player2:String = 'dad';
 
@@ -57,13 +56,12 @@ class Song
 
 	public static function loadFromJson(jsonInput:String, ?folder:String):SwagSong
 	{
-		var rawJson = File.getContent(Paths.chart(jsonInput.toLowerCase(),folder.toLowerCase())).trim();
+		var rawJson = File.getContent(Paths.chart(jsonInput.toLowerCase(), folder.toLowerCase())).trim();
 
 		while (!rawJson.endsWith("}"))
 		{
 			rawJson = rawJson.substr(0, rawJson.length - 1);
 		}
-
 
 		return parseJSONshit(rawJson);
 	}
@@ -72,18 +70,20 @@ class Song
 	{
 		var cumData = Json.parse(rawJson);
 		var swagShit:SwagSong = cast cumData.song;
-		swagShit.initialSpeed=1;
-		if(cumData.sliderVelocities!=null){
+		swagShit.initialSpeed = 1;
+		if (cumData.sliderVelocities != null)
+		{
 			var shit:Array<VelocityChange> = cast cumData.sliderVelocities;
-			shit.sort((a,b)->Std.int(a.startTime-b.startTime));
+			shit.sort((a, b) -> Std.int(a.startTime - b.startTime));
 			swagShit.sliderVelocities = shit;
-
-		}else{
+		}
+		else
+		{
 			trace("SLIDERS");
 			swagShit.sliderVelocities = [
 				{
-					startTime:0,
-					multiplier:1
+					startTime: 0,
+					multiplier: 1
 				}
 			];
 		}

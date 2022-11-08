@@ -75,7 +75,8 @@ class Vector3
 	**/
 	public inline function add(a:Vector3, result:Vector3 = null):Vector3
 	{
-		if (result == null) result = new Vector3();
+		if (result == null)
+			result = new Vector3();
 		result.setTo(this.x + a.x, this.y + a.y, this.z + a.z);
 		return result;
 	}
@@ -111,16 +112,11 @@ class Vector3
 		@param alpha How far the interpolation is
 		@return A `Vector3 instance linearly interpolated`
 	**/
-
-	//https://gamedev.stackexchange.com/questions/18615/how-do-i-linearly-interpolate-between-two-vectors
-	public function lerp(goal:Vector3, alpha:Float):Vector3{
-		return new Vector3(
-			alpha*goal.x + x*(1-alpha),
-			alpha*goal.y + y*(1-alpha),
-			alpha*goal.z + z*(1-alpha)
-		);
+	// https://gamedev.stackexchange.com/questions/18615/how-do-i-linearly-interpolate-between-two-vectors
+	public function lerp(goal:Vector3, alpha:Float):Vector3
+	{
+		return new Vector3(alpha * goal.x + x * (1 - alpha), alpha * goal.y + y * (1 - alpha), alpha * goal.z + z * (1 - alpha));
 	}
-
 
 	/**
 		Copies the x, y and z component values of another `Vector3` instance
@@ -141,7 +137,8 @@ class Vector3
 	**/
 	public inline function crossProduct(a:Vector3, result:Vector3 = null):Vector3
 	{
-		if (result == null) result = new Vector3();
+		if (result == null)
+			result = new Vector3();
 		result.setTo(y * a.z - z * a.y, z * a.x - x * a.z, x * a.y - y * a.x);
 		return result;
 	}
@@ -230,9 +227,7 @@ class Vector3
 	**/
 	public inline function nearEquals(toCompare:Vector3, tolerance:Float):Bool
 	{
-		return Math.abs(x - toCompare.x) < tolerance
-			&& Math.abs(y - toCompare.y) < tolerance
-			&& Math.abs(z - toCompare.z) < tolerance;
+		return Math.abs(x - toCompare.x) < tolerance && Math.abs(y - toCompare.y) < tolerance && Math.abs(z - toCompare.z) < tolerance;
 	}
 
 	/**
@@ -297,7 +292,8 @@ class Vector3
 	**/
 	public inline function subtract(a:Vector3, result:Vector3 = null):Vector3
 	{
-		if (result == null) result = new Vector3();
+		if (result == null)
+			result = new Vector3();
 		result.setTo(x - a.x, y - a.y, z - a.z);
 		return result;
 	}

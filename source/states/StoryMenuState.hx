@@ -21,6 +21,7 @@ import flixel.input.mouse.FlxMouseEventManager;
 import EngineData.WeekData;
 import EngineData.SongData;
 import ui.*;
+
 using StringTools;
 
 class StoryMenuState extends MusicBeatState
@@ -181,9 +182,7 @@ class StoryMenuState extends MusicBeatState
 
 		trace("Line 165");
 
-		FlxG.stage.addEventListener(MouseEvent.MOUSE_WHEEL,scroll);
-
-
+		FlxG.stage.addEventListener(MouseEvent.MOUSE_WHEEL, scroll);
 	}
 
 	override function update(elapsed:Float)
@@ -219,7 +218,7 @@ class StoryMenuState extends MusicBeatState
 					changeWeek(1);
 				}
 
-				if (controls.RIGHT || FlxG.mouse.overlaps(rightArrow) && FlxG.mouse.pressed )
+				if (controls.RIGHT || FlxG.mouse.overlaps(rightArrow) && FlxG.mouse.pressed)
 					rightArrow.animation.play('press')
 				else
 					rightArrow.animation.play('idle');
@@ -229,7 +228,7 @@ class StoryMenuState extends MusicBeatState
 				else
 					leftArrow.animation.play('idle');
 
-				if (controls.RIGHT_P || FlxG.mouse.overlaps(rightArrow) && FlxG.mouse.justPressed )
+				if (controls.RIGHT_P || FlxG.mouse.overlaps(rightArrow) && FlxG.mouse.justPressed)
 					changeDifficulty(1);
 				if (controls.LEFT_P || FlxG.mouse.overlaps(leftArrow) && FlxG.mouse.justPressed)
 					changeDifficulty(-1);
@@ -269,7 +268,7 @@ class StoryMenuState extends MusicBeatState
 			}
 
 			selectedWeek = true;
-			PlayState.setStoryWeek(weekData[curWeek],curDifficulty);
+			PlayState.setStoryWeek(weekData[curWeek], curDifficulty);
 			new FlxTimer().start(1, function(tmr:FlxTimer)
 			{
 				LoadingState.loadAndSwitchState(new PlayState(), true);
@@ -317,7 +316,8 @@ class StoryMenuState extends MusicBeatState
 	var lerpScore:Int = 0;
 	var intendedScore:Int = 0;
 
-	function scroll(event:MouseEvent){
+	function scroll(event:MouseEvent)
+	{
 		changeWeek(-event.delta);
 	}
 
@@ -374,11 +374,11 @@ class StoryMenuState extends MusicBeatState
 		#end
 	}
 
-	override function switchTo(next:FlxState){
+	override function switchTo(next:FlxState)
+	{
 		// Do all cleanup of stuff here! This makes it so you dont need to copy+paste shit to every switchState
-		FlxG.stage.removeEventListener(MouseEvent.MOUSE_WHEEL,scroll);
+		FlxG.stage.removeEventListener(MouseEvent.MOUSE_WHEEL, scroll);
 
 		return super.switchTo(next);
 	}
-
 }

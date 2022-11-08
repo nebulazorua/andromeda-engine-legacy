@@ -7,12 +7,10 @@ import flixel.FlxState;
 import flixel.FlxSprite;
 import flixel.graphics.frames.FlxAtlasFrames;
 import flixel.util.FlxTimer;
-
 import openfl.utils.Assets;
 import lime.utils.Assets as LimeAssets;
 import lime.utils.AssetLibrary;
 import lime.utils.AssetManifest;
-
 import haxe.io.Path;
 
 class LoadingState extends MusicBeatState
@@ -53,26 +51,23 @@ class LoadingState extends MusicBeatState
 		add(gfDance);
 		add(logo);
 
-		initSongsManifest().onComplete
-		(
-			function (lib)
-			{
-				callbacks = new MultiCallback(onLoad);
-				var introComplete = callbacks.add("introComplete");
-				checkLoadSong(getSongPath());
-				if (PlayState.SONG.needsVoices)
-					checkLoadSong(getVocalPath());
-				checkLibrary("shared");
-				if (PlayState.songData!=null)
-					checkLibrary(PlayState.songData.loadingPath);
-				else
-					checkLibrary("tutorial");
+		initSongsManifest().onComplete(function(lib)
+		{
+			callbacks = new MultiCallback(onLoad);
+			var introComplete = callbacks.add("introComplete");
+			checkLoadSong(getSongPath());
+			if (PlayState.SONG.needsVoices)
+				checkLoadSong(getVocalPath());
+			checkLibrary("shared");
+			if (PlayState.songData != null)
+				checkLibrary(PlayState.songData.loadingPath);
+			else
+				checkLibrary("tutorial");
 
-				var fadeTime = 0.5;
-				FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
-				new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
-			}
-		);
+			var fadeTime = 0.5;
+			FlxG.camera.fade(FlxG.camera.bgColor, fadeTime, true);
+			new FlxTimer().start(fadeTime + MIN_TIME, function(_) introComplete());
+		});
 	}
 
 	function checkLoadSong(path:String)
@@ -86,7 +81,10 @@ class LoadingState extends MusicBeatState
 			// @:privateAccess
 			// library.pathGroups.set(symbolPath, [library.__cacheBreak(symbolPath)]);
 			var callback = callbacks.add("song:" + path);
-			Assets.loadSound(path).onComplete(function (_) { callback(); });
+			Assets.loadSound(path).onComplete(function(_)
+			{
+				callback();
+			});
 		}
 	}
 
@@ -100,7 +98,10 @@ class LoadingState extends MusicBeatState
 				throw "Missing library: " + library;
 
 			var callback = callbacks.add("library:" + library);
-			Assets.loadLibrary(library).onComplete(function (_) { callback(); });
+			Assets.loadLibrary(library).onComplete(function(_)
+			{
+				callback();
+			});
 		}
 	}
 
@@ -247,7 +248,7 @@ class LoadingState extends MusicBeatState
 			}
 		}).onError(function(_)
 		{
-			promise.error("There is no asset library with an ID of \"" + id + "\"");
+				promise.error("There is no asset library with an ID of \"" + id + "\"");
 		});
 
 		return promise.future;
@@ -264,7 +265,7 @@ class MultiCallback
 	var unfired = new Map<String, Void->Void>();
 	var fired = new Array<String>();
 
-	public function new (callback:Void->Void, logId:String = null)
+	public function new(callback:Void->Void, logId:String = null)
 	{
 		this.callback = callback;
 		this.logId = logId;
@@ -276,7 +277,7 @@ class MultiCallback
 		length++;
 		numRemaining++;
 		var func:Void->Void = null;
-		func = function ()
+		func = function()
 		{
 			if (unfired.exists(id))
 			{
@@ -307,6 +308,9 @@ class MultiCallback
 			trace('$logId: $msg');
 	}
 
-	public function getFired() return fired.copy();
-	public function getUnfired() return [for (id in unfired.keys()) id];
+	public function getFired()
+		return fired.copy();
+
+	public function getUnfired()
+		return [for (id in unfired.keys()) id];
 }

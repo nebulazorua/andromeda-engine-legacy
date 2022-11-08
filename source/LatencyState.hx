@@ -34,7 +34,6 @@ class LatencyState extends FlxState
 		add(strumLine);
 
 		Conductor.changeBPM(120);
-
 	}
 
 	override function update(elapsed:Float)

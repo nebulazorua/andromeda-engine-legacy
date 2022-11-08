@@ -14,6 +14,7 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import ui.*;
+
 using StringTools;
 
 class PauseSubState extends MusicBeatSubstate
@@ -27,11 +28,12 @@ class PauseSubState extends MusicBeatSubstate
 		#if ALLOW_SET_STARTPOS
 		"Set Start Position",
 		#end
-		'Exit to menu'];
+		'Exit to menu'
+	];
 	var curSelected:Int = 0;
 
 	var pauseMusic:FlxSound;
-	var countingDown:Bool=false;
+	var countingDown:Bool = false;
 
 	public function new(x:Float, y:Float)
 	{
@@ -75,14 +77,11 @@ class PauseSubState extends MusicBeatSubstate
 		grpMenuShit = new FlxTypedGroup<Alphabet>();
 		add(grpMenuShit);
 
-		if(PlayState.startPos>0)
-			menuItems.insert(2,"Restart from beginning");
+		if (PlayState.startPos > 0)
+			menuItems.insert(2, "Restart from beginning");
 
-
-		if(PlayState.inCharter)
-			menuItems.insert(menuItems.length,"Exit to charter");
-
-
+		if (PlayState.inCharter)
+			menuItems.insert(menuItems.length, "Exit to charter");
 
 		for (i in 0...menuItems.length)
 		{
@@ -128,19 +127,17 @@ class PauseSubState extends MusicBeatSubstate
 				case "Restart Song":
 					FlxG.resetState();
 				case "Restart from beginning":
-					PlayState.startPos=0;
+					PlayState.startPos = 0;
 					FlxG.resetState();
 				case "Set Start Position":
 					PlayState.startPos = Conductor.rawSongPos;
 				case "Exit to charter":
 					FlxG.switchState(new ChartingState());
 				case "Exit to menu":
-
-					if(PlayState.isStoryMode)
+					if (PlayState.isStoryMode)
 						FlxG.switchState(new StoryMenuState());
 					else
 						FlxG.switchState(new FreeplayState());
-
 
 					Cache.clear();
 			}
