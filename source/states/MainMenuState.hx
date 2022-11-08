@@ -16,14 +16,18 @@ import flixel.tweens.FlxTween;
 import flixel.util.FlxColor;
 import lime.app.Application;
 import haxe.Exception;
+
 using StringTools;
+
 import flixel.util.FlxTimer;
 import Options;
 import flixel.input.mouse.FlxMouseEventManager;
 import ui.*;
+
 class MainMenuState extends MusicBeatState
 {
 	var curSelected:Int = 0;
+
 	public var currentOptions:Options;
 
 	var menuItems:FlxTypedGroup<FlxSprite>;
@@ -38,18 +42,25 @@ class MainMenuState extends MusicBeatState
 	var magenta:FlxSprite;
 	var camFollow:FlxObject;
 
-	function onMouseDown(object:FlxObject){
-		if(!selectedSomethin){
-			if(object==gfDance){
-				var anims = ["singUP","singLEFT","singRIGHT","singDOWN"];
-				var sounds = ["GF_1","GF_2","GF_3","GF_4"];
-				var anim = FlxG.random.int(0,3);
-				gfDance.holdTimer=0;
+	function onMouseDown(object:FlxObject)
+	{
+		if (!selectedSomethin)
+		{
+			if (object == gfDance)
+			{
+				var anims = ["singUP", "singLEFT", "singRIGHT", "singDOWN"];
+				var sounds = ["GF_1", "GF_2", "GF_3", "GF_4"];
+				var anim = FlxG.random.int(0, 3);
+				gfDance.holdTimer = 0;
 				gfDance.playAnim(anims[anim]);
 				FlxG.sound.play(Paths.sound(sounds[anim]));
-			}else{
-				for(obj in menuItems.members){
-					if(obj==object){
+			}
+			else
+			{
+				for (obj in menuItems.members)
+				{
+					if (obj == object)
+					{
 						accept();
 						break;
 					}
@@ -58,29 +69,35 @@ class MainMenuState extends MusicBeatState
 		}
 	}
 
-	function onMouseUp(object:FlxObject){
-
+	function onMouseUp(object:FlxObject)
+	{
 	}
 
-	function onMouseOver(object:FlxObject){
-		if(!selectedSomethin){
-			for(idx in 0...menuItems.members.length){
+	function onMouseOver(object:FlxObject)
+	{
+		if (!selectedSomethin)
+		{
+			for (idx in 0...menuItems.members.length)
+			{
 				var obj = menuItems.members[idx];
-				if(obj==object){
-					if(idx!=curSelected){
+				if (obj == object)
+				{
+					if (idx != curSelected)
+					{
 						FlxG.sound.play(Paths.sound('scrollMenu'));
-						changeItem(idx,true);
+						changeItem(idx, true);
 					}
 				}
 			}
 		}
 	}
 
-	function onMouseOut(object:FlxObject){
-
+	function onMouseOut(object:FlxObject)
+	{
 	}
 
-	function accept(){
+	function accept()
+	{
 		if (optionShit[curSelected] == 'donate')
 		{
 			#if linux
@@ -91,16 +108,19 @@ class MainMenuState extends MusicBeatState
 		}
 		else
 		{
-			if(!currentOptions.oldMenus)
+			if (!currentOptions.oldMenus)
 			{
 				gfDance.playAnim('cheer');
 			}
 			selectedSomethin = true;
 			FlxG.sound.play(Paths.sound('confirmMenu'));
-			if(OptionUtils.options.menuFlash){
+			if (OptionUtils.options.menuFlash)
+			{
 				FlxFlicker.flicker(magenta, 1.1, 0.15, false);
-			}else{
-				magenta.visible=true;
+			}
+			else
+			{
+				magenta.visible = true;
 			}
 
 			menuItems.forEach(function(spr:FlxSprite)
@@ -117,7 +137,8 @@ class MainMenuState extends MusicBeatState
 				}
 				else
 				{
-					if(OptionUtils.options.menuFlash){
+					if (OptionUtils.options.menuFlash)
+					{
 						FlxFlicker.flicker(spr, 1, 0.06, false, false, function(flick:FlxFlicker)
 						{
 							var daChoice:String = optionShit[curSelected];
@@ -135,8 +156,11 @@ class MainMenuState extends MusicBeatState
 									FlxG.switchState(new OptionsState());
 							}
 						});
-					}else{
-						new FlxTimer().start(1, function(tmr:FlxTimer){
+					}
+					else
+					{
+						new FlxTimer().start(1, function(tmr:FlxTimer)
+						{
 							var daChoice:String = optionShit[curSelected];
 
 							switch (daChoice)
@@ -199,64 +223,62 @@ class MainMenuState extends MusicBeatState
 		add(magenta);
 		// magenta.scrollFactor.set();
 
-		if(!currentOptions.oldMenus){
-
-			gfDance = new Character(FlxG.width * 0.4 + 20, FlxG.height * 0.07,"gf",false);
+		if (!currentOptions.oldMenus)
+		{
+			gfDance = new Character(FlxG.width * 0.4 + 20, FlxG.height * 0.07, "gf", false);
 			gfDance.antialiasing = true;
 			gfDance.scrollFactor.set();
 			add(gfDance);
 
 			gfDance.playAnim('danceLeft');
 
-			FlxMouseEventManager.add(gfDance,onMouseDown,onMouseUp,onMouseOver,onMouseOut);
+			FlxMouseEventManager.add(gfDance, onMouseDown, onMouseUp, onMouseOver, onMouseOut);
 		}
 
 		menuItems = new FlxTypedGroup<FlxSprite>();
 		add(menuItems);
 
-		if(currentOptions.oldMenus)
+		if (currentOptions.oldMenus)
 		{
 			var tex = Paths.getSparrowAtlas('FNF_main_menu_assets');
 
 			for (i in 0...optionShit.length)
-				{
-					var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
-					menuItem.frames = tex;
-					menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
-					menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
-					menuItem.animation.play('idle');
-					menuItem.ID = i;
-					menuItem.screenCenter(X);
-					menuItems.add(menuItem);
-					menuItem.scrollFactor.set();
-					menuItem.antialiasing = true;
+			{
+				var menuItem:FlxSprite = new FlxSprite(0, 60 + (i * 160));
+				menuItem.frames = tex;
+				menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
+				menuItem.animation.addByPrefix('selected', optionShit[i] + " white", 24);
+				menuItem.animation.play('idle');
+				menuItem.ID = i;
+				menuItem.screenCenter(X);
+				menuItems.add(menuItem);
+				menuItem.scrollFactor.set();
+				menuItem.antialiasing = true;
 
-					FlxMouseEventManager.add(menuItem,onMouseDown,onMouseUp,onMouseOver,onMouseOut);
-				}
+				FlxMouseEventManager.add(menuItem, onMouseDown, onMouseUp, onMouseOver, onMouseOut);
+			}
 		}
 		else
 		{
 			var tex = Paths.getSparrowAtlas('FNF_main_menu_assets_new');
 
 			for (i in 0...optionShit.length)
-				{
-					var menuItem:FlxSprite = new FlxSprite(20, FlxG.height/2 + ((i-1) * 160));
-					menuItem.frames = tex;
-					menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
-					menuItem.animation.addByPrefix('selected', optionShit[i] + " alt", 24);
-					menuItem.animation.play('idle');
-					menuItem.ID = i;
-					//menuItem.screenCenter(X);
-					menuItems.add(menuItem);
-					menuItem.updateHitbox();
-					menuItem.scrollFactor.set();
-					menuItem.antialiasing = true;
+			{
+				var menuItem:FlxSprite = new FlxSprite(20, FlxG.height / 2 + ((i - 1) * 160));
+				menuItem.frames = tex;
+				menuItem.animation.addByPrefix('idle', optionShit[i] + " basic", 24);
+				menuItem.animation.addByPrefix('selected', optionShit[i] + " alt", 24);
+				menuItem.animation.play('idle');
+				menuItem.ID = i;
+				// menuItem.screenCenter(X);
+				menuItems.add(menuItem);
+				menuItem.updateHitbox();
+				menuItem.scrollFactor.set();
+				menuItem.antialiasing = true;
 
-					FlxMouseEventManager.add(menuItem,onMouseDown,onMouseUp,onMouseOver,onMouseOut);
-				}
+				FlxMouseEventManager.add(menuItem, onMouseDown, onMouseUp, onMouseOver, onMouseOut);
+			}
 		}
-
-
 
 		FlxG.camera.follow(camFollow, null, Main.adjustFPS(0.06));
 
@@ -268,17 +290,20 @@ class MainMenuState extends MusicBeatState
 		// NG.core.calls.event.logEvent('swag').send();
 
 		changeItem();
-
 	}
 
 	var selectedSomethin:Bool = false;
-	override function beatHit(){
+
+	override function beatHit()
+	{
 		super.beatHit();
-		if(gfDance!=null){
-			if (!gfDance.animation.curAnim.name.startsWith("sing") && gfDance.animation.curAnim.name!="cheer")
+		if (gfDance != null)
+		{
+			if (!gfDance.animation.curAnim.name.startsWith("sing") && gfDance.animation.curAnim.name != "cheer")
 				gfDance.dance();
 		}
 	}
+
 	override function update(elapsed:Float)
 	{
 		if (FlxG.sound.music.volume < 0.8)
@@ -289,7 +314,7 @@ class MainMenuState extends MusicBeatState
 		if (FlxG.sound.music != null)
 			Conductor.songPosition = FlxG.sound.music.time;
 
-		FlxG.mouse.visible=true;
+		FlxG.mouse.visible = true;
 
 		if (!selectedSomethin)
 		{
@@ -313,20 +338,23 @@ class MainMenuState extends MusicBeatState
 
 		super.update(elapsed);
 
-		if(currentOptions.oldMenus)
+		if (currentOptions.oldMenus)
+		{
+			menuItems.forEach(function(spr:FlxSprite)
 			{
-				menuItems.forEach(function(spr:FlxSprite)
-					{
-						spr.screenCenter(X);
-					});
-			}
+				spr.screenCenter(X);
+			});
+		}
 	}
 
-	function changeItem(huh:Int = 0,force:Bool=false)
+	function changeItem(huh:Int = 0, force:Bool = false)
 	{
-		if(force){
-			curSelected=huh;
-		}else{
+		if (force)
+		{
+			curSelected = huh;
+		}
+		else
+		{
 			curSelected += huh;
 
 			if (curSelected >= menuItems.length)

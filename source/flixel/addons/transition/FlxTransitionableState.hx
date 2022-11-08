@@ -2,18 +2,16 @@
 // replaces the TransitionData bullshit with substates
 // the substate should have a start, setStatus and finishCallback property
 // after that, how the substate behaves is up to you.
-
 package flixel.addons.transition;
 
 import flixel.FlxState;
 import flixel.FlxSubState;
 
-
 class FlxTransitionableState extends FlxState
 {
-  // global default transitions for ALL states, used if transIn/transOut are null
-  public static var defaultTransIn:Class<TransitionSubstate> = null;
-  public static var defaultTransOut:Class<TransitionSubstate> = null;
+	// global default transitions for ALL states, used if transIn/transOut are null
+	public static var defaultTransIn:Class<TransitionSubstate> = null;
+	public static var defaultTransOut:Class<TransitionSubstate> = null;
 
 	public static var skipNextTransIn:Bool = false;
 	public static var skipNextTransOut:Bool = false;
@@ -37,17 +35,16 @@ class FlxTransitionableState extends FlxState
 
 		if (transIn == null && defaultTransIn != null)
 		{
-      trace("in");
+			trace("in");
 			transIn = defaultTransIn;
 		}
 		if (transOut == null && defaultTransOut != null)
 		{
-      trace("out");
+			trace("out");
 			transOut = defaultTransOut;
 		}
 
 		super();
-
 	}
 
 	override public function destroy():Void
@@ -66,7 +63,7 @@ class FlxTransitionableState extends FlxState
 
 	override public function switchTo(nextState:FlxState):Bool
 	{
-    trace(!hasTransOut, transOutFinished);
+		trace(!hasTransOut, transOutFinished);
 		if (!hasTransOut)
 			return true;
 
@@ -109,11 +106,10 @@ class FlxTransitionableState extends FlxState
 				return;
 			}
 
-
-      var trans = Type.createInstance(transIn, []);
+			var trans = Type.createInstance(transIn, []);
 			openSubState(trans);
 
-      trans.finishCallback = finishTransIn;
+			trans.finishCallback = finishTransIn;
 			trans.start(OUT);
 		}
 	}
@@ -126,10 +122,10 @@ class FlxTransitionableState extends FlxState
 		_onExit = OnExit;
 		if (hasTransOut)
 		{
-      var trans = Type.createInstance(transOut, []);
+			var trans = Type.createInstance(transOut, []);
 			openSubState(trans);
 
-      trans.finishCallback = finishTransOut;
+			trans.finishCallback = finishTransOut;
 			trans.start(IN);
 		}
 		else

@@ -30,6 +30,7 @@ import lime.app.Application;
 import openfl.Assets;
 import flixel.addons.transition.FlxTransitionSprite.TransitionStatus;
 import ui.*;
+
 using StringTools;
 
 class TitleState extends MusicBeatState
@@ -48,7 +49,6 @@ class TitleState extends MusicBeatState
 
 	override public function create():Void
 	{
-
 		curWacky = FlxG.random.getObject(getIntroTextShit());
 
 		// DEBUG BULLSHIT
@@ -57,10 +57,10 @@ class TitleState extends MusicBeatState
 
 		/*NGio.noLogin(APIStuff.API);
 
-		#if ng
-		var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
-		trace('NEWGROUNDS LOL');
-		#end*/
+			#if ng
+			var ng:NGio = new NGio(APIStuff.API, APIStuff.EncKey);
+			trace('NEWGROUNDS LOL');
+			#end */
 
 		#if FREEPLAY
 		FlxG.switchState(new FreeplayState());
@@ -84,7 +84,7 @@ class TitleState extends MusicBeatState
 
 	function startIntro()
 	{
-		FlxG.autoPause=true;
+		FlxG.autoPause = true;
 		if (!initialized)
 		{
 			// HAD TO MODIFY SOME BACKEND SHIT
@@ -106,7 +106,7 @@ class TitleState extends MusicBeatState
 		// bg.updateHitbox();
 		add(bg);
 
-		if(EngineData.options.oldTitle)
+		if (EngineData.options.oldTitle)
 		{
 			logoBl = new FlxSprite(-150, -100);
 			logoBl.frames = Paths.getSparrowAtlas('logoBumpin');
@@ -149,21 +149,23 @@ class TitleState extends MusicBeatState
 			speaker.antialiasing = true;
 			add(speaker);
 
-			speaker.animation.play('normal',true);
+			speaker.animation.play('normal', true);
 		}
 
-		//i know its wasteful but im a lazy ass
+		// i know its wasteful but im a lazy ass
 
 		gfDance = new FlxSprite(FlxG.width * 0.4, FlxG.height * 0.07);
 		gfDance.frames = Paths.getSparrowAtlas('gfDanceTitle');
 		gfDance.animation.addByIndices('danceLeft', 'gfDance', [30, 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14], "", 24, false);
 		gfDance.animation.addByIndices('danceRight', 'gfDance', [15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29], "", 24, false);
 		gfDance.antialiasing = true;
-		if(EngineData.options.oldTitle)
+		if (EngineData.options.oldTitle)
 		{
 			add(gfDance);
 			titleText = new FlxSprite(100, FlxG.height * 0.8);
-		}else{
+		}
+		else
+		{
 			titleText = new FlxSprite(FlxG.width * 0.099, FlxG.height * 0.825);
 		}
 		add(logoBl);
@@ -276,13 +278,12 @@ class TitleState extends MusicBeatState
 
 		if (pressedEnter && !transitioning && skippedIntro)
 		{
+			titleText.animation.play('press', true);
 
-			titleText.animation.play('press',true);
-
-			if(!EngineData.options.oldTitle)
+			if (!EngineData.options.oldTitle)
 			{
-				speaker.animation.play('lit',true);
-				//bg.visible = false;
+				speaker.animation.play('lit', true);
+				// bg.visible = false;
 				bgLit.visible = true;
 			}
 
@@ -299,17 +300,17 @@ class TitleState extends MusicBeatState
 				var version:String = "v" + Application.current.meta.get('version');
 
 				/*if (version.trim() != NGio.GAME_VER_NUMS.trim() && !OutdatedSubState.leftState)
-				{
-					FlxG.switchState(new OutdatedSubState());
-					trace('OLD VERSION!');
-					trace('old ver');
-					trace(version.trim());
-					trace('cur ver');
-					trace(NGio.GAME_VER_NUMS.trim());
-				}
-				else
-				{
-					FlxG.switchState(new MainMenuState());
+					{
+						FlxG.switchState(new OutdatedSubState());
+						trace('OLD VERSION!');
+						trace('old ver');
+						trace(version.trim());
+						trace('cur ver');
+						trace(NGio.GAME_VER_NUMS.trim());
+					}
+					else
+					{
+						FlxG.switchState(new MainMenuState());
 				}*/
 				FlxG.switchState(new MainMenuState());
 			});

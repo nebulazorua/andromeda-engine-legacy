@@ -2,19 +2,19 @@ package;
 
 import flixel.util.typeLimit.OneOfTwo;
 
-typedef Event = {
-	
-	@:optional var time: Float;
-	@:optional var name: String;
-	@:optional var args: Array<Dynamic>;
+typedef Event =
+{
+	@:optional var time:Float;
+	@:optional var name:String;
+	@:optional var args:Array<Dynamic>;
 
-	@:optional var events: Array<Event>;
+	@:optional var events:Array<Event>;
 }
 
 typedef SwagSection =
 {
 	var sectionNotes:Array<Array<Dynamic>>;
-	@:optional var  lengthInSteps:Int;
+	@:optional var lengthInSteps:Int;
 	var typeOfSection:Int;
 	var mustHitSection:Bool;
 	var bpm:Int;
@@ -38,6 +38,5 @@ class Section
 
 	public function new(lengthInSteps:Int = 16)
 	{
-		
 	}
 }

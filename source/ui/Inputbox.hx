@@ -5,41 +5,43 @@ import openfl.ui.Keyboard;
 import flash.events.KeyboardEvent;
 import flash.errors.Error;
 
-class Inputbox extends FlxInputText {
-  public var loseFocusOnEnter:Bool=true;
-  private override function filter(text:String):String
-  {
-    if (forceCase == FlxInputText.UPPER_CASE)
-    {
-      text = text.toUpperCase();
-    }
-    else if (forceCase == FlxInputText.LOWER_CASE)
-    {
-      text = text.toLowerCase();
-    }
+class Inputbox extends FlxInputText
+{
+	public var loseFocusOnEnter:Bool = true;
 
-    if (filterMode != FlxInputText.NO_FILTER)
-    {
-      var pattern:EReg;
-      switch (filterMode)
-      {
-        case FlxInputText.ONLY_ALPHA:
-          pattern = ~/[^a-zA-Z]*/g;
-        case FlxInputText.ONLY_NUMERIC:
-          pattern = ~/[^0-9.+-]*/g;
-        case FlxInputText.ONLY_ALPHANUMERIC:
-          pattern = ~/[^a-zA-Z0-9]*/g;
-        case FlxInputText.CUSTOM_FILTER:
-          pattern = customFilterPattern;
-        default:
-          throw new Error("FlxInputText: Unknown filterMode (" + filterMode + ")");
-      }
-      text = pattern.replace(text, "");
-    }
-    return text;
-  }
+	private override function filter(text:String):String
+	{
+		if (forceCase == FlxInputText.UPPER_CASE)
+		{
+			text = text.toUpperCase();
+		}
+		else if (forceCase == FlxInputText.LOWER_CASE)
+		{
+			text = text.toLowerCase();
+		}
 
-  private override function onKeyDown(e:KeyboardEvent):Void
+		if (filterMode != FlxInputText.NO_FILTER)
+		{
+			var pattern:EReg;
+			switch (filterMode)
+			{
+				case FlxInputText.ONLY_ALPHA:
+					pattern = ~/[^a-zA-Z]*/g;
+				case FlxInputText.ONLY_NUMERIC:
+					pattern = ~/[^0-9.+-]*/g;
+				case FlxInputText.ONLY_ALPHANUMERIC:
+					pattern = ~/[^a-zA-Z0-9]*/g;
+				case FlxInputText.CUSTOM_FILTER:
+					pattern = customFilterPattern;
+				default:
+					throw new Error("FlxInputText: Unknown filterMode (" + filterMode + ")");
+			}
+			text = pattern.replace(text, "");
+		}
+		return text;
+	}
+
+	private override function onKeyDown(e:KeyboardEvent):Void
 	{
 		var key:Int = e.keyCode;
 
@@ -103,11 +105,12 @@ class Inputbox extends FlxInputText {
 			else if (key == 13)
 			{
 				onChange(FlxInputText.ENTER_ACTION);
-        if(loseFocusOnEnter){
-          hasFocus = false;
-          if (focusLost != null)
-            focusLost();
-        }
+				if (loseFocusOnEnter)
+				{
+					hasFocus = false;
+					if (focusLost != null)
+						focusLost();
+				}
 			}
 			// Actually add some text
 			else
@@ -116,9 +119,9 @@ class Inputbox extends FlxInputText {
 				{
 					return;
 				}
-        var char = String.fromCharCode(e.charCode);
-        if(e.shiftKey || Keyboard.capsLock)
-          char = char.toUpperCase();
+				var char = String.fromCharCode(e.charCode);
+				if (e.shiftKey || Keyboard.capsLock)
+					char = char.toUpperCase();
 
 				var newText:String = filter(char);
 
@@ -132,10 +135,10 @@ class Inputbox extends FlxInputText {
 		}
 	}
 
-  override public function update(elapsed:Float):Void
-  {
-    super.update(elapsed);
-    if(visible==false)hasFocus=false;
-  }
-
+	override public function update(elapsed:Float):Void
+	{
+		super.update(elapsed);
+		if (visible == false)
+			hasFocus = false;
+	}
 }

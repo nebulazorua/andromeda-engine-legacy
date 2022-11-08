@@ -21,14 +21,15 @@ class MusicBeatState extends FlxUIState
 	public static var currentState:FlxState;
 
 	public static var times:Array<Float> = [];
+
 	private var lastBeat:Float = 0;
 	private var lastStep:Float = 0;
 
 	public var curStep:Int = 0;
 	public var curBeat:Int = 0;
-	public var curDecStep:Float=0;
-	public var curDecBeat:Float=0;
-	public var canChangeVolume:Bool=true;
+	public var curDecStep:Float = 0;
+	public var curDecBeat:Float = 0;
+	public var canChangeVolume:Bool = true;
 
 	public var volumeDownKeys:Array<FlxKey> = [MINUS, NUMPADMINUS];
 	public var volumeUpKeys:Array<FlxKey> = [PLUS, NUMPADPLUS];
@@ -40,11 +41,11 @@ class MusicBeatState extends FlxUIState
 
 	override function create()
 	{
-		//trace(Type.getClassName(Type.getClass(lastState)), Type.getClassName(Type.getClass(this)));
-		//if(Type.getClassName(Type.getClass(lastState))!=Type.getClassName(Type.getClass(this))){
-			trace("clearing cache");
-			Cache.wipe();
-		//}
+		// trace(Type.getClassName(Type.getClass(lastState)), Type.getClassName(Type.getClass(this)));
+		// if(Type.getClassName(Type.getClass(lastState))!=Type.getClassName(Type.getClass(this))){
+		trace("clearing cache");
+		Cache.wipe();
+		// }
 		super.create();
 	}
 
@@ -52,7 +53,7 @@ class MusicBeatState extends FlxUIState
 
 	override function update(elapsed:Float)
 	{
-		//everyStep();
+		// everyStep();
 		var oldStep:Int = curStep;
 
 		updateCurStep();
@@ -61,9 +62,9 @@ class MusicBeatState extends FlxUIState
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
 
-
 		#if FLX_KEYBOARD
-		if(canChangeVolume){
+		if (canChangeVolume)
+		{
 			if (FlxG.keys.anyJustReleased(volumeUpKeys))
 				FlxG.sound.changeVolume(0.1);
 			else if (FlxG.keys.anyJustReleased(volumeDownKeys))
@@ -86,7 +87,7 @@ class MusicBeatState extends FlxUIState
 	private function updateBeat():Void
 	{
 		curBeat = Math.floor(curStep / 4);
-		curDecBeat = curDecStep/4;
+		curDecBeat = curDecStep / 4;
 	}
 
 	private function updateCurStep():Void
@@ -106,32 +107,39 @@ class MusicBeatState extends FlxUIState
 
 	public function beatHit():Void
 	{
-		//do literally nothing dumbass
+		// do literally nothing dumbass
 	}
 
-	override function switchTo(next:FlxState){
-		MusicBeatState.lastState=FlxG.state;
+	override function switchTo(next:FlxState)
+	{
+		MusicBeatState.lastState = FlxG.state;
 		trace("i want " + Type.typeof(next) + " and am in " + Type.typeof(FlxG.state));
 		trace("last state is " + Type.typeof(MusicBeatState.lastState));
 		return super.switchTo(next);
 	}
 
-	override function add(obj:FlxBasic){
-    if(OptionUtils.options.antialiasing==false){
-      if((obj is FlxSprite)){
-        var sprite:FlxSprite = cast obj;
-        sprite.antialiasing=false;
-      }else if((obj is FlxTypedGroup)){
-        var group:FlxTypedGroup<FlxSprite> = cast obj;
-        for(o in group.members){
-          if((o is FlxSprite)){
-            var sprite:FlxSprite = cast o;
-            sprite.antialiasing=false;
-          }
-        }
-      }
-    }
-    return super.add(obj);
-  }
-
+	override function add(obj:FlxBasic)
+	{
+		if (OptionUtils.options.antialiasing == false)
+		{
+			if ((obj is FlxSprite))
+			{
+				var sprite:FlxSprite = cast obj;
+				sprite.antialiasing = false;
+			}
+			else if ((obj is FlxTypedGroup))
+			{
+				var group:FlxTypedGroup<FlxSprite> = cast obj;
+				for (o in group.members)
+				{
+					if ((o is FlxSprite))
+					{
+						var sprite:FlxSprite = cast o;
+						sprite.antialiasing = false;
+					}
+				}
+			}
+		}
+		return super.add(obj);
+	}
 }

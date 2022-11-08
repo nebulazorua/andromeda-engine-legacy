@@ -11,7 +11,7 @@ class Boyfriend extends Character
 {
 	public var stunned:Bool = false;
 
-	public function new(x:Float, y:Float, ?char:String = 'bf', ?hasTex:Bool=true)
+	public function new(x:Float, y:Float, ?char:String = 'bf', ?hasTex:Bool = true)
 	{
 		super(x, y, char, true, hasTex);
 	}
@@ -20,7 +20,8 @@ class Boyfriend extends Character
 	{
 		if (!debugMode)
 		{
-			if(animation.curAnim!=null){
+			if (animation.curAnim != null)
+			{
 				if (isSinging)
 				{
 					holdTimer += elapsed;

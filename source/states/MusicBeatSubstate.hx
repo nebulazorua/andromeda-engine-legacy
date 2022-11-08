@@ -20,7 +20,7 @@ class MusicBeatSubstate extends FlxSubState
 	private var curStep:Int = 0;
 	private var curBeat:Int = 0;
 
-	public var canChangeVolume:Bool=true;
+	public var canChangeVolume:Bool = true;
 
 	public var volumeDownKeys:Array<FlxKey> = [MINUS, NUMPADMINUS];
 	public var volumeUpKeys:Array<FlxKey> = [PLUS, NUMPADPLUS];
@@ -32,11 +32,12 @@ class MusicBeatSubstate extends FlxSubState
 
 	override function update(elapsed:Float)
 	{
-		//everyStep();
+		// everyStep();
 		var oldStep:Int = curStep;
 
 		#if FLX_KEYBOARD
-		if(canChangeVolume){
+		if (canChangeVolume)
+		{
 			if (FlxG.keys.anyJustReleased(volumeUpKeys))
 				FlxG.sound.changeVolume(0.1);
 			else if (FlxG.keys.anyJustReleased(volumeDownKeys))
@@ -49,7 +50,6 @@ class MusicBeatSubstate extends FlxSubState
 
 		if (oldStep != curStep && curStep > 0)
 			stepHit();
-
 
 		super.update(elapsed);
 	}
@@ -78,6 +78,6 @@ class MusicBeatSubstate extends FlxSubState
 
 	public function beatHit():Void
 	{
-		//do literally nothing dumbass
+		// do literally nothing dumbass
 	}
 }

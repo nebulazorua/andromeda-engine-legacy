@@ -11,6 +11,7 @@ import flixel.util.FlxColor;
 import flixel.util.FlxTimer;
 import states.*;
 import ui.*;
+
 using StringTools;
 
 class DialogueBox extends FlxSpriteGroup
@@ -124,7 +125,6 @@ class DialogueBox extends FlxSpriteGroup
 		handSelect = new FlxSprite(FlxG.width * 0.9, FlxG.height * 0.9).loadGraphic(Paths.image('pixelUI/hand_textbox'));
 		add(handSelect);
 
-
 		if (!talkingRight)
 		{
 			// box.flipX = true;
@@ -178,7 +178,7 @@ class DialogueBox extends FlxSpriteGroup
 			dialogueStarted = true;
 		}
 
-		if (FlxG.keys.justPressed.ANY  && dialogueStarted == true)
+		if (FlxG.keys.justPressed.ANY && dialogueStarted == true)
 		{
 			remove(dialogue);
 

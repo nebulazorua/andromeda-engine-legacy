@@ -10,65 +10,75 @@ import openfl.Lib;
 import flixel.math.FlxPoint;
 
 using StringTools;
-typedef ShaderEffect = {
-  var shader:Dynamic;
+
+typedef ShaderEffect =
+{
+	var shader:Dynamic;
 }
 
-class NoteEffect {
-  public var shader: NoteShader = new NoteShader();
-  public function new(){
-    shader.flash.value = [0];
-  }
+class NoteEffect
+{
+	public var shader:NoteShader = new NoteShader();
 
-  public function setFlash(val: Float){
-    shader.flash.value=[val];
-  }
+	public function new()
+	{
+		shader.flash.value = [0];
+	}
 
+	public function setFlash(val:Float)
+	{
+		shader.flash.value = [val];
+	}
 }
 
+class ColorSwap
+{
+	public var shader:ColorSwapShader = new ColorSwapShader();
+	public var hasOutline(default, set):Bool = false;
+	public var hue(default, set):Float = 0;
+	public var sat(default, set):Float = 0;
+	public var val(default, set):Float = 0;
 
-class ColorSwap {
-  public var shader:ColorSwapShader = new ColorSwapShader();
-  public var hasOutline(default, set):Bool = false;
-  public var hue(default, set):Float = 0;
-  public var sat(default, set):Float = 0;
-  public var val(default, set):Float = 0;
+	private function set_hasOutline(value:Bool)
+	{
+		hasOutline = value;
+		shader.awesomeOutline.value[0] = value;
+		return hasOutline;
+	}
 
-  private function set_hasOutline(value:Bool){
-    hasOutline=value;
-    shader.awesomeOutline.value[0]=value;
-    return hasOutline;
-  }
+	private function set_hue(value:Float)
+	{
+		hue = value;
+		shader.hue.value[0] = value;
+		return hue;
+	}
 
-  private function set_hue(value:Float){
-    hue=value;
-    shader.hue.value[0]=value;
-    return hue;
-  }
+	private function set_sat(value:Float)
+	{
+		sat = value;
+		shader.sat.value[0] = value;
+		return sat;
+	}
 
-  private function set_sat(value:Float){
-    sat=value;
-    shader.sat.value[0]=value;
-    return sat;
-  }
+	private function set_val(value:Float)
+	{
+		val = value;
+		shader.val.value[0] = value;
+		return val;
+	}
 
-  private function set_val(value:Float){
-    val=value;
-    shader.val.value[0]=value;
-    return val;
-  }
-
-  public function new(){
-    shader.hue.value = [hue];
-    shader.sat.value = [sat];
-    shader.val.value = [val];
-    shader.awesomeOutline.value = [hasOutline];
-  }
+	public function new()
+	{
+		shader.hue.value = [hue];
+		shader.sat.value = [sat];
+		shader.val.value = [val];
+		shader.awesomeOutline.value = [hasOutline];
+	}
 }
 
 class NoteShader extends FlxShader
 {
-  @:glFragmentSource('
+	@:glFragmentSource('
     #pragma header
     uniform float flash;
 
@@ -86,16 +96,15 @@ class NoteShader extends FlxShader
         gl_FragColor = newCol;
     }
   ')
-  public function new()
-  {
-    super();
-  }
-
+	public function new()
+	{
+		super();
+	}
 }
 
 class ColorSwapShader extends FlxShader
 {
-  @:glFragmentSource('
+	@:glFragmentSource('
     #pragma header
     uniform float hue;
     uniform float sat;
@@ -199,38 +208,50 @@ class ColorSwapShader extends FlxShader
         } */
       }
   ')
-  public function new()
-  {
-    super();
-  }
+	public function new()
+	{
+		super();
+	}
 }
 
 // https://www.shadertoy.com/view/WtGXDD
 
-class RaymarchEffect {
-  var rad = Math.PI/180;
-  public var shader:RaymarchShader = new RaymarchShader();
-  public function new(){
-    shader.yaw.value = [0];
-    shader.pitch.value = [0];
-  }
-  public function addYaw(yaw:Float){
-    shader.yaw.value[0]+=yaw*rad;
-  }
-  public function setYaw(yaw:Float){
-    shader.yaw.value[0]=yaw*rad;
-  }
+class RaymarchEffect
+{
+	var rad = Math.PI / 180;
 
-  public function addPitch(pitch:Float){
-    shader.pitch.value[0]+=pitch*rad;
-  }
-  public function setPitch(pitch:Float){
-    shader.pitch.value[0]=pitch*rad;
-  }
+	public var shader:RaymarchShader = new RaymarchShader();
+
+	public function new()
+	{
+		shader.yaw.value = [0];
+		shader.pitch.value = [0];
+	}
+
+	public function addYaw(yaw:Float)
+	{
+		shader.yaw.value[0] += yaw * rad;
+	}
+
+	public function setYaw(yaw:Float)
+	{
+		shader.yaw.value[0] = yaw * rad;
+	}
+
+	public function addPitch(pitch:Float)
+	{
+		shader.pitch.value[0] += pitch * rad;
+	}
+
+	public function setPitch(pitch:Float)
+	{
+		shader.pitch.value[0] = pitch * rad;
+	}
 }
 
-class RaymarchShader extends FlxShader {
-  @:glFragmentSource('
+class RaymarchShader extends FlxShader
+{
+	@:glFragmentSource('
     #pragma header
 
     // "RayMarching starting point"
@@ -327,28 +348,35 @@ class RaymarchShader extends FlxShader {
         gl_FragColor = col;
     }
   ')
-  public function new()
-  {
-    super();
-  }
+	public function new()
+	{
+		super();
+	}
 }
 
-class BuildingEffect {
-  public var shader:BuildingShader = new BuildingShader();
-  public function new(){
-    shader.alphaShit.value = [0];
-  }
-  public function addAlpha(alpha:Float){
-    shader.alphaShit.value[0]+=alpha;
-  }
-  public function setAlpha(alpha:Float){
-    shader.alphaShit.value[0]=alpha;
-  }
+class BuildingEffect
+{
+	public var shader:BuildingShader = new BuildingShader();
+
+	public function new()
+	{
+		shader.alphaShit.value = [0];
+	}
+
+	public function addAlpha(alpha:Float)
+	{
+		shader.alphaShit.value[0] += alpha;
+	}
+
+	public function setAlpha(alpha:Float)
+	{
+		shader.alphaShit.value[0] = alpha;
+	}
 }
 
 class BuildingShader extends FlxShader
 {
-  @:glFragmentSource('
+	@:glFragmentSource('
     #pragma header
     uniform float alphaShit;
     void main()
@@ -361,68 +389,76 @@ class BuildingShader extends FlxShader
       gl_FragColor = color;
     }
   ')
-  public function new()
-  {
-    super();
-  }
+	public function new()
+	{
+		super();
+	}
 }
-
 
 class VCRDistortionEffect
 {
-  public var shader:VCRDistortionShader = new VCRDistortionShader();
-  public function new(){
-    shader.iTime.value = [0];
-    shader.vignetteOn.value = [true];
-    shader.perspectiveOn.value = [true];
-    shader.distortionOn.value = [true];
-    shader.scanlinesOn.value = [true];
-    shader.vignetteMoving.value = [true];
-    shader.noiseOn.value = [true];
-    shader.glitchModifier.value = [1];
-    shader.iResolution.value = [Lib.current.stage.stageWidth,Lib.current.stage.stageHeight];
-    var noise = Assets.getBitmapData(Paths.image("noise2"));
-    shader.noiseTex.input = noise;
-  }
+	public var shader:VCRDistortionShader = new VCRDistortionShader();
 
-  public function update(elapsed:Float){
-    shader.iTime.value[0] += elapsed;
-    shader.iResolution.value = [Lib.current.stage.stageWidth,Lib.current.stage.stageHeight];
-  }
+	public function new()
+	{
+		shader.iTime.value = [0];
+		shader.vignetteOn.value = [true];
+		shader.perspectiveOn.value = [true];
+		shader.distortionOn.value = [true];
+		shader.scanlinesOn.value = [true];
+		shader.vignetteMoving.value = [true];
+		shader.noiseOn.value = [true];
+		shader.glitchModifier.value = [1];
+		shader.iResolution.value = [Lib.current.stage.stageWidth, Lib.current.stage.stageHeight];
+		var noise = Assets.getBitmapData(Paths.image("noise2"));
+		shader.noiseTex.input = noise;
+	}
 
-  public function setVignette(state:Bool){
-    shader.vignetteOn.value[0] = state;
-  }
+	public function update(elapsed:Float)
+	{
+		shader.iTime.value[0] += elapsed;
+		shader.iResolution.value = [Lib.current.stage.stageWidth, Lib.current.stage.stageHeight];
+	}
 
-  public function setNoise(state:Bool){
-    shader.noiseOn.value[0] = state;
-  }
+	public function setVignette(state:Bool)
+	{
+		shader.vignetteOn.value[0] = state;
+	}
 
-  public function setPerspective(state:Bool){
-    shader.perspectiveOn.value[0] = state;
-  }
+	public function setNoise(state:Bool)
+	{
+		shader.noiseOn.value[0] = state;
+	}
 
-  public function setGlitchModifier(modifier:Float){
-    shader.glitchModifier.value[0] = modifier;
-  }
+	public function setPerspective(state:Bool)
+	{
+		shader.perspectiveOn.value[0] = state;
+	}
 
-  public function setDistortion(state:Bool){
-    shader.distortionOn.value[0] = state;
-  }
+	public function setGlitchModifier(modifier:Float)
+	{
+		shader.glitchModifier.value[0] = modifier;
+	}
 
-  public function setScanlines(state:Bool){
-    shader.scanlinesOn.value[0] = state;
-  }
+	public function setDistortion(state:Bool)
+	{
+		shader.distortionOn.value[0] = state;
+	}
 
-  public function setVignetteMoving(state:Bool){
-    shader.vignetteMoving.value[0] = state;
-  }
+	public function setScanlines(state:Bool)
+	{
+		shader.scanlinesOn.value[0] = state;
+	}
+
+	public function setVignetteMoving(state:Bool)
+	{
+		shader.vignetteMoving.value[0] = state;
+	}
 }
 
 class VCRDistortionShader extends FlxShader // https://www.shadertoy.com/view/ldjGzV and https://www.shadertoy.com/view/Ms23DR and https://www.shadertoy.com/view/MsXGD4 and https://www.shadertoy.com/view/Xtccz4
 {
-
-  @:glFragmentSource('
+	@:glFragmentSource('
     #pragma header
 
     uniform float iTime;
@@ -549,8 +585,8 @@ class VCRDistortionShader extends FlxShader // https://www.shadertoy.com/view/ld
 
     }
   ')
-  public function new()
-  {
-    super();
-  }
+	public function new()
+	{
+		super();
+	}
 }

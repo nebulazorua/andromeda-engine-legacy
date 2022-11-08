@@ -25,7 +25,9 @@ class Main extends Sprite
 	var gameHeight:Int = 720; // Height of the game in pixels (might be less / more in actual pixels depending on your zoom).
 	var initialState:Class<FlxState> = states.InitState; // The FlxState the game starts with.
 	var zoom:Float = -1; // If -1, zoom is automatically calculated to fit the window dimensions.
+
 	public static var framerate:Int = 60; // How many frames per second the game should run at.
+
 	#if HAXEFLIXEL_LOGO
 	var skipSplash:Bool = false;
 	#else
@@ -87,14 +89,15 @@ class Main extends Sprite
 
 	public static function setFPSCap(cap:Int)
 	{
-		Main.framerate=cap;
+		Main.framerate = cap;
 		updateFramerate();
 	}
 
 	// thank u forever engine
 	// https://github.com/Yoshubs/Forever-Engine/blob/master/source/Main.hx
 
-	public static function updateFramerate(){
+	public static function updateFramerate()
+	{
 		if (Main.framerate > FlxG.updateFramerate)
 		{
 			FlxG.updateFramerate = Main.framerate;
@@ -107,8 +110,9 @@ class Main extends Sprite
 		}
 	}
 
-	public static function adjustFPS(num:Float):Float{
-		return FlxG.elapsed / (1/60) * num;
+	public static function adjustFPS(num:Float):Float
+	{
+		return FlxG.elapsed / (1 / 60) * num;
 	}
 
 	public static function getFPSCap():Float

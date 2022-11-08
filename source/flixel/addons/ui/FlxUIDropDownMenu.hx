@@ -17,7 +17,7 @@ import flixel.util.FlxStringUtil;
  */
 class FlxUIDropDownMenu extends FlxUIGroup implements IFlxUIWidget implements IFlxUIClickable implements IHasParams
 {
-  private var selection:Int = 0;
+	private var selection:Int = 0;
 
 	public var skipButtonUpdate(default, set):Bool;
 
@@ -210,19 +210,16 @@ class FlxUIDropDownMenu extends FlxUIGroup implements IFlxUIWidget implements IF
 			button.y = offset;
 			offset += buttonHeight;
 		}
-    for (button in list)
+		for (button in list)
 			button.y -= buttonHeight * selection;
 
-
-    for (button in list)
-    {
-      if(button.y < dropPanel.y)
-        button.alpha=0;
-      else
-        button.alpha=1;
-
-    }
-
+		for (button in list)
+		{
+			if (button.y < dropPanel.y)
+				button.alpha = 0;
+			else
+				button.alpha = 1;
+		}
 	}
 
 	override function set_visible(Value:Bool):Bool
@@ -407,9 +404,9 @@ class FlxUIDropDownMenu extends FlxUIGroup implements IFlxUIWidget implements IF
 		return null;
 	}
 
-  function doScroll(){
-
-  }
+	function doScroll()
+	{
+	}
 
 	public override function update(elapsed:Float):Void
 	{
@@ -418,23 +415,29 @@ class FlxUIDropDownMenu extends FlxUIGroup implements IFlxUIWidget implements IF
 		#if FLX_MOUSE
 		if (dropPanel.visible)
 		{
-			if (!FlxG.mouse.overlaps(this)){
-        if(FlxG.mouse.justPressed)
-  			{
-  				showList(false);
-  			}
-      }else{
-        if(list.length>1){
-          if(FlxG.mouse.wheel>0 || FlxG.keys.justPressed.UP){
-            selection = Std.int(CoolUtil.clamp(selection-1,0,list.length-1));
-            updateButtonPositions();
-          }
-          if(FlxG.mouse.wheel<0 || FlxG.keys.justPressed.DOWN){
-            selection = Std.int(CoolUtil.clamp(selection+1,0,list.length-1));
-            updateButtonPositions();
-          }
-        }
-      }
+			if (!FlxG.mouse.overlaps(this))
+			{
+				if (FlxG.mouse.justPressed)
+				{
+					showList(false);
+				}
+			}
+			else
+			{
+				if (list.length > 1)
+				{
+					if (FlxG.mouse.wheel > 0 || FlxG.keys.justPressed.UP)
+					{
+						selection = Std.int(CoolUtil.clamp(selection - 1, 0, list.length - 1));
+						updateButtonPositions();
+					}
+					if (FlxG.mouse.wheel < 0 || FlxG.keys.justPressed.DOWN)
+					{
+						selection = Std.int(CoolUtil.clamp(selection + 1, 0, list.length - 1));
+						updateButtonPositions();
+					}
+				}
+			}
 		}
 		#end
 	}

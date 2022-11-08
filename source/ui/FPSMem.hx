@@ -27,18 +27,21 @@ class FPSMem extends TextField
 		The current frame rate, expressed using frames-per-second
 	**/
 	public var currentFPS(default, null):Int;
-  public var currentMem:Float;
+
+	public var currentMem:Float;
 
 	public var highestMem:Float;
-  public static var showMem:Bool=true;
-  public static var showFPS:Bool=true;
-	public static var showMemPeak:Bool=true;
+
+	public static var showMem:Bool = true;
+	public static var showFPS:Bool = true;
+	public static var showMemPeak:Bool = true;
 
 	@:noCompletion private var cacheCount:Int;
 	@:noCompletion private var currentTime:Float;
 	@:noCompletion private var times:Array<Float>;
 
 	var lastUpdate:Float = 0;
+
 	public function new(x:Float = 10, y:Float = 10, color:Int = 0x000000)
 	{
 		super();
@@ -63,7 +66,7 @@ class FPSMem extends TextField
 		#if flash
 		addEventListener(Event.ENTER_FRAME, function(e)
 		{
-			__enterFrame(Timer.stamp()-lastUpdate);
+			__enterFrame(Timer.stamp() - lastUpdate);
 		});
 		#end
 	}
@@ -73,33 +76,36 @@ class FPSMem extends TextField
 	private #if !flash override #end function __enterFrame(d:Float):Void
 	{
 		currentTime = Timer.stamp();
-		var dt = currentTime-lastUpdate;
+		var dt = currentTime - lastUpdate;
 		lastUpdate = currentTime;
 		times.push(currentTime);
-		while(times[0]<currentTime-1)
+		while (times[0] < currentTime - 1)
 			times.shift();
 
 		var currentCount = times.length;
 		currentFPS = currentCount;
-    currentMem = Math.round(System.totalMemory / (1e+6));
+		currentMem = Math.round(System.totalMemory / (1e+6));
 
-		if(currentMem>highestMem)
-			highestMem=currentMem;
+		if (currentMem > highestMem)
+			highestMem = currentMem;
 		if (currentCount != cacheCount /*&& visible*/)
 		{
-      text = "";
-      if(showFPS)
-			   text += "FPS: " + currentFPS + "\n";
-      if(showMem){
-				if(currentMem<0){
-        	text += "Memory: Leaking " + Math.abs(currentMem) + " MB\n";
-				}else{
+			text = "";
+			if (showFPS)
+				text += "FPS: " + currentFPS + "\n";
+			if (showMem)
+			{
+				if (currentMem < 0)
+				{
+					text += "Memory: Leaking " + Math.abs(currentMem) + " MB\n";
+				}
+				else
+				{
 					text += "Memory: " + currentMem + " MB\n";
 				}
 			}
-			if(showMemPeak)
+			if (showMemPeak)
 				text += "Mem Peak: " + highestMem + " MB\n";
-
 		}
 
 		cacheCount = currentCount;

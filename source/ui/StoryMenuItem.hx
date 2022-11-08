@@ -25,7 +25,7 @@ class StoryMenuItem extends FlxSpriteGroup
 
 	public function startFlashing():Void
 	{
-		if(OptionUtils.options.menuFlash==true)
+		if (OptionUtils.options.menuFlash == true)
 			isFlashing = true;
 	}
 
