@@ -35,17 +35,15 @@ jobs:
           sudo apt-get install libvlccore-dev
           haxelib setup ~/haxelib
           haxelib install hxcpp > /dev/null
-          haxelib install lime
-          haxelib install openfl
-          haxelib --never install flixel
-          haxelib run lime setup flixel
-          haxelib run lime setup
+          haxelib install lime 8.0.2
+          haxelib install openfl 9.2.2
+          haxelib --never install flixel 4.11.0
           haxelib install flixel-tools
           haxelib install flixel-ui
-          haxelib install flixel-addons
+          haxelib install flixel-addons 2.11.0
           haxelib install tjson
           haxelib install hxjsonast
-          haxelib install hxCodec
+          haxelib install hxCodec 2.5.1
           haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit
           haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit
           haxelib install hscript
@@ -77,17 +75,15 @@ jobs:
         run: |
           haxelib setup C:/haxelib
           haxelib install hxcpp > nul
-          haxelib install lime
-          haxelib install openfl
-          haxelib --never install flixel
-          haxelib run lime setup flixel
-          haxelib run lime setup
+          haxelib install lime 8.0.2
+          haxelib install openfl 9.2.2
+          haxelib --never install flixel 4.11.0
           haxelib install flixel-tools
           haxelib install flixel-ui
-          haxelib install flixel-addons
+          haxelib install flixel-addons 2.11.0
           haxelib install tjson
           haxelib install hxjsonast
-          haxelib install hxCodec
+          haxelib install hxCodec 2.5.1
           haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit
           haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit
           haxelib install hscript
@@ -120,17 +116,15 @@ jobs:
         run: |
           haxelib setup ~/haxelib
           haxelib install hxcpp > /dev/null
-          haxelib install lime
-          haxelib install openfl
-          haxelib --never install flixel
-          haxelib run lime setup flixel
-          haxelib run lime setup
+          haxelib install lime 8.0.2
+          haxelib install openfl 9.2.2
+          haxelib --never install flixel 4.11.0
           haxelib install flixel-tools
           haxelib install flixel-ui
-          haxelib install flixel-addons
+          haxelib install flixel-addons 2.11.0
           haxelib install tjson
           haxelib install hxjsonast
-          haxelib install hxCodec
+          haxelib install hxCodec 2.5.1
           haxelib git hxvm-luajit https://github.com/nebulazorua/hxvm-luajit
           haxelib git linc_luajit https://github.com/nebulazorua/linc_luajit
           haxelib install hscript
