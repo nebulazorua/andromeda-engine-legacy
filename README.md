@@ -1,3 +1,7 @@
+# USE [TROLL ENGINE](https://github.com/riconuts/troll-engine), IT'S A PSYCH FORK I'VE BEEN WORKING ON AND ITS WAY BETTER THAN THIS PIECE OF JUNK!!!
+## (though if you prefer hardcoding then andromeda might be better shrug)
+### (maybe later in the year if I start enjoying FNF modding again i'll make andromeda 2)
+
 # BEFORE PUTTING AN ISSUE IN, MAKE SURE YOU'RE ON HAXE 4.2.5!
 
 # Friday Night Funkin: Andromeda Engine
