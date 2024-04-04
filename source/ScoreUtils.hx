@@ -79,7 +79,7 @@ class ScoreUtils
 	}
 
 	public static function GetMaxAccuracy(noteCounters:Map<String,Int>):Float{ // ITG-like system
-		var points:Float = 0;
+		var points:Float = 0;	
 		var topJudge = PlayState.judgeMan.getHighestAccJudgement();
 		for(i in 0...noteCounters.get("taps")){
 			points += PlayState.judgeMan.getJudgementAccuracy(topJudge);

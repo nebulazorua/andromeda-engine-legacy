@@ -289,16 +289,16 @@ class ToggleOption extends Option
 	}
 
 	public override function createOptionText(curSelected:Int,optionText:FlxTypedGroup<Option>):Dynamic{
-    remove(text);
-    text = new Alphabet(0, (70 * curSelected) + 30, name, true, false);
-    text.movementType = "list";
-    text.isMenuItem = true;
+		remove(text);
+		text = new Alphabet(0, (70 * curSelected) + 30, name, true, false);
+		text.movementType = "list";
+		text.isMenuItem = true;
 		text.offsetX = 145;
 		text.gotoTargetPosition();
 		checkbox.tracker = text;
-    add(text);
-    return text;
-  }
+		add(text);
+		return text;
+	}
 
 	public override function accept():Bool{
 		Reflect.setField(OptionUtils.options,property,!Reflect.field(OptionUtils.options,property));

@@ -329,7 +329,7 @@ class Note extends NoteGraphic
 					else
 						canBeHit = false;
 				}
-			}else{
+			}else{	
 				canBeHit=false;
 			}
 		}

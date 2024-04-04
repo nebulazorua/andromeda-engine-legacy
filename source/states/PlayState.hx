@@ -2932,7 +2932,6 @@ class PlayState extends MusicBeatState
 						else if(daNote.isSustainNote){
 							if(daNote.parent.unhitTail.contains(daNote))
 								daNote.parent.unhitTail.remove(daNote);
-
 						}
 
 
@@ -3555,8 +3554,6 @@ class PlayState extends MusicBeatState
 					hitNote.tripTimer = 1;
 					playAnimationNote(boyfriend, hitNote, "");
 				}
-
-
 			}else{
 				if((currentOptions.hitsoundType==1 || currentOptions.hitsoundType==2))
 					FlxG.sound.play(Paths.sound('Ghost_Hit'),currentOptions.hitsoundVol/100);

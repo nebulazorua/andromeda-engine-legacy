@@ -128,7 +128,7 @@
 	<assets path="assets/fonts"/>
 	<!-- _______________________________ Libraries ______________________________ -->
 
-	<haxelib name="flixel" />
+	<haxelib name="flixel" version="4.11.0" />
 	<haxedev set='webgl' />
 
 	<!--In case you want to use the addons package-->
