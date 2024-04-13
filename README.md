@@ -48,7 +48,6 @@ Andromeda Engine includes but is not limited to:
 - [Wilde](https://twitter.com/0WildeRaze) - Letting more people know about AE
 - [Lizzy](https://twitter.com/tc_lizzy) - Keepin' me sane
 - [Redsty Phoenix](https://twitter.com/RedstyP) - REALLY getting the word out
-- [Yoshubs](https://twitter.com/yoshubs) - Cache dumping, inspiring me to optimize and improve input
 - [Shadow Mario](https://twitter.com/Shadow_Mario_) - Inspiration, Psych Engine character format
 - [Psych Engine](https://github.com/ShadowMario/FNF-PsychEngine) - Read Shadow Mario's credit
 - [gedehari](https://twitter.com/gedehari) - Inspiration
