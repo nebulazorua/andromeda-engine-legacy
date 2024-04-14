@@ -385,6 +385,24 @@ class PlayState extends MusicBeatState
 				return Main.adjustFPS(num);
 			});
 
+
+            Lua_helper.add_callback(lua.state, "callEvent", function(name:String, args:Array<String>){
+                return doEvent({
+                    name: name,
+                    time: Conductor.songPosition,
+                    args: args
+                });
+            });
+
+			Lua_helper.add_callback(lua.state, "callEventAtTime", function(name:String, time:Float, args:Array<String>)
+			{
+				return doEvent({
+					name: name,
+					time: time,
+					args: args
+				});
+			});
+
 			Lua_helper.add_callback(lua.state,"newOpponent", function(x:Float, y:Float, ?character:String = "bf", ?spriteName:String){
 				var char = new Character(x,y,character,false,!currentOptions.noChars);
 				var name = "UnnamedOpponent"+unnamedLuaSprites;
@@ -1156,6 +1174,9 @@ class PlayState extends MusicBeatState
 			}else if(currAnim=='idle' || currAnim.startsWith("dance")){
 				newSprite.dance();
 			}
+            if(who == 'bf' || who == 'gf' || who =='dad')
+                luaSprites[who] = newSprite;
+            
 
 			return newSprite;
 
@@ -1168,7 +1189,6 @@ class PlayState extends MusicBeatState
 		var sprite = luaSprites[spriteName];
 		if(spriteName == 'bf' || spriteName == 'gf' || spriteName =='dad'){
 			var newChar = swapCharacter(spriteName,newCharacter);
-			luaSprites[spriteName] = newChar;
 			return;
 		}
 		if(sprite!=null){
@@ -1187,8 +1207,6 @@ class PlayState extends MusicBeatState
 			remove(sprite);
 			// TODO: Make this BETTER!!!
 			newSprite = new Character(newX,newY,newCharacter);
-
-
 			newSprite.x += newSprite.posOffset.x;
 			newSprite.y += newSprite.posOffset.y;
 			healthBar.setIcons(boyfriend.iconName,dad.iconName);
@@ -2321,7 +2339,7 @@ class PlayState extends MusicBeatState
 					case 'gf':
 						char = gf;
 					case 'opponent':
-						char=dad;
+						char = opponent;
 				}
 				char.noIdleTimer = args[2]*1000;
 				char.playAnim(args[1],true);
@@ -2370,7 +2388,7 @@ class PlayState extends MusicBeatState
 		}
 
 		if(luaModchartExists && lua!=null)
-			callLua("doEvent",[event.name, event.args]); // TODO: Note lua class???
+			callLua("doEvent",[event.name, event.args]); // breaking chnage probably but whatever whos using andromeda nowadays LOL
 
 	}
 

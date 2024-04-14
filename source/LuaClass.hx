@@ -1950,6 +1950,38 @@ class LuaReceptor extends LuaSprite {
 class LuaCharacter extends LuaSprite {
   private static var state:State;
 
+	private static function playAnimForTime(l:StatePointer):Int
+	{
+		// 1 = self
+		// 2 = anim
+        // 3 = time
+		// 4 = forced
+		// 5 = reversed
+		// 6 = frame
+		var anim = LuaL.checkstring(state, 2);
+        var time = LuaL.checknumber(state, 3);
+		var forced = false;
+		var reversed = false;
+		var frame:Int = 0;
+
+
+		if (Lua.isboolean(state, 4))
+			forced = Lua.toboolean(state, 4);
+
+		if (Lua.isboolean(state, 5))
+			reversed = Lua.toboolean(state, 5);
+
+		if (Lua.isnumber(state, 6))
+			frame = Std.int(Lua.tonumber(state, 6));
+
+		Lua.getfield(state, 1, "spriteName");
+		var spriteName = Lua.tostring(state, -1);
+		var sprite = PlayState.currentPState.luaSprites[spriteName];
+		sprite.noIdleTimer = time * 1000;
+		sprite.playAnim(anim, forced, reversed, frame);
+		return 0;
+	}
+
   private static function swapCharacter(l:StatePointer){
     // 1 = self
     // 2 = character
@@ -2023,6 +2055,7 @@ class LuaCharacter extends LuaSprite {
   }
 
   private static var playAnimC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(playAnim);
+  private static var playAnimForTimeC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(playAnimForTime);
   private static var addOffsetC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(addOffset);
   private static var leftToRightC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(leftToRight);
   private static var rightToLeftC:cpp.Callable<StatePointer->Int> = cpp.Callable.fromStaticFunction(rightToLeft);
@@ -2063,6 +2096,19 @@ class LuaCharacter extends LuaSprite {
         LuaL.error(l,"playAnim is read-only.");
         return 0;
       }
+    });
+    properties.set("playAnimForTime", {
+        defaultValue: 0,
+        getter: function(l:State, data:Any)
+        {
+			Lua.pushcfunction(l, playAnimForTimeC);
+            return 1;
+        },
+        setter: function(l:State)
+        {
+			LuaL.error(l, "playAnimForTime is read-only.");
+            return 0;
+        }
     });
     properties.set("addOffset",{
       defaultValue:0,
