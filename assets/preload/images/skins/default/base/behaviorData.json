@@ -10,27 +10,27 @@
         "sheet": "AndroSplash",
         "scale":1,
         "left":{
-          "framerate": 30,
-          "offsetX": -35,
-          "offsetY": 0,
+          "framerate": 24,
+          "offsetX": -15,
+          "offsetY": -30,
           "prefix": "splash left0"
         },
         "up":{
-          "framerate": 30,
-          "offsetX": -5,
-          "offsetY": 0,
+          "framerate": 24,
+          "offsetX": -15,
+          "offsetY": -30,
           "prefix": "splash up0"
         },
         "down":{
-          "framerate": 30,
-          "offsetX": -5,
-          "offsetY": -2,
+          "framerate": 24,
+          "offsetX": -15,
+          "offsetY": -30,
           "prefix": "splash down0"
         },
         "right":{
-          "framerate": 30,
-          "offsetX": -3,
-          "offsetY": 2,
+          "framerate": 24,
+          "offsetX": -15,
+          "offsetY": -30,
           "prefix": "splash right0"
         }
       },

@@ -1,41 +1,30 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<TextureAtlas imagePath="AndroSplash.png">
-	<!-- Created with Adobe Animate version 21.0.5.40714 -->
-	<!-- http://www.adobe.com/products/animate.html -->
-	<SubTexture name="splash down0000" x="425" y="2" width="420" height="420" pivotX="136.25" pivotY="134.85"/>
-	<SubTexture name="splash down0001" x="425" y="424" width="420" height="420"/>
-	<SubTexture name="splash down0002" x="425" y="846" width="420" height="420"/>
-	<SubTexture name="splash down0003" x="425" y="1268" width="420" height="420"/>
-	<SubTexture name="splash down0004" x="425" y="1690" width="420" height="420"/>
-	<SubTexture name="splash down0005" x="425" y="2112" width="420" height="420"/>
-	<SubTexture name="splash down0006" x="425" y="2534" width="420" height="420"/>
-	<SubTexture name="splash down0007" x="425" y="2956" width="420" height="420"/>
-	<SubTexture name="splash down0008" x="425" y="3378" width="420" height="420"/>
-	<SubTexture name="splash left0000" x="1267" y="2" width="417" height="417" pivotX="119.9" pivotY="133.55"/>
-	<SubTexture name="splash left0001" x="1267" y="421" width="417" height="417"/>
-	<SubTexture name="splash left0002" x="1267" y="840" width="417" height="417"/>
-	<SubTexture name="splash left0003" x="1267" y="1259" width="417" height="417"/>
-	<SubTexture name="splash left0004" x="1267" y="1678" width="417" height="417"/>
-	<SubTexture name="splash left0005" x="1267" y="2097" width="417" height="417"/>
-	<SubTexture name="splash left0006" x="1267" y="2516" width="417" height="417"/>
-	<SubTexture name="splash left0007" x="1267" y="2935" width="417" height="417"/>
-	<SubTexture name="splash left0008" x="1267" y="3354" width="417" height="417"/>
-	<SubTexture name="splash right0000" x="2" y="2" width="421" height="420" pivotX="136.25" pivotY="134.85"/>
-	<SubTexture name="splash right0001" x="2" y="424" width="421" height="420"/>
-	<SubTexture name="splash right0002" x="2" y="846" width="421" height="420"/>
-	<SubTexture name="splash right0003" x="2" y="1268" width="421" height="420"/>
-	<SubTexture name="splash right0004" x="2" y="1690" width="421" height="420"/>
-	<SubTexture name="splash right0005" x="2" y="2112" width="421" height="420"/>
-	<SubTexture name="splash right0006" x="2" y="2534" width="421" height="420"/>
-	<SubTexture name="splash right0007" x="2" y="2956" width="421" height="420"/>
-	<SubTexture name="splash right0008" x="2" y="3378" width="421" height="420"/>
-	<SubTexture name="splash up0000" x="847" y="2" width="418" height="417" pivotX="135.05" pivotY="133.55"/>
-	<SubTexture name="splash up0001" x="847" y="421" width="418" height="417"/>
-	<SubTexture name="splash up0002" x="847" y="840" width="418" height="417"/>
-	<SubTexture name="splash up0003" x="847" y="1259" width="418" height="417"/>
-	<SubTexture name="splash up0004" x="847" y="1678" width="418" height="417"/>
-	<SubTexture name="splash up0005" x="847" y="2097" width="418" height="417"/>
-	<SubTexture name="splash up0006" x="847" y="2516" width="418" height="417"/>
-	<SubTexture name="splash up0007" x="847" y="2935" width="418" height="417"/>
-	<SubTexture name="splash up0008" x="847" y="3354" width="418" height="417"/>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+Created with Funkin Packer v0.1.3 https://neeeoo.github.io/funkin-packer/
+-->
+<TextureAtlas imagePath="texture.png" width="1320" height="1271">
+	<SubTexture name="splash down0000" x="2" y="2" width="393" height="370" frameX="-0" frameY="-0" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash down0001" x="2" y="746" width="300" height="282" frameX="-61" frameY="-56" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash down0002" x="792" y="527" width="97" height="97" frameX="-167" frameY="-150" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash down0003" x="1094" y="2" width="204" height="212" frameX="-110" frameY="-88" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash down0004" x="528" y="1030" width="230" height="231" frameX="-98" frameY="-78" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash down0005" x="792" y="286" width="261" height="239" frameX="-76" frameY="-76" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash left0000" x="2" y="374" width="393" height="370" frameX="-0" frameY="-0" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash left0001" x="304" y="746" width="300" height="282" frameX="-61" frameY="-56" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash left0002" x="792" y="626" width="97" height="97" frameX="-167" frameY="-150" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash left0003" x="908" y="760" width="204" height="212" frameX="-110" frameY="-88" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash left0004" x="760" y="1030" width="230" height="231" frameX="-98" frameY="-78" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash left0005" x="2" y="1030" width="261" height="239" frameX="-76" frameY="-76" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash right0000" x="397" y="2" width="393" height="370" frameX="-0" frameY="-0" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash right0001" x="606" y="746" width="300" height="282" frameX="-61" frameY="-56" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash right0002" x="1198" y="974" width="97" height="97" frameX="-167" frameY="-150" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash right0003" x="992" y="974" width="204" height="212" frameX="-110" frameY="-88" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash right0004" x="908" y="527" width="230" height="231" frameX="-98" frameY="-78" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash right0005" x="265" y="1030" width="261" height="239" frameX="-76" frameY="-76" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash up0000" x="397" y="374" width="393" height="370" frameX="-0" frameY="-0" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash up0001" x="792" y="2" width="300" height="282" frameX="-61" frameY="-56" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash up0002" x="1198" y="1073" width="97" height="97" frameX="-167" frameY="-150" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash up0003" x="1114" y="760" width="204" height="212" frameX="-110" frameY="-88" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash up0004" x="1055" y="286" width="230" height="231" frameX="-98" frameY="-78" frameWidth="396" frameHeight="373"/>
+	<SubTexture name="splash up0005" x="792" y="286" width="261" height="239" frameX="-76" frameY="-76" frameWidth="396" frameHeight="373"/>
 </TextureAtlas>

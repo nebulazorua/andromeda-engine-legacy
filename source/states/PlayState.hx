@@ -1738,7 +1738,6 @@ class PlayState extends MusicBeatState
 								});
 							}
 							for(e in pushingEvents)eventSchedule.push(e);
-							//if(shouldSchedule)eventSchedule.push(event);
 						}
 					}else{
 						var shouldSchedule = eventInit(event);
@@ -3837,8 +3836,6 @@ class PlayState extends MusicBeatState
 					anim = 'hold${dir}End';
 			}
 		}
-		//if(daNote.noteType=='alt')suffix+='-alt';
-		//Just in case, I will annotate this code for the future. -Human
 
 		if(who.animation.getByName(anim+suffix)!=null)
 			anim += suffix;

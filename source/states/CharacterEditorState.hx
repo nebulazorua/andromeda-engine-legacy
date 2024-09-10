@@ -272,6 +272,8 @@ class CharacterEditorState extends MusicBeatState {
 		healthBar.scrollFactor.set();
 		healthBar.screenCenter(X);
 
+    
+		stage.defaultCamZoom = 1;
     camGame.zoom = stage.defaultCamZoom;
     zoom=camGame.zoom;
     camFollow = new FlxObject(stage.centerX,stage.centerY);

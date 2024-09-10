@@ -817,17 +817,17 @@ class FlxText extends FlxSprite
 
 		if (oldWidth != newWidth || oldHeight != newHeight)
 		{
-      if(lastKey!=null){
-        FlxG.bitmap.removeByKey(lastKey);
-        graphic.destroy();
-      }
+            if(lastKey!=null){
+                FlxG.bitmap.removeByKey(lastKey);
+                graphic.destroy();
+            }
 
 			height = newHeight;
-      // Need to generate a new buffer to store the text graphic
+            // Need to generate a new buffer to store the text graphic
 			var key:String = FlxG.bitmap.getUniqueKey(textField.text.trim()==''?'text':textField.text);
-      lastKey = key;
+            lastKey = key;
 			makeGraphic(Std.int(newWidth), Std.int(newHeight), FlxColor.TRANSPARENT, false, key);
-      graphic.persist=false;
+            graphic.persist=false;
 			if (_hasBorderAlpha)
 				_borderPixels = graphic.bitmap.clone();
 			frameHeight = Std.int(height);
