@@ -1,6 +1,4 @@
-# USE [TROLL ENGINE](https://github.com/riconuts/troll-engine), IT'S A PSYCH FORK I'VE BEEN WORKING ON AND ITS WAY BETTER THAN THIS PIECE OF JUNK!!!
-## (though if you prefer hardcoding then andromeda might be better shrug)
-### (maybe later in the year if I start enjoying FNF modding again i'll make andromeda 2)
+# Archived! You should be using [Troll Engine](https://github.com/riconuts/FNF-Troll-Engine) if you want to keep using my work (i.e for modcharting), or you should be using something like [Maru Funkin'](https://github.com/MaybeMaru/Maru-Funkin) if you are averse to using a Psych-derived project.
 
 # BEFORE PUTTING AN ISSUE IN, MAKE SURE YOU'RE ON HAXE 4.2.5!
 
